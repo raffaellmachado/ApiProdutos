@@ -1,15 +1,14 @@
-package br.com.bling.ApiProdutos.controllers.Request;
+package br.com.bling.ApiProdutos.controllers.request;
 
-import br.com.bling.ApiProdutos.models.Imagem;
-import br.com.bling.ApiProdutos.models.ProdutoLoja;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.checkerframework.checker.units.qual.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
+
 import java.util.Date;
-import java.util.List;
 
 @NoArgsConstructor
 @Getter

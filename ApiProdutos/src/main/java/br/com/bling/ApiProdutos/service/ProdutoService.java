@@ -14,10 +14,10 @@ import br.com.bling.ApiProdutos.models.Resposta;
 @Service
 public class ProdutoService {
 
-	//Chamada da lista de produtos;
-    private static final String APIKEY = "f335209056ebf0f8542e371edbcffbc6c95fa2925903c63aa0175825c2ac2110ab01fd23";
+    //Chamada da lista de produtos;
+    private static final String APIKEY = "?apikey=f335209056ebf0f8542e371edbcffbc6c95fa2925903c63aa0175825c2ac2110ab01fd23";
     private static final String XML_PARAM = "&xml=";
-    private static final String APIKEY_PARAM = "?apikey=";
+    //   private static final String APIKEY_PARAM = "";
 
     private static final String BLING_API_URL;
     //Chamada apenas de um  produto;
@@ -29,11 +29,10 @@ public class ProdutoService {
 
     static {
 
-
-        BLING_API_URL = "https://bling.com.br/Api/v2/produtos/json/" + APIKEY_PARAM + APIKEY;
-        BLING_API_URL_CODIGO = "https://bling.com.br/Api/v2/produto/{codigo}/json/" + APIKEY_PARAM + APIKEY;
-        BLING_API_URL_ID_FORNECEDOR = "https://bling.com.br/Api/v2/produto/{codigo}/{id_fornecedor}/json/" + APIKEY_PARAM + APIKEY;
-        BLING_API_URL_POST = "https://bling.com.br/Api/v2/produto/json/" + APIKEY_PARAM + XML_PARAM;
+        BLING_API_URL = "https://bling.com.br/Api/v2/produtos/json/" + APIKEY;
+        BLING_API_URL_CODIGO = "https://bling.com.br/Api/v2/produto/{codigo}/json/" + APIKEY;
+        BLING_API_URL_ID_FORNECEDOR = "https://bling.com.br/Api/v2/produto/{codigo}/{id_fornecedor}/json/" + APIKEY;
+        BLING_API_URL_POST = "https://bling.com.br/Api/v2/produto/json/" + APIKEY + XML_PARAM;
     }
 
     @Autowired
@@ -94,10 +93,18 @@ public class ProdutoService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
         HttpEntity<String> request = new HttpEntity<>(xml, headers);
-        return restTemplate.postForObject(BLING_API_URL_POST + xml, request , String.class);
+        String url = BLING_API_URL_POST + xml;
+        return restTemplate.postForObject(url, request, String.class);
     }
 
-
-
-
+    /**
+     * POST ATUALIZA UM PRODUTO A PARTIR DO SEU CODIGO UTILIZANDO XML
+     */
+    public String postProductXmlByCode(String xml, String codigo) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_XML);
+        HttpEntity<String> request = new HttpEntity<>(xml, headers);
+        String url = BLING_API_URL_POST + xml + codigo;
+        return restTemplate.postForObject(url, request, String.class);
+    }
 }

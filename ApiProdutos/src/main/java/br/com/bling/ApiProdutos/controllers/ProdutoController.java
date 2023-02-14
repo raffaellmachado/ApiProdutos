@@ -12,9 +12,9 @@ import org.springframework.web.client.RestTemplate;
 
 
 @RestController
-@RequestMapping(value = "/api")		//Padrão para os métodos /api/...
-@Api(value = "API REST PRODUTOS") 	//Swagger
-@CrossOrigin(origins = "*") 		// Liberar os dominios da API
+@RequestMapping(value = "/api")        //Padrão para os métodos /api/...
+@Api(value = "API REST PRODUTOS")    //Swagger
+@CrossOrigin(origins = "*")        // Liberar os dominios da API
 public class ProdutoController {
 
     private final ProdutoService produtoService;
@@ -63,35 +63,26 @@ public class ProdutoController {
     @ApiOperation(value = "Deleta um produto pelo código")
     public void deleteProductByCodigo(@PathVariable String codigo) {
         this.codigo = codigo;
-        produtoService.deleteProductByCodigo(String.valueOf(codigo));
+        produtoService.deleteProductByCodigo(codigo);
     }
 
     /**
      * POST DE UM NOVO PRODUTO UTILIZANDO XML.
      */
     @PostMapping(path = "/cadastrarproduto", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void sendXML(@RequestBody String xml) {
+    @ApiOperation(value = "Cadastrar um produto")
+    public void registerProduct(@RequestBody String xml) {
         RestTemplate restTemplate = new RestTemplate();
         produtoService.postProductXml(xml);
     }
 
-    /*
-	@PostMapping("/cadastrarproduto")
-	@ApiOperation(value = "Salva um produto")
-	public Produto salvaProduto(@RequestBody Produto produto) {
-		return produtoRepository.save(produto);
-	}
+    /**
+     * POST ATUALIZA UM PRODUTO A PARTIR DO SEU CODIGO UTILIZANDO XML
+     */
+    @PostMapping(path = "/cadastrarproduto/{codigo}", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Atualiza um produto pelo código")
+    public void registerProductByCode(@RequestBody String xml, @PathVariable String codigo) {
+        produtoService.postProductXmlByCode(xml, codigo);
+    }
 
-	@DeleteMapping("/produto")
-	@ApiOperation(value = "Deleta um produto")
-	public void deletaProduto(@RequestBody Produto produto) {
-		produtoRepository.delete(produto);
-	}
-
-	@PutMapping("/produto")
-	@ApiOperation(value = "Atualiza um produto")
-	public Produto atualizaProduto(@RequestBody Produto produto) {
-		return produtoRepository.save(produto);
-	}
-*/
 }
