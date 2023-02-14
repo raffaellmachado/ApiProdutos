@@ -8,7 +8,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-//@Entity
 public class Categoria {
 
 	@JsonProperty("id")
@@ -16,41 +15,9 @@ public class Categoria {
 	
 	@JsonProperty("descricao")
     private String descricao;
-	
+
 	@JsonProperty("idCategoriaPai")
     private String idCategoriaPai;
 
-/*
-    public Categoria(String id, String descricao, String idCategoriaPai) {
-
-		this.id = id;
-		this.descricao = descricao;
-		this.idCategoriaPai = idCategoriaPai;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getDescricao() {
-		return descricao;
-	}
-
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
-
-	public String getIdCategoriaPai() {
-		return idCategoriaPai;
-	}
-
-	public void setIdCategoriaPai(String idCategoriaPai) {
-		this.idCategoriaPai = idCategoriaPai;
-	}
-*/
 }
 

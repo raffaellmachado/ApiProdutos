@@ -15,8 +15,10 @@ import br.com.bling.ApiProdutos.models.Resposta;
 public class ProdutoService {
 
 	//Chamada da lista de produtos;
-    private static final String APIKEY_PARAM = "&apikey=f335209056ebf0f8542e371edbcffbc6c95fa2925903c63aa0175825c2ac2110ab01fd23";
+    private static final String APIKEY = "f335209056ebf0f8542e371edbcffbc6c95fa2925903c63aa0175825c2ac2110ab01fd23";
     private static final String XML_PARAM = "&xml=";
+    private static final String APIKEY_PARAM = "?apikey=";
+
     private static final String BLING_API_URL;
     //Chamada apenas de um  produto;
     private static final String BLING_API_URL_CODIGO;
@@ -28,9 +30,9 @@ public class ProdutoService {
     static {
 
 
-        BLING_API_URL = "https://bling.com.br/Api/v2/produtos/json/" + APIKEY_PARAM;
-        BLING_API_URL_CODIGO = "https://bling.com.br/Api/v2/produto/{codigo}/json/" + APIKEY_PARAM;
-        BLING_API_URL_ID_FORNECEDOR = "https://bling.com.br/Api/v2/produto/{codigo}/{id_fornecedor}/json/" + APIKEY_PARAM;
+        BLING_API_URL = "https://bling.com.br/Api/v2/produtos/json/" + APIKEY_PARAM + APIKEY;
+        BLING_API_URL_CODIGO = "https://bling.com.br/Api/v2/produto/{codigo}/json/" + APIKEY_PARAM + APIKEY;
+        BLING_API_URL_ID_FORNECEDOR = "https://bling.com.br/Api/v2/produto/{codigo}/{id_fornecedor}/json/" + APIKEY_PARAM + APIKEY;
         BLING_API_URL_POST = "https://bling.com.br/Api/v2/produto/json/" + APIKEY_PARAM + XML_PARAM;
     }
 
@@ -87,22 +89,7 @@ public class ProdutoService {
 
     /**
      * POST DE UM NOVO PRODUTO UTILIZANDO XML
-     *
-     * @return
      */
- /*   public void postProductXml(String @NotNull [] xmlArray) {
-        for (String xml : xmlArray) {
-            restTemplate.postForObject(BLING_API_URL_POST + xml, request, String.class);
-        }
-    }
-
-    public void postProductXml(String xml) {
-        this.xml = xml;
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForObject(BLING_API_URL_POST + xml, null, String.class);
-    }
-
- */
     public String postProductXml(String xml) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);

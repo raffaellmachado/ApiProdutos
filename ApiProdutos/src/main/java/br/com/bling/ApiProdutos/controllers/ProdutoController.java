@@ -1,4 +1,4 @@
-package br.com.bling.ApiProdutos.resources;
+package br.com.bling.ApiProdutos.controllers;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,21 +10,19 @@ import br.com.bling.ApiProdutos.service.ProdutoService;
 import io.swagger.annotations.Api;
 import org.springframework.web.client.RestTemplate;
 
-import javax.xml.crypto.Data;
-
 
 @RestController
 @RequestMapping(value = "/api")		//Padrão para os métodos /api/...
 @Api(value = "API REST PRODUTOS") 	//Swagger
 @CrossOrigin(origins = "*") 		// Liberar os dominios da API
-public class ProdutoResource {
+public class ProdutoController {
 
     private final ProdutoService produtoService;
     private String codigo;
     private String nomeFornecedor;
 
     @Autowired
-    public ProdutoResource(ProdutoService produtoService) {
+    public ProdutoController(ProdutoService produtoService) {
         this.produtoService = produtoService;
     }
 
@@ -71,14 +69,7 @@ public class ProdutoResource {
     /**
      * POST DE UM NOVO PRODUTO UTILIZANDO XML.
      */
-  /*  @PostMapping(path = "/produto", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Insere um produto")
-    public ResponseEntity<Resposta> postXml(@RequestBody String xml)  {
-        Resposta resposta = produtoService.postXml(xml);
-        return new ResponseEntity<>(resposta, HttpStatus.OK);
-    }
-*/
-    @PostMapping(path = "/cadastrarproduto", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/cadastrarproduto", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public void sendXML(@RequestBody String xml) {
         RestTemplate restTemplate = new RestTemplate();
         produtoService.postProductXml(xml);
