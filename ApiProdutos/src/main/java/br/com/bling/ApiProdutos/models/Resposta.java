@@ -20,4 +20,17 @@ public class Resposta {
 		@JsonIgnoreProperties(ignoreUnknown = true)
 		private List<Produto> produtos;
 		}
+
+	class RetornoCategoria{
+		@JsonProperty("retorno")
+		@JsonIgnoreProperties(ignoreUnknown = true)
+		private List<Categoria> categorias;
 	}
+
+	class RetornoDeposito{
+		@JsonProperty("retorno")
+		@JsonIgnoreProperties(ignoreUnknown = true)
+		private List<Deposito> depositos;
+	}
+
+}
