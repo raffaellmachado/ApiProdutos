@@ -22,13 +22,13 @@ public class Resposta {
 		}
 
 	class RetornoCategoria{
-		@JsonProperty("retorno")
+		@JsonProperty("RetornoCategoria")
 		@JsonIgnoreProperties(ignoreUnknown = true)
 		private List<Categoria> categorias;
 	}
 
 	class RetornoDeposito{
-		@JsonProperty("retorno")
+		@JsonProperty("RetornoDeposito")
 		@JsonIgnoreProperties(ignoreUnknown = true)
 		private List<Deposito> depositos;
 	}

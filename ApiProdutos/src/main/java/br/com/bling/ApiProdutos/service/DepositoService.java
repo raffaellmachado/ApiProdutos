@@ -57,6 +57,4 @@ public class DepositoService {
         String url = BLING_API_URL_POST + xml;
         return restTemplate.postForObject(url, request, String.class);
     }
-
-
 }

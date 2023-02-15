@@ -14,17 +14,11 @@ import br.com.bling.ApiProdutos.models.Resposta;
 @Service
 public class ProdutoService {
 
-    //Chamada da lista de produtos;
     private static final String APIKEY = "?apikey=f335209056ebf0f8542e371edbcffbc6c95fa2925903c63aa0175825c2ac2110ab01fd23";
     private static final String XML_PARAM = "&xml=";
-    //   private static final String APIKEY_PARAM = "";
-
     private static final String BLING_API_URL;
-    //Chamada apenas de um  produto;
     private static final String BLING_API_URL_CODIGO;
-    //Chamada passando o codigo do produto e nome do fornecedor
     private static final String BLING_API_URL_ID_FORNECEDOR;
-    //Chamada informando o XML para adicionar um novo produto.
     private static final String BLING_API_URL_POST;
 
     static {

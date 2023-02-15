@@ -143,7 +143,7 @@ public class Produto {
 	private List<Imagem> imagem;
 
 	@JsonProperty("produtoLoja")
-	private ProdutoLoja produtoLoja;
+	private List <ProdutoLoja> produtoLoja;
 
 	@JsonProperty("codigopai")
 	private String codigopai;
@@ -152,6 +152,6 @@ public class Produto {
 	private String estoqueAtual;
 
 	@JsonProperty("deposito")
-	private Deposito deposito;
+	private List <Deposito> deposito;
 
 }
