@@ -7,29 +7,28 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
-@RequestMapping(value = "/api")        //Padrão para os métodos /api/...
-@Api(value = "API REST CATEGORIA")    //Swagger
+@RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
+@Api(value = "API REST DEPOSITOS")    //Swagger
 @CrossOrigin(origins = "*")        // Liberar os dominios da API
 public class DepositoController {
 
-    private final DepositoService depositoService;
-    private String idDeposito;
-
     @Autowired
-    public DepositoController(DepositoService depositoService) {
-        this.depositoService = depositoService;
-    }
+    public DepositoService depositoService;
+    private String idDeposito;
 
     /**
      * GET "BUSCA LISTA DE DEPOSITOS".
      */
-    @GetMapping("/deposito")
+    @GetMapping("/depositos")
     @ApiOperation(value = "Retorna uma lista de depositos")
     public Resposta getCategoria() {
-        return depositoService.getDeposito();
+        Resposta response = depositoService.getAllDeposit();
+
+        System.out.println(response);
+
+        return response;
     }
 
     /**
@@ -37,19 +36,35 @@ public class DepositoController {
      */
     @GetMapping("/deposito/{idDeposito}")
     @ApiOperation(value = "Retorna um deposito pelo idDeposito")
-    public Resposta getProductById(@PathVariable String idDeposito) {
-        this.idDeposito = idDeposito;
-        return depositoService.getDepositoIdDeposito(idDeposito);
+    public Resposta getDepositByIdDeposit(@PathVariable String idDeposito) {
+        Resposta response = depositoService.getDepositByIdDeposit(idDeposito);
+
+        System.out.println(response);
+
+        return response;
     }
 
     /**
-     * POST "CADASTRA UM NOVO DEPOSITO UTILIZANDO XML".
+     * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
     @PostMapping(path = "/cadastrardeposito", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Cadastrar um deposito")
-    public void registerProduct(@RequestBody String xml) {
-        RestTemplate restTemplate = new RestTemplate();
-        depositoService.postDepositoXml(xml);
+    @ApiOperation(value = "Cadastrar um novo deposito")
+    public String createDeposit(@RequestBody String xml) {
+        String request = depositoService.createDeposit(xml);
+
+        System.out.println(request);
+
+        return request;
     }
+
+//    /**
+//     * POST "CADASTRA UM NOVO DEPOSITO UTILIZANDO XML".
+//     */
+//    @PostMapping(path = "/cadastrardeposito", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    @ApiOperation(value = "Cadastrar um deposito")
+//    public void registerProduct(@RequestBody String xml) {
+//        RestTemplate restTemplate = new RestTemplate();
+//        depositoService.postDepositoXml(xml);
+//    }
 
 }

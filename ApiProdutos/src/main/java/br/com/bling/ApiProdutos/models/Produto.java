@@ -16,6 +16,9 @@ import lombok.Setter;
 @Setter
 public class Produto {
 
+	@JsonProperty("id")
+	private Long id;
+
 	@JsonProperty("codigo")
 	private String codigo;
 

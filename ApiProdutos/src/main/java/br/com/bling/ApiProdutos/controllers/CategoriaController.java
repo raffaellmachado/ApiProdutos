@@ -10,26 +10,26 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@RequestMapping(value = "/api")        //Padrão para os métodos /api/...
+@RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
 @Api(value = "API REST CATEGORIA")    //Swagger
 @CrossOrigin(origins = "*")        // Liberar os dominios da API
 public class CategoriaController {
 
-    private final CategoriaService categoriaService;
-    private String idCategoria;
-
     @Autowired
-    public CategoriaController(CategoriaService categoriaService) {
-        this.categoriaService = categoriaService;
-    }
+    private CategoriaService categoriaService;
+    private String idCategoria;
 
     /**
      * GET "BUSCA A LISTA DE CATEGORIAS".
      */
     @GetMapping("/categoria")
     @ApiOperation(value = "Retorna uma lista de categorias")
-    public Resposta getCategoria() {
-        return categoriaService.getCategoria();
+    public Resposta getCategory() {
+        Resposta response = categoriaService.getCategory();
+
+        System.out.println(response);
+
+        return response;
     }
 
     /**
@@ -37,9 +37,12 @@ public class CategoriaController {
      */
     @GetMapping("/categoria/{idCategoria}")
     @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
-    public Resposta getProductById(@PathVariable String idCategoria) {
-        this.idCategoria = idCategoria;
-        return categoriaService.getCategoriaIdCategoria(idCategoria);
+    public Resposta getCategoryByIdCategory(@PathVariable String idCategoria) {
+        Resposta response = categoriaService.getCategoryByIdCategoria(idCategoria);
+
+        System.out.println(response);
+
+        return response;
     }
 
     /**
@@ -47,9 +50,13 @@ public class CategoriaController {
      */
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public void registerProduct(@RequestBody String xml) {
+    public String createCategory(@RequestBody String xml) {
         RestTemplate restTemplate = new RestTemplate();
-        categoriaService.postCategoriaXml(xml);
+        String request = categoriaService.createCategory(xml);
+
+        System.out.println(request);
+
+        return request;
     }
 
     /**

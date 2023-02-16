@@ -1,6 +1,7 @@
 package br.com.bling.ApiProdutos.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,15 +13,19 @@ import java.util.List;
 @Data
 public class Resposta {
 	@JsonProperty("retorno")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private Object retorno;
 
 	class Retorno{
 		@JsonProperty("retorno")
+		@JsonInclude(JsonInclude.Include.NON_NULL)
 		@JsonIgnoreProperties(ignoreUnknown = true)
 		private List<Produto> produtos;
+		private List<Categoria> categorias;
+		private List<Deposito> depositos;
 		}
-
+/*
 	class RetornoCategoria{
 		@JsonProperty("RetornoCategoria")
 		@JsonIgnoreProperties(ignoreUnknown = true)
@@ -32,5 +37,5 @@ public class Resposta {
 		@JsonIgnoreProperties(ignoreUnknown = true)
 		private List<Deposito> depositos;
 	}
-
+*/
 }
