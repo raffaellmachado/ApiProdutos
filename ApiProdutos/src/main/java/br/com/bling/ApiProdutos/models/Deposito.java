@@ -11,10 +11,14 @@ import lombok.Setter;
 public class Deposito {
 
     @JsonProperty("id")
-    private String id;
-    @JsonProperty("nome")
-    private String nome;
-    @JsonProperty("saldo")
-    private String saldo;
+    public int id;
+    @JsonProperty("descricao")
+    public String descricao;
+    @JsonProperty("situacao")
+    public String situacao;
+    @JsonProperty("depositoPadrao")
+    public String depositoPadrao;
+    @JsonProperty("desconsiderarSaldo")
+    public String desconsiderarSaldo;
 
 }

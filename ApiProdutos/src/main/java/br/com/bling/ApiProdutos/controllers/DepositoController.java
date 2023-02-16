@@ -47,7 +47,7 @@ public class DepositoController {
     /**
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
-    @PostMapping(path = "/cadastrardeposito", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/cadastrardeposito", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo deposito")
     public String createDeposit(@RequestBody String xml) {
         String request = depositoService.createDeposit(xml);

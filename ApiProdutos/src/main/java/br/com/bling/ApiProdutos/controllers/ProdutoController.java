@@ -1,5 +1,6 @@
 package br.com.bling.ApiProdutos.controllers;
 
+import br.com.bling.ApiProdutos.models.Produto;
 import br.com.bling.ApiProdutos.service.ProdutoService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ProdutoController {
     /**
      * GET "BUSCAR LISTA DE PRODUTOS".
      */
-    @GetMapping("/produtos")
+    @GetMapping(value = "/produtos")
     @ApiOperation(value = "Retorna uma lista de produtos")
     public Resposta getAllProducts() {
         Resposta response = produtoService.getAllProducts();
@@ -73,7 +74,7 @@ public class ProdutoController {
     /**
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
-    @PostMapping(path = "/cadastrarproduto", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/cadastrarproduto", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo produto")
     public String createProduct(@RequestBody String xml) {
         String request = produtoService.createProduct(xml);

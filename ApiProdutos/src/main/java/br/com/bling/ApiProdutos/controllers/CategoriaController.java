@@ -1,5 +1,6 @@
 package br.com.bling.ApiProdutos.controllers;
 
+import br.com.bling.ApiProdutos.models.Produto;
 import br.com.bling.ApiProdutos.models.Resposta;
 import br.com.bling.ApiProdutos.service.CategoriaService;
 import io.swagger.annotations.Api;
@@ -24,7 +25,7 @@ public class CategoriaController {
      */
     @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
-    public Resposta getCategory() {
+    public Resposta getCategory(Produto produto) {
         Resposta response = categoriaService.getCategory();
 
         System.out.println(response);
@@ -48,7 +49,7 @@ public class CategoriaController {
     /**
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
-    @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
     public String createCategory(@RequestBody String xml) {
         RestTemplate restTemplate = new RestTemplate();

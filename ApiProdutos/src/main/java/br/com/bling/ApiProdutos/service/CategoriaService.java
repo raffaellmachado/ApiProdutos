@@ -2,7 +2,6 @@ package br.com.bling.ApiProdutos.service;
 
 import br.com.bling.ApiProdutos.models.Resposta;
 
-
 public interface CategoriaService {
 
     public Resposta getCategory();
