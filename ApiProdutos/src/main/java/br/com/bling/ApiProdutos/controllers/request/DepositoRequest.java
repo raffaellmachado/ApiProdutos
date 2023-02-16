@@ -2,19 +2,22 @@ package br.com.bling.ApiProdutos.controllers.request;
 
 import lombok.*;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-@NoArgsConstructor
-@Getter
-@Setter
 @Data
 public class DepositoRequest {
 
-    @Size(max = 120)
+    @NotEmpty
+    @Max(value = 120, message = "Descrição do depósito")
     public String descricao;
-    @Size(max= 1, message = "A ou I")
+    @NotEmpty
+    @Max(value= 1, message = "Situação do depósito (A ou I)")
     public String situacao = "A";
+    @Size(message = "Define se o depósito vai ser o padrão")
     public boolean depositoPadrao = false;
+    @Size(message = "Desconsidera saldo deste depósito")
     public boolean desconsiderarSaldo = false;
 
 }

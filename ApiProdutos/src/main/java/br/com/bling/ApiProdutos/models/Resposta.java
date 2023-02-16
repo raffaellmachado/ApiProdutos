@@ -14,7 +14,8 @@ public class Resposta {
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private Object retorno;
 
-	class Retorno{
+	@Data
+	public static class Retorno{
 		@JsonProperty("retorno")
 		@JsonInclude(JsonInclude.Include.NON_NULL)
 		@JsonIgnoreProperties(ignoreUnknown = true)

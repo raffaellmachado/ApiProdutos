@@ -1,21 +1,17 @@
 package br.com.bling.ApiProdutos.controllers.request;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotEmpty;
 
-@NoArgsConstructor
-@Getter
-@Setter
 @Data
 public class CategoriaRequest {
 
-    @Size(max = 50, message = "Maximo 50 caracteres")
+    @NotEmpty
+    @Max(value = 50, message = "Descrição da categoria")
     public String descricao;
-    @Size(max = 11, message = "Maximo 11 caracteres")
+    @Max(value =  11, message = "ID da categoria pai")
     public int idCategoriaPai = 0;
 
 }

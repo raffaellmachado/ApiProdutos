@@ -1,6 +1,9 @@
 package br.com.bling.ApiProdutos.service;
 
 
+import br.com.bling.ApiProdutos.exceptions.ApiProdutoException;
+import br.com.bling.ApiProdutos.exceptions.ProdutoException;
+import br.com.bling.ApiProdutos.exceptions.ProdutoNaoEncontradoException;
 import br.com.bling.ApiProdutos.models.Produto;
 import br.com.bling.ApiProdutos.models.Resposta;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +12,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Service
 public class ProdutoServiceImpl implements ProdutoService{
@@ -32,8 +38,15 @@ public class ProdutoServiceImpl implements ProdutoService{
      */
     @Override
     public Resposta getAllProducts() {
-        Resposta result = restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, Resposta.class);
-        return result;
+        try {
+            Resposta result = restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, Resposta.class);
+            if (result == null || result.getRetorno() == null) {
+                throw new ProdutoException("Não foi possível obter a lista de produtos", null);
+            }
+            return result;
+        } catch (RestClientException e) {
+            throw new ProdutoException("Erro ao obter a lista de produtos", e);
+        }
     }
 
     /**
@@ -41,18 +54,31 @@ public class ProdutoServiceImpl implements ProdutoService{
      */
     @Override
     public Resposta getProductByCode(String codigo) {
-        Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, Resposta.class);
-        return result;
+        try {
+            Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, Resposta.class);
+            if (result == null || result.getRetorno() == null) { //Retornando FALSE quando força um codigo inexistente (CORRIGIR)
+                throw new ProdutoNaoEncontradoException(codigo);
+            }
+            return result;
+        } catch (HttpClientErrorException ex) {
+            throw new ProdutoNaoEncontradoException(codigo);
+        }
     }
+
 
     /**
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU) E NOME DO FORNECEDOR".
      */
     @Override
     public Resposta getProductByCodeSupplier(String codigo, String nomeFornecedor) {
-        Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" +nomeFornecedor + "/json/" + apiKey, Resposta.class);
-        return result;
+        try {
+            Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + nomeFornecedor + "/json/" + apiKey, Resposta.class);
+            return result;
+        } catch (RestClientException ex) {
+            throw new ApiProdutoException(ex);
+        }
     }
+
 
     /**
      * DELETE "APAGAR UM PRODUTO PELO CÓDIGO (SKU)".

@@ -1,16 +1,17 @@
 package br.com.bling.ApiProdutos.models;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.*;
-
-
-//@NoArgsConstructor
-//@Getter
-//@Setter
+@NoArgsConstructor
+@Getter
+@Setter
 @Data
 public class Produto {
 
