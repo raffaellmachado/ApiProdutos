@@ -33,6 +33,9 @@ public class ProdutoController {
         return response;
     }
 
+    /**
+     * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU)".
+     */
     @GetMapping("/produto/{codigo}")
     @ApiOperation(value = "Retorna um produto pelo código")
     public Resposta getProductByCode(@PathVariable String codigo) {
@@ -56,7 +59,6 @@ public class ProdutoController {
         return response;
     }
 
-
     /**
      * DELETE PROUTO PELO CÓDIGO (SKU).
      */
@@ -65,18 +67,9 @@ public class ProdutoController {
     public void deleteProductByCode(@PathVariable String codigo) {
         produtoService.deleteProductByCode(codigo);
 
-        System.out.println(codigo);
+        System.out.println("Codigo deletado = " + codigo);
     }
 
-/* - EXEMPLO DO VIDEO COM O DE BAIXO
-
-    @PostMapping(path = "/cadastrarproduto")
-    @ApiOperation(value = "Cadastrar um produto")
-    public ProdutoRequest createProduct(@RequestBody ProdutoRequest produtoRequest) {
-        ProdutoRequest request = produtoService.createProduct(produtoRequest);
-        return request;
-    }
-*/
     /**
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
@@ -89,6 +82,17 @@ public class ProdutoController {
 
         return request;
     }
+
+    /* - EXEMPLO DO VIDEO COM O DE BAIXO
+
+    @PostMapping(path = "/cadastrarproduto")
+    @ApiOperation(value = "Cadastrar um produto")
+    public ProdutoRequest createProduct(@RequestBody ProdutoRequest produtoRequest) {
+        ProdutoRequest request = produtoService.createProduct(produtoRequest);
+        return request;
+    }
+*/
+
 
 /*
     @PostMapping(path = "/cadastrarproduto/{codigo}", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

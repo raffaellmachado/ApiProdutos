@@ -1,6 +1,5 @@
 package br.com.bling.ApiProdutos.service;
 
-import br.com.bling.ApiProdutos.controllers.request.ProdutoRequest;
 import br.com.bling.ApiProdutos.models.Resposta;
 import org.springframework.web.bind.annotation.RequestBody;
 

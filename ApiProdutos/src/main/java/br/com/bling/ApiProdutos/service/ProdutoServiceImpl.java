@@ -57,8 +57,7 @@ public class ProdutoServiceImpl implements ProdutoService{
      */
     @Override
     public void deleteProductByCode(String codigo) {
-        String url = apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey;
-        restTemplate.delete(url);
+        restTemplate.delete(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey);
     }
 
     /**

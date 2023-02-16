@@ -22,7 +22,7 @@ public class CategoriaController {
     /**
      * GET "BUSCA A LISTA DE CATEGORIAS".
      */
-    @GetMapping("/categoria")
+    @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
     public Resposta getCategory() {
         Resposta response = categoriaService.getCategory();
