@@ -135,9 +135,9 @@ public class ProdutoRequest {
             private double estoque;
         }
     }
-
-    public class Imagens {
+    @Data
+    public static class Imagens {
         @Size(message = "URL da imagem")
-        private String url;
+        public String url;
     }
 }

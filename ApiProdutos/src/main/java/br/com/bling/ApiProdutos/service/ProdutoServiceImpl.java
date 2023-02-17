@@ -2,10 +2,10 @@ package br.com.bling.ApiProdutos.service;
 
 
 import br.com.bling.ApiProdutos.exceptions.ApiProdutoException;
-import br.com.bling.ApiProdutos.exceptions.ProdutoException;
-import br.com.bling.ApiProdutos.exceptions.ProdutoNaoEncontradoException;
-import br.com.bling.ApiProdutos.models.Produto;
+import br.com.bling.ApiProdutos.exceptions.CodigoProdutoNaoEncontradoException;
 import br.com.bling.ApiProdutos.models.Resposta;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -16,10 +16,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-
 @Service
-public class ProdutoServiceImpl implements ProdutoService{
+public class ProdutoServiceImpl implements ProdutoService {
 
     @Value("${external.api.url}")
     private String apiBaseUrl;
@@ -37,16 +35,26 @@ public class ProdutoServiceImpl implements ProdutoService{
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
     @Override
-    public Resposta getAllProducts() {
+    public Resposta getAllProducts()  {
+ //       try {
+        String json =restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, String.class);
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            Resposta result = restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, Resposta.class);
-            if (result == null || result.getRetorno() == null) {
-                throw new ProdutoException("Não foi possível obter a lista de produtos", null);
-            }
-            return result;
-        } catch (RestClientException e) {
-            throw new ProdutoException("Erro ao obter a lista de produtos", e);
+            Resposta r =  objectMapper.readValue(json, Resposta.class);
+            System.out.println(r);
+            return r;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
+
+
+//            if (result == null || result.getRetorno() == null) {
+//                throw new ProdutoException("Não foi possível obter a lista de produtos", null);
+//            }
+//            return result;
+//        } catch (RestClientException e) {
+//            throw new ProdutoException("Erro ao obter a lista de produtos", e);
+//        }
     }
 
     /**
@@ -57,11 +65,11 @@ public class ProdutoServiceImpl implements ProdutoService{
         try {
             Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, Resposta.class);
             if (result == null || result.getRetorno() == null) { //Retornando FALSE quando força um codigo inexistente (CORRIGIR)
-                throw new ProdutoNaoEncontradoException(codigo);
+                throw new CodigoProdutoNaoEncontradoException(codigo);
             }
             return result;
         } catch (HttpClientErrorException ex) {
-            throw new ProdutoNaoEncontradoException(codigo);
+            throw new CodigoProdutoNaoEncontradoException(codigo);
         }
     }
 
@@ -92,15 +100,26 @@ public class ProdutoServiceImpl implements ProdutoService{
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
     @Override
-    public String createProduct(String xml) {
+    public Resposta createProduct(String xml) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
 
         HttpEntity<String> request = new HttpEntity<>(xml, headers);
         String url = apiBaseUrl + "/produto/json/" + apiKey + apiXmlParam + xml;
-        return restTemplate.postForObject(url, request, String.class);
+        String json =restTemplate.postForObject(url, request, String.class);
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Resposta r =  objectMapper.readValue(json, Resposta.class);
+            System.out.println(r);
+            return r;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
+}
 
 
 
@@ -142,4 +161,3 @@ public class ProdutoServiceImpl implements ProdutoService{
 //        String url = BLING_API_URL_POST + xml + codigo;
 //        return restTemplate.postForObject(url, request, String.class);
 //    }
-}

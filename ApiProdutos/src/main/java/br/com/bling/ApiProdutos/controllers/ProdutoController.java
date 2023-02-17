@@ -1,11 +1,11 @@
 package br.com.bling.ApiProdutos.controllers;
 
+import br.com.bling.ApiProdutos.exceptions.ListaProdutoNaoEncontradoException;
 import br.com.bling.ApiProdutos.exceptions.ProdutoCadastroException;
-import br.com.bling.ApiProdutos.exceptions.ProdutoNaoEncontradoException;
+import br.com.bling.ApiProdutos.exceptions.CodigoProdutoNaoEncontradoException;
 import br.com.bling.ApiProdutos.exceptions.ProdutoNaoEncontradoParaExclusaoException;
-import br.com.bling.ApiProdutos.models.Produto;
+import br.com.bling.ApiProdutos.models.Retorno;
 import br.com.bling.ApiProdutos.service.ProdutoService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import br.com.bling.ApiProdutos.models.Resposta;
 import io.swagger.annotations.Api;
 
-import java.util.List;
+import java.util.Collections;
 
 
 @RestController
@@ -33,8 +33,14 @@ public class ProdutoController {
     @GetMapping(value = "/produtos")
     @ApiOperation(value = "Retorna uma lista de produtos")
     public Resposta getAllProducts() {
-        Resposta response = produtoService.getAllProducts();
 
+        Resposta response = produtoService.getAllProducts();
+        //Recuperar atributos JSON do BLing.
+        for (Retorno.Produto listaProdutos : response.getRetorno().getProdutos()){
+            System.out.println(listaProdutos.produto.codigo);
+            System.out.println(listaProdutos.produto.descricao);
+        }
+        //Recupera e printa o JSON retornando do Bling.
         System.out.println(response);
 
         return response;
@@ -49,7 +55,7 @@ public class ProdutoController {
         Resposta response = produtoService.getProductByCode(codigo);
 
         if (response == null || response.getRetorno() == null) {
-            throw new ProdutoNaoEncontradoException(codigo);
+            throw new CodigoProdutoNaoEncontradoException(codigo);
         }
 
         System.out.println(response);
@@ -67,7 +73,7 @@ public class ProdutoController {
         Resposta response = produtoService.getProductByCodeSupplier(codigo, nomeFornecedor);
 
         if (response == null || response.getRetorno() == null) {
-            throw new ProdutoNaoEncontradoException(codigo);
+            throw new CodigoProdutoNaoEncontradoException(codigo);
         }
 
         System.out.println(response);
@@ -100,9 +106,9 @@ public class ProdutoController {
     @PostMapping(path = "/cadastrarproduto", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo produto")
     @ResponseStatus(HttpStatus.CREATED)
-    public String createProduct(@RequestBody String xml) {
+    public Resposta createProduct(@RequestBody String xml) {
         try {
-            String request = produtoService.createProduct(xml);
+            Resposta request = produtoService.createProduct(xml);
             System.out.println(request);
             return request;
         } catch (Exception e) {

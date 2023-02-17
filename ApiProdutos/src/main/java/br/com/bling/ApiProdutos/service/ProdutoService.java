@@ -1,6 +1,7 @@
 package br.com.bling.ApiProdutos.service;
 
 import br.com.bling.ApiProdutos.models.Resposta;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ProdutoService {
@@ -13,7 +14,7 @@ public interface ProdutoService {
 
     public void deleteProductByCode(String codigo);
 
-    public String createProduct(@RequestBody String xml);
+    public Resposta createProduct(@RequestBody String xml);
 /*
     public ProdutoRequest createProduct(ProdutoRequest produtoRequest);
 */
