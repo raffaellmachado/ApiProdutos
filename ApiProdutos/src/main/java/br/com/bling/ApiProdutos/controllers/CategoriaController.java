@@ -1,8 +1,7 @@
 package br.com.bling.ApiProdutos.controllers;
 
-import br.com.bling.ApiProdutos.models.Produto2;
+import br.com.bling.ApiProdutos.models.Produto;
 import br.com.bling.ApiProdutos.models.Resposta;
-import br.com.bling.ApiProdutos.models.Retorno;
 import br.com.bling.ApiProdutos.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -28,7 +25,7 @@ public class CategoriaController {
      */
     @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
-    public Resposta getCategory(Produto2 produto) {
+    public Resposta getCategory(Produto produto) {
         Resposta response = categoriaService.getCategory();
 
         System.out.println(response);

@@ -3,15 +3,15 @@ package br.com.bling.ApiProdutos.models;
 import lombok.Data;
 
 @Data
-public class Produto2 {
+public class Produto {
 
 	public String id;
 	public String codigo;
 	public String descricao;
 	public String tipo;
-	public String idCategoria;
-	public String[] imagens;
-	public String clonarDadosPai;
+	public Object idCategoria;
+	public Object imagens;
+	public Object clonarDadosPai;
 	public String situacao;
 	public String unidade;
 	public String preco;
@@ -35,7 +35,7 @@ public class Produto2 {
 	public String garantia;
 	public String descricaoFornecedor;
 	public String idFabricante;
-	public Categoria2 categoria;
+	public Categoria categoria;
 	public String pesoLiq;
 	public String pesoBruto;
 	public String estoqueMinimo;

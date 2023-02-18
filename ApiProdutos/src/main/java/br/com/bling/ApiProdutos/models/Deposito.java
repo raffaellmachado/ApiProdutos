@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class Deposito2 {
+public class Deposito {
 
     @JsonProperty("id")
     public int id;

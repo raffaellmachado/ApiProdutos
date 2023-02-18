@@ -18,5 +18,5 @@ public class ProdutoLoja {
     private Preco preco;
 
     @JsonProperty("categoria")
-    private List<Categoria2> categoria;
+    private List<Categoria> categoria;
 }

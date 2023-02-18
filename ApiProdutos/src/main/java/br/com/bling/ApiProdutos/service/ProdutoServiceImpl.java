@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -36,25 +37,16 @@ public class ProdutoServiceImpl implements ProdutoService {
      */
     @Override
     public Resposta getAllProducts()  {
- //       try {
-        String json =restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, String.class);
+
+        String json = restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, String.class);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            Resposta r =  objectMapper.readValue(json, Resposta.class);
-            System.out.println(r);
-            return r;
+            Resposta result =  objectMapper.readValue(json, Resposta.class);
+            System.out.println(result);
+            return result;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
-
-//            if (result == null || result.getRetorno() == null) {
-//                throw new ProdutoException("Não foi possível obter a lista de produtos", null);
-//            }
-//            return result;
-//        } catch (RestClientException e) {
-//            throw new ProdutoException("Erro ao obter a lista de produtos", e);
-//        }
     }
 
     /**
@@ -64,12 +56,13 @@ public class ProdutoServiceImpl implements ProdutoService {
     public Resposta getProductByCode(String codigo) {
         try {
             Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, Resposta.class);
-            if (result == null || result.getRetorno() == null) { //Retornando FALSE quando força um codigo inexistente (CORRIGIR)
+
+            if (result == null || result.getRetorno() == null || result.getRetorno().getProdutos() == null || result.getRetorno().getProdutos().isEmpty()) {
                 throw new CodigoProdutoNaoEncontradoException(codigo);
             }
             return result;
-        } catch (HttpClientErrorException ex) {
-            throw new CodigoProdutoNaoEncontradoException(codigo);
+        } catch (RestClientException ex) {
+            throw new ApiProdutoException(ex);
         }
     }
 
@@ -81,6 +74,10 @@ public class ProdutoServiceImpl implements ProdutoService {
     public Resposta getProductByCodeSupplier(String codigo, String nomeFornecedor) {
         try {
             Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + nomeFornecedor + "/json/" + apiKey, Resposta.class);
+
+            if (result == null || result.getRetorno() == null || result.getRetorno().getProdutos() == null || result.getRetorno().getProdutos().isEmpty()) {
+                throw new CodigoProdutoNaoEncontradoException(codigo);
+            }
             return result;
         } catch (RestClientException ex) {
             throw new ApiProdutoException(ex);
@@ -90,10 +87,17 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     /**
      * DELETE "APAGAR UM PRODUTO PELO CÓDIGO (SKU)".
+     *
+     * @return
      */
     @Override
-    public void deleteProductByCode(String codigo) {
+    public ResponseEntity<Void> deleteProductByCode(String codigo) {
+        try {
         restTemplate.delete(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey);
+        } catch (RestClientException ex) {
+            throw new ApiProdutoException(ex);
+        }
+        return null;
     }
 
     /**
@@ -107,7 +111,7 @@ public class ProdutoServiceImpl implements ProdutoService {
 
         HttpEntity<String> request = new HttpEntity<>(xml, headers);
         String url = apiBaseUrl + "/produto/json/" + apiKey + apiXmlParam + xml;
-        String json =restTemplate.postForObject(url, request, String.class);
+        String json = restTemplate.postForObject(url, request, String.class);
 
 
         ObjectMapper objectMapper = new ObjectMapper();

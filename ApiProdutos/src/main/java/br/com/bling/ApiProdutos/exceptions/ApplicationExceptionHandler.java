@@ -11,6 +11,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleException(Exception e) {
-        return new ResponseEntity("Insira um numero de código válido", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity("Erro interno de servidor, possivelmente o que procura não encontra-se na base", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

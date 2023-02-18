@@ -1,8 +1,6 @@
 package br.com.bling.ApiProdutos.service;
 
-import br.com.bling.ApiProdutos.models.Categoria2;
 import br.com.bling.ApiProdutos.models.Resposta;
-import br.com.bling.ApiProdutos.models.Retorno;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @Service
 public class CategoriaServiceImpl implements CategoriaService{
