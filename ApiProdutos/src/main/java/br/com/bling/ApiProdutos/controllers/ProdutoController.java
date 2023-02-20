@@ -1,18 +1,20 @@
 package br.com.bling.ApiProdutos.controllers;
 
-import br.com.bling.ApiProdutos.exceptions.CodigoProdutoNaoEncontradoException;
 import br.com.bling.ApiProdutos.exceptions.ListaProdutoNaoEncontradoException;
 import br.com.bling.ApiProdutos.exceptions.ProdutoCadastroException;
+import br.com.bling.ApiProdutos.exceptions.CodigoProdutoNaoEncontradoException;
 import br.com.bling.ApiProdutos.exceptions.ProdutoNaoEncontradoParaExclusaoException;
-import br.com.bling.ApiProdutos.models.Resposta;
 import br.com.bling.ApiProdutos.models.Retorno;
 import br.com.bling.ApiProdutos.service.ProdutoService;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
+import br.com.bling.ApiProdutos.models.Resposta;
+import io.swagger.annotations.Api;
+
+import java.util.Collections;
 
 
 @RestController
@@ -33,11 +35,8 @@ public class ProdutoController {
     public Resposta getAllProducts() {
 
         Resposta response = produtoService.getAllProducts();
-        if (response.getRetorno().getProdutos().isEmpty()) {
-            throw new ListaProdutoNaoEncontradoException();
-        }
         //Recuperar atributos JSON do BLing.
-        for (Retorno.Produtos listaProdutos : response.getRetorno().getProdutos()){
+        for (Retorno.Produto listaProdutos : response.getRetorno().getProdutos()){
             System.out.println(listaProdutos.produto.codigo);
             System.out.println(listaProdutos.produto.descricao);
         }
@@ -55,12 +54,8 @@ public class ProdutoController {
     public Resposta getProductByCode(@PathVariable String codigo) {
         Resposta response = produtoService.getProductByCode(codigo);
 
-        if (response == null || response.getRetorno() == null || response.getRetorno().getProdutos() == null) {
+        if (response == null || response.getRetorno() == null) {
             throw new CodigoProdutoNaoEncontradoException(codigo);
-        }
-        //Recuperar atributos JSON do BLing.
-        for (Retorno.Produtos listaProdutos : response.getRetorno().getProdutos()){
-            System.out.println(listaProdutos.produto.codigo);
         }
 
         System.out.println(response);
@@ -77,12 +72,8 @@ public class ProdutoController {
     public Resposta getProductByCodeSupplier(@PathVariable String codigo, String nomeFornecedor) {
         Resposta response = produtoService.getProductByCodeSupplier(codigo, nomeFornecedor);
 
-        if (response.getRetorno().getProdutos() == null) {
+        if (response == null || response.getRetorno() == null) {
             throw new CodigoProdutoNaoEncontradoException(codigo);
-        }
-        //Recuperar atributos JSON do BLing.
-        for (Retorno.Produtos listaProdutos : response.getRetorno().getProdutos()){
-            System.out.println(listaProdutos.produto.codigo);
         }
 
         System.out.println(response);
@@ -96,17 +87,16 @@ public class ProdutoController {
      */
     @DeleteMapping("/produto/{codigo}")
     @ApiOperation(value = "Deletar um produto pelo código")
-    public String deleteProductByCode(@PathVariable String codigo) {
+    public void deleteProductByCode(@PathVariable String codigo) {
         Resposta response = produtoService.getProductByCode(codigo);
-        if (response == null || response.getRetorno() == null || response.getRetorno().getProdutos() == null) {
+
+        if (response == null || response.getRetorno() == null) {
             throw new ProdutoNaoEncontradoParaExclusaoException(codigo);
         }
-        try {
-            produtoService.deleteProductByCode(codigo);
-            return "Código " + codigo + " Deletado com sucesso!";
-        } catch (Exception ex) {
-            return ex.getMessage();
-        }
+
+        produtoService.deleteProductByCode(codigo);
+
+        System.out.println("Codigo deletado = " + codigo);
     }
 
 

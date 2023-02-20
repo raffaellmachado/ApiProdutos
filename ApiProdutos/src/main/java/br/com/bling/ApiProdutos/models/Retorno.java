@@ -6,20 +6,23 @@ import java.util.List;
 @Data
 public  class Retorno {
 
-    public List<Produtos> produtos;
+    public List<Produto> produtos;
     private List<Categoria> categorias;
     private List<Deposito> depositos;
 
-    public static class Produtos {
+    @Data
+    public static class Produto {
 
-        public Produto produto;
+        public Produto2 produto;
     }
 
+    @Data
     public static class Categoria {
-        public Categoria categoria;
+        public Categoria2 categoria;
     }
 
+    @Data
     public static class Deposito {
-        private Deposito deposito;
+        private Deposito2 deposito;
     }
 }

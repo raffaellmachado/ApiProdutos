@@ -1,7 +1,7 @@
 package br.com.bling.ApiProdutos.service;
 
 import br.com.bling.ApiProdutos.models.Resposta;
-import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ProdutoService {
@@ -12,7 +12,12 @@ public interface ProdutoService {
 
     public Resposta getProductByCodeSupplier(String codigo, String nomeFornecedor);
 
-    public ResponseEntity<Void> deleteProductByCode(String codigo);
+    public void deleteProductByCode(String codigo);
 
     public Resposta createProduct(@RequestBody String xml);
+/*
+    public ProdutoRequest createProduct(ProdutoRequest produtoRequest);
+*/
+
+
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class Resposta {
+
 	@JsonProperty("retorno")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonIgnoreProperties(ignoreUnknown = true)
