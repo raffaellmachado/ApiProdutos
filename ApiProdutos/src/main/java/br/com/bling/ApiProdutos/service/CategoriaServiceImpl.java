@@ -1,8 +1,6 @@
 package br.com.bling.ApiProdutos.service;
 
-import br.com.bling.ApiProdutos.models.Categoria2;
 import br.com.bling.ApiProdutos.models.Resposta;
-import br.com.bling.ApiProdutos.models.Retorno;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @Service
 public class CategoriaServiceImpl implements CategoriaService{
@@ -31,6 +25,9 @@ public class CategoriaServiceImpl implements CategoriaService{
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private CategoriaService categoriaService;
 
     /**
      * GET "BUSCAR A LISTA DE DEPOSITOS CADASTRADOS NO BLING".
@@ -61,13 +58,13 @@ public class CategoriaServiceImpl implements CategoriaService{
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @Override
-    public String createCategory(String xml) {
+    public Resposta createCategory(String xml) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
 
         HttpEntity<String> request = new HttpEntity<>(xml, headers);
         String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xml;
-        return restTemplate.postForObject(url, request, String.class);
+        return restTemplate.postForObject(url, request, Resposta.class);
     }
 }

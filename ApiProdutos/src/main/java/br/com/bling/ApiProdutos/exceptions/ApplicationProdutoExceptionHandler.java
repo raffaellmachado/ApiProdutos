@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 @Slf4j
 @ControllerAdvice
-public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
+public class ApplicationProdutoExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ApiProdutoException.class)
     public ResponseEntity<String> handleApiProdutoException(ApiProdutoException ex) {
@@ -25,8 +25,8 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ProdutoNaoEncontradoParaExclusaoException.class)
-    public ResponseEntity<String> ProdutoNaoEncontradoParaExclusaoException(ProdutoNaoEncontradoParaExclusaoException ex) {
+    @ExceptionHandler(ProdutoNaoEncontradoExclusaoException.class)
+    public ResponseEntity<String> ProdutoNaoEncontradoParaExclusaoException(ProdutoNaoEncontradoExclusaoException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 

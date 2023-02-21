@@ -1,5 +1,7 @@
 package br.com.bling.ApiProdutos.controllers;
 
+import br.com.bling.ApiProdutos.exceptions.*;
+import br.com.bling.ApiProdutos.models.Categoria2;
 import br.com.bling.ApiProdutos.models.Produto2;
 import br.com.bling.ApiProdutos.models.Resposta;
 import br.com.bling.ApiProdutos.models.Retorno;
@@ -10,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -28,9 +28,16 @@ public class CategoriaController {
      */
     @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
-    public Resposta getCategory(Produto2 produto) {
+    public Resposta getCategory() {
         Resposta response = categoriaService.getCategory();
+        for (Retorno.Categoria categorias : response.getRetorno().getProdutos()) {
+            System.out.println(listaCategoria.categorias.codigo);
+            System.out.println(listaCategoria.categorias.descricao);
+        }
 
+        if (response.retorno. == null || response.getRetorno() == null) {
+            throw new CategoriaListaNaoEncontradoException();
+        }
         System.out.println(response);
 
         return response;
@@ -44,6 +51,9 @@ public class CategoriaController {
     public Resposta getCategoryByIdCategory(@PathVariable String idCategoria) {
         Resposta response = categoriaService.getCategoryByIdCategoria(idCategoria);
 
+        if (response.retorno.produtos == null || response.getRetorno() == null) {
+            throw new CategoriaIdCategoriaNaoEncontradoException(idCategoria);
+        }
         System.out.println(response);
 
         return response;
@@ -54,14 +64,22 @@ public class CategoriaController {
      */
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public String createCategory(@RequestBody String xml) {
+    public Resposta createCategory(@RequestBody String xml) {
+      try{
         RestTemplate restTemplate = new RestTemplate();
-        String request = categoriaService.createCategory(xml);
+        Resposta result = categoriaService.createCategory(xml);
 
-        System.out.println(request);
+          if (result.retorno.produtos == null) {
+              throw new ApiCategoriaException("Não foi possível criar a categoria", null);
+          }
+          System.out.println("Categoria cadastrado com sucesso!");
 
-        return request;
+          return result;
+      } catch (Exception e) {
+          throw new CategoriaCadastroException("Erro ao cadastrar categoria: " + e.getMessage());
+      }
     }
+}
 
     /**
      * PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".
@@ -72,5 +90,5 @@ public class CategoriaController {
 //        RestTemplate restTemplate = new RestTemplate();
 //        categoriaService.postCategoriaXml(xml);
 //    }
-}
+
 

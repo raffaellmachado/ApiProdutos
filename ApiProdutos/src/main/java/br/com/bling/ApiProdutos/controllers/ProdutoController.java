@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 
 @RestController
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")        // Liberar os dominios da API
 public class ProdutoController {
 
+    @Autowired
+    private RestTemplate restTemplate;
     @Autowired
     private ProdutoService produtoService;
     private String codigo;
@@ -83,7 +86,7 @@ public class ProdutoController {
         Resposta response = produtoService.getProductByCode(codigo);
 
         if (response.retorno.produtos == null || response.getRetorno() == null) {
-            throw new ProdutoNaoEncontradoParaExclusaoException(codigo);
+            throw new ProdutoNaoEncontradoExclusaoException(codigo);
         }
         produtoService.deleteProductByCode(codigo);
 
@@ -98,14 +101,14 @@ public class ProdutoController {
     @ApiOperation(value = "Cadastrar um novo produto")
     public Resposta createProduct(@RequestBody String xml) {
         try {
-            Resposta result = produtoService.createProduct(xml);
+            Resposta response = produtoService.createProduct(xml);
 
-            if (result.retorno.produtos == null) {
+            if (response.retorno.produtos == null) {
                 throw new ApiProdutoException("Não foi possível criar o produto", null);
             }
             System.out.println("Produto cadastrado com sucesso!");
 
-            return result;
+            return response;
         } catch (Exception e) {
             throw new ProdutoCadastroException("Erro ao cadastrar produto: " + e.getMessage());
         }

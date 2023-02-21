@@ -4,11 +4,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public  class Retorno {
+public class Retorno {
 
     public List<Produto> produtos;
-    private List<Categoria> categorias;
-    private List<Deposito> depositos;
+    public List<Categoria> categorias;
+    public List<Deposito> depositos;
 
     @Data
     public static class Produto {
