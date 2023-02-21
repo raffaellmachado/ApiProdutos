@@ -29,11 +29,13 @@ public class DepositoController {
     public Resposta getCategoria() {
         Resposta request = depositoService.getAllDeposit();
         for (Retorno.Deposito listaDepositos : request.getRetorno().getDepositos()) {
-            System.out.println(listaDepositos.deposito.id);
-            System.out.println(listaDepositos.deposito.descricao);
-            System.out.println(listaDepositos.deposito.situacao);
-            System.out.println(listaDepositos.deposito.depositoPadrao);
-            System.out.println(listaDepositos.deposito.desconsiderarSaldo);
+            System.out.println("-------------------------------------------------------------------");
+            System.out.println("Id Deposito: " + listaDepositos.deposito.id);
+            System.out.println("Descrição: " + listaDepositos.deposito.descricao);
+            System.out.println("Situação: " + listaDepositos.deposito.situacao);
+            System.out.println("Deposito Padrão: " + listaDepositos.deposito.depositoPadrao);
+            System.out.println("Desconsiderar Saldo: " + listaDepositos.deposito.desconsiderarSaldo);
+            System.out.println("-------------------------------------------------------------------");
         }
 
         if (request.retorno.depositos == null || request.getRetorno() == null) {
@@ -52,6 +54,15 @@ public class DepositoController {
     @ApiOperation(value = "Retorna um deposito pelo idDeposito")
     public Resposta getDepositByIdDeposit(@PathVariable String idDeposito) {
         Resposta request = depositoService.getDepositByIdDeposit(idDeposito);
+        for (Retorno.Deposito listaDepositos : request.getRetorno().getDepositos()) {
+            System.out.println("-------------------------------------------------------------------");
+            System.out.println("Id Deposito: " + listaDepositos.deposito.id);
+            System.out.println("Descrição: " + listaDepositos.deposito.descricao);
+            System.out.println("Situação: " + listaDepositos.deposito.situacao);
+            System.out.println("Deposito Padrão: " + listaDepositos.deposito.depositoPadrao);
+            System.out.println("Desconsiderar Saldo: " + listaDepositos.deposito.desconsiderarSaldo);
+            System.out.println("-------------------------------------------------------------------");
+        }
 
         if (request.retorno.depositos == null || request.getRetorno() == null) {
             throw new DepositoIdDepositoNaoEncontradoException(idDeposito);

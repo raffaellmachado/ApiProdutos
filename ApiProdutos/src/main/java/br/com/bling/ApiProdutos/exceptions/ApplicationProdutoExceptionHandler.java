@@ -34,4 +34,9 @@ public class ApplicationProdutoExceptionHandler extends ResponseEntityExceptionH
     public ResponseEntity<String> handleProdutoCadastroException(ProdutoCadastroException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<Object> handleNullPointerException(NullPointerException ex) {
+        return new ResponseEntity<>("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.bling.ApiCategoria.models.Resposta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
@@ -67,10 +65,10 @@ public class CategoriaServiceImpl implements CategoriaService{
     }
 
     /**
-     * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
+     * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".  -----> CRIAR EXCEPTION
      */
     @Override
-    public String createCategory(String xml) {
+    public String createCategory(String xml) throws ApiCategoriaException {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
@@ -79,5 +77,22 @@ public class CategoriaServiceImpl implements CategoriaService{
         String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xml;
         String result =  restTemplate.postForObject(url, request, String.class);
         return result;
+    }
+
+    /**
+     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> CORRIGIR e INSERIR EXCEPTION
+     */
+    @Override
+    public String updateCategory(String xml, String idCategoriaPai) throws ApiCategoriaException {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_XML);
+
+        HttpEntity<String> request = new HttpEntity<>(xml, headers);
+        String url = apiBaseUrl + "/categoria/" + idCategoriaPai + "/json/" + apiKey + apiXmlParam + xml;
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+
+        return response.getBody();
     }
 }

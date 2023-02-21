@@ -31,14 +31,16 @@ public class ProdutoController {
     @ApiOperation(value = "Retorna uma lista de produtos")
     public Resposta getAllProducts() {
         Resposta request = produtoService.getAllProducts();
+
+        if (request.retorno.produtos == null || request.getRetorno() == null) {
+            throw new ProdutoListaNaoEncontradoException();
+        }
+
         for (Retorno.Produto listaProdutos : request.getRetorno().getProdutos()) {
             System.out.println(listaProdutos.produto.codigo);
             System.out.println(listaProdutos.produto.descricao);
         }
 
-        if (request.retorno.produtos == null || request.getRetorno() == null) {
-            throw new ProdutoListaNaoEncontradoException();
-        }
         System.out.println(request);
 
         return request;

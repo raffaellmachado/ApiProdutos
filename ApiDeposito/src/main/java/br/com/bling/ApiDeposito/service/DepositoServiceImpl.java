@@ -38,6 +38,7 @@ public class DepositoServiceImpl implements DepositoService{
         String json = restTemplate.getForObject(apiBaseUrl + "/depositos/json/" + apiKey, String.class);
         ObjectMapper objectMapper = new ObjectMapper();
         Resposta request =  objectMapper.readValue(json, Resposta.class);
+
         return request;
 
     } catch (

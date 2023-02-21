@@ -10,6 +10,8 @@ public interface CategoriaService {
 
     public Resposta getCategoryByIdCategoria(String idCategoria);
 
-    public String createCategory(@RequestBody String xml);
+    public String createCategory(String xml);
+
+    public String updateCategory(String xml, String idCategoriaPai);
 
 }

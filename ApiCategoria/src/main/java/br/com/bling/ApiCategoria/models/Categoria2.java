@@ -2,12 +2,15 @@ package br.com.bling.ApiCategoria.models;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 public class Categoria2 {
 
-	private String id;
-    private String descricao;
-    private String idCategoriaPai;
+    public String id;
+    @NotBlank
+    public String descricao;
+    public String idCategoriaPai;
 
 }
 
