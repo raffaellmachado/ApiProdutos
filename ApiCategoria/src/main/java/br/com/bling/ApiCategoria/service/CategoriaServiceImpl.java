@@ -1,14 +1,17 @@
-package service;
+package br.com.bling.ApiCategoria.service;
 
+import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import models.Resposta;
+import br.com.bling.ApiCategoria.models.Resposta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -33,16 +36,19 @@ public class CategoriaServiceImpl implements CategoriaService{
      * GET "BUSCAR A LISTA DE DEPOSITOS CADASTRADOS NO BLING".
      */
     @Override
-    public Resposta getCategory() {
-
-        String json = restTemplate.getForObject(apiBaseUrl + "/categorias/json/" + apiKey, String.class);
-        ObjectMapper objectMapper = new ObjectMapper();
+    public Resposta getCategory() throws ApiCategoriaException {
         try {
-            Resposta r =  objectMapper.readValue(json, Resposta.class);
-            System.out.println(r);
-            return r;
+            String json = restTemplate.getForObject(apiBaseUrl + "/categorias/json/" + apiKey, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Resposta request = objectMapper.readValue(json, Resposta.class);
+
+            System.out.println(request);
+
+            return request;
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new ApiCategoriaException("Erro ao processar JSON", e);
+        } catch (RestClientException e) {
+            throw new ApiCategoriaException("Erro ao chamar API", e);
         }
 
     }
@@ -50,21 +56,28 @@ public class CategoriaServiceImpl implements CategoriaService{
      * GET "BUSCA CATEGORIA PELO IDCATEGORIA".
      */
     @Override
-    public Resposta getCategoryByIdCategoria(String idCategoria) {
-        Resposta result = restTemplate.getForObject(apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey, Resposta.class);
-        return result;    }
+    public Resposta getCategoryByIdCategoria(String idCategoria) throws ApiCategoriaException {
+        try {
+            Resposta request = restTemplate.getForObject(apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey, Resposta.class);
+
+            return request;
+        } catch (RestClientException e) {
+            throw new ApiCategoriaException("Erro ao chamar API", e);
+        }
+    }
 
     /**
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @Override
-    public Resposta createCategory(String xml) {
+    public String createCategory(String xml) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
 
         HttpEntity<String> request = new HttpEntity<>(xml, headers);
         String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xml;
-        return restTemplate.postForObject(url, request, Resposta.class);
+        String result =  restTemplate.postForObject(url, request, String.class);
+        return result;
     }
 }

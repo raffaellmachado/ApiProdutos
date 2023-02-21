@@ -1,4 +1,4 @@
-package controllers.request;
+package br.com.bling.ApiDeposito.controllers.request;
 
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;

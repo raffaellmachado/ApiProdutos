@@ -1,10 +1,6 @@
 package br.com.bling.ApiProdutos.controllers;
 
-import br.com.bling.ApiProdutos.exceptions.*;
-import br.com.bling.ApiProdutos.models.Categoria2;
-import br.com.bling.ApiProdutos.models.Produto2;
 import br.com.bling.ApiProdutos.models.Resposta;
-import br.com.bling.ApiProdutos.models.Retorno;
 import br.com.bling.ApiProdutos.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,14 +26,6 @@ public class CategoriaController {
     @ApiOperation(value = "Retorna uma lista de categorias")
     public Resposta getCategory() {
         Resposta response = categoriaService.getCategory();
-        for (Retorno.Categoria categorias : response.getRetorno().getProdutos()) {
-            System.out.println(listaCategoria.categorias.codigo);
-            System.out.println(listaCategoria.categorias.descricao);
-        }
-
-        if (response.retorno. == null || response.getRetorno() == null) {
-            throw new CategoriaListaNaoEncontradoException();
-        }
         System.out.println(response);
 
         return response;
@@ -51,9 +39,6 @@ public class CategoriaController {
     public Resposta getCategoryByIdCategory(@PathVariable String idCategoria) {
         Resposta response = categoriaService.getCategoryByIdCategoria(idCategoria);
 
-        if (response.retorno.produtos == null || response.getRetorno() == null) {
-            throw new CategoriaIdCategoriaNaoEncontradoException(idCategoria);
-        }
         System.out.println(response);
 
         return response;
@@ -65,19 +50,12 @@ public class CategoriaController {
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
     public Resposta createCategory(@RequestBody String xml) {
-      try{
         RestTemplate restTemplate = new RestTemplate();
         Resposta result = categoriaService.createCategory(xml);
 
-          if (result.retorno.produtos == null) {
-              throw new ApiCategoriaException("Não foi possível criar a categoria", null);
-          }
-          System.out.println("Categoria cadastrado com sucesso!");
+        System.out.println("Categoria cadastrado com sucesso!");
 
           return result;
-      } catch (Exception e) {
-          throw new CategoriaCadastroException("Erro ao cadastrar categoria: " + e.getMessage());
-      }
     }
 }
 

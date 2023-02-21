@@ -30,18 +30,18 @@ public class ProdutoController {
     @GetMapping("/produtos")
     @ApiOperation(value = "Retorna uma lista de produtos")
     public Resposta getAllProducts() {
-        Resposta response = produtoService.getAllProducts();
-        for (Retorno.Produto listaProdutos : response.getRetorno().getProdutos()) {
+        Resposta request = produtoService.getAllProducts();
+        for (Retorno.Produto listaProdutos : request.getRetorno().getProdutos()) {
             System.out.println(listaProdutos.produto.codigo);
             System.out.println(listaProdutos.produto.descricao);
         }
 
-        if (response.retorno.produtos == null || response.getRetorno() == null) {
+        if (request.retorno.produtos == null || request.getRetorno() == null) {
             throw new ProdutoListaNaoEncontradoException();
         }
-        System.out.println(response);
+        System.out.println(request);
 
-        return response;
+        return request;
     }
 
     /**
@@ -50,15 +50,15 @@ public class ProdutoController {
     @GetMapping("/produto/{codigo}")
     @ApiOperation(value = "Retorna um produto pelo código")
     public Resposta getProductByCode(@PathVariable String codigo) {
-        Resposta response = produtoService.getProductByCode(codigo);
+        Resposta request = produtoService.getProductByCode(codigo);
 
-        if (response.retorno.produtos == null || response.getRetorno() == null) {
+        if (request.retorno.produtos == null || request.getRetorno() == null) {
             throw new ProdutoCodigoNaoEncontradoException(codigo);
         }
 
-        System.out.println(response);
+        System.out.println(request);
 
-        return response;
+        return request;
     }
 
     /**
@@ -67,14 +67,14 @@ public class ProdutoController {
     @GetMapping("/produto/{codigo}/{id_fornecedor}")
     @ApiOperation(value = "Retorna um produto pelo código e nome do fornecedor")
     public Resposta getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String id_fornecedor) {
-        Resposta response = produtoService.getProductByCodeSupplier(codigo, id_fornecedor);
+        Resposta request = produtoService.getProductByCodeSupplier(codigo, id_fornecedor);
 
-        if (response.retorno.produtos == null || response.getRetorno() == null) {
+        if (request.retorno.produtos == null || request.getRetorno() == null) {
             throw new ProdutoCodigoNaoEncontradoException(codigo);
         }
 
-        System.out.println(response);
-        return response;
+        System.out.println(request);
+        return request;
     }
 
     /**
@@ -83,9 +83,9 @@ public class ProdutoController {
     @DeleteMapping("/produto/{codigo}")
     @ApiOperation(value = "Deletar um produto pelo código")
     public String deleteProductByCode(@PathVariable String codigo) {
-        Resposta response = produtoService.getProductByCode(codigo);
+        Resposta request = produtoService.getProductByCode(codigo);
 
-        if (response.retorno.produtos == null || response.getRetorno() == null) {
+        if (request.retorno.produtos == null || request.getRetorno() == null) {
             throw new ProdutoNaoEncontradoExclusaoException(codigo);
         }
         produtoService.deleteProductByCode(codigo);
@@ -101,14 +101,14 @@ public class ProdutoController {
     @ApiOperation(value = "Cadastrar um novo produto")
     public Resposta createProduct(@RequestBody String xml) {
         try {
-            Resposta response = produtoService.createProduct(xml);
+            Resposta request = produtoService.createProduct(xml);
 
-            if (response.retorno.produtos == null) {
+            if (request.retorno.produtos == null) {
                 throw new ApiProdutoException("Não foi possível criar o produto", null);
             }
             System.out.println("Produto cadastrado com sucesso!");
 
-            return response;
+            return request;
         } catch (Exception e) {
             throw new ProdutoCadastroException("Erro ao cadastrar produto: " + e.getMessage());
         }

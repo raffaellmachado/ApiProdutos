@@ -1,34 +1,33 @@
 package br.com.bling.ApiProdutos.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+@Slf4j
+@ControllerAdvice
 public class ApplicationCategoriaExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ApiProdutoException.class)
-    public ResponseEntity<String> handleApiProdutoException(ApiProdutoException ex) {
+    @ExceptionHandler(ApiCategoriaException.class)
+    public ResponseEntity<String> handleApiCategoriaException(ApiCategoriaException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-//    @ExceptionHandler(ProdutoListaNaoEncontradoException.class)
-//    public ResponseEntity<String> handleListaProdutoNaoEncontradoException(ProdutoListaNaoEncontradoException ex) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-//    }
-//
-//    @ExceptionHandler(ProdutoCodigoNaoEncontradoException.class)
-//    public ResponseEntity<String> handleCodigoProdutoNaoEncontradoException(ProdutoCodigoNaoEncontradoException ex) {
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-//    }
-//
-//    @ExceptionHandler(ProdutoNaoEncontradoExclusaoException.class)
-//    public ResponseEntity<String> ProdutoNaoEncontradoParaExclusaoException(ProdutoNaoEncontradoExclusaoException ex) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-//    }
-//
-//    @ExceptionHandler(ProdutoCadastroException.class)
-//    public ResponseEntity<String> handleProdutoCadastroException(ProdutoCadastroException ex) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-//    }{
+    @ExceptionHandler(CategoriaListaNaoEncontradoException.class)
+    public ResponseEntity<String> handleCategoriaListaNaoEncontradoException(CategoriaListaNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CategoriaIdCategoriaNaoEncontradoException.class)
+    public ResponseEntity<String> handleCategoriaIdCategoriaNaoEncontradoException(CategoriaIdCategoriaNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CategoriaCadastroException.class)
+    public ResponseEntity<String> handleCategoriaCadastroException(CategoriaCadastroException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
 }

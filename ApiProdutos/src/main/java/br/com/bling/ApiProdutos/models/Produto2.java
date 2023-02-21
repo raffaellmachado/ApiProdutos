@@ -6,6 +6,7 @@ import lombok.Data;
 public class Produto2 {
 
 	public String id;
+	
 	public String codigo;
 	public String descricao;
 	public String tipo;

@@ -37,9 +37,9 @@ public class ProdutoServiceImpl implements ProdutoService {
         try {
             String json = restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            Resposta result =  objectMapper.readValue(json, Resposta.class);
+            Resposta request =  objectMapper.readValue(json, Resposta.class);
 
-            return result;
+            return request;
 
         } catch (JsonProcessingException e) {
             throw new ApiProdutoException("Erro ao processar JSON", e);
@@ -54,9 +54,9 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public Resposta getProductByCode(String codigo) throws ApiProdutoException {
         try {
-            Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, Resposta.class);
+            Resposta request = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, Resposta.class);
 
-            return result;
+            return request;
 
         } catch (RestClientException e) {
             throw new ApiProdutoException("Erro ao chamar API", e);
@@ -69,9 +69,9 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public Resposta getProductByCodeSupplier(String codigo, String nomeFornecedor) throws ApiProdutoException {
         try {
-            Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + nomeFornecedor + "/json/" + apiKey, Resposta.class);
+            Resposta request = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + nomeFornecedor + "/json/" + apiKey, Resposta.class);
 
-            return result;
+            return request;
 
         } catch (RestClientException e) {
             throw new ApiProdutoException("Não foi possível recuperar o produto do fornecedor. Código: " + codigo + ", Nome do Fornecedor: " + nomeFornecedor, e);

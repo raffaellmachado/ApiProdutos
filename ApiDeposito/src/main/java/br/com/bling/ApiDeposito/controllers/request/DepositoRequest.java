@@ -1,4 +1,4 @@
-package controllers.request;
+package br.com.bling.ApiDeposito.controllers.request;
 
 import lombok.*;
 

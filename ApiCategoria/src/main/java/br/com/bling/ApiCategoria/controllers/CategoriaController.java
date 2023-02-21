@@ -1,18 +1,15 @@
-package controllers;
+package br.com.bling.ApiCategoria.controllers;
 
-import exceptions.ApiCategoriaException;
-import exceptions.CategoriaCadastroException;
-import exceptions.CategoriaIdCategoriaNaoEncontradoException;
-import exceptions.CategoriaListaNaoEncontradoException;
+import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaNaoEncontradoException;
+import br.com.bling.ApiCategoria.exceptions.CategoriaListaNaoEncontradoException;
+import br.com.bling.ApiCategoria.models.Resposta;
+import br.com.bling.ApiCategoria.models.Retorno;
+import br.com.bling.ApiCategoria.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import models.Resposta;
-import models.Retorno;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import service.CategoriaService;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -30,18 +27,18 @@ public class CategoriaController {
     @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
     public Resposta getCategory() {
-        Resposta response = categoriaService.getCategory();
-        for (Retorno.Categoria listaCategoria : response.getRetorno().getCategorias()) {
+        Resposta request = categoriaService.getCategory();
+        for (Retorno.Categoria listaCategoria : request.getRetorno().getCategorias()) {
             System.out.println(listaCategoria.categoria.getId());
             System.out.println(listaCategoria.categoria.getDescricao());
         }
 
-        if (response.retorno.getCategorias() == null || response.getRetorno() == null) {
+        if (request.retorno.getCategorias() == null || request.getRetorno() == null) {
             throw new CategoriaListaNaoEncontradoException();
         }
-        System.out.println(response);
+        System.out.println(request);
 
-        return response;
+        return request;
     }
 
     /**
@@ -50,14 +47,14 @@ public class CategoriaController {
     @GetMapping("/categoria/{idCategoria}")
     @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
     public Resposta getCategoryByIdCategory(@PathVariable String idCategoria) {
-        Resposta response = categoriaService.getCategoryByIdCategoria(idCategoria);
+        Resposta request = categoriaService.getCategoryByIdCategoria(idCategoria);
 
-        if (response.retorno.getCategorias()  == null || response.getRetorno() == null) {
+        if (request.retorno.categorias == null || request.getRetorno() == null) {
             throw new CategoriaIdCategoriaNaoEncontradoException(idCategoria);
         }
-        System.out.println(response);
+        System.out.println(request);
 
-        return response;
+        return request;
     }
 
     /**
@@ -65,20 +62,13 @@ public class CategoriaController {
      */
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public Resposta createCategory(@RequestBody String xml) {
-      try{
-        RestTemplate restTemplate = new RestTemplate();
-        Resposta response = categoriaService.createCategory(xml);
+    public String createCategory(@RequestBody String xml) {
 
-          if (response.retorno.getCategorias()  == null) {
-              throw new ApiCategoriaException("Não foi possível criar a categoria", null);
-          }
-          System.out.println("Categoria cadastrado com sucesso!");
+        String request = categoriaService.createCategory(xml);
 
-          return response;
-      } catch (Exception e) {
-          throw new CategoriaCadastroException("Erro ao cadastrar categoria: " + e.getMessage());
-      }
+        System.out.println(request);
+
+        return request;
     }
 }
 

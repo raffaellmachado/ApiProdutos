@@ -1,4 +1,4 @@
-package config;
+package br.com.bling.ApiDeposito.config;
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import org.springframework.context.annotation.Bean;
@@ -25,15 +25,15 @@ public class SwaggerConfig {
 	@Bean
 	public Docket productApi() {
 		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("br.com.bling.ApiProdutos")).paths(PathSelectors.regex("/api.*"))
+				.apis(RequestHandlerSelectors.basePackage("br.com.bling.ApiDeposito")).paths(PathSelectors.regex("/api.*"))
 				.build().apiInfo(metaInfo());
 	}
 
 	private ApiInfo metaInfo() {
 
         ApiInfo apiInfo = new ApiInfo(
-                "API REST Produtos",
-                "API REST para consumo de produtos Bling.",
+                "API REST Depositos",
+                "API REST para consumo de depositos Bling.",
                 "1.0",
                 "Terms of Service",
                 new Contact("Okeaa", null, null),

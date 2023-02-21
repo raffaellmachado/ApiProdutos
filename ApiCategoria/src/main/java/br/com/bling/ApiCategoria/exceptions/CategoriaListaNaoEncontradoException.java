@@ -1,4 +1,4 @@
-package exceptions;
+package br.com.bling.ApiCategoria.exceptions;
 
 public class CategoriaListaNaoEncontradoException  extends RuntimeException {
     public CategoriaListaNaoEncontradoException() {
