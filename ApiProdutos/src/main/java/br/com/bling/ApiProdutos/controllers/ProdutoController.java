@@ -34,7 +34,7 @@ public class ProdutoController {
         }
 
         if (response.retorno.produtos == null || response.getRetorno() == null) {
-            throw new ListaProdutoNaoEncontradoException();
+            throw new ProdutoListaNaoEncontradoException();
         }
         System.out.println(response);
 
@@ -50,7 +50,7 @@ public class ProdutoController {
         Resposta response = produtoService.getProductByCode(codigo);
 
         if (response.retorno.produtos == null || response.getRetorno() == null) {
-            throw new CodigoProdutoNaoEncontradoException(codigo);
+            throw new ProdutoCodigoNaoEncontradoException(codigo);
         }
 
         System.out.println(response);
@@ -67,7 +67,7 @@ public class ProdutoController {
         Resposta response = produtoService.getProductByCodeSupplier(codigo, id_fornecedor);
 
         if (response.retorno.produtos == null || response.getRetorno() == null) {
-            throw new CodigoProdutoNaoEncontradoException(codigo);
+            throw new ProdutoCodigoNaoEncontradoException(codigo);
         }
 
         System.out.println(response);

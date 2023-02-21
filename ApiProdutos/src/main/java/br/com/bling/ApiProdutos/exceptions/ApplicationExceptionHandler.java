@@ -15,13 +15,13 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ListaProdutoNaoEncontradoException.class)
-    public ResponseEntity<String> handleListaProdutoNaoEncontradoException(ListaProdutoNaoEncontradoException ex) {
+    @ExceptionHandler(ProdutoListaNaoEncontradoException.class)
+    public ResponseEntity<String> handleListaProdutoNaoEncontradoException(ProdutoListaNaoEncontradoException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(CodigoProdutoNaoEncontradoException.class)
-    public ResponseEntity<String> handleCodigoProdutoNaoEncontradoException(CodigoProdutoNaoEncontradoException ex) {
+    @ExceptionHandler(ProdutoCodigoNaoEncontradoException.class)
+    public ResponseEntity<String> handleCodigoProdutoNaoEncontradoException(ProdutoCodigoNaoEncontradoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
