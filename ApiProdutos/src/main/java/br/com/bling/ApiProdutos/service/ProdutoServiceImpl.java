@@ -2,7 +2,6 @@ package br.com.bling.ApiProdutos.service;
 
 
 import br.com.bling.ApiProdutos.exceptions.ApiProdutoException;
-import br.com.bling.ApiProdutos.exceptions.CodigoProdutoNaoEncontradoException;
 import br.com.bling.ApiProdutos.models.Resposta;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -35,121 +33,90 @@ public class ProdutoServiceImpl implements ProdutoService {
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
     @Override
-    public Resposta getAllProducts()  {
- //       try {
-        String json =restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, String.class);
-        ObjectMapper objectMapper = new ObjectMapper();
+    public Resposta getAllProducts() throws ApiProdutoException {
         try {
-            Resposta r =  objectMapper.readValue(json, Resposta.class);
-            System.out.println(r);
-            return r;
+            String json = restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Resposta result =  objectMapper.readValue(json, Resposta.class);
+
+            return result;
+
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new ApiProdutoException("Erro ao processar JSON", e);
+        } catch (RestClientException e) {
+            throw new ApiProdutoException("Erro ao chamar API", e);
         }
-
-
-//            if (result == null || result.getRetorno() == null) {
-//                throw new ProdutoException("Não foi possível obter a lista de produtos", null);
-//            }
-//            return result;
-//        } catch (RestClientException e) {
-//            throw new ProdutoException("Erro ao obter a lista de produtos", e);
-//        }
     }
 
     /**
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU)".
      */
     @Override
-    public Resposta getProductByCode(String codigo) {
+    public Resposta getProductByCode(String codigo) throws ApiProdutoException {
         try {
             Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, Resposta.class);
-            if (result == null || result.getRetorno() == null) { //Retornando FALSE quando força um codigo inexistente (CORRIGIR)
-                throw new CodigoProdutoNaoEncontradoException(codigo);
-            }
+
             return result;
-        } catch (HttpClientErrorException ex) {
-            throw new CodigoProdutoNaoEncontradoException(codigo);
+
+        } catch (RestClientException e) {
+            throw new ApiProdutoException("Erro ao chamar API", e);
         }
     }
-
 
     /**
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU) E NOME DO FORNECEDOR".
      */
     @Override
-    public Resposta getProductByCodeSupplier(String codigo, String nomeFornecedor) {
+    public Resposta getProductByCodeSupplier(String codigo, String nomeFornecedor) throws ApiProdutoException {
         try {
             Resposta result = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + nomeFornecedor + "/json/" + apiKey, Resposta.class);
+
             return result;
-        } catch (RestClientException ex) {
-            throw new ApiProdutoException(ex);
+
+        } catch (RestClientException e) {
+            throw new ApiProdutoException("Não foi possível recuperar o produto do fornecedor. Código: " + codigo + ", Nome do Fornecedor: " + nomeFornecedor, e);
         }
     }
-
 
     /**
      * DELETE "APAGAR UM PRODUTO PELO CÓDIGO (SKU)".
      */
     @Override
-    public void deleteProductByCode(String codigo) {
-        restTemplate.delete(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey);
+    public void deleteProductByCode(String codigo) throws ApiProdutoException {
+        try {
+            restTemplate.delete(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey);
+
+        } catch (RestClientException e) {
+            throw new ApiProdutoException("Erro ao chamar API", e);
+        }
     }
 
     /**
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
     @Override
-    public Resposta createProduct(String xml) {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_XML);
-
-        HttpEntity<String> request = new HttpEntity<>(xml, headers);
-        String url = apiBaseUrl + "/produto/json/" + apiKey + apiXmlParam + xml;
-        String json =restTemplate.postForObject(url, request, String.class);
-
-
-        ObjectMapper objectMapper = new ObjectMapper();
+    public Resposta createProduct(String xml) throws ApiProdutoException {
         try {
-            Resposta r =  objectMapper.readValue(json, Resposta.class);
-            System.out.println(r);
-            return r;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_XML);
+
+            HttpEntity<String> request = new HttpEntity<>(xml, headers);
+            String url  = apiBaseUrl + "/produto/json/" + apiKey + apiXmlParam + xml;
+            String json = restTemplate.postForObject(url, request, String.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Resposta result = objectMapper.readValue(json, Resposta.class);
+
+            return result;
+
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new ApiProdutoException("Erro ao processar JSON", e);
+        } catch (RestClientException e) {
+            throw new ApiProdutoException("Erro ao chamar API", e);
         }
     }
 }
 
-
-
-/* - ESSE É O OK DO VIDEO.
-    @Override
-    public ProdutoRequest createProduct(ProdutoRequest produtoRequest) {
-
-        ProdutoRequest request = null;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_XML);
-
-        HttpEntity<ProdutoRequest> httpEntity = new HttpEntity<>(produtoRequest, headers);
-        ResponseEntity<ProdutoRequest> newPostEntity = restTemplate.postForEntity(apiBaseUrl + "/produto/json/" + APIKEY + XML_PARAM, httpEntity, ProdutoRequest.class);
-        if(newPostEntity.getStatusCode() == HttpStatus.CREATED) {
-            request = newPostEntity.getBody();
-        }
-        return request;
-    }
-*/
-
-//    /**
-//     * POST DE UM NOVO PRODUTO UTILIZANDO XML
-//     */
-//    public String postProductXml(String xml) {
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_XML);
-//        HttpEntity<String> request = new HttpEntity<>(xml, headers);
-//        String url = BLING_API_URL_POST + xml;
-//        return restTemplate.postForObject(url, request, String.class);
-//    }
 //
 //    /**
 //     * POST ATUALIZA UM PRODUTO A PARTIR DO SEU CODIGO UTILIZANDO XML

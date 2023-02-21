@@ -10,7 +10,7 @@ import lombok.Setter;
 public class Deposito2 {
 
     @JsonProperty("id")
-    public int id;
+    public String id;
     @JsonProperty("descricao")
     public String descricao;
     @JsonProperty("situacao")

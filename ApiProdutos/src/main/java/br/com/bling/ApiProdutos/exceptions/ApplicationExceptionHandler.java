@@ -9,8 +9,29 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 @ControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity handleException(Exception e) {
-        return new ResponseEntity("Insira um numero de código válido", HttpStatus.INTERNAL_SERVER_ERROR);
+
+    @ExceptionHandler(ApiProdutoException.class)
+    public ResponseEntity<String> handleApiProdutoException(ApiProdutoException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ListaProdutoNaoEncontradoException.class)
+    public ResponseEntity<String> handleListaProdutoNaoEncontradoException(ListaProdutoNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CodigoProdutoNaoEncontradoException.class)
+    public ResponseEntity<String> handleCodigoProdutoNaoEncontradoException(CodigoProdutoNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ProdutoNaoEncontradoParaExclusaoException.class)
+    public ResponseEntity<String> ProdutoNaoEncontradoParaExclusaoException(ProdutoNaoEncontradoParaExclusaoException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ProdutoCadastroException.class)
+    public ResponseEntity<String> handleProdutoCadastroException(ProdutoCadastroException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 }
