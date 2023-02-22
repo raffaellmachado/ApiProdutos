@@ -1,14 +1,13 @@
 package br.com.bling.ApiCategoria.service;
 
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
+import br.com.bling.ApiCategoria.models.Resposta;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import br.com.bling.ApiCategoria.models.Resposta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -69,27 +68,31 @@ public class CategoriaServiceImpl implements CategoriaService{
      */
     @Override
     public String createCategory(String xml) throws ApiCategoriaException {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_XML);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_XML);
+            HttpEntity<String> request = new HttpEntity<>(xml, headers);
+            String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xml;
+            String result =  restTemplate.postForObject(url, request, String.class);
+            return result;
 
-        HttpEntity<String> request = new HttpEntity<>(xml, headers);
-        String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xml;
-        String result =  restTemplate.postForObject(url, request, String.class);
-        return result;
+        } catch (RestClientException e) {
+            throw new ApiCategoriaException("Erro ao chamar API", e);
+        }
     }
 
     /**
      * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> CORRIGIR e INSERIR EXCEPTION
      */
     @Override
-    public String updateCategory(String xml, String idCategoriaPai) throws ApiCategoriaException {
+    public String updateCategory(String xml, String idCategoria) throws ApiCategoriaException {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
 
         HttpEntity<String> request = new HttpEntity<>(xml, headers);
-        String url = apiBaseUrl + "/categoria/" + idCategoriaPai + "/json/" + apiKey + apiXmlParam + xml;
+        String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey + apiXmlParam + xml;
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 

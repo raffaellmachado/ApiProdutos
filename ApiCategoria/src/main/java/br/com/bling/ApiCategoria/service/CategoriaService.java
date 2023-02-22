@@ -1,17 +1,16 @@
 package br.com.bling.ApiCategoria.service;
 
-import br.com.bling.ApiCategoria.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategoria.models.Resposta;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface CategoriaService {
 
     public Resposta getCategory();
 
-    public Resposta getCategoryByIdCategoria(String idCategoria);
+    public Resposta getCategoryByIdCategoria(@PathVariable String idCategoria);
 
-    public String createCategory(String xml);
+    public String createCategory(@RequestBody String xml);
 
-    public String updateCategory(String xml, String idCategoriaPai);
-
+    public String updateCategory(@RequestBody String xml, @PathVariable String idCategoria);
 }

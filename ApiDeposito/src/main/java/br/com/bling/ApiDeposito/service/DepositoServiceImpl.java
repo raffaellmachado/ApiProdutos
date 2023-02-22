@@ -7,9 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -41,12 +39,12 @@ public class DepositoServiceImpl implements DepositoService{
 
         return request;
 
-    } catch (
-    JsonProcessingException e) {
-        throw new ApiDepositoException("Erro ao processar JSON", e);
-    } catch (RestClientException e) {
-        throw new ApiDepositoException("Erro ao chamar API", e);
-    }
+        } catch (
+        JsonProcessingException e) {
+            throw new ApiDepositoException("Erro ao processar JSON", e);
+        } catch (RestClientException e) {
+            throw new ApiDepositoException("Erro ao chamar API", e);
+        }
     }
 
     /**
@@ -78,4 +76,20 @@ public class DepositoServiceImpl implements DepositoService{
         return restTemplate.postForObject(url, request, String.class);
     }
 
+    /**
+     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> CORRIGIR e INSERIR EXCEPTION
+     */
+    @Override
+    public String updateDeposit(String xml, String idDeposito) throws ApiDepositoException {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_XML);
+
+        HttpEntity<String> request = new HttpEntity<>(xml, headers);
+        String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey + apiXmlParam + xml;
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+
+        return response.getBody();
+    }
 }

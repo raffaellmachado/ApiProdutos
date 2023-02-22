@@ -1,19 +1,20 @@
 package br.com.bling.ApiCategoria.controllers;
 
+import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
+import br.com.bling.ApiCategoria.exceptions.CategoriaCadastroException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaNaoEncontradoException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaListaNaoEncontradoException;
-import br.com.bling.ApiCategoria.models.Categoria2;
 import br.com.bling.ApiCategoria.models.Resposta;
 import br.com.bling.ApiCategoria.models.Retorno;
 import br.com.bling.ApiCategoria.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -26,7 +27,7 @@ public class CategoriaController {
     private CategoriaService categoriaService;
     private String idCategoria;
 
-    private String idCategoriaPai;
+    private String id;
 
     /**
      * GET "BUSCA A LISTA DE CATEGORIAS".
@@ -87,24 +88,19 @@ public class CategoriaController {
 
         String request = categoriaService.createCategory(xml);
 
-        System.out.println(request);
-
         return request;
     }
 
     /**
-     * PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".  -----> CORRIGIR
+     * PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".  -----> CORRIGIR ESTA DANDO ERRO 500 AO TESTAR NO POSTMAN
      */
     @PutMapping(path = "/atualizarcategoria/{idCategoriaPai}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public String updateCategory(@RequestBody String xml, @PathVariable String idCategoriaPai) {
+    public String updateCategory(@RequestBody String xml, @PathVariable String idCategoria) {
 
-        String request = categoriaService.updateCategory(xml, idCategoriaPai);
-
+        String request = categoriaService.updateCategory(xml, id);
         System.out.println(request);
 
         return request;
     }
 }
-
-

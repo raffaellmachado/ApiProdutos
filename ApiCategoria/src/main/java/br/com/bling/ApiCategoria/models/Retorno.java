@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public  class Retorno {
+public class Retorno {
     @JsonProperty("categorias")
     public List<Categoria> categorias;
 
     @Data
     public static class Categoria {
+        @JsonProperty("categoria")
         public Categoria2 categoria;
     }
 }

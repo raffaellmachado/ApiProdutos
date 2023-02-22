@@ -9,7 +9,6 @@ import javax.validation.constraints.Size;
 @Data
 public class DepositoRequest {
 
-    @NotEmpty
     @Max(value = 120, message = "Descrição do depósito")
     public String descricao;
     @NotEmpty

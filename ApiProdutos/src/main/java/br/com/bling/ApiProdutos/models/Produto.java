@@ -1,18 +1,18 @@
 package br.com.bling.ApiProdutos.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import java.util.ArrayList;
+
 @Data
-public class Produto2 {
+public class Produto {
 
 	public String id;
-	
+
 	public String codigo;
 	public String descricao;
 	public String tipo;
-	public String idCategoria;
-	public String[] imagens;
-	public String clonarDadosPai;
 	public String situacao;
 	public String unidade;
 	public String preco;
@@ -32,11 +32,12 @@ public class Produto2 {
 	public String idGrupoProduto;
 	public String linkExterno;
 	public String observacoes;
-	public Object grupoProduto;
-	public String garantia;
+	public String grupoProduto;
+	public int garantia;
 	public String descricaoFornecedor;
 	public String idFabricante;
-	public Categoria2 categoria;
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public Categoria categoria;
 	public String pesoLiq;
 	public String pesoBruto;
 	public String estoqueMinimo;
@@ -56,6 +57,19 @@ public class Produto2 {
 	public String producao;
 	public String dataValidade;
 	public String spedTipoItem;
+	public String clonarDadosPai;
+	public String codigopai;
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public ArrayList<Variaco> variacoes;
+
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public ArrayList<Imagem> imagem;
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public ArrayList<Deposito> depositos;
+	public ProdutoLoja produtoLoja;
+	public int estoqueAtual;
+	public String idCategoria;
 
 }
 

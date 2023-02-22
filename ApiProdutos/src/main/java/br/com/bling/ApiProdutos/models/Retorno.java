@@ -1,28 +1,19 @@
 package br.com.bling.ApiProdutos.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import java.util.List;
+
+import java.util.ArrayList;
 
 @Data
 public class Retorno {
-
-    public List<Produto> produtos;
-//    public List<Categoria> categorias;
-//    public List<Deposito> depositos;
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public ArrayList<Produtos> produtos;
 
     @Data
-    public static class Produto {
+    public static class Produtos {
 
-        public Produto2 produto;
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public Produto produto;
     }
-
-//    @Data
-//    public static class Categoria {
-//        public Categoria2 categoria;
-//    }
-
-//    @Data
-//    public static class Deposito {
-//        private Deposito2 deposito;
-//    }
 }

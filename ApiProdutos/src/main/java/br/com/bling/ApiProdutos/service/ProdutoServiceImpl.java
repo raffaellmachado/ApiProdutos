@@ -115,16 +115,29 @@ public class ProdutoServiceImpl implements ProdutoService {
             throw new ApiProdutoException("Erro ao chamar API", e);
         }
     }
-}
 
-//
-//    /**
-//     * POST ATUALIZA UM PRODUTO A PARTIR DO SEU CODIGO UTILIZANDO XML
-//     */
-//    public String postProductXmlByCode(String xml, String codigo) {
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_XML);
-//        HttpEntity<String> request = new HttpEntity<>(xml, headers);
-//        String url = BLING_API_URL_POST + xml + codigo;
-//        return restTemplate.postForObject(url, request, String.class);
-//    }
+    /**
+     * POST "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
+     */
+    @Override
+    public Resposta updateProduct(String xml, String codigo) throws ApiProdutoException {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_XML);
+
+            HttpEntity<String> request = new HttpEntity<>(xml, headers);
+            String url  = apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey + apiXmlParam + xml;
+            String json = restTemplate.postForObject(url, request, String.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Resposta result = objectMapper.readValue(json, Resposta.class);
+
+            return result;
+
+        } catch (JsonProcessingException e) {
+            throw new ApiProdutoException("Erro ao processar JSON", e);
+        } catch (RestClientException e) {
+            throw new ApiProdutoException("Erro ao chamar API", e);
+        }
+    }
+}

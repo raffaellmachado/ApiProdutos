@@ -16,7 +16,6 @@ public class ProdutoRequest {
     private String codigo;
     @Max(value = 4, message = "Código de item de serviço (06, 21 e 22)")
     private int codigoItem;
-    @NotEmpty
     @Max(value = 120, message = "Descrição do produto")
     private String descricao;
     @Size(message = "Tipo ('S' para serviço, 'P' para produto e 'N' para serviço de nota 06, 21 e 22)")

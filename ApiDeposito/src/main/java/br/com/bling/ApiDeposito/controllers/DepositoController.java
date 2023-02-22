@@ -1,5 +1,6 @@
 package br.com.bling.ApiDeposito.controllers;
 
+import br.com.bling.ApiDeposito.exceptions.DepositoCadastroException;
 import br.com.bling.ApiDeposito.exceptions.DepositoIdDepositoNaoEncontradoException;
 import br.com.bling.ApiDeposito.exceptions.DepositoListaNaoEncontradoException;
 import br.com.bling.ApiDeposito.models.Resposta;
@@ -10,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -19,6 +21,8 @@ public class DepositoController {
 
     @Autowired
     public DepositoService depositoService;
+    @Autowired
+    private RestTemplate restTemplate;
     private String idDeposito;
 
     /**
@@ -28,6 +32,9 @@ public class DepositoController {
     @ApiOperation(value = "Retorna uma lista de depositos")
     public Resposta getCategoria() {
         Resposta request = depositoService.getAllDeposit();
+        if (request.retorno.depositos == null || request.getRetorno() == null) {
+            throw new DepositoListaNaoEncontradoException();
+        }
         for (Retorno.Deposito listaDepositos : request.getRetorno().getDepositos()) {
             System.out.println("-------------------------------------------------------------------");
             System.out.println("Id Deposito: " + listaDepositos.deposito.id);
@@ -36,10 +43,6 @@ public class DepositoController {
             System.out.println("Deposito Padrão: " + listaDepositos.deposito.depositoPadrao);
             System.out.println("Desconsiderar Saldo: " + listaDepositos.deposito.desconsiderarSaldo);
             System.out.println("-------------------------------------------------------------------");
-        }
-
-        if (request.retorno.depositos == null || request.getRetorno() == null) {
-            throw new DepositoListaNaoEncontradoException();
         }
 
         System.out.println(request);
@@ -54,6 +57,10 @@ public class DepositoController {
     @ApiOperation(value = "Retorna um deposito pelo idDeposito")
     public Resposta getDepositByIdDeposit(@PathVariable String idDeposito) {
         Resposta request = depositoService.getDepositByIdDeposit(idDeposito);
+        if (request.retorno.depositos == null || request.getRetorno() == null) {
+            throw new DepositoIdDepositoNaoEncontradoException(idDeposito);
+        }
+
         for (Retorno.Deposito listaDepositos : request.getRetorno().getDepositos()) {
             System.out.println("-------------------------------------------------------------------");
             System.out.println("Id Deposito: " + listaDepositos.deposito.id);
@@ -62,10 +69,6 @@ public class DepositoController {
             System.out.println("Deposito Padrão: " + listaDepositos.deposito.depositoPadrao);
             System.out.println("Desconsiderar Saldo: " + listaDepositos.deposito.desconsiderarSaldo);
             System.out.println("-------------------------------------------------------------------");
-        }
-
-        if (request.retorno.depositos == null || request.getRetorno() == null) {
-            throw new DepositoIdDepositoNaoEncontradoException(idDeposito);
         }
 
         System.out.println(request);
@@ -86,14 +89,16 @@ public class DepositoController {
         return request;
     }
 
-//    /**
-//     * POST "CADASTRA UM NOVO DEPOSITO UTILIZANDO XML".
-//     */
-//    @PostMapping(path = "/cadastrardeposito", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ApiOperation(value = "Cadastrar um deposito")
-//    public void registerProduct(@RequestBody String xml) {
-//        RestTemplate restTemplate = new RestTemplate();
-//        depositoService.postDepositoXml(xml);
-//    }
+    /**
+     * PUT "ATUALIZA UM DEPOSITO EXISTENTE UTILIZANDO XML".  -----> CORRIGIR ESTA DANDO ERRO 500 AO TESTAR NO POSTMAN
+     */
+    @PutMapping(path = "/atualizardeposito/{idDeposito}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Cadastrar uma categoria")
+    public String updateCategory(@RequestBody String xml, @PathVariable String idDeposito) {
 
+        String request = depositoService.updateDeposit(xml, idDeposito);
+        System.out.println(request);
+
+        return request;
+    }
 }

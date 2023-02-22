@@ -3,10 +3,7 @@ package br.com.bling.ApiProdutos.controllers.request;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Date;
 
 @Data
@@ -29,6 +26,7 @@ public class ProdutoRequest {
     private String descricaoComplementar;
     @Max(value = 6, message = "Tipo de unidade do produto")
     private String un;
+    @DecimalMin("0")
     @Digits(integer = 17, fraction = 10)
     @Size(message = "Valor unitário do produto")
     private double vlr_unit;
