@@ -1,20 +1,16 @@
 package br.com.bling.ApiCategoria.controllers;
 
-import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
-import br.com.bling.ApiCategoria.exceptions.CategoriaCadastroException;
+import br.com.bling.ApiCategoria.controllers.response.Retorno;
 import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaNaoEncontradoException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaListaNaoEncontradoException;
-import br.com.bling.ApiCategoria.models.Resposta;
-import br.com.bling.ApiCategoria.models.Retorno;
+import br.com.bling.ApiCategoria.controllers.response.Resposta;
 import br.com.bling.ApiCategoria.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -41,13 +37,13 @@ public class CategoriaController {
             throw new CategoriaListaNaoEncontradoException();
         }
 
-//        for (Retorno listaCategoria : request.getRetorno().getCategorias()) {
-//            System.out.println("-------------------------------------------------------------------");
-//            System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-//            System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-//            System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-//            System.out.println("-------------------------------------------------------------------");
-//        }
+        for (Retorno.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+            System.out.println("-------------------------------------------------------------------");
+            System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+            System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+            System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+            System.out.println("-------------------------------------------------------------------");
+        }
 
         System.out.println(request);
 
@@ -66,13 +62,13 @@ public class CategoriaController {
             throw new CategoriaIdCategoriaNaoEncontradoException(idCategoria);
         }
 
-//        for (Retorno.Categorias listaCategoria : request.getRetorno().getCategorias()) {
-//            System.out.println("-------------------------------------------------------------------");
-//            System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-//            System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-//            System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-//            System.out.println("-------------------------------------------------------------------");
-//        }
+        for (Retorno.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+            System.out.println("-------------------------------------------------------------------");
+            System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+            System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+            System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+            System.out.println("-------------------------------------------------------------------");
+        }
 
         System.out.println(request);
 
@@ -86,9 +82,9 @@ public class CategoriaController {
     @ApiOperation(value = "Cadastrar uma categoria")
     public String createCategory(@RequestBody String xml) {
 
-        String response = categoriaService.createCategory(xml);
+        String request = categoriaService.createCategory(xml);
 
-        return response;
+        return request;
     }
 
     /**

@@ -1,6 +1,6 @@
 package br.com.bling.ApiCategoria.service;
 
-import br.com.bling.ApiCategoria.models.Resposta;
+import br.com.bling.ApiCategoria.controllers.response.Resposta;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 

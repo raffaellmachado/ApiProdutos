@@ -1,7 +1,7 @@
 package br.com.bling.ApiCategoria.service;
 
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
-import br.com.bling.ApiCategoria.models.Resposta;
+import br.com.bling.ApiCategoria.controllers.response.Resposta;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +35,14 @@ public class CategoriaServiceImpl implements CategoriaService{
     @Override
     public Resposta getAllCategory() throws ApiCategoriaException {
         try {
-            String json = restTemplate.getForObject(apiBaseUrl + "/categorias/json/" + apiKey, String.class);
+            String request = restTemplate.getForObject(apiBaseUrl + "/categorias/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            Resposta request = objectMapper.readValue(json, Resposta.class);
 
-            System.out.println(request);
+            Resposta response = objectMapper.readValue(request, Resposta.class);
 
-            return request;
+            System.out.println(response);
+
+            return response;
 
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON", e);
@@ -56,11 +57,12 @@ public class CategoriaServiceImpl implements CategoriaService{
     @Override
     public Resposta getCategoryByIdCategoria(String idCategoria) throws ApiCategoriaException {
         try {
-            String json = restTemplate.getForObject(apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey, String.class);
+            String request = restTemplate.getForObject(apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            Resposta request = objectMapper.readValue(json, Resposta.class);
 
-            return request;
+            Resposta response = objectMapper.readValue(request, Resposta.class);
+
+            return response;
 
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON", e);
@@ -80,9 +82,9 @@ public class CategoriaServiceImpl implements CategoriaService{
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
             String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xml;
-            String result =  restTemplate.postForObject(url, request, String.class);
+            String response =  restTemplate.postForObject(url, request, String.class);
 
-            return result;
+            return response;
 
         } catch (RestClientException e) {
             throw new ApiCategoriaException("Erro ao chamar API", e);
@@ -108,5 +110,4 @@ public class CategoriaServiceImpl implements CategoriaService{
             throw new ApiCategoriaException("Erro ao chamar API: " + e, e);
         }
     }
-
 }

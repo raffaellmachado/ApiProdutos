@@ -33,11 +33,12 @@ public class DepositoServiceImpl implements DepositoService{
     @Override
     public Resposta getAllDeposit() throws ApiDepositoException {
         try {
-            String json = restTemplate.getForObject(apiBaseUrl + "/depositos/json/" + apiKey, String.class);
+            String request = restTemplate.getForObject(apiBaseUrl + "/depositos/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            Resposta request =  objectMapper.readValue(json, Resposta.class);
 
-            return request;
+            Resposta response =  objectMapper.readValue(request, Resposta.class);
+
+            return response;
 
         } catch (JsonProcessingException e) {
             throw new ApiDepositoException("Erro ao processar JSON", e);
@@ -52,11 +53,12 @@ public class DepositoServiceImpl implements DepositoService{
     @Override
     public Resposta getDepositByIdDeposit(String idDeposito) throws ApiDepositoException {
         try {
-            String json = restTemplate.getForObject(apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey, String.class);
+            String request = restTemplate.getForObject(apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            Resposta request = objectMapper.readValue(json, Resposta.class);
 
-            return request;
+            Resposta response = objectMapper.readValue(request, Resposta.class);
+
+            return response;
 
         } catch (JsonProcessingException e) {
             throw new ApiDepositoException("Erro ao processar JSON", e);
@@ -76,9 +78,9 @@ public class DepositoServiceImpl implements DepositoService{
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
             String url = apiBaseUrl + "/deposito/json/" + apiKey + apiXmlParam + xml;
-            String result = restTemplate.postForObject(url, request, String.class);
+            String response = restTemplate.postForObject(url, request, String.class);
 
-            return result;
+            return response;
 
         } catch (RestClientException e) {
             throw new ApiDepositoException("Erro ao chamar API", e);

@@ -1,4 +1,4 @@
-package br.com.bling.ApiCategoria.models;
+package br.com.bling.ApiCategoria.controllers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -9,5 +9,5 @@ public class Categoria {
 
     public String id;
     public String descricao;
-    public int idCategoriaPai;
+    public int idCategoriaPai = 0;
 }
