@@ -1,7 +1,7 @@
-package br.com.bling.ApiDeposito.service;
+package br.com.bling.ApiDeposito.services;
 
 
-import br.com.bling.ApiDeposito.models.Resposta;
+import br.com.bling.ApiDeposito.controllers.response.Resposta;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 

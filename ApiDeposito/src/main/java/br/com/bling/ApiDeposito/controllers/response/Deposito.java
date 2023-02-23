@@ -1,4 +1,4 @@
-package br.com.bling.ApiDeposito.models;
+package br.com.bling.ApiDeposito.controllers.response;
 
 import lombok.Data;
 

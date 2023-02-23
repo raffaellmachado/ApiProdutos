@@ -1,4 +1,4 @@
-package br.com.bling.ApiDeposito.models;
+package br.com.bling.ApiDeposito.controllers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

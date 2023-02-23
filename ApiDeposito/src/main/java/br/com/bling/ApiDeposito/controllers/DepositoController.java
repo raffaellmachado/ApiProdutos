@@ -1,11 +1,10 @@
 package br.com.bling.ApiDeposito.controllers;
 
-import br.com.bling.ApiDeposito.exceptions.DepositoCadastroException;
 import br.com.bling.ApiDeposito.exceptions.DepositoIdDepositoNaoEncontradoException;
 import br.com.bling.ApiDeposito.exceptions.DepositoListaNaoEncontradoException;
-import br.com.bling.ApiDeposito.models.Resposta;
-import br.com.bling.ApiDeposito.models.Retorno;
-import br.com.bling.ApiDeposito.service.DepositoService;
+import br.com.bling.ApiDeposito.controllers.response.Resposta;
+import br.com.bling.ApiDeposito.controllers.response.Retorno;
+import br.com.bling.ApiDeposito.services.DepositoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ public class DepositoController {
     @ApiOperation(value = "Retorna uma lista de depositos")
     public Resposta getCategoria() {
         Resposta request = depositoService.getAllDeposit();
+
         if (request.retorno.depositos == null || request.getRetorno() == null) {
             throw new DepositoListaNaoEncontradoException();
         }
@@ -57,6 +57,7 @@ public class DepositoController {
     @ApiOperation(value = "Retorna um deposito pelo idDeposito")
     public Resposta getDepositByIdDeposit(@PathVariable String idDeposito) {
         Resposta request = depositoService.getDepositByIdDeposit(idDeposito);
+
         if (request.retorno.depositos == null || request.getRetorno() == null) {
             throw new DepositoIdDepositoNaoEncontradoException(idDeposito);
         }
@@ -82,8 +83,8 @@ public class DepositoController {
     @PostMapping(path = "/cadastrardeposito", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo deposito")
     public String createDeposit(@RequestBody String xml) {
-        String request = depositoService.createDeposit(xml);
 
+        String request = depositoService.createDeposit(xml);
         System.out.println(request);
 
         return request;

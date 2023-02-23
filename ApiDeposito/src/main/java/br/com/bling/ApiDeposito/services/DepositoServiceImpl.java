@@ -1,8 +1,8 @@
-package br.com.bling.ApiDeposito.service;
+package br.com.bling.ApiDeposito.services;
 
 
 import br.com.bling.ApiDeposito.exceptions.ApiDepositoException;
-import br.com.bling.ApiDeposito.models.Resposta;
+import br.com.bling.ApiDeposito.controllers.response.Resposta;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +80,9 @@ public class DepositoServiceImpl implements DepositoService{
 
             return result;
 
-    } catch (RestClientException e) {
-        throw new ApiDepositoException("Erro ao chamar API", e);
-    }
+        } catch (RestClientException e) {
+            throw new ApiDepositoException("Erro ao chamar API", e);
+        }
     }
 
     /**
