@@ -1,11 +1,13 @@
 package br.com.bling.ApiContatos.controllers.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 @Data
-public class Contato2 {
+public class Contato implements Serializable {
 
 	public String id;
 	public String codigo;
@@ -33,6 +35,7 @@ public class Contato2 {
 	public String sexo;
 	public String clienteDesde;
 	public String limiteCredito;
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public ArrayList<TiposContato> tiposContato;
 	public String dataNascimento;
 

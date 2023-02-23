@@ -1,5 +1,6 @@
 package br.com.bling.ApiContatos.controllers;
 
+import br.com.bling.ApiContatos.controllers.request.RespostaRequest;
 import br.com.bling.ApiContatos.exceptions.*;
 import br.com.bling.ApiContatos.controllers.response.Resposta;
 import br.com.bling.ApiContatos.controllers.response.Retorno;
@@ -8,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -35,7 +37,7 @@ public class ContatoController {
             throw new ContatoListaNaoEncontradoException();
         }
 
-        for (Retorno.Contato listaContatos : request.getRetorno().getContatos()) {
+        for (Retorno.Contatos listaContatos : request.getRetorno().getContatos()) {
             System.out.println("-----------------------------------------------------------------------------------");
             System.out.println("Id: " + listaContatos.contato.id);
             System.out.println("codigo: " + listaContatos.contato.codigo);
@@ -84,7 +86,7 @@ public class ContatoController {
             throw new ContatoIdNaoEncontradoException(cpf_cnpj);
         }
 
-        for (Retorno.Contato listaContatos : request.getRetorno().getContatos()) {
+        for (Retorno.Contatos listaContatos : request.getRetorno().getContatos()) {
             System.out.println("-----------------------------------------------------------------------------------");
             System.out.println("Id: " + listaContatos.contato.id);
             System.out.println("codigo: " + listaContatos.contato.codigo);
@@ -122,30 +124,40 @@ public class ContatoController {
     }
 
     /**
-     * POST "CADASTRAR UM NOVO CONTATO" UTILIZANDO XML.
+     * POST "CADASTRAR UM NOVO CONTATO" UTILIZANDO XML. ----- ERRO: {"retorno":{"erros":[{"erro":{"cod":68,"msg":"O campo cpf_cnpj e invalido"}}]}}
      */
     @PostMapping(path = "/cadastrarcontato", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo contato")
-    public String createContact(@RequestBody String xml) {
+    public RespostaRequest createContact(@RequestBody String xml) {
 
-        String request = contatosService.createContact(xml);
+        RespostaRequest request = contatosService.createContact(xml);
 
         System.out.println(request);
         return request;
     }
 
     /**
-     * POST "ATUALIZAR CONTATO PELO CPF e CNPJ" UTILIZANDO XML.
+     * PUT "ATUALIZAR CONTATO PELO CPF e CNPJ" UTILIZANDO XML.
      */
-    @PostMapping(path = "/atualizarcontato/{codigo}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    @PutMapping(path = "/atualizarcontato/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    @ApiOperation(value = "Atualizar um produto existente")
+//    public String updateContact(@RequestBody String xml, @PathVariable String id) {
+//
+//        String request = contatosService.updateContact(xml, id);
+//
+//        System.out.println("Produto atualizado com sucesso!");
+//
+//            return request;
+//
+//    }
+
+    @PutMapping(path = "/atualizarcontato/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto existente")
-    public String updateContact(@RequestBody String xml, @PathVariable String cpf_cnpj) {
+    public ResponseEntity<String> updateContact(@RequestBody String xml, @PathVariable String id) {
 
-        String request = contatosService.updateContact(xml, cpf_cnpj);
-
+        String request = contatosService.updateContact(xml, id);
         System.out.println("Produto atualizado com sucesso!");
-
-            return request;
-
+        return ResponseEntity.ok(request);
     }
+
 }

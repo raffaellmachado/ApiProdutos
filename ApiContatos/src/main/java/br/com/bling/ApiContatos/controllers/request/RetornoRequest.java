@@ -1,19 +1,17 @@
-package br.com.bling.ApiContatos.controllers.response;
+package br.com.bling.ApiContatos.controllers.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
-import java.util.ArrayList;
-
 @Data
-public class Retorno {
+public class RetornoRequest {
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public ArrayList<Contatos> contatos;
+    public Contatos contatos;
 
     @Data
     public static class Contatos {
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public Contato contato;
+        public ContatoRequest contato;
     }
 
 }
