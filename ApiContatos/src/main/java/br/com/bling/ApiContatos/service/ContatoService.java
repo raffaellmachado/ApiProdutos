@@ -1,7 +1,6 @@
 package br.com.bling.ApiContatos.service;
 
-import br.com.bling.ApiContatos.controllers.response.ContatoResponse;
-import br.com.bling.ApiContatos.models.Resposta;
+import br.com.bling.ApiContatos.controllers.response.Resposta;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 

@@ -1,6 +1,5 @@
-package br.com.bling.ApiContatos.models;
+package br.com.bling.ApiContatos.controllers.response;
 
-import antlr.collections.List;
 import lombok.Data;
 
 import java.util.ArrayList;

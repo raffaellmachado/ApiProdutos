@@ -1,9 +1,8 @@
 package br.com.bling.ApiContatos.controllers;
 
-import br.com.bling.ApiContatos.controllers.response.ContatoResponse;
 import br.com.bling.ApiContatos.exceptions.*;
-import br.com.bling.ApiContatos.models.Resposta;
-import br.com.bling.ApiContatos.models.Retorno;
+import br.com.bling.ApiContatos.controllers.response.Resposta;
+import br.com.bling.ApiContatos.controllers.response.Retorno;
 import br.com.bling.ApiContatos.service.ContatoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -1,7 +1,7 @@
 package br.com.bling.ApiContatos.service;
 
 import br.com.bling.ApiContatos.exceptions.ApiContatoException;
-import br.com.bling.ApiContatos.models.Resposta;
+import br.com.bling.ApiContatos.controllers.response.Resposta;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;

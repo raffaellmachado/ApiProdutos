@@ -1,10 +1,9 @@
-package br.com.bling.ApiContatos.models;
+package br.com.bling.ApiContatos.controllers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class Retorno {

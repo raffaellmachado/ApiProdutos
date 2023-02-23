@@ -1,11 +1,10 @@
-package br.com.bling.ApiContatos.models;
+package br.com.bling.ApiProdutosFornecedores.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
-public class TiposContato {
-
+public class Fornecedore {
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public TipoContato tipoContato;
+    public ProdutoFornecedor produtoFornecedor;
 }
