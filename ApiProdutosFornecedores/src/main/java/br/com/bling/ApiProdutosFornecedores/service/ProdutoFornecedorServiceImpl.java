@@ -1,7 +1,7 @@
 package br.com.bling.ApiProdutosFornecedores.service;
 
 import br.com.bling.ApiProdutosFornecedores.exceptions.ApiProdutoFornecedorException;
-import br.com.bling.ApiProdutosFornecedores.models.Resposta;
+import br.com.bling.ApiProdutosFornecedores.controllers.response.Resposta;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,11 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
 
 @Service
 public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
@@ -79,7 +84,6 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
             Resposta result = objectMapper.readValue(json, Resposta.class);
 
             return result;
-
         } catch (JsonProcessingException e) {
             throw new ApiProdutoFornecedorException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
@@ -88,7 +92,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
     }
 
     /**
-     * POST "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
+     * PUT "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
      */
     @Override
     public Resposta updateProduct(String xml, String id) throws ApiProdutoFornecedorException {
@@ -111,4 +115,6 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
             throw new ApiProdutoFornecedorException("Erro ao chamar API", e);
         }
     }
+
+
 }

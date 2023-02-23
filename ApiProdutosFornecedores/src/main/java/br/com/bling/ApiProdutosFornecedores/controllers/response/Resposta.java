@@ -1,4 +1,4 @@
-package br.com.bling.ApiProdutosFornecedores.models;
+package br.com.bling.ApiProdutosFornecedores.controllers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

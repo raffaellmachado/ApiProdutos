@@ -1,12 +1,13 @@
 package br.com.bling.ApiProdutosFornecedores.controllers;
 
 import br.com.bling.ApiProdutosFornecedores.exceptions.*;
-import br.com.bling.ApiProdutosFornecedores.models.Resposta;
+import br.com.bling.ApiProdutosFornecedores.controllers.response.Resposta;
 import br.com.bling.ApiProdutosFornecedores.service.ProdutoFornecedorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,9 +32,9 @@ public class ProdutoFornecedorController {
     public Resposta getAllProducts() {
         Resposta request = produtoFornecedorService.getAllProducts();
 
-//        if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
-//            throw new ProdutoListaNaoEncontradoException();
-//        }
+        if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
+            throw new ProdutoFornecedorListaNaoEncontradoException();
+        }
 //
 //        for (Retorno.Produtosfornecedore listaProdutos : request.getRetorno().getProdutosfornecedores()) {
 //            System.out.println("-----------------------------------------------------------------------------------");
@@ -108,9 +109,9 @@ public class ProdutoFornecedorController {
     public Resposta getProductByCode(@PathVariable String id) {
         Resposta request = produtoFornecedorService.getProductByCode(id);
 
-//        if (request.retorno.produtos == null || request.getRetorno() == null) {
-//            throw new ProdutoCodigoNaoEncontradoException(codigo);
-//        }
+        if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
+            throw new IdProdutoFornecedorNaoEncontradoException(id);
+        }
 //
 //        for (Retorno.Produtos listaProdutos : request.getRetorno().getProdutos()) {
 //            System.out.println("-----------------------------------------------------------------------------------");
@@ -178,7 +179,7 @@ public class ProdutoFornecedorController {
     }
 
     /**
-     * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
+     * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML. ----- CORRIGIR, RETORNANDO NULL NO POSTMAN, POREM ESTA CADASTRANDO NORMAL NO BLING
      */
     @PostMapping(path = "/cadastrarprodutofornecedor", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo produto fornecedor")
@@ -186,10 +187,10 @@ public class ProdutoFornecedorController {
         try {
             Resposta request = produtoFornecedorService.createProduct(xml);
 
-//            if (request.retorno.produtos == null) {
-//                throw new ApiProdutoException("Não foi possível criar o produto", null);
-//            }
-//            System.out.println("Produto cadastrado com sucesso!");
+            if (request.toString() == null) {
+                throw new ApiProdutoFornecedorException("Não foi possível criar o produto", null);
+            }
+            System.out.println("Produto cadastrado com sucesso!");
 
             return request;
         } catch (Exception e) {
@@ -198,17 +199,17 @@ public class ProdutoFornecedorController {
     }
 
     /**
-     * POST "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
+     * PUT "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
      */
-    @PostMapping(path = "/atualizarprodutofornecedor/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/atualizarprodutofornecedor/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto fornecedor existente")
     public Resposta updateProduct(@RequestBody String xml, @PathVariable String id) {
         try {
             Resposta request = produtoFornecedorService.updateProduct(xml, id);
 
-//            if (request.retorno.produtos == null) {
-//                throw new ProdutoAtualizarException(codigo);
-//            }
+            if (request.retorno.produtosfornecedores == null) {
+                throw new ApiProdutoFornecedorException(id, null);
+            }
             System.out.println("Produto cadastrado com sucesso!");
 
             return request;
@@ -216,4 +217,5 @@ public class ProdutoFornecedorController {
             throw new ProdutoFornecedorAtualizarException(id);
         }
     }
+
 }

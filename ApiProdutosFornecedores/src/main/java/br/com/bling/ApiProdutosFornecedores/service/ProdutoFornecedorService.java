@@ -1,6 +1,6 @@
 package br.com.bling.ApiProdutosFornecedores.service;
 
-import br.com.bling.ApiProdutosFornecedores.models.Resposta;
+import br.com.bling.ApiProdutosFornecedores.controllers.response.Resposta;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 

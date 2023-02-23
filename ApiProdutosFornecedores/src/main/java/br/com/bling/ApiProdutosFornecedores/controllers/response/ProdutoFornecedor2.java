@@ -1,11 +1,12 @@
-package br.com.bling.ApiProdutosFornecedores.models;
+package br.com.bling.ApiProdutosFornecedores.controllers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
-public class ProdutoFornecedor {
+public class ProdutoFornecedor2 {
 
+    public String id;
     public int idProdutoFornecedor;
     @JsonIgnoreProperties(ignoreUnknown = true)
     public Object idFornecedor;

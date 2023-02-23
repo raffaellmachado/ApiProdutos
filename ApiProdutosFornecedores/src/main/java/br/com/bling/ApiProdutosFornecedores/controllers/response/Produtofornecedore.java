@@ -1,4 +1,4 @@
-package br.com.bling.ApiProdutosFornecedores.models;
+package br.com.bling.ApiProdutosFornecedores.controllers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -12,7 +12,7 @@ public class Produtofornecedore {
     public ArrayList<Fornecedore> fornecedores;
     public class Fornecedore {
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public Produtofornecedores produtoFornecedor;
+        public Produtofornecedor produtoFornecedor;
     }
 
 }
