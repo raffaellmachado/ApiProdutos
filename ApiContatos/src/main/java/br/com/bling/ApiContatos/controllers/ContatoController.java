@@ -132,6 +132,10 @@ public class ContatoController {
 
         RespostaRequest request = contatosService.createContact(xml);
 
+        if (request.retorno.contatos == null || request.getRetorno() == null) {
+            throw new ContatoCadastroException();
+        }
+
         System.out.println(request);
         return request;
     }

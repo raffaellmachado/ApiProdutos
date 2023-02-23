@@ -8,5 +8,6 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TiposContatosRequest {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public List<TipoContatoRequest> tipo_contato;
 }
