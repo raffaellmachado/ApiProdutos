@@ -33,14 +33,13 @@ public class DepositoServiceImpl implements DepositoService{
     @Override
     public Resposta getAllDeposit() throws ApiDepositoException {
         try {
-        String json = restTemplate.getForObject(apiBaseUrl + "/depositos/json/" + apiKey, String.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        Resposta request =  objectMapper.readValue(json, Resposta.class);
+            String json = restTemplate.getForObject(apiBaseUrl + "/depositos/json/" + apiKey, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Resposta request =  objectMapper.readValue(json, Resposta.class);
 
-        return request;
+            return request;
 
-        } catch (
-        JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new ApiDepositoException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
             throw new ApiDepositoException("Erro ao chamar API", e);
@@ -53,10 +52,14 @@ public class DepositoServiceImpl implements DepositoService{
     @Override
     public Resposta getDepositByIdDeposit(String idDeposito) throws ApiDepositoException {
         try {
-        Resposta result = restTemplate.getForObject(apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey, Resposta.class);
+            String json = restTemplate.getForObject(apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Resposta request = objectMapper.readValue(json, Resposta.class);
 
-        return result;
+            return request;
 
+        } catch (JsonProcessingException e) {
+            throw new ApiDepositoException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
             throw new ApiDepositoException("Erro ao chamar API", e);
         }
@@ -67,13 +70,19 @@ public class DepositoServiceImpl implements DepositoService{
      */
     @Override
     public String createDeposit(String xml) throws ApiDepositoException  {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_XML);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_XML);
+            HttpEntity<String> request = new HttpEntity<>(xml, headers);
+            String url = apiBaseUrl + "/deposito/json/" + apiKey + apiXmlParam + xml;
+            String result = restTemplate.postForObject(url, request, String.class);
 
-        HttpEntity<String> request = new HttpEntity<>(xml, headers);
-        String url = apiBaseUrl + "/deposito/json/" + apiKey + apiXmlParam + xml;
-        return restTemplate.postForObject(url, request, String.class);
+            return result;
+
+    } catch (RestClientException e) {
+        throw new ApiDepositoException("Erro ao chamar API", e);
+    }
     }
 
     /**
@@ -81,15 +90,18 @@ public class DepositoServiceImpl implements DepositoService{
      */
     @Override
     public String updateDeposit(String xml, String idDeposito) throws ApiDepositoException {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_XML);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_XML);
+            HttpEntity<String> request = new HttpEntity<>(xml, headers);
+            String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey + apiXmlParam + xml;
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
-        HttpEntity<String> request = new HttpEntity<>(xml, headers);
-        String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey + apiXmlParam + xml;
+            return response.getBody();
 
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
-
-        return response.getBody();
+        } catch (RestClientException e) {
+            throw new ApiDepositoException("Erro ao chamar API: " + e, e);
+        }
     }
 }

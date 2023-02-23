@@ -35,7 +35,7 @@ public class DepositoController {
         if (request.retorno.depositos == null || request.getRetorno() == null) {
             throw new DepositoListaNaoEncontradoException();
         }
-        for (Retorno.Deposito listaDepositos : request.getRetorno().getDepositos()) {
+        for (Retorno.Depositos listaDepositos : request.getRetorno().getDepositos()) {
             System.out.println("-------------------------------------------------------------------");
             System.out.println("Id Deposito: " + listaDepositos.deposito.id);
             System.out.println("Descrição: " + listaDepositos.deposito.descricao);
@@ -61,7 +61,7 @@ public class DepositoController {
             throw new DepositoIdDepositoNaoEncontradoException(idDeposito);
         }
 
-        for (Retorno.Deposito listaDepositos : request.getRetorno().getDepositos()) {
+        for (Retorno.Depositos listaDepositos : request.getRetorno().getDepositos()) {
             System.out.println("-------------------------------------------------------------------");
             System.out.println("Id Deposito: " + listaDepositos.deposito.id);
             System.out.println("Descrição: " + listaDepositos.deposito.descricao);

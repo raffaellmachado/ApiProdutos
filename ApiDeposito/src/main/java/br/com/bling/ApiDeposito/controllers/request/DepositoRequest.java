@@ -19,7 +19,6 @@ public class DepositoRequest {
     public boolean depositoPadrao = false;
     @Size(message = "Desconsidera saldo deste depósito")
     public boolean desconsiderarSaldo = false;
-
 }
 
 

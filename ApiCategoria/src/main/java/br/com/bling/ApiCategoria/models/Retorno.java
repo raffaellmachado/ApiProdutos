@@ -1,20 +1,19 @@
 package br.com.bling.ApiCategoria.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class Retorno {
-    @JsonProperty("categorias")
-    public List<Categoria> categorias;
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public ArrayList<Categorias> categorias;
 
     @Data
-    public static class Categoria {
-        @JsonProperty("categoria")
-        public Categoria2 categoria;
+    public static class Categorias {
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public Categoria categoria;
     }
 }

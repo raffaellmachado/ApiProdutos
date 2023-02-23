@@ -6,10 +6,10 @@ import java.util.List;
 @Data
 public class Retorno {
 
-    public List<Deposito> depositos;
+    public List<Depositos> depositos;
 
     @Data
-    public static class Deposito {
-        public Deposito2 deposito;
+    public static class Depositos {
+        public Deposito deposito;
     }
 }

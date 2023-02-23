@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface CategoriaService {
 
-    public Resposta getCategory();
+    public Resposta getAllCategory();
 
     public Resposta getCategoryByIdCategoria(@PathVariable String idCategoria);
 

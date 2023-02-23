@@ -34,20 +34,20 @@ public class CategoriaController {
      */
     @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
-    public Resposta getCategory() {
-        Resposta request = categoriaService.getCategory();
+    public Resposta getAllCategory() {
+        Resposta request = categoriaService.getAllCategory();
 
         if (request.retorno.getCategorias() == null || request.getRetorno() == null) {
             throw new CategoriaListaNaoEncontradoException();
         }
 
-        for (Retorno.Categoria listaCategoria : request.getRetorno().getCategorias()) {
-            System.out.println("-------------------------------------------------------------------");
-            System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-            System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-            System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-            System.out.println("-------------------------------------------------------------------");
-        }
+//        for (Retorno listaCategoria : request.getRetorno().getCategorias()) {
+//            System.out.println("-------------------------------------------------------------------");
+//            System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+//            System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+//            System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+//            System.out.println("-------------------------------------------------------------------");
+//        }
 
         System.out.println(request);
 
@@ -66,13 +66,13 @@ public class CategoriaController {
             throw new CategoriaIdCategoriaNaoEncontradoException(idCategoria);
         }
 
-        for (Retorno.Categoria listaCategoria : request.getRetorno().getCategorias()) {
-            System.out.println("-------------------------------------------------------------------");
-            System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-            System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-            System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-            System.out.println("-------------------------------------------------------------------");
-        }
+//        for (Retorno.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+//            System.out.println("-------------------------------------------------------------------");
+//            System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+//            System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+//            System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+//            System.out.println("-------------------------------------------------------------------");
+//        }
 
         System.out.println(request);
 
@@ -86,15 +86,15 @@ public class CategoriaController {
     @ApiOperation(value = "Cadastrar uma categoria")
     public String createCategory(@RequestBody String xml) {
 
-        String request = categoriaService.createCategory(xml);
+        String response = categoriaService.createCategory(xml);
 
-        return request;
+        return response;
     }
 
     /**
      * PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".  -----> CORRIGIR ESTA DANDO ERRO 500 AO TESTAR NO POSTMAN
      */
-    @PutMapping(path = "/atualizarcategoria/{idCategoriaPai}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/atualizarcategoria/{idCategoria}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
     public String updateCategory(@RequestBody String xml, @PathVariable String idCategoria) {
 
