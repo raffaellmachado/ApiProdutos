@@ -1,9 +1,8 @@
 package br.com.bling.ApiCategoria.service;
 
-import br.com.bling.ApiCategoria.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategoria.controllers.request.RespostaRequest;
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
-import br.com.bling.ApiCategoria.controllers.response.Resposta;
+import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +34,12 @@ public class CategoriaServiceImpl implements CategoriaService{
      * GET "BUSCAR A LISTA DE DEPOSITOS CADASTRADOS NO BLING".
      */
     @Override
-    public Resposta getAllCategory() throws ApiCategoriaException {
+    public RespostaResponse getAllCategory() throws ApiCategoriaException {
         try {
             String request = restTemplate.getForObject(apiBaseUrl + "/categorias/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
 
-            Resposta response = objectMapper.readValue(request, Resposta.class);
+            RespostaResponse response = objectMapper.readValue(request, RespostaResponse.class);
 
             System.out.println(response);
 
@@ -57,12 +56,12 @@ public class CategoriaServiceImpl implements CategoriaService{
      * GET "BUSCA CATEGORIA PELO IDCATEGORIA".
      */
     @Override
-    public Resposta getCategoryByIdCategoria(String idCategoria) throws ApiCategoriaException {
+    public RespostaResponse getCategoryByIdCategoria(String idCategoria) throws ApiCategoriaException {
         try {
             String request = restTemplate.getForObject(apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
 
-            Resposta response = objectMapper.readValue(request, Resposta.class);
+            RespostaResponse response = objectMapper.readValue(request, RespostaResponse.class);
 
             return response;
 

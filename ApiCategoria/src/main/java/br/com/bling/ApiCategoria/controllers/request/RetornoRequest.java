@@ -1,6 +1,6 @@
 package br.com.bling.ApiCategoria.controllers.request;
 
-import br.com.bling.ApiCategoria.controllers.response.Categoria;
+import br.com.bling.ApiCategoria.controllers.response.CategoriaResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
@@ -14,6 +14,6 @@ public class RetornoRequest {
     @Data
     public static class Categorias {
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public Categoria categoria;
+        public CategoriaResponse categoria;
     }
 }

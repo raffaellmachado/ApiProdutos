@@ -1,13 +1,12 @@
 package br.com.bling.ApiCategoria.controllers;
 
-import br.com.bling.ApiCategoria.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategoria.controllers.request.RespostaRequest;
-import br.com.bling.ApiCategoria.controllers.response.Retorno;
+import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaCadastroException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaNaoEncontradoException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaListaNaoEncontradoException;
-import br.com.bling.ApiCategoria.controllers.response.Resposta;
+import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
 import br.com.bling.ApiCategoria.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,15 +33,15 @@ public class CategoriaController {
      */
     @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
-    public Resposta getAllCategory() {
+    public RespostaResponse getAllCategory() {
         try {
-            Resposta request = categoriaService.getAllCategory();
+            RespostaResponse request = categoriaService.getAllCategory();
 
             if (request.retorno.getCategorias() == null || request.getRetorno() == null) {
                 throw new ApiCategoriaException("Não foi possível localizar a lista de categorias");
             }
 
-            for (Retorno.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+            for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
                 System.out.println("-------------------------------------------------------------------");
                 System.out.println("Id Categoria: " + listaCategoria.categoria.id);
                 System.out.println("Descrição: " + listaCategoria.categoria.descricao);
@@ -63,15 +62,15 @@ public class CategoriaController {
      */
     @GetMapping("/categoria/{idCategoria}")
     @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
-    public Resposta getCategoryByIdCategory(@PathVariable String idCategoria) {
+    public RespostaResponse getCategoryByIdCategory(@PathVariable String idCategoria) {
         try {
-            Resposta request = categoriaService.getCategoryByIdCategoria(idCategoria);
+            RespostaResponse request = categoriaService.getCategoryByIdCategoria(idCategoria);
 
             if (request.retorno.categorias == null || request.getRetorno() == null) {
                 throw new ApiCategoriaException("Não foi possível localizar a categoria pelo idCategoria");
             }
 
-            for (Retorno.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+            for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
                 System.out.println("-------------------------------------------------------------------");
                 System.out.println("Id Categoria: " + listaCategoria.categoria.id);
                 System.out.println("Descrição: " + listaCategoria.categoria.descricao);
