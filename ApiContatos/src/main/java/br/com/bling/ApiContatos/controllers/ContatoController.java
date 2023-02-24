@@ -124,7 +124,7 @@ public class ContatoController {
     }
 
     /**
-     * POST "CADASTRAR UM NOVO CONTATO" UTILIZANDO XML. ----- ERRO: {"retorno":{"erros":[{"erro":{"cod":68,"msg":"O campo cpf_cnpj e invalido"}}]}}
+     * POST "CADASTRAR UM NOVO CONTATO" UTILIZANDO XML.
      */
     @PostMapping(path = "/cadastrarcontato", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo contato")
@@ -143,25 +143,20 @@ public class ContatoController {
     /**
      * PUT "ATUALIZAR CONTATO PELO CPF e CNPJ" UTILIZANDO XML.
      */
-//    @PutMapping(path = "/atualizarcontato/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ApiOperation(value = "Atualizar um produto existente")
-//    public String updateContact(@RequestBody String xml, @PathVariable String id) {
-//
-//        String request = contatosService.updateContact(xml, id);
-//
-//        System.out.println("Produto atualizado com sucesso!");
-//
-//            return request;
-//
-//    }
-
     @PutMapping(path = "/atualizarcontato/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto existente")
-    public ResponseEntity<String> updateContact(@RequestBody String xml, @PathVariable String id) {
+    public RespostaRequest updateContact(@RequestBody String xml, @PathVariable String id) {
+        try {
+            RespostaRequest request = contatosService.updateContact(xml, id);
 
-        String request = contatosService.updateContact(xml, id);
-        System.out.println("Produto atualizado com sucesso!");
-        return ResponseEntity.ok(request);
+            if (request.retorno.contatos == null || request.getRetorno() == null) {
+                throw new ApiContatoException("Não foi possível atualizar o deposito", null);
+            }
+            System.out.println(request);
+
+            return request;
+        } catch (Exception e) {
+            throw new ContatoCadastroException();
+        }
     }
-
 }

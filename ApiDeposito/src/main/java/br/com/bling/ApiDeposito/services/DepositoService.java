@@ -14,6 +14,6 @@ public interface DepositoService {
 
     public RespostaRequest createDeposit(@RequestBody String xml);
 
-    public String updateDeposit(@RequestBody String xml, @PathVariable String idDeposito);
+    public RespostaRequest updateDeposit(@RequestBody String xml, @PathVariable String idDeposito);
 
 }

@@ -13,5 +13,5 @@ public interface ContatoService {
 
     public RespostaRequest createContact(@RequestBody String xml);
 
-    public String updateContact(@RequestBody String xml, @PathVariable String id);
+    public RespostaRequest updateContact(@RequestBody String xml, @PathVariable String id);
 }

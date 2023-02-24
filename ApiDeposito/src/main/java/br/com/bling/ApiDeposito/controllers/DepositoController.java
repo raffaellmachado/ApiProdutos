@@ -109,15 +109,22 @@ public class DepositoController {
     }
 
     /**
-     * PUT "ATUALIZA UM DEPOSITO EXISTENTE UTILIZANDO XML".  -----> CORRIGIR ESTA DANDO ERRO 500 AO TESTAR NO POSTMAN
+     * PUT "ATUALIZAR UM DEPOSITO EXISTENTE UTILIZANDO XML".  -----> ERRO 401 UNAUTHORIZED
      */
     @PutMapping(path = "/atualizardeposito/{idDeposito}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public String updateCategory(@RequestBody String xml, @PathVariable String idDeposito) {
+    public RespostaRequest updateCategory(@RequestBody String xml, @PathVariable String idDeposito) {
+        try {
+            RespostaRequest request = depositoService.updateDeposit(xml, idDeposito);
 
-        String request = depositoService.updateDeposit(xml, idDeposito);
-        System.out.println(request);
+            if (request.retorno.depositos == null || request.getRetorno() == null) {
+                throw new ApiDepositoException("Não foi possível atualizar o deposito");
+            }
+            System.out.println(request);
 
-        return request;
+            return request;
+        } catch (Exception e) {
+            throw new DepositoCadastroException();
+        }
     }
 }

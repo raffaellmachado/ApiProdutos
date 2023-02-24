@@ -91,40 +91,27 @@ public class ContatoServiceImpl implements ContatoService {
     }
 
     /**
-     * POST "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
+     * PUT "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML. --
      */
-//    @Override
-//    public String updateContact(String xml, String id) throws ApiContatoException {
-//        try {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_XML);
-//
-//            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-//            String url  = apiBaseUrl + "/contato/" + id + "/json/" + apiKey + apiXmlParam + xml;
-//            String result = restTemplate.postForObject(url, request, String.class);
-//
-//
-//            return result;
-//
-//        } catch (RestClientException e) {
-//            throw new ApiContatoException("Erro ao chamar API", e);
-//        }
-//    }
-
     @Override
-    public String updateContact(String xml, String id) throws ApiContatoException {
+    public RespostaRequest updateContact(String xml, String id) throws ApiContatoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url  = apiBaseUrl + "/contato/" + id + "/json/" + apiKey + apiXmlParam + xml;
-            ResponseEntity<String> result = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+            String url = apiBaseUrl + "/contato/" + id + "/json/" + apiKey + apiXmlParam + xml;
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
-            return result.getBody();
+            ObjectMapper objectMapper = new ObjectMapper();
+            RespostaRequest response = objectMapper.readValue(responseEntity.getBody(), RespostaRequest.class);
+
+            return response;
+
+        } catch (JsonProcessingException e) {
+            throw new ApiContatoException("Erro ao processar JSON", null);
         } catch (RestClientException e) {
-            throw new ApiContatoException("Erro ao chamar API", e);
+            throw new ApiContatoException("Erro ao chamar API", null);
         }
     }
-
 }

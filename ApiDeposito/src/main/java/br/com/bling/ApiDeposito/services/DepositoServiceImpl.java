@@ -92,22 +92,27 @@ public class DepositoServiceImpl implements DepositoService {
     }
 
     /**
-     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> CORRIGIR e INSERIR EXCEPTION
+     * PUT "ATUALIZAR UMA NOVA CATEGORIA UTILIZANDO XML". -----> CORRIGIR e INSERIR EXCEPTION
      */
     @Override
-    public String updateDeposit(String xml, String idDeposito) throws ApiDepositoException {
+    public RespostaRequest updateDeposit(String xml, String idDeposito) throws ApiDepositoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
             String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey + apiXmlParam + xml;
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
-            return response.getBody();
+            ObjectMapper objectMapper = new ObjectMapper();
+            RespostaRequest response = objectMapper.readValue(responseEntity.getBody(), RespostaRequest.class);
 
+            return response;
+
+        } catch (JsonProcessingException e) {
+            throw new ApiDepositoException("Erro ao processar JSON");
         } catch (RestClientException e) {
-            throw new ApiDepositoException("Erro ao chamar API: " + e);
+            throw new ApiDepositoException("Erro ao chamar API");
         }
     }
 }
