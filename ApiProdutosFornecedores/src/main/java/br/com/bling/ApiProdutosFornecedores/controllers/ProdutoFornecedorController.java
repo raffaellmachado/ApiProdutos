@@ -74,7 +74,7 @@ public class ProdutoFornecedorController {
             RespostaResponse request = produtoFornecedorService.getProducId(id);
 
             if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
-                throw new ApiProdutoFornecedorException("Não foi possível localizar produto fornecedor");
+                throw new ApiProdutoFornecedorException("Não foi possível localizar produto fornecedor pelo Id");
             }
 
             for (RetornoResponse.Produtosfornecedores listaProdutos : request.getRetorno().getProdutosfornecedores()) {
@@ -113,7 +113,7 @@ public class ProdutoFornecedorController {
             RespostaRequest request = produtoFornecedorService.createProduct(xml);
 
             if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
-                throw new ApiProdutoFornecedorException("Não foi possível criar o produto");
+                throw new ApiProdutoFornecedorException("Não foi possível cadastrar o produto");
             }
             System.out.println("Produto cadastrado com sucesso!");
 

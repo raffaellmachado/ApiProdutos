@@ -1,9 +1,11 @@
 package br.com.bling.ApiDeposito.controllers;
 
+import br.com.bling.ApiDeposito.controllers.request.DepositoRequest;
+import br.com.bling.ApiDeposito.controllers.request.RespostaRequest;
 import br.com.bling.ApiDeposito.exceptions.DepositoIdDepositoNaoEncontradoException;
 import br.com.bling.ApiDeposito.exceptions.DepositoListaNaoEncontradoException;
-import br.com.bling.ApiDeposito.controllers.response.Resposta;
-import br.com.bling.ApiDeposito.controllers.response.Retorno;
+import br.com.bling.ApiDeposito.controllers.response.RespostaResponse;
+import br.com.bling.ApiDeposito.controllers.response.RetornoResponse;
 import br.com.bling.ApiDeposito.services.DepositoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,13 +31,13 @@ public class DepositoController {
      */
     @GetMapping("/depositos")
     @ApiOperation(value = "Retorna uma lista de depositos")
-    public Resposta getCategoria() {
-        Resposta request = depositoService.getAllDeposit();
+    public RespostaResponse getCategoria() {
+        RespostaResponse request = depositoService.getAllDeposit();
 
         if (request.retorno.depositos == null || request.getRetorno() == null) {
             throw new DepositoListaNaoEncontradoException();
         }
-        for (Retorno.Depositos listaDepositos : request.getRetorno().getDepositos()) {
+        for (RetornoResponse.Depositos listaDepositos : request.getRetorno().getDepositos()) {
             System.out.println("-------------------------------------------------------------------");
             System.out.println("Id Deposito: " + listaDepositos.deposito.id);
             System.out.println("Descrição: " + listaDepositos.deposito.descricao);
@@ -55,14 +57,14 @@ public class DepositoController {
      */
     @GetMapping("/deposito/{idDeposito}")
     @ApiOperation(value = "Retorna um deposito pelo idDeposito")
-    public Resposta getDepositByIdDeposit(@PathVariable String idDeposito) {
-        Resposta request = depositoService.getDepositByIdDeposit(idDeposito);
+    public RespostaResponse getDepositByIdDeposit(@PathVariable String idDeposito) {
+        RespostaResponse request = depositoService.getDepositByIdDeposit(idDeposito);
 
         if (request.retorno.depositos == null || request.getRetorno() == null) {
             throw new DepositoIdDepositoNaoEncontradoException(idDeposito);
         }
 
-        for (Retorno.Depositos listaDepositos : request.getRetorno().getDepositos()) {
+        for (RetornoResponse.Depositos listaDepositos : request.getRetorno().getDepositos()) {
             System.out.println("-------------------------------------------------------------------");
             System.out.println("Id Deposito: " + listaDepositos.deposito.id);
             System.out.println("Descrição: " + listaDepositos.deposito.descricao);
@@ -82,9 +84,9 @@ public class DepositoController {
      */
     @PostMapping(path = "/cadastrardeposito", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo deposito")
-    public String createDeposit(@RequestBody String xml) {
+    public RespostaRequest createDeposit(@RequestBody String xml) {
 
-        String request = depositoService.createDeposit(xml);
+        RespostaRequest request = depositoService.createDeposit(xml);
         System.out.println(request);
 
         return request;

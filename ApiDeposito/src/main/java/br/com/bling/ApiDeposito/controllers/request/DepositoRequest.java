@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 @Data
 public class DepositoRequest {
 
+    public String id;
     @NotEmpty(message = "Campo Obrigatorio")
     @Max(value = 120, message = "Descrição do depósito")
     public String descricao;

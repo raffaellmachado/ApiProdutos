@@ -3,7 +3,7 @@ package br.com.bling.ApiDeposito.controllers.response;
 import lombok.Data;
 
 @Data
-public class Deposito {
+public class DepositoResponse {
 
 
     public String id;
