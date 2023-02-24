@@ -1,5 +1,7 @@
 package br.com.bling.ApiCategoria.service;
 
+import br.com.bling.ApiCategoria.controllers.request.CategoriaRequest;
+import br.com.bling.ApiCategoria.controllers.request.RespostaRequest;
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
 import br.com.bling.ApiCategoria.controllers.response.Resposta;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,9 +47,9 @@ public class CategoriaServiceImpl implements CategoriaService{
             return response;
 
         } catch (JsonProcessingException e) {
-            throw new ApiCategoriaException("Erro ao processar JSON", e);
+            throw new ApiCategoriaException("Erro ao processar JSON");
         } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API", e);
+            throw new ApiCategoriaException("Erro ao chamar API");
         }
 
     }
@@ -65,9 +67,9 @@ public class CategoriaServiceImpl implements CategoriaService{
             return response;
 
         } catch (JsonProcessingException e) {
-            throw new ApiCategoriaException("Erro ao processar JSON", e);
+            throw new ApiCategoriaException("Erro ao processar JSON");
         } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API", e);
+            throw new ApiCategoriaException("Erro ao chamar API");
         }
     }
 
@@ -75,39 +77,49 @@ public class CategoriaServiceImpl implements CategoriaService{
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".  -----> CRIAR EXCEPTION
      */
     @Override
-    public String createCategory(String xml) throws ApiCategoriaException {
+    public RespostaRequest createCategory(String xml) throws ApiCategoriaException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
             String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xml;
-            String response =  restTemplate.postForObject(url, request, String.class);
+            String json =  restTemplate.postForObject(url, request, String.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            RespostaRequest response = objectMapper.readValue(json, RespostaRequest.class);
 
             return response;
 
+        } catch (JsonProcessingException e) {
+            throw new ApiCategoriaException("Erro ao processar JSON");
         } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API", e);
+            throw new ApiCategoriaException("Erro ao chamar API");
         }
     }
 
     /**
-     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> CORRIGIR e INSERIR EXCEPTION
+     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
      */
     @Override
-    public String updateCategory(String xml, String idCategoria) throws ApiCategoriaException {
+    public RespostaRequest updateCategory(String xml, String idCategoria) throws ApiCategoriaException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey + apiXmlParam + xml;
+            String url  = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey + apiXmlParam + xml;
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
-            return responseEntity.getBody();
+            ObjectMapper objectMapper = new ObjectMapper();
+            RespostaRequest response = objectMapper.readValue(responseEntity.getBody(), RespostaRequest.class);
 
+            return response;
+
+        } catch (JsonProcessingException e) {
+            throw new ApiCategoriaException("Erro ao processar JSON");
         } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API: " + e, e);
+            throw new ApiCategoriaException("Erro ao chamar API: ");
         }
     }
 }

@@ -109,7 +109,7 @@ public class DepositoController {
     }
 
     /**
-     * PUT "ATUALIZAR UM DEPOSITO EXISTENTE UTILIZANDO XML".  -----> ERRO 401 UNAUTHORIZED
+     * PUT "ATUALIZAR UM DEPOSITO EXISTENTE UTILIZANDO XML".  -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
      */
     @PutMapping(path = "/atualizardeposito/{idDeposito}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")

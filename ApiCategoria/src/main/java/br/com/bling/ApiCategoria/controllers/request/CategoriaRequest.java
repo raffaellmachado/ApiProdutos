@@ -8,6 +8,7 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class CategoriaRequest {
 
+    String id;
     @NotEmpty(message = "Campo Obrigatorio")
     @Max(value = 50, message = "Descrição da categoria")
     public String descricao;
