@@ -35,10 +35,10 @@ public class ContatoResponse implements Serializable {
 	public String sexo;
 	public String clienteDesde;
 	public String limiteCredito;
+	public String dataNascimento;
+	public String informacoesContato;
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public ArrayList<TiposContatoResponse> tiposContato;
-	public String dataNascimento;
-
 }
 
 

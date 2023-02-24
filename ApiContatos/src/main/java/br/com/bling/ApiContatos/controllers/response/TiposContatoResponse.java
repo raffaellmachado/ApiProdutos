@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 public class TiposContatoResponse {
-
     @JsonIgnoreProperties(ignoreUnknown = true)
     public TipoContatoResponse tipoContato;
 }

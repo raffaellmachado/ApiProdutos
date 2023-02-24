@@ -8,8 +8,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Data
-public class ProdutoFornecedorRequest {
+public class ProdutoFornecedor2Request {
 
+    public String id;
     @NotEmpty
     @Max(value = 20, message = "Identificador único do produto")
     public int idProduto;

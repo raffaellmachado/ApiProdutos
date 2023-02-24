@@ -1,5 +1,6 @@
 package br.com.bling.ApiProdutosFornecedores.controllers;
 
+import br.com.bling.ApiProdutosFornecedores.controllers.request.RespostaRequest;
 import br.com.bling.ApiProdutosFornecedores.exceptions.*;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.Resposta;
 import br.com.bling.ApiProdutosFornecedores.service.ProdutoFornecedorService;
@@ -7,7 +8,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -183,9 +183,9 @@ public class ProdutoFornecedorController {
      */
     @PostMapping(path = "/cadastrarprodutofornecedor", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo produto fornecedor")
-    public Resposta createProduct(@RequestBody String xml) {
+    public RespostaRequest createProduct(@RequestBody String xml) {
         try {
-            Resposta request = produtoFornecedorService.createProduct(xml);
+            RespostaRequest request = produtoFornecedorService.createProduct(xml);
 
             if (request.toString() == null) {
                 throw new ApiProdutoFornecedorException("Não foi possível criar o produto", null);

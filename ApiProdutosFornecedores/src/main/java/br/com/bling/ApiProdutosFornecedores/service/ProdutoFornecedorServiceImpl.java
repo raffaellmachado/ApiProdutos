@@ -1,5 +1,6 @@
 package br.com.bling.ApiProdutosFornecedores.service;
 
+import br.com.bling.ApiProdutosFornecedores.controllers.request.RespostaRequest;
 import br.com.bling.ApiProdutosFornecedores.exceptions.ApiProdutoFornecedorException;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.Resposta;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,11 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
 
 @Service
 public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
@@ -71,7 +67,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
     @Override
-    public Resposta createProduct(String xml) throws ApiProdutoFornecedorException {
+    public RespostaRequest createProduct(String xml) throws ApiProdutoFornecedorException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -81,9 +77,10 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
             String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            Resposta result = objectMapper.readValue(json, Resposta.class);
+            RespostaRequest response = objectMapper.readValue(json, RespostaRequest.class);
 
-            return result;
+            return response;
+
         } catch (JsonProcessingException e) {
             throw new ApiProdutoFornecedorException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
