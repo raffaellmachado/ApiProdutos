@@ -93,10 +93,10 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
     }
 
     /**
-     * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML.
+     * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML. --- ERRO 404 Not Found: "{"retorno":{"erros":{"erro":{"cod":12,"msg":"Parametro(s) e(sao) invalido(s)"}}}}"
      */
     @Override
-    public RespostaResponse updateProduct(String xml, String id) throws ApiProdutoFornecedorException {
+    public RespostaRequest updateProduct(String xml, String id) throws ApiProdutoFornecedorException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -106,7 +106,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
             String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaResponse response = objectMapper.readValue(json, RespostaResponse.class);
+            RespostaRequest response = objectMapper.readValue(json, RespostaRequest.class);
 
             return response;
 
@@ -116,6 +116,4 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
             throw new ApiProdutoFornecedorException("Erro ao chamar API");
         }
     }
-
-
 }

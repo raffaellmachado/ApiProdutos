@@ -124,13 +124,13 @@ public class ProdutoFornecedorController {
     }
 
     /**
-     * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML.
+     * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML. --- 404 Not Found: "{"retorno":{"erros":{"erro":{"cod":12,"msg":"Parametro(s) e(sao) invalido(s)"}}}}"
      */
     @PutMapping(path = "/atualizarprodutofornecedor/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto fornecedor existente")
-    public RespostaResponse updateProduct(@RequestBody String xml, @PathVariable String id) {
+    public RespostaRequest updateProduct(@RequestBody String xml, @PathVariable String id) {
         try {
-            RespostaResponse request = produtoFornecedorService.updateProduct(xml, id);
+            RespostaRequest request = produtoFornecedorService.updateProduct(xml, id);
 
             if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
                 throw new ApiProdutoFornecedorException(id);

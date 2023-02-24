@@ -13,5 +13,5 @@ public interface ProdutoFornecedorService {
 
     public RespostaRequest createProduct(@RequestBody String xml);
 
-    public RespostaResponse updateProduct(@RequestBody String xml, @PathVariable String id);
+    public RespostaRequest updateProduct(@RequestBody String xml, @PathVariable String id);
 }
