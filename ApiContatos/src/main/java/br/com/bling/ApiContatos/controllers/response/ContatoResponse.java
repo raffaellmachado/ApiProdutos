@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 @Data
-public class Contato implements Serializable {
+public class ContatoResponse implements Serializable {
 
 	public String id;
 	public String codigo;
@@ -36,7 +36,7 @@ public class Contato implements Serializable {
 	public String clienteDesde;
 	public String limiteCredito;
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public ArrayList<TiposContato> tiposContato;
+	public ArrayList<TiposContatoResponse> tiposContato;
 	public String dataNascimento;
 
 }

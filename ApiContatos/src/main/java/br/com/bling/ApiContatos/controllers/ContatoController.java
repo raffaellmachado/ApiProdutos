@@ -2,8 +2,8 @@ package br.com.bling.ApiContatos.controllers;
 
 import br.com.bling.ApiContatos.controllers.request.RespostaRequest;
 import br.com.bling.ApiContatos.exceptions.*;
-import br.com.bling.ApiContatos.controllers.response.Resposta;
-import br.com.bling.ApiContatos.controllers.response.Retorno;
+import br.com.bling.ApiContatos.controllers.response.RespostaResponse;
+import br.com.bling.ApiContatos.controllers.response.RetornoResponse;
 import br.com.bling.ApiContatos.service.ContatoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,14 +30,14 @@ public class ContatoController {
      */
     @GetMapping("/contatos")
     @ApiOperation(value = "Retorna uma lista de contatos")
-    public Resposta getAllContacts() {
-        Resposta request = contatosService.getAllContacts();
+    public RespostaResponse getAllContacts() {
+        RespostaResponse request = contatosService.getAllContacts();
 
         if (request.retorno.contatos == null || request.getRetorno() == null) {
             throw new ContatoListaNaoEncontradoException();
         }
 
-        for (Retorno.Contatos listaContatos : request.getRetorno().getContatos()) {
+        for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
             System.out.println("-----------------------------------------------------------------------------------");
             System.out.println("Id: " + listaContatos.contato.id);
             System.out.println("codigo: " + listaContatos.contato.codigo);
@@ -79,14 +79,14 @@ public class ContatoController {
      */
     @GetMapping("/contato/{cpf_cnpj}")
     @ApiOperation(value = "Retorna um contato pelo CPF ou CNPJ")
-    public Resposta getContactsById(@PathVariable String cpf_cnpj) {
-        Resposta request = contatosService.getContactsById(cpf_cnpj);
+    public RespostaResponse getContactsById(@PathVariable String cpf_cnpj) {
+        RespostaResponse request = contatosService.getContactsById(cpf_cnpj);
 
         if (request.retorno.contatos == null || request.getRetorno() == null) {
             throw new ContatoIdNaoEncontradoException(cpf_cnpj);
         }
 
-        for (Retorno.Contatos listaContatos : request.getRetorno().getContatos()) {
+        for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
             System.out.println("-----------------------------------------------------------------------------------");
             System.out.println("Id: " + listaContatos.contato.id);
             System.out.println("codigo: " + listaContatos.contato.codigo);

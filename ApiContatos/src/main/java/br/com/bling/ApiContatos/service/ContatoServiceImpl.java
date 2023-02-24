@@ -1,7 +1,7 @@
 package br.com.bling.ApiContatos.service;
 
 import br.com.bling.ApiContatos.controllers.request.RespostaRequest;
-import br.com.bling.ApiContatos.controllers.response.Resposta;
+import br.com.bling.ApiContatos.controllers.response.RespostaResponse;
 import br.com.bling.ApiContatos.exceptions.ApiContatoException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,13 +31,13 @@ public class ContatoServiceImpl implements ContatoService {
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
     @Override
-    public Resposta getAllContacts() throws ApiContatoException {
+    public RespostaResponse getAllContacts() throws ApiContatoException {
         try {
             String json = restTemplate.getForObject(apiBaseUrl + "/contatos/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            Resposta request = objectMapper.readValue(json, Resposta.class);
+            RespostaResponse response = objectMapper.readValue(json, RespostaResponse.class);
 
-            return request;
+            return response;
 
         } catch (JsonProcessingException e) {
             throw new ApiContatoException("Erro ao processar JSON", e);
@@ -50,12 +50,16 @@ public class ContatoServiceImpl implements ContatoService {
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU)".
      */
     @Override
-    public Resposta getContactsById(String cpf_cnpj) throws ApiContatoException {
+    public RespostaResponse getContactsById(String cpf_cnpj) throws ApiContatoException {
         try {
-            Resposta request = restTemplate.getForObject(apiBaseUrl + "/contato/" + cpf_cnpj + "/json/" + apiKey, Resposta.class);
+            String json = restTemplate.getForObject(apiBaseUrl + "/contato/" + cpf_cnpj + "/json/" + apiKey, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            RespostaResponse response = objectMapper.readValue(json, RespostaResponse.class);
 
-            return request;
+            return response;
 
+        } catch (JsonProcessingException e) {
+            throw new ApiContatoException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
             throw new ApiContatoException("Erro ao chamar API", e);
         }
@@ -75,9 +79,9 @@ public class ContatoServiceImpl implements ContatoService {
             String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaRequest result = objectMapper.readValue(json, RespostaRequest.class);
+            RespostaRequest response = objectMapper.readValue(json, RespostaRequest.class);
 
-            return result;
+            return response;
 
         } catch (JsonProcessingException e) {
             throw new ApiContatoException("Erro ao processar JSON", e);

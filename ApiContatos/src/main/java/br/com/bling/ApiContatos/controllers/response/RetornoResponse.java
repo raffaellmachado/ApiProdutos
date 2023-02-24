@@ -6,14 +6,14 @@ import lombok.Data;
 import java.util.ArrayList;
 
 @Data
-public class Retorno {
+public class RetornoResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public ArrayList<Contatos> contatos;
 
     @Data
     public static class Contatos {
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public Contato contato;
+        public ContatoResponse contato;
     }
 
 }

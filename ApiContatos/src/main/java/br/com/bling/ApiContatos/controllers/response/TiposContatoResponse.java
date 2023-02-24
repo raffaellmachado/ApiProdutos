@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
-public class TiposContato {
+public class TiposContatoResponse {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public TipoContato tipoContato;
+    public TipoContatoResponse tipoContato;
 }

@@ -1,15 +1,15 @@
 package br.com.bling.ApiContatos.service;
 
 import br.com.bling.ApiContatos.controllers.request.RespostaRequest;
-import br.com.bling.ApiContatos.controllers.response.Resposta;
+import br.com.bling.ApiContatos.controllers.response.RespostaResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ContatoService {
 
-    public Resposta getAllContacts();
+    public RespostaResponse getAllContacts();
 
-    public Resposta getContactsById(@PathVariable String cpf_cnpj);
+    public RespostaResponse getContactsById(@PathVariable String cpf_cnpj);
 
     public RespostaRequest createContact(@RequestBody String xml);
 
