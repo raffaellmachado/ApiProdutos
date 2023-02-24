@@ -1,7 +1,6 @@
 package br.com.bling.ApiDeposito.services;
 
 
-import br.com.bling.ApiDeposito.controllers.request.DepositoRequest;
 import br.com.bling.ApiDeposito.controllers.request.RespostaRequest;
 import br.com.bling.ApiDeposito.controllers.response.RespostaResponse;
 import org.springframework.web.bind.annotation.PathVariable;

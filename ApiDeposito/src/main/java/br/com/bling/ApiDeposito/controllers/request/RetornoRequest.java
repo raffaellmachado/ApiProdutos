@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class RetornoRequest {
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public List<Deposito> depositos;
+    public ArrayList<ArrayList<Deposito>> depositos;
 
     @Data
     public static class Deposito {

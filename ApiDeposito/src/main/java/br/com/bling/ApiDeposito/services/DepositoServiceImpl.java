@@ -1,10 +1,9 @@
 package br.com.bling.ApiDeposito.services;
 
 
-import br.com.bling.ApiDeposito.controllers.request.DepositoRequest;
 import br.com.bling.ApiDeposito.controllers.request.RespostaRequest;
-import br.com.bling.ApiDeposito.exceptions.ApiDepositoException;
 import br.com.bling.ApiDeposito.controllers.response.RespostaResponse;
+import br.com.bling.ApiDeposito.exceptions.ApiDepositoException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class DepositoServiceImpl implements DepositoService{
+public class DepositoServiceImpl implements DepositoService {
 
     @Value("${external.api.url}")
     private String apiBaseUrl;
@@ -37,7 +36,6 @@ public class DepositoServiceImpl implements DepositoService{
         try {
             String request = restTemplate.getForObject(apiBaseUrl + "/depositos/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-
             RespostaResponse response =  objectMapper.readValue(request, RespostaResponse.class);
 
             return response;
@@ -57,7 +55,6 @@ public class DepositoServiceImpl implements DepositoService{
         try {
             String request = restTemplate.getForObject(apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-
             RespostaResponse response = objectMapper.readValue(request, RespostaResponse.class);
 
             return response;
