@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
-public class Fornecedore {
+public class FornecedoreResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public ProdutoFornecedor2 produtoFornecedor;
+    public ProdutoFornecedor2Response produtoFornecedor;
 }

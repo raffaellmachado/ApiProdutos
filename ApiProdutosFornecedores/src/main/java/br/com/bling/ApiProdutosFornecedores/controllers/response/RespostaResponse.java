@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class Resposta {
+public class RespostaResponse {
 
 	@JsonProperty("retorno")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public Retorno retorno;
+	public RetornoResponse retorno;
 }

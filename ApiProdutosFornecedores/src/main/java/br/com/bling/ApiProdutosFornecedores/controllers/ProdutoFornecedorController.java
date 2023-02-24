@@ -1,8 +1,10 @@
 package br.com.bling.ApiProdutosFornecedores.controllers;
 
 import br.com.bling.ApiProdutosFornecedores.controllers.request.RespostaRequest;
+import br.com.bling.ApiProdutosFornecedores.controllers.response.FornecedoreResponse;
+import br.com.bling.ApiProdutosFornecedores.controllers.response.RespostaResponse;
+import br.com.bling.ApiProdutosFornecedores.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutosFornecedores.exceptions.*;
-import br.com.bling.ApiProdutosFornecedores.controllers.response.Resposta;
 import br.com.bling.ApiProdutosFornecedores.service.ProdutoFornecedorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,161 +27,84 @@ public class ProdutoFornecedorController {
     private String codigo;
 
     /**
-     * GET "BUSCAR LISTA DE PRODUTOS".
+     * GET "BUSCAR LISTA DE PRODUTOS FORNECEDORES".
      */
     @GetMapping("/produtosfornecedores")
     @ApiOperation(value = "Retorna uma lista de produtos fornecedors")
-    public Resposta getAllProducts() {
-        Resposta request = produtoFornecedorService.getAllProducts();
-
+    public RespostaResponse getAllProducts() {
+        RespostaResponse request = produtoFornecedorService.getAllProducts();
+        try {
         if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
-            throw new ProdutoFornecedorListaNaoEncontradoException();
+            throw new ApiProdutoFornecedorException("Não foi possível localizar a lista de produto fornecedor");
         }
-//
-//        for (Retorno.Produtosfornecedore listaProdutos : request.getRetorno().getProdutosfornecedores()) {
-//            System.out.println("-----------------------------------------------------------------------------------");
-//            System.out.println("Id Produto: " + listaProdutos.produtofornecedores.id);
-//            System.out.println("codigo: " + listaProdutos.produto.codigo);
-//            System.out.println("descricao: " + listaProdutos.produto.descricao);
-//            System.out.println("tipo: " + listaProdutos.produto.tipo);
-//            System.out.println("situacao: " + listaProdutos.produto.situacao);
-//            System.out.println("unidade: " + listaProdutos.produto.unidade);
-//            System.out.println("preco: " + listaProdutos.produto.preco);
-//            System.out.println("precoCusto: " + listaProdutos.produto.precoCusto);
-//            System.out.println("descricaoCurta: " + listaProdutos.produto.descricaoCurta);
-//            System.out.println("descricaoComplementar: " + listaProdutos.produto.descricaoComplementar);
-//            System.out.println("dataInclusao: " + listaProdutos.produto.dataInclusao);
-//            System.out.println("dataAlteracao: " + listaProdutos.produto.dataAlteracao);
-//            System.out.println("imageThumbnail: " + listaProdutos.produto.imageThumbnail);
-//            System.out.println("urlVideo: " + listaProdutos.produto.urlVideo);
-//            System.out.println("nomeFornecedor: " + listaProdutos.produto.nomeFornecedor);
-//            System.out.println("codigoFabricante: " + listaProdutos.produto.codigoFabricante);
-//            System.out.println("marca: " + listaProdutos.produto.marca);
-//            System.out.println("class_fiscal: " + listaProdutos.produto.class_fiscal);
-//            System.out.println("cest: " + listaProdutos.produto.cest);
-//            System.out.println("origem: " + listaProdutos.produto.origem);
-//            System.out.println("idGrupoProduto: " + listaProdutos.produto.idGrupoProduto);
-//            System.out.println("linkExterno: " + listaProdutos.produto.linkExterno);
-//            System.out.println("observacoes: " + listaProdutos.produto.observacoes);
-//            System.out.println("grupoProduto: " + listaProdutos.produto.grupoProduto);
-//            System.out.println("garantia: " + listaProdutos.produto.garantia);
-//            System.out.println("descricaoFornecedor: " + listaProdutos.produto.descricaoFornecedor);
-//            System.out.println("idFabricante: " + listaProdutos.produto.idFabricante);
-//            System.out.println("categoria: " + listaProdutos.produto.categoria);
-//            System.out.println("pesoLiq: " + listaProdutos.produto.pesoLiq);
-//            System.out.println("pesoBruto: " + listaProdutos.produto.pesoBruto);
-//            System.out.println("estoqueMinimo: " + listaProdutos.produto.estoqueMinimo);
-//            System.out.println("estoqueMaximo: " + listaProdutos.produto.estoqueMaximo);
-//            System.out.println("gtin: " + listaProdutos.produto.gtin);
-//            System.out.println("gtinEmbalagem: " + listaProdutos.produto.gtinEmbalagem);
-//            System.out.println("larguraProduto: " + listaProdutos.produto.larguraProduto);
-//            System.out.println("alturaProduto: " + listaProdutos.produto.alturaProduto);
-//            System.out.println("profundidadeProduto: " + listaProdutos.produto.profundidadeProduto);
-//            System.out.println("unidadeMedida: " + listaProdutos.produto.unidadeMedida);
-//            System.out.println("itensPorCaixa: " + listaProdutos.produto.itensPorCaixa);
-//            System.out.println("volumes: " + listaProdutos.produto.volumes);
-//            System.out.println("localizacao: " + listaProdutos.produto.localizacao);
-//            System.out.println("crossdocking: " + listaProdutos.produto.crossdocking);
-//            System.out.println("condicao: " + listaProdutos.produto.condicao);
-//            System.out.println("freteGratis: " + listaProdutos.produto.freteGratis);
-//            System.out.println("producao: " + listaProdutos.produto.producao);
-//            System.out.println("dataValidade: " + listaProdutos.produto.dataValidade);
-//            System.out.println("spedTipoItem: " + listaProdutos.produto.spedTipoItem);
-//            System.out.println("clonarDadosPai: " + listaProdutos.produto.clonarDadosPai);
-//            System.out.println("codigopai: " + listaProdutos.produto.codigopai);
-//            System.out.println("variacoes: " + listaProdutos.produto.variacoes);
-//            System.out.println("imagem: " + listaProdutos.produto.imagem);
-//            System.out.println("depositos: " + listaProdutos.produto.depositos);
-//            System.out.println("produtoLoja: " + listaProdutos.produto.produtoLoja);
-//            System.out.println("estoqueAtual: " + listaProdutos.produto.estoqueAtual);
-//            System.out.println("idCategoria: " + listaProdutos.produto.idCategoria);
-//            System.out.println("-----------------------------------------------------------------------------------");
-//        }
+
+        for (RetornoResponse.Produtosfornecedores listaProdutoFornecedor : request.getRetorno().getProdutosfornecedores()) {
+            System.out.println("-----------------------------------------------------------------------------------");
+            System.out.println("Id Produto: " + listaProdutoFornecedor.produtofornecedores.idProduto);
+            System.out.println("-----------------------------------------------------------------------------------");
+
+            for (FornecedoreResponse fornecedor : listaProdutoFornecedor.produtofornecedores.fornecedores) {
+                System.out.println("idProdutoFornecedor: " + fornecedor.produtoFornecedor.idProdutoFornecedor);
+                System.out.println("idFornecedor " + fornecedor.produtoFornecedor.idFornecedor);
+                System.out.println("produtoDescricao: " + fornecedor.produtoFornecedor.produtoDescricao);
+                System.out.println("produtoCodigo: " + fornecedor.produtoFornecedor.produtoCodigo);
+                System.out.println("precoCompra: " + fornecedor.produtoFornecedor.precoCompra);
+                System.out.println("precoCusto: " + fornecedor.produtoFornecedor.precoCusto);
+                System.out.println("produtoGarantia : " + fornecedor.produtoFornecedor.produtoGarantia);
+                System.out.println("padrao: " + fornecedor.produtoFornecedor.padrao);
+                System.out.println("-----------------------------------------------------------------------------------");
+            }
+        }
 
         System.out.println(request);
 
         return request;
+    } catch (Exception e) {
+        throw new ProdutoFornecedorListaNaoEncontradoException();
+    }
     }
 
     /**
-     * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU)".
+     * GET "BUSCAR UM PRODUTO FORNECEDOR PELO ID".
      */
     @GetMapping("/produtosfornecedores/{id}")
     @ApiOperation(value = "Retorna um produto fornecedor pelo ID")
-    public Resposta getProductByCode(@PathVariable String id) {
-        Resposta request = produtoFornecedorService.getProductByCode(id);
+    public RespostaResponse getProducId(@PathVariable String id) {
+        try {
+            RespostaResponse request = produtoFornecedorService.getProducId(id);
 
-        if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
+            if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
+                throw new ApiProdutoFornecedorException("Não foi possível localizar produto fornecedor");
+            }
+
+            for (RetornoResponse.Produtosfornecedores listaProdutos : request.getRetorno().getProdutosfornecedores()) {
+                System.out.println("-----------------------------------------------------------------------------------");
+                System.out.println("Id Produto: " + listaProdutos.produtofornecedores.idProduto);
+                System.out.println("-----------------------------------------------------------------------------------");
+
+                for (FornecedoreResponse fornecedor : listaProdutos.produtofornecedores.fornecedores) {
+                    System.out.println("idProdutoFornecedor: " + fornecedor.produtoFornecedor.idProdutoFornecedor);
+                    System.out.println("idFornecedor " + fornecedor.produtoFornecedor.idFornecedor);
+                    System.out.println("produtoDescricao: " + fornecedor.produtoFornecedor.produtoDescricao);
+                    System.out.println("produtoCodigo: " + fornecedor.produtoFornecedor.produtoCodigo);
+                    System.out.println("precoCompra: " + fornecedor.produtoFornecedor.precoCompra);
+                    System.out.println("precoCusto: " + fornecedor.produtoFornecedor.precoCusto);
+                    System.out.println("produtoGarantia : " + fornecedor.produtoFornecedor.produtoGarantia);
+                    System.out.println("padrao: " + fornecedor.produtoFornecedor.padrao);
+                    System.out.println("-----------------------------------------------------------------------------------");
+                }
+            }
+
+            System.out.println(request);
+
+            return request;
+        } catch (Exception e) {
             throw new IdProdutoFornecedorNaoEncontradoException(id);
         }
-//
-//        for (Retorno.Produtos listaProdutos : request.getRetorno().getProdutos()) {
-//            System.out.println("-----------------------------------------------------------------------------------");
-//            System.out.println("Id Produto: " + listaProdutos.produto.id);
-//            System.out.println("codigo: " + listaProdutos.produto.codigo);
-//            System.out.println("descricao: " + listaProdutos.produto.descricao);
-//            System.out.println("tipo: " + listaProdutos.produto.tipo);
-//            System.out.println("situacao: " + listaProdutos.produto.situacao);
-//            System.out.println("unidade: " + listaProdutos.produto.unidade);
-//            System.out.println("preco: " + listaProdutos.produto.preco);
-//            System.out.println("precoCusto: " + listaProdutos.produto.precoCusto);
-//            System.out.println("descricaoCurta: " + listaProdutos.produto.descricaoCurta);
-//            System.out.println("descricaoComplementar: " + listaProdutos.produto.descricaoComplementar);
-//            System.out.println("dataInclusao: " + listaProdutos.produto.dataInclusao);
-//            System.out.println("dataAlteracao: " + listaProdutos.produto.dataAlteracao);
-//            System.out.println("imageThumbnail: " + listaProdutos.produto.imageThumbnail);
-//            System.out.println("urlVideo: " + listaProdutos.produto.urlVideo);
-//            System.out.println("nomeFornecedor: " + listaProdutos.produto.nomeFornecedor);
-//            System.out.println("codigoFabricante: " + listaProdutos.produto.codigoFabricante);
-//            System.out.println("marca: " + listaProdutos.produto.marca);
-//            System.out.println("class_fiscal: " + listaProdutos.produto.class_fiscal);
-//            System.out.println("cest: " + listaProdutos.produto.cest);
-//            System.out.println("origem: " + listaProdutos.produto.origem);
-//            System.out.println("idGrupoProduto: " + listaProdutos.produto.idGrupoProduto);
-//            System.out.println("linkExterno: " + listaProdutos.produto.linkExterno);
-//            System.out.println("observacoes: " + listaProdutos.produto.observacoes);
-//            System.out.println("grupoProduto: " + listaProdutos.produto.grupoProduto);
-//            System.out.println("garantia: " + listaProdutos.produto.garantia);
-//            System.out.println("descricaoFornecedor: " + listaProdutos.produto.descricaoFornecedor);
-//            System.out.println("idFabricante: " + listaProdutos.produto.idFabricante);
-//            System.out.println("categoria: " + listaProdutos.produto.categoria);
-//            System.out.println("pesoLiq: " + listaProdutos.produto.pesoLiq);
-//            System.out.println("pesoBruto: " + listaProdutos.produto.pesoBruto);
-//            System.out.println("estoqueMinimo: " + listaProdutos.produto.estoqueMinimo);
-//            System.out.println("estoqueMaximo: " + listaProdutos.produto.estoqueMaximo);
-//            System.out.println("gtin: " + listaProdutos.produto.gtin);
-//            System.out.println("gtinEmbalagem: " + listaProdutos.produto.gtinEmbalagem);
-//            System.out.println("larguraProduto: " + listaProdutos.produto.larguraProduto);
-//            System.out.println("alturaProduto: " + listaProdutos.produto.alturaProduto);
-//            System.out.println("profundidadeProduto: " + listaProdutos.produto.profundidadeProduto);
-//            System.out.println("unidadeMedida: " + listaProdutos.produto.unidadeMedida);
-//            System.out.println("itensPorCaixa: " + listaProdutos.produto.itensPorCaixa);
-//            System.out.println("volumes: " + listaProdutos.produto.volumes);
-//            System.out.println("localizacao: " + listaProdutos.produto.localizacao);
-//            System.out.println("crossdocking: " + listaProdutos.produto.crossdocking);
-//            System.out.println("condicao: " + listaProdutos.produto.condicao);
-//            System.out.println("freteGratis: " + listaProdutos.produto.freteGratis);
-//            System.out.println("producao: " + listaProdutos.produto.producao);
-//            System.out.println("dataValidade: " + listaProdutos.produto.dataValidade);
-//            System.out.println("spedTipoItem: " + listaProdutos.produto.spedTipoItem);
-//            System.out.println("clonarDadosPai: " + listaProdutos.produto.clonarDadosPai);
-//            System.out.println("codigopai: " + listaProdutos.produto.codigopai);
-//            System.out.println("variacoes: " + listaProdutos.produto.variacoes);
-//            System.out.println("imagem: " + listaProdutos.produto.imagem);
-//            System.out.println("depositos: " + listaProdutos.produto.depositos);
-//            System.out.println("produtoLoja: " + listaProdutos.produto.produtoLoja);
-//            System.out.println("estoqueAtual: " + listaProdutos.produto.estoqueAtual);
-//            System.out.println("idCategoria: " + listaProdutos.produto.idCategoria);
-//            System.out.println("-----------------------------------------------------------------------------------");
-//        }
-
-        System.out.println(request);
-
-        return request;
     }
 
     /**
-     * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML. ----- CORRIGIR, RETORNANDO NULL NO POSTMAN, POREM ESTA CADASTRANDO NORMAL NO BLING
+     * POST "CADASTRAR UM NOVO PRODUTO FORNECEDOR" UTILIZANDO XML.
      */
     @PostMapping(path = "/cadastrarprodutofornecedor", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo produto fornecedor")
@@ -187,28 +112,28 @@ public class ProdutoFornecedorController {
         try {
             RespostaRequest request = produtoFornecedorService.createProduct(xml);
 
-            if (request.toString() == null) {
-                throw new ApiProdutoFornecedorException("Não foi possível criar o produto", null);
+            if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
+                throw new ApiProdutoFornecedorException("Não foi possível criar o produto");
             }
             System.out.println("Produto cadastrado com sucesso!");
 
             return request;
         } catch (Exception e) {
-            throw new ProdutoFornecedorCadastroException("Erro ao cadastrar produto: " + e.getMessage());
+            throw new ProdutoFornecedorCadastroException();
         }
     }
 
     /**
-     * PUT "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
+     * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML.
      */
     @PutMapping(path = "/atualizarprodutofornecedor/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto fornecedor existente")
-    public Resposta updateProduct(@RequestBody String xml, @PathVariable String id) {
+    public RespostaResponse updateProduct(@RequestBody String xml, @PathVariable String id) {
         try {
-            Resposta request = produtoFornecedorService.updateProduct(xml, id);
+            RespostaResponse request = produtoFornecedorService.updateProduct(xml, id);
 
-            if (request.retorno.produtosfornecedores == null) {
-                throw new ApiProdutoFornecedorException(id, null);
+            if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
+                throw new ApiProdutoFornecedorException(id);
             }
             System.out.println("Produto cadastrado com sucesso!");
 
@@ -217,5 +142,4 @@ public class ProdutoFornecedorController {
             throw new ProdutoFornecedorAtualizarException(id);
         }
     }
-
 }

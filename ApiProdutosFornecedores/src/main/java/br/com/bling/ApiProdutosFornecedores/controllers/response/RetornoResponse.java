@@ -6,13 +6,13 @@ import lombok.Data;
 import java.util.ArrayList;
 
 @Data
-public class Retorno {
+public class RetornoResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public ArrayList<Produtosfornecedores> produtosfornecedores;
 
     @Data
     public static class Produtosfornecedores {
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public Produtofornecedor produtofornecedores;
+        public ProdutofornecedorResponse produtofornecedores;
     }
 }
