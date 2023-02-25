@@ -1,4 +1,4 @@
-package br.com.bling.ApiProdutos.models;
+package br.com.bling.ApiProdutos.controllers.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -6,9 +6,9 @@ import lombok.Data;
 import java.util.ArrayList;
 
 @Data
-public class ProdutoLoja {
+public class ProdutoLojaRequest {
 
-    public Preco preco;
+    public PrecoRequest preco;
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public ArrayList<Categoria> categoria;
+    public ArrayList<CategoriaRequest> categoria;
 }

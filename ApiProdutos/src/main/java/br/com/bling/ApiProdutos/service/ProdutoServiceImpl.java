@@ -1,8 +1,9 @@
 package br.com.bling.ApiProdutos.service;
 
 
+import br.com.bling.ApiProdutos.controllers.request.RespostaRequest;
 import br.com.bling.ApiProdutos.exceptions.ApiProdutoException;
-import br.com.bling.ApiProdutos.models.Resposta;
+import br.com.bling.ApiProdutos.controllers.response.RespostaResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +34,11 @@ public class ProdutoServiceImpl implements ProdutoService {
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
     @Override
-    public Resposta getAllProducts() throws ApiProdutoException {
+    public RespostaResponse getAllProducts() throws ApiProdutoException {
         try {
             String json = restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            Resposta request =  objectMapper.readValue(json, Resposta.class);
+            RespostaResponse request =  objectMapper.readValue(json, RespostaResponse.class);
 
             return request;
 
@@ -52,9 +53,9 @@ public class ProdutoServiceImpl implements ProdutoService {
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU)".
      */
     @Override
-    public Resposta getProductByCode(String codigo) throws ApiProdutoException {
+    public RespostaResponse getProductByCode(String codigo) throws ApiProdutoException {
         try {
-            Resposta request = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, Resposta.class);
+            RespostaResponse request = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, RespostaResponse.class);
 
             return request;
 
@@ -67,9 +68,9 @@ public class ProdutoServiceImpl implements ProdutoService {
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU) E NOME DO FORNECEDOR".
      */
     @Override
-    public Resposta getProductByCodeSupplier(String codigo, String nomeFornecedor) throws ApiProdutoException {
+    public RespostaResponse getProductByCodeSupplier(String codigo, String nomeFornecedor) throws ApiProdutoException {
         try {
-            Resposta request = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + nomeFornecedor + "/json/" + apiKey, Resposta.class);
+            RespostaResponse request = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + nomeFornecedor + "/json/" + apiKey, RespostaResponse.class);
 
             return request;
 
@@ -95,7 +96,7 @@ public class ProdutoServiceImpl implements ProdutoService {
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
     @Override
-    public Resposta createProduct(String xml) throws ApiProdutoException {
+    public RespostaRequest createProduct(String xml) throws ApiProdutoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -105,7 +106,7 @@ public class ProdutoServiceImpl implements ProdutoService {
             String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            Resposta result = objectMapper.readValue(json, Resposta.class);
+            RespostaRequest result = objectMapper.readValue(json, RespostaRequest.class);
 
             return result;
 
@@ -120,7 +121,7 @@ public class ProdutoServiceImpl implements ProdutoService {
      * POST "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
      */
     @Override
-    public Resposta updateProduct(String xml, String codigo) throws ApiProdutoException {
+    public RespostaRequest updateProduct(String xml, String codigo) throws ApiProdutoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -130,7 +131,7 @@ public class ProdutoServiceImpl implements ProdutoService {
             String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            Resposta result = objectMapper.readValue(json, Resposta.class);
+            RespostaRequest result = objectMapper.readValue(json, RespostaRequest.class);
 
             return result;
 

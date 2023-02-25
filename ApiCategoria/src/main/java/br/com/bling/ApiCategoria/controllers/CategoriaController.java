@@ -112,7 +112,7 @@ public class CategoriaController {
     @ApiOperation(value = "Cadastrar uma categoria")
     public RespostaRequest updateCategory(@RequestBody String xml, @PathVariable String idCategoria) {
         try {
-            RespostaRequest request = categoriaService.updateCategory(xml, id);
+            RespostaRequest request = categoriaService.updateCategory(xml, idCategoria);
 
             if (request.retorno.categorias == null || request.getRetorno() == null) {
                 throw new ApiCategoriaException("Não foi possível atualizar a categoria");
@@ -124,5 +124,4 @@ public class CategoriaController {
             throw new CategoriaCadastroException();
         }
     }
-
 }

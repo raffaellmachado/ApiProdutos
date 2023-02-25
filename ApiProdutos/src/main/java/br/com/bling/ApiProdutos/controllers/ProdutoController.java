@@ -1,8 +1,9 @@
 package br.com.bling.ApiProdutos.controllers;
 
+import br.com.bling.ApiProdutos.controllers.request.RespostaRequest;
 import br.com.bling.ApiProdutos.exceptions.*;
-import br.com.bling.ApiProdutos.models.Resposta;
-import br.com.bling.ApiProdutos.models.Retorno;
+import br.com.bling.ApiProdutos.controllers.response.RespostaResponse;
+import br.com.bling.ApiProdutos.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutos.service.ProdutoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,14 +30,14 @@ public class ProdutoController {
      */
     @GetMapping("/produtos")
     @ApiOperation(value = "Retorna uma lista de produtos")
-    public Resposta getAllProducts() {
-        Resposta request = produtoService.getAllProducts();
+    public RespostaResponse getAllProducts() {
+        RespostaResponse request = produtoService.getAllProducts();
 
         if (request.retorno.produtos == null || request.getRetorno() == null) {
             throw new ProdutoListaNaoEncontradoException();
         }
 
-        for (Retorno.Produtos listaProdutos : request.getRetorno().getProdutos()) {
+        for (RetornoResponse.Produtos listaProdutos : request.getRetorno().getProdutos()) {
             System.out.println("-----------------------------------------------------------------------------------");
             System.out.println("Id Produto: " + listaProdutos.produto.id);
             System.out.println("codigo: " + listaProdutos.produto.codigo);
@@ -106,14 +107,14 @@ public class ProdutoController {
      */
     @GetMapping("/produto/{codigo}")
     @ApiOperation(value = "Retorna um produto pelo código")
-    public Resposta getProductByCode(@PathVariable String codigo) {
-        Resposta request = produtoService.getProductByCode(codigo);
+    public RespostaResponse getProductByCode(@PathVariable String codigo) {
+        RespostaResponse request = produtoService.getProductByCode(codigo);
 
         if (request.retorno.produtos == null || request.getRetorno() == null) {
             throw new ProdutoCodigoNaoEncontradoException(codigo);
         }
 
-        for (Retorno.Produtos listaProdutos : request.getRetorno().getProdutos()) {
+        for (RetornoResponse.Produtos listaProdutos : request.getRetorno().getProdutos()) {
             System.out.println("-----------------------------------------------------------------------------------");
             System.out.println("Id Produto: " + listaProdutos.produto.id);
             System.out.println("codigo: " + listaProdutos.produto.codigo);
@@ -183,14 +184,14 @@ public class ProdutoController {
      */
     @GetMapping("/produto/{codigo}/{id_fornecedor}")
     @ApiOperation(value = "Retorna um produto pelo código e nome do fornecedor")
-    public Resposta getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String id_fornecedor) {
-        Resposta request = produtoService.getProductByCodeSupplier(codigo, id_fornecedor);
+    public RespostaResponse getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String id_fornecedor) {
+        RespostaResponse request = produtoService.getProductByCodeSupplier(codigo, id_fornecedor);
 
         if (request.retorno.produtos == null || request.getRetorno() == null) {
             throw new ProdutoCodigoNaoEncontradoException(codigo);
         }
 
-        for (Retorno.Produtos listaProdutos : request.getRetorno().getProdutos()) {
+        for (RetornoResponse.Produtos listaProdutos : request.getRetorno().getProdutos()) {
             System.out.println("-----------------------------------------------------------------------------------");
             System.out.println("Id Produto: " + listaProdutos.produto.id);
             System.out.println("codigo: " + listaProdutos.produto.codigo);
@@ -260,7 +261,7 @@ public class ProdutoController {
     @DeleteMapping("/produto/{codigo}")
     @ApiOperation(value = "Deletar um produto pelo código")
     public String deleteProductByCode(@PathVariable String codigo) {
-        Resposta request = produtoService.getProductByCode(codigo);
+        RespostaResponse request = produtoService.getProductByCode(codigo);
 
         if (request.retorno.produtos == null || request.getRetorno() == null) {
             throw new ProdutoNaoEncontradoExclusaoException(codigo);
@@ -276,9 +277,9 @@ public class ProdutoController {
      */
     @PostMapping(path = "/cadastrarproduto", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo produto")
-    public Resposta createProduct(@RequestBody String xml) {
+    public RespostaRequest createProduct(@RequestBody String xml) {
         try {
-            Resposta request = produtoService.createProduct(xml);
+            RespostaRequest request = produtoService.createProduct(xml);
 
             if (request.retorno.produtos == null) {
                 throw new ApiProdutoException("Não foi possível criar o produto", null);
@@ -296,9 +297,9 @@ public class ProdutoController {
      */
     @PostMapping(path = "/atualizarproduto/{codigo}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto existente")
-    public Resposta updateProduct(@RequestBody String xml, @PathVariable String codigo) {
+    public RespostaRequest updateProduct(@RequestBody String xml, @PathVariable String codigo) {
         try {
-            Resposta request = produtoService.updateProduct(xml, codigo);
+            RespostaRequest request = produtoService.updateProduct(xml, codigo);
 
             if (request.retorno.produtos == null) {
                 throw new ProdutoAtualizarException(codigo);

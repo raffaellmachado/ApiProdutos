@@ -48,7 +48,7 @@ public class ProdutoRequest {
     @Max(value = 1, message = "Origem do produto")
     private String origem = "9";
     @Max(value = 11, message = "Identificador do grupo do produto")
-    private double idGrupoProduto = 0;
+    private double idGrupoProduto;
     @Size(message = "Condição do produto (Não especificado, Novo, Recondicionado ou Usado)")
     private String condicao = "Não especificado";
     @Max(value = 1, message = "Frete grátis (S para Sim ou N para Não)")
@@ -138,4 +138,6 @@ public class ProdutoRequest {
         @Size(message = "URL da imagem")
         public String url;
     }
+
+    public String estoque;
 }

@@ -1,4 +1,4 @@
-package br.com.bling.ApiProdutos.models;
+package br.com.bling.ApiProdutos.controllers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.ArrayList;
 
 @Data
-public class Produto {
+public class ProdutoResponse {
 
 	public String id;
 
@@ -37,7 +37,7 @@ public class Produto {
 	public String descricaoFornecedor;
 	public String idFabricante;
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public Categoria categoria;
+	public CategoriaResponse categoria;
 	public String pesoLiq;
 	public String pesoBruto;
 	public String estoqueMinimo;
@@ -60,14 +60,14 @@ public class Produto {
 	public String clonarDadosPai;
 	public String codigopai;
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public ArrayList<Variaco> variacoes;
+	public ArrayList<VariacoResponse> variacoes;
 
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public ArrayList<Imagem> imagem;
+	public ArrayList<ImagemResponse> imagem;
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public ArrayList<Deposito> depositos;
-	public ProdutoLoja produtoLoja;
+	public ArrayList<VariacaoResponse.Deposito> depositos;
+	public ProdutoLojaResponse produtoLoja;
 	public int estoqueAtual;
 	public String idCategoria;
 

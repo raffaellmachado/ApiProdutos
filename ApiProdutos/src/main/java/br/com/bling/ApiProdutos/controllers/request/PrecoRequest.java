@@ -1,10 +1,10 @@
-package br.com.bling.ApiProdutos.models;
+package br.com.bling.ApiProdutos.controllers.request;
 
 import lombok.Data;
 
 
 @Data
-public class Preco {
+public class PrecoRequest {
 	public double preco;
 	public double precoPromocional;
 }

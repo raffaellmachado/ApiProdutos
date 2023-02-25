@@ -1,10 +1,10 @@
-package br.com.bling.ApiProdutos.models;
+package br.com.bling.ApiProdutos.controllers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
-public class Variaco {
+public class VariacoResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public Variacao variacao;
+    public VariacaoResponse variacao;
 }

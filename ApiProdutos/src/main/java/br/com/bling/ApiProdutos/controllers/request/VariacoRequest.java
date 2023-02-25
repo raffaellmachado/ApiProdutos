@@ -1,11 +1,10 @@
-package br.com.bling.ApiProdutos.models;
+package br.com.bling.ApiProdutos.controllers.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
-public class Deposito {
+public class VariacoRequest {
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public Deposito deposito;
-
+    public VariacaoRequest variacao;
 }

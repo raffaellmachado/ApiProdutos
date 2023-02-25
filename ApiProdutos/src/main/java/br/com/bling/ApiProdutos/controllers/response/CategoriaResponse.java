@@ -1,9 +1,9 @@
-package br.com.bling.ApiProdutos.models;
+package br.com.bling.ApiProdutos.controllers.response;
 
 import lombok.Data;
 
 @Data
-public class Categoria {
+public class CategoriaResponse {
 
     public String id;
     public String descricao;
