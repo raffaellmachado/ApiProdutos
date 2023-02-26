@@ -141,7 +141,7 @@ public class ContatoController {
     }
 
     /**
-     * PUT "ATUALIZAR CONTATO PELO CPF e CNPJ" UTILIZANDO XML.
+     * PUT "ATUALIZAR CONTATO PELO CPF e CNPJ" UTILIZANDO XML. -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
      */
     @PutMapping(path = "/atualizarcontato/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto existente")

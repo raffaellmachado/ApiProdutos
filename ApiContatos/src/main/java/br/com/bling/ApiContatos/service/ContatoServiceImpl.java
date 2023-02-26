@@ -91,7 +91,7 @@ public class ContatoServiceImpl implements ContatoService {
     }
 
     /**
-     * PUT "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML. --
+     * PUT "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML. -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
      */
     @Override
     public RespostaRequest updateContact(String xml, String id) throws ApiContatoException {
