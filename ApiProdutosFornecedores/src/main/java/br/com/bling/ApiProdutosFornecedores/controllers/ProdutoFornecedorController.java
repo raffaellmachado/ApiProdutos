@@ -67,11 +67,11 @@ public class ProdutoFornecedorController {
     /**
      * GET "BUSCAR UM PRODUTO FORNECEDOR PELO ID".
      */
-    @GetMapping("/produtosfornecedores/{id}")
+    @GetMapping("/produtosfornecedores/{idProdutoFornecedor}")
     @ApiOperation(value = "Retorna um produto fornecedor pelo ID")
-    public RespostaResponse getProducId(@PathVariable String id) {
+    public RespostaResponse getProducId(@PathVariable String idProdutoFornecedor) {
         try {
-            RespostaResponse request = produtoFornecedorService.getProducId(id);
+            RespostaResponse request = produtoFornecedorService.getProducId(idProdutoFornecedor);
 
             if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
                 throw new ApiProdutoFornecedorException("Não foi possível localizar produto fornecedor pelo Id");
@@ -99,7 +99,7 @@ public class ProdutoFornecedorController {
 
             return request;
         } catch (Exception e) {
-            throw new IdProdutoFornecedorNaoEncontradoException(id);
+            throw new IdProdutoFornecedorNaoEncontradoException(idProdutoFornecedor);
         }
     }
 
@@ -124,22 +124,22 @@ public class ProdutoFornecedorController {
     }
 
     /**
-     * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML. --- 404 Not Found: "{"retorno":{"erros":{"erro":{"cod":12,"msg":"Parametro(s) e(sao) invalido(s)"}}}}"
+     * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML. -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
      */
-    @PutMapping(path = "/atualizarprodutofornecedor/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/atualizarprodutofornecedor/{idProdutoFornecedor}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto fornecedor existente")
-    public RespostaRequest updateProduct(@RequestBody String xml, @PathVariable String id) {
+    public RespostaRequest updateProduct(@RequestBody String xml, @PathVariable String idProdutoFornecedor) {
         try {
-            RespostaRequest request = produtoFornecedorService.updateProduct(xml, id);
+            RespostaRequest request = produtoFornecedorService.updateProduct(xml, idProdutoFornecedor);
 
             if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
-                throw new ApiProdutoFornecedorException(id);
+                throw new ApiProdutoFornecedorException(idProdutoFornecedor);
             }
             System.out.println("Produto cadastrado com sucesso!");
 
             return request;
         } catch (Exception e) {
-            throw new ProdutoFornecedorAtualizarException(id);
+            throw new ProdutoFornecedorAtualizarException(idProdutoFornecedor);
         }
     }
 }

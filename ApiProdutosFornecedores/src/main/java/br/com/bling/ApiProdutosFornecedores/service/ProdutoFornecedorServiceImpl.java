@@ -7,9 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -52,9 +50,9 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
      * GET "BUSCAR UM PRODUTO FORNECEDOR PELO ID".
      */
     @Override
-    public RespostaResponse getProducId(String id) throws ApiProdutoFornecedorException {
+    public RespostaResponse getProducId(String idProdutoFornecedor) throws ApiProdutoFornecedorException {
         try {
-            String request = restTemplate.getForObject(apiBaseUrl + "/produtofornecedor/" + id + "/json/" + apiKey, String.class);
+            String request = restTemplate.getForObject(apiBaseUrl + "/produtofornecedor/" + idProdutoFornecedor + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
             RespostaResponse response =  objectMapper.readValue(request, RespostaResponse.class);
 
@@ -93,20 +91,20 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
     }
 
     /**
-     * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML. --- ERRO 404 Not Found: "{"retorno":{"erros":{"erro":{"cod":12,"msg":"Parametro(s) e(sao) invalido(s)"}}}}"
+     * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML. -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
      */
     @Override
-    public RespostaRequest updateProduct(String xml, String id) throws ApiProdutoFornecedorException {
+    public RespostaRequest updateProduct(String xml, String idProdutoFornecedor) throws ApiProdutoFornecedorException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url  = apiBaseUrl + "/produtofornecedor/" + id + "/json/" + apiKey + apiXmlParam + xml;
-            String json = restTemplate.postForObject(url, request, String.class);
+            String url  = apiBaseUrl + "/produtofornecedor/" + idProdutoFornecedor + "/json/" + apiKey + apiXmlParam + xml;
+            ResponseEntity<String> json = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaRequest response = objectMapper.readValue(json, RespostaRequest.class);
+            RespostaRequest response = objectMapper.readValue(json.getBody(), RespostaRequest.class);
 
             return response;
 

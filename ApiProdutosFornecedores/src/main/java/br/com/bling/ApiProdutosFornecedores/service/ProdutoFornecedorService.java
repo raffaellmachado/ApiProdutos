@@ -9,9 +9,9 @@ public interface ProdutoFornecedorService {
 
     public RespostaResponse getAllProducts();
 
-    public RespostaResponse getProducId(@PathVariable String id);
+    public RespostaResponse getProducId(@PathVariable String idProdutoFornecedor);
 
     public RespostaRequest createProduct(@RequestBody String xml);
 
-    public RespostaRequest updateProduct(@RequestBody String xml, @PathVariable String id);
+    public RespostaRequest updateProduct(@RequestBody String xml, @PathVariable String idProdutoFornecedor);
 }
