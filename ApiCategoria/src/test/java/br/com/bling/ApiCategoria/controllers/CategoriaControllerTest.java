@@ -71,12 +71,15 @@ class CategoriaControllerTest {
 
         RespostaResponse resposta = new RespostaResponse();
         RetornoResponse retorno = new RetornoResponse();
+
         ArrayList<RetornoResponse.Categorias> categorias = new ArrayList<>();
         RetornoResponse.Categorias categoria = new RetornoResponse.Categorias();
+
         categoria.categoria = new CategoriaResponse();
         categoria.categoria.id = idCategoria;
         categoria.categoria.descricao = "Categoria 1";
         categoria.categoria.idCategoriaPai = Integer.parseInt("456");
+
         categorias.add(categoria);
         retorno.setCategorias(categorias);
         resposta.setRetorno(retorno);
@@ -84,7 +87,6 @@ class CategoriaControllerTest {
         when(categoriaService.getCategoryByIdCategoria(idCategoria)).thenReturn(resposta);
 
         RespostaResponse result = categoriaController.getCategoryByIdCategory(idCategoria);
-
         assertEquals(resposta, result);
     }
 

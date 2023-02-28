@@ -23,6 +23,7 @@ class DepositoServiceImplTest {
 
     @Mock
     DepositoService categoriaService;
+
     @InjectMocks
     DepositoServiceImpl depositoServiceImpl;
 
