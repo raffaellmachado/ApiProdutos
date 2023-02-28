@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestClientException;
@@ -34,7 +35,7 @@ class DepositoServiceImplTest {
     void testGetAllDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\": {\"depositos\": [{\"deposito\": {\"id\": \"01\", \"situacao\": \"Deposito 1\"}}, {\"deposito\": {\"id\": \"02\", \"situacao\": \"Deposito 2\"}}]}}";
-        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
+        Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
         RespostaResponse result = depositoServiceImpl.getAllDeposit();
@@ -53,7 +54,7 @@ class DepositoServiceImplTest {
     void testGetDepositByIdDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"14886963547\",\"descricao\":\"Geral\",\"situacao\":\"Ativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
-        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
+        Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
         RespostaResponse result = depositoServiceImpl.getDepositByIdDeposit("idDeposito");
@@ -72,7 +73,7 @@ class DepositoServiceImplTest {
     void testCreateDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"14886963547\",\"descricao\":\"Geral\",\"situacao\":\"Ativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
-        when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+        Mockito.when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
         RespostaRequest result = depositoServiceImpl.createDeposit("xml");
