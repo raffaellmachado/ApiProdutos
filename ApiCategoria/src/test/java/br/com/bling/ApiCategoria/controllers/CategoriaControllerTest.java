@@ -1,13 +1,10 @@
 package br.com.bling.ApiCategoria.controllers;
 
-import br.com.bling.ApiCategoria.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategoria.controllers.request.RespostaRequest;
-import br.com.bling.ApiCategoria.controllers.request.RetornoRequest;
 import br.com.bling.ApiCategoria.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategoria.service.CategoriaService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,10 +12,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class CategoriaControllerTest {
     @Mock

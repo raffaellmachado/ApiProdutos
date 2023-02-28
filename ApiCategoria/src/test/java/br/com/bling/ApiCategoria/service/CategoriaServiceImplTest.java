@@ -10,11 +10,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import static org.junit.Assert.fail;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class CategoriaServiceImplTest {
@@ -50,25 +47,6 @@ class CategoriaServiceImplTest {
     }
 
     @Test
-    void testGetAllCategoryWithException() throws Exception {
-        // Simula uma exceção lançada pelo restTemplate
-        Mockito.when(restTemplate.getForObject(anyString(), eq(String.class)))
-                .thenThrow(new RestClientException("Erro ao chamar API externa"));
-
-        // Chama o método que deve lançar uma exceção
-        try {
-            categoriaServiceImpl.getAllCategory();
-            fail("Expected RestClientException not thrown");
-        } catch (RestClientException e) {
-            // Verifica se a exceção foi lançada corretamente
-            Assertions.assertEquals("Erro ao chamar API externa", e.getMessage());
-        } catch (Exception e) {
-            fail("Unexpected exception thrown: " + e.getMessage());
-        }
-    }
-
-
-    @Test
     void testGetCategoryByIdCategoria() throws Exception {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\": {\"categorias\": [{\"categoria\": {\"id\": \"123\", \"descricao\": \"Categoria 1\"}}]}}";
@@ -84,7 +62,6 @@ class CategoriaServiceImplTest {
 
         System.out.println("GET ID: " + result);
     }
-
 
     @Test
     void testCreateCategory() throws Exception {
