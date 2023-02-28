@@ -95,9 +95,9 @@ public class CategoriaController {
         try {
             RespostaRequest request = categoriaService.createCategory(xml);
 
-            if (request.retorno.categorias == null || request.getRetorno() == null) {
-                throw new ApiCategoriaException("Não foi possível cadastrar a categoria");
-            }
+//            if (request.retorno.categorias == null || request.getRetorno() == null) {
+//                throw new ApiCategoriaException("Não foi possível cadastrar a categoria");
+//            }
 
             return request;
         } catch (Exception e) {

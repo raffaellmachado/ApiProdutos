@@ -5,6 +5,7 @@ import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
 import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -13,7 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class CategoriaServiceImpl implements CategoriaService{
+public class CategoriaServiceImpl implements CategoriaService {
 
     @Value("${external.api.url}")
     private String apiBaseUrl;
@@ -52,6 +53,7 @@ public class CategoriaServiceImpl implements CategoriaService{
         }
 
     }
+
     /**
      * GET "BUSCA CATEGORIA PELO IDCATEGORIA".
      */
@@ -83,7 +85,7 @@ public class CategoriaServiceImpl implements CategoriaService{
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
             String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xml;
-            String json =  restTemplate.postForObject(url, request, String.class);
+            String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
             RespostaRequest response = objectMapper.readValue(json, RespostaRequest.class);
@@ -107,7 +109,7 @@ public class CategoriaServiceImpl implements CategoriaService{
             headers.setContentType(MediaType.APPLICATION_XML);
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url  = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey + apiXmlParam + xml;
+            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey + apiXmlParam + xml;
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
