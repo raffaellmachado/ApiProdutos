@@ -72,5 +72,5 @@ public class ContatoRequest {
     public String site;
     @Max(value = 100, message = "Informações do contato")
     public String obs;
-    public Object TiposContatoResponse;
+    public Object TiposContatoRequest;
 }

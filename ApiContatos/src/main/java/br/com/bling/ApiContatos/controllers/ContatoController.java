@@ -1,6 +1,7 @@
 package br.com.bling.ApiContatos.controllers;
 
 import br.com.bling.ApiContatos.controllers.request.RespostaRequest;
+import br.com.bling.ApiContatos.controllers.request.RetornoRequest;
 import br.com.bling.ApiContatos.controllers.response.RespostaResponse;
 import br.com.bling.ApiContatos.controllers.response.RetornoResponse;
 import br.com.bling.ApiContatos.exceptions.ApiContatoException;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
 
 
 @RestController
@@ -136,7 +139,18 @@ public class ContatoController {
             throw new ContatoCadastroException();
         }
 
+        for (ArrayList<RetornoRequest.Contatos> listaContatos : request.getRetorno().getContatos()) {
+            System.out.println("-----------------------------------------------------------------------------------");
+            System.out.println("Id: " + listaContatos.get(0).contato.id);
+            System.out.println("Nome: " + listaContatos.get(0).contato.nome);
+            System.out.println("tipoPessoa: " + listaContatos.get(0).contato.tipoPessoa);
+            System.out.println("contribuinte: " + listaContatos.get(0).contato.contribuinte);
+            System.out.println("cpf_cnpj: " + listaContatos.get(0).contato.cpf_cnpj);
+            System.out.println("-----------------------------------------------------------------------------------");
+        }
+
         System.out.println(request);
+
         return request;
     }
 
