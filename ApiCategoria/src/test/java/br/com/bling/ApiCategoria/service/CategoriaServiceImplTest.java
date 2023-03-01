@@ -27,6 +27,9 @@ class CategoriaServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * TESTE SERVICE - GET "BUSCAR A LISTA DE CATEGORIA CADASTRADOS NO BLING".
+     */
     @Test
     void testGetAllCategory() throws Exception {
         // Simula a resposta da chamada para a API externa
@@ -46,6 +49,9 @@ class CategoriaServiceImplTest {
         System.out.println("GET LIST: " + result);
     }
 
+    /**
+     * TESTE SERVICE - GET "BUSCA CATEGORIA PELO IDCATEGORIA".
+     */
     @Test
     void testGetCategoryByIdCategoria() throws Exception {
         // Simula a resposta da chamada para a API externa
@@ -63,22 +69,27 @@ class CategoriaServiceImplTest {
         System.out.println("GET ID: " + result);
     }
 
+    /**
+     * TESTE SERVICE - POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateCategory() throws Exception {
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\": {\"categorias\": {\"categoria\": {\"id\": \"123\", \"descricao\": \"Categoria 1\"}}}}";
+        String jsonResponse = "{\"retorno\": {\"categorias\": {\"categoria\": {\"id\": \"007\", \"descricao\": \"Moveis usados\"}}}}";
         Mockito.when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
         RespostaRequest result = categoriaServiceImpl.createCategory("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
-        Assertions.assertEquals("123", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getId());
-        Assertions.assertEquals("Categoria 1", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getDescricao());
+        Assertions.assertEquals("007", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getId());
+        Assertions.assertEquals("Moveis usados", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getDescricao());
 
         System.out.println("POST: " + result);
     }
-
+    /**
+     * TESTE SERVICE - PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
+     */
     @Test
     void testUpdateCategory() {
 //        RespostaRequest result = categoriaServiceImpl.updateCategory("xml", "idCategoria");

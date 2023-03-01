@@ -90,7 +90,7 @@ public class CategoriaController {
     }
 
     /**
-     * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> CRIAR EXCEPTION
+     * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")

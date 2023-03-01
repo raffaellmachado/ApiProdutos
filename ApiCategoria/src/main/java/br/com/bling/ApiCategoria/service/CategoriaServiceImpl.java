@@ -32,7 +32,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     private CategoriaService categoriaService;
 
     /**
-     * GET "BUSCAR A LISTA DE DEPOSITOS CADASTRADOS NO BLING".
+     * GET "BUSCAR A LISTA DE CATEGORIA CADASTRADOS NO BLING".
      */
     @Override
     public RespostaResponse getAllCategory() throws ApiCategoriaException {
@@ -75,7 +75,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     /**
-     * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".  -----> CRIAR EXCEPTION
+     * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @Override
     public RespostaRequest createCategory(String xml) throws ApiCategoriaException {

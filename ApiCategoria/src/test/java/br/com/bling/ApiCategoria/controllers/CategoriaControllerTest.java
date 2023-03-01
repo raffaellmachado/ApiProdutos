@@ -31,6 +31,9 @@ class CategoriaControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCAR A LISTA DE CATEGORIA CADASTRADOS NO BLING".
+     */
     @Test
     void testGetAllCategory() throws Exception {
         // Cria uma resposta simulada do serviço
@@ -65,6 +68,9 @@ class CategoriaControllerTest {
         assertEquals(resposta, result);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCA CATEGORIA PELO IDCATEGORIA".
+     */
     @Test
     void testGetCategoryByIdCategory() {
         String idCategoria = "123";
@@ -90,6 +96,9 @@ class CategoriaControllerTest {
         assertEquals(resposta, result);
     }
 
+    /**
+     * TESTE CONTROLLER - POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateCategory() {
         // Cria o XML de categoria a ser enviado na requisição
@@ -124,7 +133,9 @@ class CategoriaControllerTest {
         assertEquals(resposta, result);
     }
 
-
+    /**
+     * TESTE CONTROLLER - PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
+     */
     @Test
     void testUpdateCategory() {
 //        when(categoriaService.updateCategory(anyString(), anyString())).thenReturn(new RespostaRequest());
@@ -133,5 +144,3 @@ class CategoriaControllerTest {
 //        Assertions.assertEquals(new RespostaRequest(), result);
     }
 }
-
-//Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme
