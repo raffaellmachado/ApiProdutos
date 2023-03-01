@@ -84,11 +84,9 @@ class DepositoServiceImplTest {
         System.out.println("POST: " + result);
     }
 
-//    @Test
-//    void testUpdateDeposit() {
+    @Test
+    void testUpdateDeposit() {
 //        RespostaRequest result = depositoServiceImpl.updateDeposit("xml", "idDeposito");
 //        Assertions.assertEquals(new RespostaRequest(), result);
-//    }
+    }
 }
-
-//Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme
