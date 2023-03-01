@@ -78,12 +78,10 @@ class CategoriaServiceImplTest {
 
         System.out.println("POST: " + result);
     }
-}
-//    @Test
-//    void testUpdateCategory() {
+
+    @Test
+    void testUpdateCategory() {
 //        RespostaRequest result = categoriaServiceImpl.updateCategory("xml", "idCategoria");
 //        Assertions.assertEquals(new RespostaRequest(), result);
-//    }
-//}
-//
-////Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme
+    }
+}

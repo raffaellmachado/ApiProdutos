@@ -1,6 +1,7 @@
 package br.com.bling.ApiCategoria.controllers;
 
 import br.com.bling.ApiCategoria.controllers.request.RespostaRequest;
+import br.com.bling.ApiCategoria.controllers.request.RetornoRequest;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaCadastroException;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -95,9 +98,18 @@ public class CategoriaController {
         try {
             RespostaRequest request = categoriaService.createCategory(xml);
 
-//            if (request.retorno.categorias == null || request.getRetorno() == null) {
-//                throw new ApiCategoriaException("Não foi possível cadastrar a categoria");
-//            }
+            if (request.retorno.categorias == null || request.getRetorno() == null) {
+                throw new ApiCategoriaException("Não foi possível cadastrar a categoria");
+            }
+
+            for (ArrayList<RetornoRequest.Categorias> listaCategoria : request.getRetorno().getCategorias()) {
+                System.out.println("-------------------------------------------------------------------");
+                System.out.println("Id Categoria: " + listaCategoria.get(0).categoria.id);
+                System.out.println("Descrição: " + listaCategoria.get(0).categoria.descricao);
+                System.out.println("Id Categoria Pai: " + listaCategoria.get(0).categoria.idCategoriaPai);
+                System.out.println("-------------------------------------------------------------------");
+            }
+            System.out.println(request);
 
             return request;
         } catch (Exception e) {

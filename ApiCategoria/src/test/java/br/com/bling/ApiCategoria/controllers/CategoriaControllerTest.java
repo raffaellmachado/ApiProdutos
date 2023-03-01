@@ -1,6 +1,9 @@
 package br.com.bling.ApiCategoria.controllers;
 
+import static org.junit.Assert.*;
+import br.com.bling.ApiCategoria.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategoria.controllers.request.RespostaRequest;
+import br.com.bling.ApiCategoria.controllers.request.RetornoRequest;
 import br.com.bling.ApiCategoria.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
@@ -92,35 +95,43 @@ class CategoriaControllerTest {
         // Cria o XML de categoria a ser enviado na requisição
         String xml = "<categorias>\n" +
                 "     <categoria>\n" +
-                "          <descricao>CHUPA MEUS OVOS</descricao>\n" +
-                "     </categoria>\n" +
-                "</categorias>";
-
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
 
         // Simula a resposta da chamada para o serviço de categoria
-        RespostaRequest respostaEsperada = new RespostaRequest();
-        when(categoriaService.createCategory(xml)).thenReturn(respostaEsperada);
+        RespostaRequest resposta = new RespostaRequest();
+        RetornoRequest retorno = new RetornoRequest();
 
-        // Chama o método de criação de categoria
-        RespostaRequest resultado = categoriaController.createCategory(xml);
+        ArrayList<ArrayList<RetornoRequest.Categorias>> categorias = new ArrayList<>();
+        ArrayList<RetornoRequest.Categorias> categoriasList = new ArrayList<>();
+        RetornoRequest.Categorias categoria = new RetornoRequest.Categorias();
 
-        // Verifica se a resposta do método está correta
-        assertEquals(respostaEsperada, resultado);
-        verify(categoriaService).createCategory(xml);
+        categoria.categoria = new CategoriaRequest();
+        categoria.categoria.id = "01";
+        categoria.categoria.descricao = "Calçado";
+        categoria.categoria.idCategoriaPai = "0";
 
-        System.out.println(resultado);
-        System.out.println(respostaEsperada);
+        categoriasList.add(categoria);
+        categorias.add(categoriasList);
+        retorno.setCategorias(categorias);
+        resposta.setRetorno(retorno);
+
+        when(categoriaService.createCategory(xml)).thenReturn(resposta);
+
+        RespostaRequest result = categoriaController.createCategory(xml);
+        assertEquals(resposta, result);
     }
 
 
-
-//    @Test
-//    void testUpdateCategory() {
+    @Test
+    void testUpdateCategory() {
 //        when(categoriaService.updateCategory(anyString(), anyString())).thenReturn(new RespostaRequest());
 //
 //        RespostaRequest result = categoriaController.updateCategory("xml", "idCategoria");
 //        Assertions.assertEquals(new RespostaRequest(), result);
-//    }
+    }
 }
 
 //Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme

@@ -1,6 +1,8 @@
 package br.com.bling.ApiDeposito.controllers;
 
+import br.com.bling.ApiDeposito.controllers.request.DepositoRequest;
 import br.com.bling.ApiDeposito.controllers.request.RespostaRequest;
+import br.com.bling.ApiDeposito.controllers.request.RetornoRequest;
 import br.com.bling.ApiDeposito.controllers.response.DepositoResponse;
 import br.com.bling.ApiDeposito.controllers.response.RespostaResponse;
 import br.com.bling.ApiDeposito.controllers.response.RetornoResponse;
@@ -101,10 +103,40 @@ class DepositoControllerTest {
 
     @Test
     void testCreateDeposit() {
-//        when(depositoService.createDeposit(anyString())).thenReturn(new RespostaRequest());
-//
-//        RespostaRequest result = depositoController.createDeposit("xml");
-//        Assertions.assertEquals(new RespostaRequest(), result);
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<depositos>\n" +
+                "    <deposito>\n" +
+                "        <descricao>Deposito padrão</descricao>\n" +
+                "        <situacao>A</situacao>\n" +
+                "        <depositoPadrao>true</depositoPadrao>\n" +
+                "        <desconsiderarSaldo>true</desconsiderarSaldo>\n" +
+                "    </deposito>\n" +
+                "</depositos>";
+
+        // Simula a resposta da chamada para o serviço de categoria
+        RespostaRequest resposta = new RespostaRequest();
+        RetornoRequest retorno = new RetornoRequest();
+
+        ArrayList<ArrayList<RetornoRequest.Deposito>> depositos = new ArrayList<>();
+        ArrayList<RetornoRequest.Deposito> depositosList = new ArrayList<>();
+        RetornoRequest.Deposito deposito = new RetornoRequest.Deposito();
+
+        deposito.deposito = new DepositoRequest();
+        deposito.deposito.id = "01";
+        deposito.deposito.descricao = "Deposito padrão";
+        deposito.deposito.situacao = "A";
+        deposito.deposito.depositoPadrao = true;
+        deposito.deposito.desconsiderarSaldo = true;
+
+        depositosList.add(deposito);
+        depositos.add(depositosList);
+        retorno.setDepositos(depositos);
+        resposta.setRetorno(retorno);
+
+        when(depositoService.createDeposit(xml)).thenReturn(resposta);
+
+        RespostaRequest result = depositoController.createDeposit(xml);
+        assertEquals(resposta, result);
     }
 
     @Test

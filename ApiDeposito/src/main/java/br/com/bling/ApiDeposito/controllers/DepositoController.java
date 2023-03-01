@@ -1,6 +1,7 @@
 package br.com.bling.ApiDeposito.controllers;
 
 import br.com.bling.ApiDeposito.controllers.request.RespostaRequest;
+import br.com.bling.ApiDeposito.controllers.request.RetornoRequest;
 import br.com.bling.ApiDeposito.controllers.response.RespostaResponse;
 import br.com.bling.ApiDeposito.controllers.response.RetornoResponse;
 import br.com.bling.ApiDeposito.exceptions.ApiDepositoException;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -99,6 +102,16 @@ public class DepositoController {
 
             if (request.retorno.depositos == null || request.getRetorno() == null) {
                 throw new ApiDepositoException("Não foi possível cadastrar o deposito");
+            }
+
+            for (ArrayList<RetornoRequest.Deposito> listaDepositos : request.getRetorno().getDepositos()) {
+                System.out.println("-------------------------------------------------------------------");
+                System.out.println("Id Deposito: " + listaDepositos.get(0).deposito.id);
+                System.out.println("Descrição: " + listaDepositos.get(0).deposito.descricao);
+                System.out.println("Situação: " + listaDepositos.get(0).deposito.situacao);
+                System.out.println("Deposito Padrão: " + listaDepositos.get(0).deposito.depositoPadrao);
+                System.out.println("Desconsiderar Saldo: " + listaDepositos.get(0).deposito.desconsiderarSaldo);
+                System.out.println("-------------------------------------------------------------------");
             }
             System.out.println(request);
 

@@ -32,7 +32,7 @@ class DepositoServiceImplTest {
     @Test
     void testGetAllDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\": {\"depositos\": [{\"deposito\": {\"id\": \"01\", \"situacao\": \"Deposito 1\"}}, {\"deposito\": {\"id\": \"02\", \"situacao\": \"Deposito 2\"}}]}}";
+        String jsonResponse = "{\"retorno\": {\"depositos\": [{\"deposito\": {\"id\": \"01\", \"situacao\": \"Deposito 1\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}, {\"deposito\": {\"id\": \"02\", \"situacao\": \"Deposito 2\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
         Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
@@ -42,8 +42,13 @@ class DepositoServiceImplTest {
         Assertions.assertEquals(2, result.getRetorno().getDepositos().size());
         Assertions.assertEquals("01", result.getRetorno().getDepositos().get(0).getDeposito().getId());
         Assertions.assertEquals("Deposito 1", result.getRetorno().getDepositos().get(0).getDeposito().getSituacao());
+        Assertions.assertEquals(true, result.getRetorno().getDepositos().get(0).getDeposito().depositoPadrao);
+        Assertions.assertEquals(false, result.getRetorno().getDepositos().get(0).getDeposito().desconsiderarSaldo);
+
         Assertions.assertEquals("02", result.getRetorno().getDepositos().get(1).getDeposito().getId());
         Assertions.assertEquals("Deposito 2", result.getRetorno().getDepositos().get(1).getDeposito().getSituacao());
+        Assertions.assertEquals(true, result.getRetorno().getDepositos().get(1).getDeposito().depositoPadrao);
+        Assertions.assertEquals(false, result.getRetorno().getDepositos().get(1).getDeposito().desconsiderarSaldo);
 
         System.out.println("GET LIST: " + result);
     }
@@ -51,7 +56,7 @@ class DepositoServiceImplTest {
     @Test
     void testGetDepositByIdDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"14886963547\",\"descricao\":\"Geral\",\"situacao\":\"Ativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
+        String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"007\",\"descricao\":\"Desfazimento\",\"situacao\":\"Inativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
         Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
@@ -59,9 +64,12 @@ class DepositoServiceImplTest {
 
         // Verifica se a categoria foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals(1, result.getRetorno().getDepositos().size());
-        Assertions.assertEquals("14886963547", result.getRetorno().getDepositos().get(0).getDeposito().getId());
-        Assertions.assertEquals("Geral", result.getRetorno().getDepositos().get(0).getDeposito().getDescricao());
-        Assertions.assertEquals("Ativo", result.getRetorno().getDepositos().get(0).getDeposito().getSituacao());
+        Assertions.assertEquals("007", result.getRetorno().getDepositos().get(0).getDeposito().getId());
+        Assertions.assertEquals("Desfazimento", result.getRetorno().getDepositos().get(0).getDeposito().getDescricao());
+        Assertions.assertEquals("Inativo", result.getRetorno().getDepositos().get(0).getDeposito().getSituacao());
+        Assertions.assertEquals(true, result.getRetorno().getDepositos().get(0).getDeposito().depositoPadrao);
+        Assertions.assertEquals(false, result.getRetorno().getDepositos().get(0).getDeposito().desconsiderarSaldo);
+
 
 
         System.out.println("GET ID: " + result);
@@ -80,6 +88,8 @@ class DepositoServiceImplTest {
         Assertions.assertEquals("14886963547", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getId());
         Assertions.assertEquals("Geral", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getDescricao());
         Assertions.assertEquals("Ativo", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getSituacao());
+        Assertions.assertEquals(true, result.getRetorno().getDepositos().get(0).get(0).getDeposito().depositoPadrao);
+        Assertions.assertEquals(false, result.getRetorno().getDepositos().get(0).get(0).getDeposito().desconsiderarSaldo);
 
         System.out.println("POST: " + result);
     }
