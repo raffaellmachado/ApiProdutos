@@ -2,6 +2,7 @@ package br.com.bling.ApiContatos.controllers.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.validation.constraints.Digits;
@@ -23,17 +24,23 @@ public class ContatoRequest {
     public String tipoPessoa = "F";
     @NotEmpty
     @Max(value = 1, message = "1 - Contribuinte do ICMS, 2 - Contribuinte isento do ICMS ou 9 - Não contribuinte")
-    public int contribuinte = 9;
+    public String contribuinte = "9";
+    @CNPJ
     @CPF
     @NotEmpty
     @Max(value = 18, message = "CPF ou CNPJ do contato")
     public String cpf_cnpj;
+    @CNPJ
+    @CPF
+    @NotEmpty
+    @Max(value = 18, message = "CPF ou CNPJ do contato")
+    public String cnpj;
     @Max(value = 18, message = "RG ou Inscrição Estadual do cliente")
     public String ie_rg;
     @Max(value = 50, message = "Endereço do Cliente")
     public String endereco;
     @Max(value = 10, message = "Número do endereço do cliente")
-    public int numero;
+    public String numero;
     @Max(value = 100, message = "Complemento do endereço do cliente")
     public String complemento;
     @Max(value = 30, message = "Bairro do cliente")
@@ -56,7 +63,7 @@ public class ContatoRequest {
     public String informacaoContato;
     @Digits(integer = 11, fraction = 2)
     @Max(value = 50, message = "Limite de credito do cliente")
-    public double limiteCredito;
+    public String limiteCredito;
     @Max(value = 50, message = "País de origem do cliente estrangeiro")
     public String paisOrigem;
     @Max(value = 15, message = "Código do contato")
@@ -65,5 +72,5 @@ public class ContatoRequest {
     public String site;
     @Max(value = 100, message = "Informações do contato")
     public String obs;
-    public TiposContatosRequest tipos_contatos;
+    public Object TiposContatoResponse;
 }

@@ -1,15 +1,17 @@
 package br.com.bling.ApiContatos.controllers;
 
 import br.com.bling.ApiContatos.controllers.request.RespostaRequest;
-import br.com.bling.ApiContatos.exceptions.*;
 import br.com.bling.ApiContatos.controllers.response.RespostaResponse;
 import br.com.bling.ApiContatos.controllers.response.RetornoResponse;
+import br.com.bling.ApiContatos.exceptions.ApiContatoException;
+import br.com.bling.ApiContatos.exceptions.ContatoCadastroException;
+import br.com.bling.ApiContatos.exceptions.ContatoIdNaoEncontradoException;
+import br.com.bling.ApiContatos.exceptions.ContatoListaNaoEncontradoException;
 import br.com.bling.ApiContatos.service.ContatoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -65,7 +67,6 @@ public class ContatoController {
             System.out.println("sexo: " + listaContatos.contato.sexo);
             System.out.println("clienteDesde: " + listaContatos.contato.clienteDesde);
             System.out.println("limiteCredito: " + listaContatos.contato.limiteCredito);
-            System.out.println("tiposContato: " + listaContatos.contato.tiposContato);
             System.out.println("dataNascimento: " + listaContatos.contato.dataNascimento);
         }
 
@@ -114,7 +115,6 @@ public class ContatoController {
             System.out.println("sexo: " + listaContatos.contato.sexo);
             System.out.println("clienteDesde: " + listaContatos.contato.clienteDesde);
             System.out.println("limiteCredito: " + listaContatos.contato.limiteCredito);
-            System.out.println("tiposContato: " + listaContatos.contato.tiposContato);
             System.out.println("dataNascimento: " + listaContatos.contato.dataNascimento);
         }
 
