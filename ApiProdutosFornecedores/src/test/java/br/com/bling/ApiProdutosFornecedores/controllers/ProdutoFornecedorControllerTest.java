@@ -35,6 +35,9 @@ class ProdutoFornecedorControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCAR A LISTA DE PRODUTOS FORNECEDORES CADASTRADOS NO BLING".
+     */
     @Test
     void testGetAllProducts() {
         // Cria uma resposta simulada do serviço
@@ -87,6 +90,9 @@ class ProdutoFornecedorControllerTest {
         assertEquals(resposta, result);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCAR A LISTA DE PRODUTOS FORNECEDORES A ENTRAR NO EXCEPTION".
+     */
     @Test
     void testGetAllProductsException() {
         when(produtoFornecedorService.getAllProducts()).thenReturn(null);
@@ -100,6 +106,9 @@ class ProdutoFornecedorControllerTest {
         verify(produtoFornecedorService).getAllProducts();
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCA PRODUTO FORNECEDOR PELO IDPRODUTOFORNECEDOR".
+     */
     @Test
     void testGetProducId() {
         String idProdutoFornecedor = "123";
@@ -137,6 +146,9 @@ class ProdutoFornecedorControllerTest {
         assertEquals(resposta, result);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA PRODUTO FORNECEDOR PELO IDPRODUTOFORNECEDOR A ENTRAR NO EXCEPTION".
+     */
     @Test
     void testGetProducIdException() {
         String idProdutoFornecedor = "123";
@@ -151,7 +163,9 @@ class ProdutoFornecedorControllerTest {
         verify(produtoFornecedorService).getProducId(idProdutoFornecedor);
     }
 
-
+    /**
+     * TESTE CONTROLLER - POST "CADASTRA UMA NOVO PRODUTO FORNECEDOR UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateProduct() {
         // Cria o XML de categoria a ser enviado na requisição
@@ -195,6 +209,9 @@ class ProdutoFornecedorControllerTest {
         assertEquals(resposta, result);
     }
 
+    /**
+     * TESTE CONTROLLER - POST "FORÇA O METODO DE CADASTRO DE PRODUTO FORNECEDOR A ENTRAR NO EXCEPTION".
+     */
     @Test
     void testCreateProductException() {
         // Cria o XML de categoria a ser enviado na requisição

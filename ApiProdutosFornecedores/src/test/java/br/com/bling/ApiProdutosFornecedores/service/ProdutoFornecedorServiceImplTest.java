@@ -25,6 +25,9 @@ class ProdutoFornecedorServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * TESTE SERVICE - GET "BUSCAR A LISTA DE PRODUTOS FORNECEDORES CADASTRADOS NO BLING".
+     */
     @Test
     void testGetAllProducts() {
         // Simula a resposta da chamada para a API externa
@@ -49,6 +52,9 @@ class ProdutoFornecedorServiceImplTest {
         System.out.println("GET LIST: " + result);
     }
 
+    /**
+     * TESTE SERVICE - GET "BUSCA PRODUTO FORNECEDOR PELO IDPRODUTOFORNECEDOR".
+     */
     @Test
     void testGetProducId() {
         // Simula a resposta da chamada para a API externa
@@ -71,6 +77,9 @@ class ProdutoFornecedorServiceImplTest {
         System.out.println("GET ID: " + result);
     }
 
+    /**
+     * TESTE SERVICE - POST "CADASTRA UMA NOVO PRODUTO FORNECEDOR UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateProduct() {
         // Simula a resposta da chamada para a API externa

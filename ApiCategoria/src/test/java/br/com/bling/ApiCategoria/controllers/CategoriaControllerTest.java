@@ -72,6 +72,9 @@ class CategoriaControllerTest {
         assertEquals(resposta, result);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCAR A LISTA DE CATEGORIA A ENTRAR NO EXCEPTION".
+     */
     @Test
     void testGetAllCategoryException() {
         String idProdutoFornecedor = "123";
@@ -114,6 +117,9 @@ class CategoriaControllerTest {
         assertEquals(resposta, result);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA CATEGORIA PELO IDCATEGORIA A ENTRAR NO EXCEPTION".
+     */
     @Test
     void testGetCategoryByIdCategoryException() {
         String idCategoria = "123";
@@ -164,6 +170,9 @@ class CategoriaControllerTest {
         assertEquals(resposta, result);
     }
 
+    /**
+     * TESTE CONTROLLER - POST "FORÇA O METODO DE CADASTRO DE CATEGORIA A ENTRAR NO EXCEPTION".
+     */
     @Test
     void testCreateProductException() {
         // Cria o XML de categoria a ser enviado na requisição
