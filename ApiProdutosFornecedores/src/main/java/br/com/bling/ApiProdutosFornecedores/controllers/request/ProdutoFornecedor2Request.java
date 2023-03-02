@@ -13,22 +13,22 @@ public class ProdutoFornecedor2Request {
     public String id;
     @NotEmpty
     @Max(value = 20, message = "Identificador único do produto")
-    public int idProduto;
+    public String idProduto;
     @NotEmpty
     @Max(value = 20, message = "Identificador único do contato (fornecedor)")
-    public double idFornecedor;
+    public String idFornecedor;
     @Max(value = 120, message = "Descrição do produto no fornecedor")
     public String produtoDescricao;
     @Max(value = 60, message = "Código do produto no fornecedor")
     public String produtoCodigo;
     @Digits(integer = 17, fraction = 10)
     @Size(message = "Preço de compra do produto no fornecedor")
-    public double precoCompra;
+    public String precoCompra;
     @Digits(integer = 17, fraction = 10)
     @Size(message = "Preço de custo do produto no fornecedor")
-    public double precoCusto;
+    public String precoCusto;
     @Max(value = 3, message = "Garantia do produto no fornecedor")
-    public int produtoGarantia;
+    public String produtoGarantia;
     @Max(value = 1, message = "Principal fornecedor do produto")
-    public int padrao;
+    public String padrao;
 }

@@ -7,6 +7,9 @@ import br.com.bling.ApiCategoria.controllers.request.RetornoRequest;
 import br.com.bling.ApiCategoria.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
+import br.com.bling.ApiCategoria.exceptions.CategoriaCadastroException;
+import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaNaoEncontradoException;
+import br.com.bling.ApiCategoria.exceptions.CategoriaListaNaoEncontradoException;
 import br.com.bling.ApiCategoria.service.CategoriaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,6 +72,20 @@ class CategoriaControllerTest {
         assertEquals(resposta, result);
     }
 
+    @Test
+    void testGetAllCategoryException() {
+        String idProdutoFornecedor = "123";
+        when(categoriaService.getAllCategory()).thenReturn(null);
+
+        // Chama o método sendo testado
+        assertThrows(CategoriaListaNaoEncontradoException.class, () -> {
+            categoriaController.getAllCategory();
+        });
+
+        // Verifica se o serviço foi chamado
+        verify(categoriaService).getAllCategory();
+    }
+
     /**
      * TESTE CONTROLLER - GET "BUSCA CATEGORIA PELO IDCATEGORIA".
      */
@@ -96,6 +114,19 @@ class CategoriaControllerTest {
         assertEquals(resposta, result);
     }
 
+    @Test
+    void testGetCategoryByIdCategoryException() {
+        String idCategoria = "123";
+        when(categoriaService.getCategoryByIdCategoria(idCategoria)).thenReturn(null);
+
+        // Chama o método sendo testado
+        assertThrows(CategoriaIdCategoriaNaoEncontradoException.class, () -> {
+            categoriaController.getCategoryByIdCategory(idCategoria);
+        });
+
+        // Verifica se o serviço foi chamado
+        verify(categoriaService).getCategoryByIdCategoria(idCategoria);
+    }
     /**
      * TESTE CONTROLLER - POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML/JSON".
      */
@@ -131,6 +162,29 @@ class CategoriaControllerTest {
 
         RespostaRequest result = categoriaController.createCategory(xml);
         assertEquals(resposta, result);
+    }
+
+    @Test
+    void testCreateProductException() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+
+        // Cria um mock do serviço que retorna null
+        when(categoriaService.createCategory(xml)).thenReturn(null);
+
+        // Chama o método sendo testado
+        assertThrows(CategoriaCadastroException.class, () -> {
+            categoriaController.createCategory(xml);
+        });
+
+        // Verifica se o serviço foi chamado
+        verify(categoriaService).createCategory(xml);
     }
 
     /**

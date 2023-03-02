@@ -7,13 +7,11 @@ import java.util.ArrayList;
 
 @Data
 public class ProdutofornecedoreResponse {
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public Object idProduto;
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public ArrayList<Fornecedore> fornecedores;
-    public class Fornecedore {
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public ProdutofornecedorResponse produtoFornecedor;
-    }
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public String idProduto;
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public ArrayList<FornecedoreResponse> fornecedores;
 
 }
+
+

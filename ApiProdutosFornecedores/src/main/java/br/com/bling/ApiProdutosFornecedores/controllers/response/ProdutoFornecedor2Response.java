@@ -6,13 +6,13 @@ import lombok.Data;
 @Data
 public class ProdutoFornecedor2Response {
 
-    public int idProdutoFornecedor;
+    public String idProdutoFornecedor;
     @JsonIgnoreProperties(ignoreUnknown = true)
     public Object idFornecedor;
     public String produtoDescricao;
     public String produtoCodigo;
     public String precoCompra;
     public String precoCusto;
-    public int produtoGarantia;
-    public int padrao;
+    public String produtoGarantia;
+    public String padrao;
 }

@@ -1,6 +1,7 @@
 package br.com.bling.ApiProdutosFornecedores.controllers;
 
 import br.com.bling.ApiProdutosFornecedores.controllers.request.RespostaRequest;
+import br.com.bling.ApiProdutosFornecedores.controllers.request.RetornoRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.FornecedoreResponse;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.RespostaResponse;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.RetornoResponse;
@@ -77,12 +78,12 @@ public class ProdutoFornecedorController {
                 throw new ApiProdutoFornecedorException("Não foi possível localizar produto fornecedor pelo Id");
             }
 
-            for (RetornoResponse.Produtosfornecedores listaProdutos : request.getRetorno().getProdutosfornecedores()) {
+            for (RetornoResponse.Produtosfornecedores listaProdutoFornecedor : request.getRetorno().getProdutosfornecedores()) {
                 System.out.println("-----------------------------------------------------------------------------------");
-                System.out.println("Id Produto: " + listaProdutos.produtofornecedores.idProduto);
+                System.out.println("Id Produto: " + listaProdutoFornecedor.produtofornecedores.idProduto);
                 System.out.println("-----------------------------------------------------------------------------------");
 
-                for (FornecedoreResponse fornecedor : listaProdutos.produtofornecedores.fornecedores) {
+                for (FornecedoreResponse fornecedor : listaProdutoFornecedor.produtofornecedores.fornecedores) {
                     System.out.println("idProdutoFornecedor: " + fornecedor.produtoFornecedor.idProdutoFornecedor);
                     System.out.println("idFornecedor " + fornecedor.produtoFornecedor.idFornecedor);
                     System.out.println("produtoDescricao: " + fornecedor.produtoFornecedor.produtoDescricao);
@@ -115,6 +116,19 @@ public class ProdutoFornecedorController {
             if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
                 throw new ApiProdutoFornecedorException("Não foi possível cadastrar o produto");
             }
+
+            for (RetornoRequest.Produtosfornecedore listaProdutoFornecedor : request.getRetorno().getProdutosfornecedores()) {
+                    System.out.println("idProdutoFornecedor: " + listaProdutoFornecedor.produtoFornecedor.idProduto);
+                    System.out.println("idFornecedor " + listaProdutoFornecedor.produtoFornecedor.idFornecedor);
+                    System.out.println("produtoDescricao: " + listaProdutoFornecedor.produtoFornecedor.produtoDescricao);
+                    System.out.println("produtoCodigo: " + listaProdutoFornecedor.produtoFornecedor.produtoCodigo);
+                    System.out.println("precoCompra: " + listaProdutoFornecedor.produtoFornecedor.precoCompra);
+                    System.out.println("precoCusto: " + listaProdutoFornecedor.produtoFornecedor.precoCusto);
+                    System.out.println("produtoGarantia : " + listaProdutoFornecedor.produtoFornecedor.produtoGarantia);
+                    System.out.println("padrao: " + listaProdutoFornecedor.produtoFornecedor.padrao);
+                    System.out.println("-----------------------------------------------------------------------------------");
+                }
+
             System.out.println("Produto cadastrado com sucesso!");
 
             return request;

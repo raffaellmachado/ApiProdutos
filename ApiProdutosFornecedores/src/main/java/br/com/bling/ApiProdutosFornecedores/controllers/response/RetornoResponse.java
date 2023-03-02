@@ -13,6 +13,6 @@ public class RetornoResponse {
     @Data
     public static class Produtosfornecedores {
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public ProdutofornecedorResponse produtofornecedores;
+        public ProdutofornecedoreResponse produtofornecedores;
     }
 }
