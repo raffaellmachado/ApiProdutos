@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 
@@ -26,9 +25,7 @@ public class DepositoController {
 
     @Autowired
     public DepositoService depositoService;
-    @Autowired
-    private RestTemplate restTemplate;
-    private String idDeposito;
+
 
     /**
      * GET "BUSCA LISTA DE DEPOSITOS".

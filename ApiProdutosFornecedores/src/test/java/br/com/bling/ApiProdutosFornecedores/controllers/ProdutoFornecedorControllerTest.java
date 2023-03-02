@@ -111,7 +111,7 @@ class ProdutoFornecedorControllerTest {
      */
     @Test
     void testGetProducId() {
-        String idProdutoFornecedor = "123";
+        String idProdutoFornecedor = "159357";
 
         RetornoResponse.Produtosfornecedores produtosfornecedores1 = new RetornoResponse.Produtosfornecedores();
         produtosfornecedores1.produtofornecedores = new ProdutofornecedoreResponse();
@@ -151,7 +151,7 @@ class ProdutoFornecedorControllerTest {
      */
     @Test
     void testGetProducIdException() {
-        String idProdutoFornecedor = "123";
+        String idProdutoFornecedor = "753159";
         when(produtoFornecedorService.getProducId(idProdutoFornecedor)).thenReturn(null);
 
         // Chama o método sendo testado

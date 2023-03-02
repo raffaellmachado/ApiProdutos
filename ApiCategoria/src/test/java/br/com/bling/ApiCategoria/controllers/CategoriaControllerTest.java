@@ -133,6 +133,7 @@ class CategoriaControllerTest {
         // Verifica se o serviço foi chamado
         verify(categoriaService).getCategoryByIdCategoria(idCategoria);
     }
+
     /**
      * TESTE CONTROLLER - POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML/JSON".
      */

@@ -18,9 +18,6 @@ class DepositoServiceImplTest {
     @Mock
     RestTemplate restTemplate;
 
-    @Mock
-    DepositoService categoriaService;
-
     @InjectMocks
     DepositoServiceImpl depositoServiceImpl;
 
@@ -29,6 +26,9 @@ class DepositoServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * TESTE SERVICE - GET "BUSCAR A LISTA DE DEPOSITOS CADASTRADOS NO BLING".
+     */
     @Test
     void testGetAllDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
@@ -53,6 +53,9 @@ class DepositoServiceImplTest {
         System.out.println("GET LIST: " + result);
     }
 
+    /**
+     * TESTE SERVICE - GET "BUSCA DEPOSITO PELO IDDEPOSITO".
+     */
     @Test
     void testGetDepositByIdDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
@@ -75,6 +78,9 @@ class DepositoServiceImplTest {
         System.out.println("GET ID: " + result);
     }
 
+    /**
+     * TESTE SERVICE - POST "CADASTRA UM NOVO DEPOSITO UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
@@ -94,6 +100,9 @@ class DepositoServiceImplTest {
         System.out.println("POST: " + result);
     }
 
+    /**
+     * TESTE SERVICE - PUT "ATUALIZA UM NOVO DEPOSITO UTILIZANDO XML".
+     */
     @Test
     void testUpdateDeposit() {
 //        RespostaRequest result = depositoServiceImpl.updateDeposit("xml", "idDeposito");

@@ -6,6 +6,9 @@ import br.com.bling.ApiDeposito.controllers.request.RetornoRequest;
 import br.com.bling.ApiDeposito.controllers.response.DepositoResponse;
 import br.com.bling.ApiDeposito.controllers.response.RespostaResponse;
 import br.com.bling.ApiDeposito.controllers.response.RetornoResponse;
+import br.com.bling.ApiDeposito.exceptions.DepositoCadastroException;
+import br.com.bling.ApiDeposito.exceptions.DepositoIdDepositoNaoEncontradoException;
+import br.com.bling.ApiDeposito.exceptions.DepositoListaNaoEncontradoException;
 import br.com.bling.ApiDeposito.services.DepositoService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class DepositoControllerTest {
@@ -34,6 +38,9 @@ class DepositoControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCAR A LISTA DE DEPOSITOS CADASTRADOS NO BLING".
+     */
     @Test
     void testGetCategoria() throws Exception {
 
@@ -74,6 +81,26 @@ class DepositoControllerTest {
         assertEquals(resposta, result);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCAR A LISTA DE DEPOSITOS A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testGetAllCategoryException() {
+        String idProdutoFornecedor = "123";
+        when(depositoService.getAllDeposit()).thenReturn(null);
+
+        // Chama o método sendo testado
+        assertThrows(DepositoListaNaoEncontradoException.class, () -> {
+            depositoController.getCategoria();
+        });
+
+        // Verifica se o serviço foi chamado
+        verify(depositoService).getAllDeposit();
+    }
+
+    /**
+     * TESTE CONTROLLER - GET "BUSCA DEPOSITO PELO IDDEPOSITO".
+     */
     @Test
     void testGetDepositByIdDeposit() {
         String idDeposito = "123";
@@ -101,6 +128,26 @@ class DepositoControllerTest {
         Assertions.assertEquals(resposta, result);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA DEPOSITO PELO IDDEPOSITO A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testGetCategoryByIdCategoryException() {
+        String idDeposito = "123";
+        when(depositoService.getDepositByIdDeposit(idDeposito)).thenReturn(null);
+
+        // Chama o método sendo testado
+        assertThrows(DepositoIdDepositoNaoEncontradoException.class, () -> {
+            depositoController.getDepositByIdDeposit(idDeposito);
+        });
+
+        // Verifica se o serviço foi chamado
+        verify(depositoService).getDepositByIdDeposit(idDeposito);
+    }
+
+    /**
+     * TESTE CONTROLLER - POST "CADASTRA UMA NOVO DEPOSITO UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateDeposit() {
         // Cria o XML de categoria a ser enviado na requisição
@@ -137,6 +184,32 @@ class DepositoControllerTest {
 
         RespostaRequest result = depositoController.createDeposit(xml);
         assertEquals(resposta, result);
+    }
+
+    /**
+     * TESTE CONTROLLER - POST "FORÇA O METODO DE DEPOSITO A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testCreateProductException() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+
+        // Cria um mock do serviço que retorna null
+        when(depositoService.createDeposit(xml)).thenReturn(null);
+
+        // Chama o método sendo testado
+        assertThrows(DepositoCadastroException.class, () -> {
+            depositoController.createDeposit(xml);
+        });
+
+        // Verifica se o serviço foi chamado
+        verify(depositoService).createDeposit(xml);
     }
 
     @Test
