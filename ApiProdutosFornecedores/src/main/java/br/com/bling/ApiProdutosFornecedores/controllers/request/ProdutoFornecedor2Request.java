@@ -4,17 +4,15 @@ import lombok.Data;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Data
 public class ProdutoFornecedor2Request {
 
     public String id;
-    @NotEmpty
+
     @Max(value = 20, message = "Identificador único do produto")
-    public String idProduto;
-    @NotEmpty
+    public String idProdutoFornecedor;
     @Max(value = 20, message = "Identificador único do contato (fornecedor)")
     public String idFornecedor;
     @Max(value = 120, message = "Descrição do produto no fornecedor")

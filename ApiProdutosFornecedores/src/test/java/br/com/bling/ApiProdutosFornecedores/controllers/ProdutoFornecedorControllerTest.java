@@ -17,7 +17,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -174,7 +175,7 @@ class ProdutoFornecedorControllerTest {
 
         produtoFornecedor.produtoFornecedor = new ProdutoFornecedor2Request();
         produtoFornecedor.produtoFornecedor.id = "01";
-        produtoFornecedor.produtoFornecedor.idProduto = "16023092137";
+        produtoFornecedor.produtoFornecedor.idProdutoFornecedor = "16023092137";
         produtoFornecedor.produtoFornecedor.idFornecedor = "478963346";
         produtoFornecedor.produtoFornecedor.produtoDescricao = "Descricao do fornecedor";
         produtoFornecedor.produtoFornecedor.produtoCodigo = "159";

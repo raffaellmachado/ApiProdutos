@@ -118,7 +118,7 @@ public class ProdutoFornecedorController {
             }
 
             for (RetornoRequest.Produtosfornecedore listaProdutoFornecedor : request.getRetorno().getProdutosfornecedores()) {
-                    System.out.println("idProdutoFornecedor: " + listaProdutoFornecedor.produtoFornecedor.idProduto);
+                    System.out.println("idProdutoFornecedor: " + listaProdutoFornecedor.produtoFornecedor.idFornecedor);
                     System.out.println("idFornecedor " + listaProdutoFornecedor.produtoFornecedor.idFornecedor);
                     System.out.println("produtoDescricao: " + listaProdutoFornecedor.produtoFornecedor.produtoDescricao);
                     System.out.println("produtoCodigo: " + listaProdutoFornecedor.produtoFornecedor.produtoCodigo);
