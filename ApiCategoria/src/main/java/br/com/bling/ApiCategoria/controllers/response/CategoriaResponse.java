@@ -9,5 +9,5 @@ public class CategoriaResponse {
 
     public String id;
     public String descricao;
-    public int idCategoriaPai = 0;
+    public int idCategoriaPai;
 }
