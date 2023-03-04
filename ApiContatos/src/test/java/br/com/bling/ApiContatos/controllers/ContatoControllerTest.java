@@ -1,10 +1,10 @@
 package br.com.bling.ApiContatos.controllers;
 
 import br.com.bling.ApiContatos.controllers.request.*;
-import br.com.bling.ApiContatos.controllers.response.ContatoResponse;
-import br.com.bling.ApiContatos.controllers.response.RespostaResponse;
-import br.com.bling.ApiContatos.controllers.response.RetornoResponse;
-import br.com.bling.ApiContatos.controllers.response.TiposContatoResponse;
+import br.com.bling.ApiContatos.controllers.response.*;
+import br.com.bling.ApiContatos.exceptions.ContatoIdNaoEncontradoException;
+import br.com.bling.ApiContatos.exceptions.ContatoListaNaoEncontradoException;
+import br.com.bling.ApiContatos.exceptions.ContatoCadastroException;
 import br.com.bling.ApiContatos.service.ContatoService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class ContatoControllerTest {
-    @Mock
-    RestTemplate restTemplate;
+
     @Mock
     ContatoService contatosService;
     @InjectMocks
@@ -34,6 +34,9 @@ class ContatoControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCAR A LISTA DE CONTATOS CADASTRADOS NO BLING".
+     */
     @Test
     void testGetAllContacts() {
 
@@ -68,6 +71,13 @@ class ContatoControllerTest {
         contato1.contato.limiteCredito = "0.00";
         contato1.contato.dataNascimento = "08/08/1998";
 
+        contato1.contato.tiposContato = new ArrayList<>(); // Criar lista vazia para evitar NullPointerException
+        TiposContatoResponse tiposContatoResponse1 = new TiposContatoResponse();
+
+        tiposContatoResponse1.tipoContato = new TipoContatoResponse();
+        tiposContatoResponse1.tipoContato.descricao = "Vendedor";
+        contato1.contato.tiposContato.add(tiposContatoResponse1);
+
         // DEPOSITO TESTE 02
         RetornoResponse.Contatos contato2 = new RetornoResponse.Contatos();
         contato2.contato = new ContatoResponse();
@@ -99,6 +109,13 @@ class ContatoControllerTest {
         contato2.contato.limiteCredito = "0.00";
         contato2.contato.dataNascimento = "08/08/1998";
 
+        contato2.contato.tiposContato = new ArrayList<>(); // Criar lista vazia para evitar NullPointerException
+        TiposContatoResponse tiposContatoResponse2 = new TiposContatoResponse();
+
+        tiposContatoResponse2.tipoContato = new TipoContatoResponse();
+        tiposContatoResponse2.tipoContato.descricao = "Vendedor";
+        contato2.contato.tiposContato.add(tiposContatoResponse2);
+
         RetornoResponse retorno = new RetornoResponse();
         retorno.contatos = new ArrayList<>();
         retorno.contatos.add(contato1);
@@ -117,56 +134,101 @@ class ContatoControllerTest {
         verify(contatosService).getAllContacts();
         assertEquals(resposta, result);
     }
-
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCAR A LISTA DE CONTATOS A ENTRAR NO EXCEPTION".
+     */
     @Test
-    void testGetContactsById() {
-        String idContato = "123";
+    void testGetAllContactsException() {
 
-        RespostaResponse resposta = new RespostaResponse();
-        RetornoResponse retorno = new RetornoResponse();
+        when(contatosService.getAllContacts()).thenReturn(null);
 
-        ArrayList<RetornoResponse.Contatos> contatos = new ArrayList<>();
-        RetornoResponse.Contatos contato = new RetornoResponse.Contatos();
+        // Chama o método sendo testado
+        assertThrows(ContatoListaNaoEncontradoException.class, () -> {
+            contatoController.getAllContacts();
+        });
 
-        contato.contato = new ContatoResponse();
-        contato.contato.id = idContato;
-        contato.contato.codigo = "01";
-        contato.contato.nome = "Rafael";
-        contato.contato.fantasia = "RMS";
-        contato.contato.tipo = "F";
-        contato.contato.cnpj = "00.000.000/0000-00";
-        contato.contato.cpf_cnpj = "000.000.000-00";
-        contato.contato.ie_rg = "00.000.000-0";
-        contato.contato.endereco = "Rua Mato Grosso";
-        contato.contato.numero = "1893";
-        contato.contato.bairro = "Centro";
-        contato.contato.cep = "86010-180";
-        contato.contato.cidade = "Londrina";
-        contato.contato.complemento = "503";
-        contato.contato.uf = "PR";
-        contato.contato.fone = "Londrina";
-        contato.contato.email = "teste@teste.com";
-        contato.contato.situacao = "A";
-        contato.contato.contribuinte = "9";
-        contato.contato.site = "www.teste.com.br";
-        contato.contato.celular = "(43) 99620-9999";
-        contato.contato.dataAlteracao = "08/07/1990";
-        contato.contato.dataInclusao = "08/07/1991";
-        contato.contato.sexo = "M";
-        contato.contato.clienteDesde = "01/01/2023";
-        contato.contato.limiteCredito = "0.00";
-        contato.contato.dataNascimento = "08/08/1998";
-
-        contatos.add(contato);
-        retorno.setContatos(contatos);
-        resposta.setRetorno(retorno);
-
-        Mockito.when(contatosService.getContactsById(idContato)).thenReturn(resposta);
-
-        RespostaResponse result = contatoController.getContactsById(idContato);
-        Assertions.assertEquals(resposta, result);
+        // Verifica se o serviço foi chamado
+        verify(contatosService).getAllContacts();
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCA CONTATO PELO CPF_CNPJ".
+     */
+    @Test
+    void testGetContactsById() {
+            String idContato = "825";
+
+            RespostaResponse resposta = new RespostaResponse();
+            RetornoResponse retorno = new RetornoResponse();
+
+            ArrayList<RetornoResponse.Contatos> contatos = new ArrayList<>();
+            RetornoResponse.Contatos contato = new RetornoResponse.Contatos();
+
+            contato.contato = new ContatoResponse();
+            contato.contato.id = idContato;
+            contato.contato.codigo = "01";
+            contato.contato.nome = "Rafael";
+            contato.contato.fantasia = "RMS";
+            contato.contato.tipo = "F";
+            contato.contato.cnpj = "00.000.000/0000-00";
+            contato.contato.cpf_cnpj = "000.000.000-00";
+            contato.contato.ie_rg = "00.000.000-0";
+            contato.contato.endereco = "Rua Mato Grosso";
+            contato.contato.numero = "1893";
+            contato.contato.bairro = "Centro";
+            contato.contato.cep = "86010-180";
+            contato.contato.cidade = "Londrina";
+            contato.contato.complemento = "503";
+            contato.contato.uf = "PR";
+            contato.contato.fone = "Londrina";
+            contato.contato.email = "teste@teste.com";
+            contato.contato.situacao = "A";
+            contato.contato.contribuinte = "9";
+            contato.contato.site = "www.teste.com.br";
+            contato.contato.celular = "(43) 99620-9999";
+            contato.contato.dataAlteracao = "08/07/1990";
+            contato.contato.dataInclusao = "08/07/1991";
+            contato.contato.sexo = "M";
+            contato.contato.clienteDesde = "01/01/2023";
+            contato.contato.limiteCredito = "0.00";
+            contato.contato.dataNascimento = "08/08/1998";
+            contato.contato.tiposContato = new ArrayList<>(); // Criar lista vazia para evitar NullPointerException
+            TiposContatoResponse tiposContatoResponse = new TiposContatoResponse();
+            tiposContatoResponse.tipoContato = new TipoContatoResponse();
+            tiposContatoResponse.tipoContato.descricao = "Vendedor";
+            contato.contato.tiposContato.add(tiposContatoResponse);
+
+            contatos.add(contato);
+            retorno.setContatos(contatos);
+            resposta.setRetorno(retorno);
+
+            Mockito.when(contatosService.getContactsById(idContato)).thenReturn(resposta);
+
+            RespostaResponse result = contatoController.getContactsById(idContato);
+            Assertions.assertEquals(resposta, result);
+
+    }
+
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA CONTATO PELO CPF_CNPJ A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testGetContactsByIdException() {
+        String cpf_cnpj = "066.852.259-70";
+        when(contatosService.getContactsById(cpf_cnpj)).thenReturn(null);
+
+        // Chama o método sendo testado
+        assertThrows(ContatoIdNaoEncontradoException.class, () -> {
+            contatoController.getContactsById(cpf_cnpj);
+        });
+
+        // Verifica se o serviço foi chamado
+        verify(contatosService).getContactsById(cpf_cnpj);
+    }
+
+    /**
+     * TESTE CONTROLLER - POST "CADASTRA UM NOVO CONTATO UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateContact() {
         // Cria o XML de categoria a ser enviado na requisição
@@ -238,6 +300,33 @@ class ContatoControllerTest {
         RespostaRequest result = contatoController.createContact(xml);
         assertEquals(resposta, result);
     }
+
+    /**
+     * TESTE CONTROLLER - POST "FORÇA O METODO DE CADASTRO DE CONTATO A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testCreateContactException() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+
+        // Cria um mock do serviço que retorna null
+        when(contatosService.createContact(xml)).thenReturn(null);
+
+        // Chama o método sendo testado
+        assertThrows(ContatoCadastroException.class, () -> {
+            contatoController.createContact(xml);
+        });
+
+        // Verifica se o serviço foi chamado
+        verify(contatosService).createContact(xml);
+    }
+
 
     @Test
     void testUpdateContact() {

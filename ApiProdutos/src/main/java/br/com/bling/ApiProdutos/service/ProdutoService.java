@@ -11,7 +11,7 @@ public interface ProdutoService {
 
     public RespostaResponse getProductByCode(@PathVariable String codigo);
 
-    public RespostaResponse getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String nomeFornecedor);
+    public RespostaResponse getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String idFornecedor);
 
     public void deleteProductByCode(@PathVariable String codigo);
 

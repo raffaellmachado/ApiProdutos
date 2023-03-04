@@ -76,6 +76,8 @@ class ContatoServiceImplTest {
         System.out.println("GET LIST: " + result);
     }
 
+
+
     @Test
     void testGetContactsById() throws Exception {
 

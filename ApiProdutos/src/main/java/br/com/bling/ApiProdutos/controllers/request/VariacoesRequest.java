@@ -3,8 +3,10 @@ package br.com.bling.ApiProdutos.controllers.request;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-public class VariacoRequest {
+public class VariacoesRequest {
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public VariacaoRequest variacao;
+    public List<VariacaoRequest> variacao;
 }

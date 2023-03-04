@@ -1,6 +1,5 @@
 package br.com.bling.ApiProdutos.controllers.request;
 
-import br.com.bling.ApiProdutos.controllers.response.ProdutoResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
@@ -15,6 +14,6 @@ public class RetornoRequest {
     public static class Produtos {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public ProdutoResponse produto;
+        public ProdutoRequest produto;
     }
 }

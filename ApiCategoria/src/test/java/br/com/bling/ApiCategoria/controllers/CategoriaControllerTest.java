@@ -77,7 +77,6 @@ class CategoriaControllerTest {
      */
     @Test
     void testGetAllCategoryException() {
-        String idProdutoFornecedor = "123";
         when(categoriaService.getAllCategory()).thenReturn(null);
 
         // Chama o método sendo testado

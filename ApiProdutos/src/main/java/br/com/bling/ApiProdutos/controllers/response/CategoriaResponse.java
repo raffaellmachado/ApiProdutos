@@ -6,6 +6,7 @@ import lombok.Data;
 public class CategoriaResponse {
 
     public String id;
+
     public String descricao;
     public String idCategoriaPai;
 }

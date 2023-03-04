@@ -1,6 +1,8 @@
 package br.com.bling.ApiContatos.controllers.request;
 
+import br.com.bling.ApiContatos.controllers.response.TiposContatoResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
@@ -8,6 +10,7 @@ import org.hibernate.validator.constraints.br.CPF;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -72,5 +75,6 @@ public class ContatoRequest {
     public String site;
     @Max(value = 100, message = "Informações do contato")
     public String obs;
-    public Object TiposContatoRequest;
+    @JsonProperty("tiposContato")
+    public List<TiposContatosRequest> tiposContato;
 }

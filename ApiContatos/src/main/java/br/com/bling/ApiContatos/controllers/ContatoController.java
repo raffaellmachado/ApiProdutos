@@ -36,46 +36,51 @@ public class ContatoController {
     @GetMapping("/contatos")
     @ApiOperation(value = "Retorna uma lista de contatos")
     public RespostaResponse getAllContacts() {
-        RespostaResponse request = contatosService.getAllContacts();
+        try {
+            RespostaResponse request = contatosService.getAllContacts();
 
-        if (request.retorno.contatos == null || request.getRetorno() == null) {
+            if (request.retorno.contatos == null || request.getRetorno() == null) {
+                throw new ContatoListaNaoEncontradoException();
+            }
+
+            for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
+                System.out.println("-----------------------------------------------------------------------------------");
+                System.out.println("Id: " + listaContatos.contato.id);
+                System.out.println("codigo: " + listaContatos.contato.codigo);
+                System.out.println("nome: " + listaContatos.contato.nome);
+                System.out.println("fantasia: " + listaContatos.contato.fantasia);
+                System.out.println("tipo: " + listaContatos.contato.tipo);
+                System.out.println("cnpj: " + listaContatos.contato.cnpj);
+                System.out.println("cpf_cnpj: " + listaContatos.contato.cpf_cnpj);
+                System.out.println("ie_rg: " + listaContatos.contato.ie_rg);
+                System.out.println("endereco: " + listaContatos.contato.endereco);
+                System.out.println("numero: " + listaContatos.contato.numero);
+                System.out.println("bairro: " + listaContatos.contato.bairro);
+                System.out.println("cep: " + listaContatos.contato.cep);
+                System.out.println("cidade: " + listaContatos.contato.cidade);
+                System.out.println("complemento: " + listaContatos.contato.complemento);
+                System.out.println("uf: " + listaContatos.contato.uf);
+                System.out.println("fone: " + listaContatos.contato.fone);
+                System.out.println("email: " + listaContatos.contato.email);
+                System.out.println("situacao: " + listaContatos.contato.situacao);
+                System.out.println("contribuinte: " + listaContatos.contato.contribuinte);
+                System.out.println("site: " + listaContatos.contato.site);
+                System.out.println("celular: " + listaContatos.contato.celular);
+                System.out.println("dataAlteracao: " + listaContatos.contato.dataAlteracao);
+                System.out.println("dataInclusao: " + listaContatos.contato.dataInclusao);
+                System.out.println("sexo: " + listaContatos.contato.sexo);
+                System.out.println("clienteDesde: " + listaContatos.contato.clienteDesde);
+                System.out.println("limiteCredito: " + listaContatos.contato.limiteCredito);
+                System.out.println("dataNascimento: " + listaContatos.contato.dataNascimento);
+                System.out.println("descricao: " + listaContatos.contato.getTiposContato().get(0).tipoContato.descricao);
+            }
+
+            System.out.println(request);
+
+            return request;
+        } catch (Exception e) {
             throw new ContatoListaNaoEncontradoException();
         }
-
-        for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
-            System.out.println("-----------------------------------------------------------------------------------");
-            System.out.println("Id: " + listaContatos.contato.id);
-            System.out.println("codigo: " + listaContatos.contato.codigo);
-            System.out.println("nome: " + listaContatos.contato.nome);
-            System.out.println("fantasia: " + listaContatos.contato.fantasia);
-            System.out.println("tipo: " + listaContatos.contato.tipo);
-            System.out.println("cnpj: " + listaContatos.contato.cnpj);
-            System.out.println("cpf_cnpj: " + listaContatos.contato.cpf_cnpj);
-            System.out.println("ie_rg: " + listaContatos.contato.ie_rg);
-            System.out.println("endereco: " + listaContatos.contato.endereco);
-            System.out.println("numero: " + listaContatos.contato.numero);
-            System.out.println("bairro: " + listaContatos.contato.bairro);
-            System.out.println("cep: " + listaContatos.contato.cep);
-            System.out.println("cidade: " + listaContatos.contato.cidade);
-            System.out.println("complemento: " + listaContatos.contato.complemento);
-            System.out.println("uf: " + listaContatos.contato.uf);
-            System.out.println("fone: " + listaContatos.contato.fone);
-            System.out.println("email: " + listaContatos.contato.email);
-            System.out.println("situacao: " + listaContatos.contato.situacao);
-            System.out.println("contribuinte: " + listaContatos.contato.contribuinte);
-            System.out.println("site: " + listaContatos.contato.site);
-            System.out.println("celular: " + listaContatos.contato.celular);
-            System.out.println("dataAlteracao: " + listaContatos.contato.dataAlteracao);
-            System.out.println("dataInclusao: " + listaContatos.contato.dataInclusao);
-            System.out.println("sexo: " + listaContatos.contato.sexo);
-            System.out.println("clienteDesde: " + listaContatos.contato.clienteDesde);
-            System.out.println("limiteCredito: " + listaContatos.contato.limiteCredito);
-            System.out.println("dataNascimento: " + listaContatos.contato.dataNascimento);
-        }
-
-        System.out.println(request);
-
-        return request;
     }
 
     /**
@@ -84,46 +89,52 @@ public class ContatoController {
     @GetMapping("/contato/{cpf_cnpj}")
     @ApiOperation(value = "Retorna um contato pelo CPF ou CNPJ")
     public RespostaResponse getContactsById(@PathVariable String cpf_cnpj) {
-        RespostaResponse request = contatosService.getContactsById(cpf_cnpj);
+        try {
+            RespostaResponse request = contatosService.getContactsById(cpf_cnpj);
 
-        if (request.retorno.contatos == null || request.getRetorno() == null) {
+            if (request.retorno.contatos == null || request.getRetorno() == null) {
+                throw new ContatoIdNaoEncontradoException(cpf_cnpj);
+            }
+
+            for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
+                System.out.println("-----------------------------------------------------------------------------------");
+                System.out.println("Id: " + listaContatos.contato.id);
+                System.out.println("codigo: " + listaContatos.contato.codigo);
+                System.out.println("nome: " + listaContatos.contato.nome);
+                System.out.println("fantasia: " + listaContatos.contato.fantasia);
+                System.out.println("tipo: " + listaContatos.contato.tipo);
+                System.out.println("cnpj: " + listaContatos.contato.cnpj);
+                System.out.println("cpf_cnpj: " + listaContatos.contato.cpf_cnpj);
+                System.out.println("ie_rg: " + listaContatos.contato.ie_rg);
+                System.out.println("endereco: " + listaContatos.contato.endereco);
+                System.out.println("numero: " + listaContatos.contato.numero);
+                System.out.println("bairro: " + listaContatos.contato.bairro);
+                System.out.println("cep: " + listaContatos.contato.cep);
+                System.out.println("cidade: " + listaContatos.contato.cidade);
+                System.out.println("complemento: " + listaContatos.contato.complemento);
+                System.out.println("uf: " + listaContatos.contato.uf);
+                System.out.println("fone: " + listaContatos.contato.fone);
+                System.out.println("email: " + listaContatos.contato.email);
+                System.out.println("situacao: " + listaContatos.contato.situacao);
+                System.out.println("contribuinte: " + listaContatos.contato.contribuinte);
+                System.out.println("site: " + listaContatos.contato.site);
+                System.out.println("celular: " + listaContatos.contato.celular);
+                System.out.println("dataAlteracao: " + listaContatos.contato.dataAlteracao);
+                System.out.println("dataInclusao: " + listaContatos.contato.dataInclusao);
+                System.out.println("sexo: " + listaContatos.contato.sexo);
+                System.out.println("clienteDesde: " + listaContatos.contato.clienteDesde);
+                System.out.println("limiteCredito: " + listaContatos.contato.limiteCredito);
+                System.out.println("dataNascimento: " + listaContatos.contato.dataNascimento);
+                System.out.println("descricao: " + listaContatos.contato.getTiposContato().get(0).tipoContato.descricao);
+
+            }
+
+            System.out.println(request);
+
+            return request;
+        } catch (Exception e) {
             throw new ContatoIdNaoEncontradoException(cpf_cnpj);
         }
-
-        for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
-            System.out.println("-----------------------------------------------------------------------------------");
-            System.out.println("Id: " + listaContatos.contato.id);
-            System.out.println("codigo: " + listaContatos.contato.codigo);
-            System.out.println("nome: " + listaContatos.contato.nome);
-            System.out.println("fantasia: " + listaContatos.contato.fantasia);
-            System.out.println("tipo: " + listaContatos.contato.tipo);
-            System.out.println("cnpj: " + listaContatos.contato.cnpj);
-            System.out.println("cpf_cnpj: " + listaContatos.contato.cpf_cnpj);
-            System.out.println("ie_rg: " + listaContatos.contato.ie_rg);
-            System.out.println("endereco: " + listaContatos.contato.endereco);
-            System.out.println("numero: " + listaContatos.contato.numero);
-            System.out.println("bairro: " + listaContatos.contato.bairro);
-            System.out.println("cep: " + listaContatos.contato.cep);
-            System.out.println("cidade: " + listaContatos.contato.cidade);
-            System.out.println("complemento: " + listaContatos.contato.complemento);
-            System.out.println("uf: " + listaContatos.contato.uf);
-            System.out.println("fone: " + listaContatos.contato.fone);
-            System.out.println("email: " + listaContatos.contato.email);
-            System.out.println("situacao: " + listaContatos.contato.situacao);
-            System.out.println("contribuinte: " + listaContatos.contato.contribuinte);
-            System.out.println("site: " + listaContatos.contato.site);
-            System.out.println("celular: " + listaContatos.contato.celular);
-            System.out.println("dataAlteracao: " + listaContatos.contato.dataAlteracao);
-            System.out.println("dataInclusao: " + listaContatos.contato.dataInclusao);
-            System.out.println("sexo: " + listaContatos.contato.sexo);
-            System.out.println("clienteDesde: " + listaContatos.contato.clienteDesde);
-            System.out.println("limiteCredito: " + listaContatos.contato.limiteCredito);
-            System.out.println("dataNascimento: " + listaContatos.contato.dataNascimento);
-        }
-
-        System.out.println(request);
-
-        return request;
     }
 
     /**
@@ -132,7 +143,7 @@ public class ContatoController {
     @PostMapping(path = "/cadastrarcontato", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo contato")
     public RespostaRequest createContact(@RequestBody String xml) {
-
+        try {
         RespostaRequest request = contatosService.createContact(xml);
 
         if (request.retorno.contatos == null || request.getRetorno() == null) {
@@ -152,6 +163,9 @@ public class ContatoController {
         System.out.println(request);
 
         return request;
+        } catch (Exception e) {
+            throw new ContatoCadastroException();
+        }
     }
 
     /**

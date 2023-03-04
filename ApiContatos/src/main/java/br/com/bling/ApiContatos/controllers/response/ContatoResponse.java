@@ -1,9 +1,12 @@
 package br.com.bling.ApiContatos.controllers.response;
 
+import br.com.bling.ApiContatos.controllers.request.TiposContatosRequest;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class ContatoResponse implements Serializable {
@@ -37,5 +40,5 @@ public class ContatoResponse implements Serializable {
 	public String dataNascimento;
 	public String informacoesContato;
 	@JsonProperty("tiposContato")
-	public Object TiposContatoResponse;
+	public List<TiposContatoResponse> tiposContato;
 }
