@@ -15,23 +15,33 @@ public class ApplicationProdutoExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ProdutoListaNaoEncontradoException.class)
-    public ResponseEntity<String> handleListaProdutoNaoEncontradoException(ProdutoListaNaoEncontradoException ex) {
+    @ExceptionHandler(ProdutoListaException.class)
+    public ResponseEntity<String> handleProdutoListaException(ProdutoListaException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ProdutoCodigoNaoEncontradoException.class)
-    public ResponseEntity<String> handleCodigoProdutoNaoEncontradoException(ProdutoCodigoNaoEncontradoException ex) {
+    @ExceptionHandler(ProdutoCodigoException.class)
+    public ResponseEntity<String> handleProdutoCodigoException(ProdutoCodigoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ProdutoNaoEncontradoExclusaoException.class)
-    public ResponseEntity<String> ProdutoNaoEncontradoParaExclusaoException(ProdutoNaoEncontradoExclusaoException ex) {
+    @ExceptionHandler(ProdutoCodigoFornecedorException.class)
+    public ResponseEntity<String> handleProdutoCodigoFOrnecedorException(ProdutoCodigoFornecedorException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ProdutoExclusaoException.class)
+    public ResponseEntity<String> ProdutoExclusaoException(ProdutoExclusaoException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
     @ExceptionHandler(ProdutoCadastroException.class)
     public ResponseEntity<String> handleProdutoCadastroException(ProdutoCadastroException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ProdutoAtualizarException.class)
+    public ResponseEntity<String> handleProdutoAtualizarException(ProdutoAtualizarException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 

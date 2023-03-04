@@ -69,9 +69,9 @@ public class ProdutoServiceImpl implements ProdutoService {
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU) E NOME DO FORNECEDOR".
      */
     @Override
-    public RespostaResponse getProductByCodeSupplier(String codigo, String idFornecedor) throws ApiProdutoException {
+    public RespostaResponse getProductByCodeSupplier(String codigo, String codigoFabricante) throws ApiProdutoException {
         try {
-            String json = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + idFornecedor + "/json/" + apiKey, String.class);
+            String json = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + codigoFabricante + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
             RespostaResponse request =  objectMapper.readValue(json, RespostaResponse.class);
 
@@ -79,7 +79,7 @@ public class ProdutoServiceImpl implements ProdutoService {
         } catch (JsonProcessingException e) {
             throw new ApiProdutoException("Erro ao processar JSON");
         } catch (RestClientException e) {
-            throw new ApiProdutoException("Não foi possível recuperar o produto do fornecedor. Código: " + codigo + ", Nome do Fornecedor: " + idFornecedor);
+            throw new ApiProdutoException("Não foi possível recuperar o produto do fornecedor. Código: " + codigo + ", Nome do Fornecedor: " + codigoFabricante);
         }
     }
 

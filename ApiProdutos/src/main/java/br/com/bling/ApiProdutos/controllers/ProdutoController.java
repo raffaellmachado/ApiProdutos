@@ -98,7 +98,7 @@ public class ProdutoController {
 
             return request;
         } catch (Exception e) {
-            throw new ProdutoListaNaoEncontradoException();
+            throw new ProdutoListaException();
         }
     }
 
@@ -176,7 +176,7 @@ public class ProdutoController {
 
         return request;
         } catch (Exception e) {
-            throw new ProdutoCodigoNaoEncontradoException(codigo);
+            throw new ProdutoCodigoException(codigo);
         }
     }
 
@@ -185,8 +185,8 @@ public class ProdutoController {
      */
     @GetMapping("/produto/{codigo}/{id_fornecedor}")
     @ApiOperation(value = "Retorna um produto pelo código e nome do fornecedor")
-    public RespostaResponse getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String idFornecedor) {
-        RespostaResponse request = produtoService.getProductByCodeSupplier(codigo, idFornecedor);
+    public RespostaResponse getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String codigoFabricante) {
+        RespostaResponse request = produtoService.getProductByCodeSupplier(codigo, codigoFabricante);
         try {
             if (request.retorno.produtos == null || request.getRetorno() == null) {
                 throw new ApiProdutoException("Produto com código " + codigo + " não encontrado.");
@@ -252,7 +252,7 @@ public class ProdutoController {
 
             return request;
     } catch (Exception e) {
-        throw new ProdutoCodigoNaoEncontradoException(codigo);
+        throw new ProdutoCodigoFornecedorException(codigoFabricante, codigoFabricante);
     }
     }
 
@@ -273,7 +273,7 @@ public class ProdutoController {
 
             return "Produto com o código " + codigo + " foi deletado com sucesso!";
         } catch (Exception e) {
-            throw new ProdutoNaoEncontradoExclusaoException(codigo);
+            throw new ProdutoExclusaoException(codigo);
         }
     }
 

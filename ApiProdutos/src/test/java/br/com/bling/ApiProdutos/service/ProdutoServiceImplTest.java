@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -292,64 +294,63 @@ class ProdutoServiceImplTest {
         System.out.println("TEST DELETE: " + "Código deletado no teste: " + codigo);
     }
 
-
     @Test
     void testCreateProductSimple() {     //TESTE PRODUTO SIMPLES
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":\"01\",\"descricao\":\"01\",\"situacao\":\"01\",\"descricaoCurta\":\"01\",\"descricaoComplementar\":\"01\",\"un\":\"01\",\"vlr_unit\":\"01\",\"preco_custo\":\"01\",\"peso_bruto\":\"01\",\"peso_liq\":\"01\",\"class_fiscal\":\"01\",\"marca\":\"01\",\"origem\":\"01\",\"estoque\":\"01\",\"deposito\":{\"id\":\"01\",\"estoque\":\"01\"},\"gtin\":\"01\",\"gtinEmbalagem\":\"01\",\"largura\":\"01\",\"altura\":\"01\",\"profundidade\":\"01\",\"estoqueMinimo\":\"01\",\"estoqueMaximo\":\"01\",\"cest\":\"01\",\"idGrupoProduto\":\"01\",\"condicao\":\"01\",\"freteGratis\":\"01\",\"linkExterno\":\"01\",\"observacoes\":\"01\",\"producao\":\"01\",\"dataValidade\":\"01\",\"descricaoFornecedor\":\"01\",\"idFabricante\":\"01\",\"codigoFabricante\":\"01\",\"unidadeMedida\":\"01\",\"garantia\":\"01\",\"itensPorCaixa\":\"01\",\"volumes\":\"01\",\"urlVideo\":\"01\",\"imagens\":{\"url\":\"01\"},\"camposCustomizados\":{\"alias\":\"01\"},\"idCategoria\":\"01\"}}]}}";
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"situacao\":\"Ativo\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"estoque\":10,\"deposito\":{\"id\":123456,\"estoque\":200},\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Novo\",\"freteGratis\":\"N\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produtos\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"imagens\":{\"url\":\"https://bling.com.br/bling.jpg\"},\"camposCustomizados\":{\"alias\":16},\"idCategoria\":1234}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
         RespostaRequest result = produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getSituacao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUn());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPeso_bruto());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPeso_liq());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getMarca());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getOrigem());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstoque());
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
+        Assertions.assertEquals("Caneta 001", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
+        Assertions.assertEquals("Ativo", result.getRetorno().getProdutos().get(0).getProduto().getSituacao());
+        Assertions.assertEquals("Descrição curta da caneta", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
+        Assertions.assertEquals("Descrição complementar da caneta", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
+        Assertions.assertEquals("Pc", result.getRetorno().getProdutos().get(0).getProduto().getUn());
+        Assertions.assertEquals(BigDecimal.valueOf(1.68), result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
+        Assertions.assertEquals(BigDecimal.valueOf(1.23), result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
+        Assertions.assertEquals(BigDecimal.valueOf(0.2), result.getRetorno().getProdutos().get(0).getProduto().getPeso_bruto());
+        Assertions.assertEquals(BigDecimal.valueOf(0.18), result.getRetorno().getProdutos().get(0).getProduto().getPeso_liq());
+        Assertions.assertEquals("1000.01.01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
+        Assertions.assertEquals("Marca da Caneta", result.getRetorno().getProdutos().get(0).getProduto().getMarca());
+        Assertions.assertEquals("0", result.getRetorno().getProdutos().get(0).getProduto().getOrigem());
+        Assertions.assertEquals(10, result.getRetorno().getProdutos().get(0).getProduto().getEstoque());
         //DepositoRequest
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDeposito().getId());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDeposito().getEstoque());
+        Assertions.assertEquals(BigDecimal.valueOf(123456), result.getRetorno().getProdutos().get(0).getProduto().getDeposito().getId());
+        Assertions.assertEquals(BigDecimal.valueOf(200), result.getRetorno().getProdutos().get(0).getProduto().getDeposito().getEstoque());
         /*---------------------------------------------------------------------------------------------------------------------*/
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGtin());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGtinEmbalagem());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getLargura());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getAltura());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getProfundidade());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMinimo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMaximo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCest());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCondicao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getFreteGratis());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getProducao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDataValidade());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoFornecedor());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdFabricante());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCodigoFabricante());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUnidadeMedida());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGarantia());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getItensPorCaixa());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVolumes());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getGtin());
+        Assertions.assertEquals("54546", result.getRetorno().getProdutos().get(0).getProduto().getGtinEmbalagem());
+        Assertions.assertEquals("11", result.getRetorno().getProdutos().get(0).getProduto().getLargura());
+        Assertions.assertEquals("21", result.getRetorno().getProdutos().get(0).getProduto().getAltura());
+        Assertions.assertEquals("31", result.getRetorno().getProdutos().get(0).getProduto().getProfundidade());
+        Assertions.assertEquals(BigDecimal.valueOf(1), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMinimo());
+        Assertions.assertEquals(BigDecimal.valueOf(100), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMaximo());
+        Assertions.assertEquals("28.040.00", result.getRetorno().getProdutos().get(0).getProduto().getCest());
+        Assertions.assertEquals(BigDecimal.valueOf(12345), result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
+        Assertions.assertEquals("Novo", result.getRetorno().getProdutos().get(0).getProduto().getCondicao());
+        Assertions.assertEquals("N", result.getRetorno().getProdutos().get(0).getProduto().getFreteGratis());
+        Assertions.assertEquals("https://minhaloja.com.br/meu-produto", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
+        Assertions.assertEquals("Observações do meu produtos", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
+        Assertions.assertEquals("P", result.getRetorno().getProdutos().get(0).getProduto().getProducao());
+        Assertions.assertEquals("20/11/2019", result.getRetorno().getProdutos().get(0).getProduto().getDataValidade());
+        Assertions.assertEquals("Descrição do fornecedor", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoFornecedor());
+        Assertions.assertEquals(BigDecimal.valueOf(0), result.getRetorno().getProdutos().get(0).getProduto().getIdFabricante());
+        Assertions.assertEquals("123", result.getRetorno().getProdutos().get(0).getProduto().getCodigoFabricante());
+        Assertions.assertEquals("Centímetros", result.getRetorno().getProdutos().get(0).getProduto().getUnidadeMedida());
+        Assertions.assertEquals(4, result.getRetorno().getProdutos().get(0).getProduto().getGarantia());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getItensPorCaixa());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getVolumes());
+        Assertions.assertEquals("https://www.youtube.com/watch?v=zKKL-SgC5lY", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
         //ImagemRequest
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getImagens().getUrl());
+        Assertions.assertEquals("https://bling.com.br/bling.jpg", result.getRetorno().getProdutos().get(0).getProduto().getImagens().get(0).getUrl());
         //CamposCustomizadosReques
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCamposCustomizados().getAlias());
+        Assertions.assertEquals("16", result.getRetorno().getProdutos().get(0).getProduto().getCamposCustomizados().getAlias());
         /*---------------------------------------------------------------------------------------------------------------------*/
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdCategoria());
+        Assertions.assertEquals(BigDecimal.valueOf(1234), result.getRetorno().getProdutos().get(0).getProduto().getIdCategoria());
 
         System.out.println("TEST POST CREATE PRODUCT SIMPLE: " + result);
     }
@@ -357,63 +358,63 @@ class ProdutoServiceImplTest {
     @Test
     void testCreateProductVariation() {     //TESTE PRODUTO COM VARIAÇÃO.
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":\"01\",\"descricao\":\"01\",\"descricaoCurta\":\"01\",\"descricaoComplementar\":\"01\",\"un\":\"01\",\"vlr_unit\":\"01\",\"preco_custo\":\"01\",\"peso_bruto\":\"01\",\"peso_liq\":\"01\",\"class_fiscal\":\"01\",\"marca\":\"01\",\"origem\":\"01\",\"gtin\":\"01\",\"gtinEmbalagem\":\"01\",\"largura\":\"01\",\"altura\":\"01\",\"profundidade\":\"01\",\"estoqueMinimo\":\"01\",\"estoqueMaximo\":\"01\",\"cest\":\"01\",\"idGrupoProduto\":\"01\",\"condicao\":\"01\",\"freteGratis\":\"01\",\"linkExterno\":\"01\",\"observacoes\":\"01\",\"producao\":\"01\",\"dataValidade\":\"01\",\"descricaoFornecedor\":\"01\",\"idFabricante\":\"01\",\"codigoFabricante\":\"01\",\"unidadeMedida\":\"01\",\"crossdocking\":\"01\",\"garantia\":\"01\",\"itensPorCaixa\":\"01\",\"volumes\":\"01\",\"urlVideo\":\"01\",\"idCategoria\":\"01\",\"variacoes\":{\"variacao\":[{\"nome\":\"01\",\"codigo\":\"01\",\"clonarDadosPai\":\"01\",\"vlr_unit\":\"01\",\"estoque\":\"01\",\"un\":\"01\",\"deposito\":{\"id\":\"01\",\"estoque\":\"01\"}}]},\"imagens\":{\"url\":\"01\"}}}]}}";
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"variacoes\":{\"variacao\":[{\"nome\":\"Cor:Preto\",\"codigo\":\"223435780\",\"clonarDadosPai\":\"S\",\"vlr_unit\":150,\"estoque\":120,\"un\":\"1\",\"deposito\":{\"id\":123456,\"estoque\":200}}]},\"imagens\":{\"url\":\"https://www.bling.com.br/bling.jpg\"}}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
         RespostaRequest result = produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUn());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPeso_bruto());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPeso_liq());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getMarca());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getOrigem());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGtin());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGtinEmbalagem());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getLargura());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getAltura());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getProfundidade());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMinimo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMaximo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCest());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCondicao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getFreteGratis());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getProducao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDataValidade());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoFornecedor());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdFabricante());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCodigoFabricante());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUnidadeMedida());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCrossdocking());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGarantia());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getItensPorCaixa());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVolumes());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdCategoria());
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
+        Assertions.assertEquals("Caneta 001", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
+        Assertions.assertEquals("Descrição curta da caneta", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
+        Assertions.assertEquals("Descrição complementar da caneta", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
+        Assertions.assertEquals("Pc", result.getRetorno().getProdutos().get(0).getProduto().getUn());
+        Assertions.assertEquals(BigDecimal.valueOf(1.68), result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
+        Assertions.assertEquals(BigDecimal.valueOf(1.23), result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
+        Assertions.assertEquals(BigDecimal.valueOf(0.2), result.getRetorno().getProdutos().get(0).getProduto().getPeso_bruto());
+        Assertions.assertEquals(BigDecimal.valueOf(0.18), result.getRetorno().getProdutos().get(0).getProduto().getPeso_liq());
+        Assertions.assertEquals("1000.01.01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
+        Assertions.assertEquals("Marca da Caneta", result.getRetorno().getProdutos().get(0).getProduto().getMarca());
+        Assertions.assertEquals("0", result.getRetorno().getProdutos().get(0).getProduto().getOrigem());
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getGtin());
+        Assertions.assertEquals("54546", result.getRetorno().getProdutos().get(0).getProduto().getGtinEmbalagem());
+        Assertions.assertEquals("11", result.getRetorno().getProdutos().get(0).getProduto().getLargura());
+        Assertions.assertEquals("21", result.getRetorno().getProdutos().get(0).getProduto().getAltura());
+        Assertions.assertEquals("31", result.getRetorno().getProdutos().get(0).getProduto().getProfundidade());
+        Assertions.assertEquals(BigDecimal.valueOf(1), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMinimo());
+        Assertions.assertEquals(BigDecimal.valueOf(100), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMaximo());
+        Assertions.assertEquals("1000.01.01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
+        Assertions.assertEquals("28.040.00", result.getRetorno().getProdutos().get(0).getProduto().getCest());
+        Assertions.assertEquals(BigDecimal.valueOf(12345), result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
+        Assertions.assertEquals("Usado", result.getRetorno().getProdutos().get(0).getProduto().getCondicao());
+        Assertions.assertEquals("S", result.getRetorno().getProdutos().get(0).getProduto().getFreteGratis());
+        Assertions.assertEquals("https://minhaloja.com.br/meu-produto", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
+        Assertions.assertEquals("Observações do meu produto", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
+        Assertions.assertEquals("P", result.getRetorno().getProdutos().get(0).getProduto().getProducao());
+        Assertions.assertEquals("20/11/2019", result.getRetorno().getProdutos().get(0).getProduto().getDataValidade());
+        Assertions.assertEquals("Descrição do fornecedor", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoFornecedor());
+        Assertions.assertEquals(BigDecimal.valueOf(0), result.getRetorno().getProdutos().get(0).getProduto().getIdFabricante());
+        Assertions.assertEquals("123", result.getRetorno().getProdutos().get(0).getProduto().getCodigoFabricante());
+        Assertions.assertEquals("Centímetros", result.getRetorno().getProdutos().get(0).getProduto().getUnidadeMedida());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getCrossdocking());
+        Assertions.assertEquals(4, result.getRetorno().getProdutos().get(0).getProduto().getGarantia());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getItensPorCaixa());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getVolumes());
+        Assertions.assertEquals("https://www.youtube.com/watch?v=zKKL-SgC5lY", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
+        Assertions.assertEquals(BigDecimal.valueOf(1234), result.getRetorno().getProdutos().get(0).getProduto().getIdCategoria());
         //VariacaoRequest
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getNome());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getCodigo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getClonarDadosPai());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getEstoque());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getUn());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getVlr_unit());
+        Assertions.assertEquals("Cor:Preto", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getNome());
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getCodigo());
+        Assertions.assertEquals("S", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getClonarDadosPai());
+        Assertions.assertEquals(BigDecimal.valueOf(120), result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getEstoque());
+        Assertions.assertEquals("1", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getUn());
+        Assertions.assertEquals(BigDecimal.valueOf(150), result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getVlr_unit());
         //DepositoRequest
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getDeposito().getId());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getDeposito().getEstoque());
+        Assertions.assertEquals(BigDecimal.valueOf(123456), result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getDeposito().getId());
+        Assertions.assertEquals(BigDecimal.valueOf(200), result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getDeposito().getEstoque());
         //ImagemRequest
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getImagens().getUrl());
+        Assertions.assertEquals("https://www.bling.com.br/bling.jpg", result.getRetorno().getProdutos().get(0).getProduto().getImagens().get(0).getUrl());
 
         System.out.println("TEST POST CREATE PRODUCT WITH VARIATION: " + result);
 
@@ -422,59 +423,58 @@ class ProdutoServiceImplTest {
     @Test
     void testCreateProductComposition() {     //TESTE PRODUTO COM COMPOSIÇÃO.
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":\"01\",\"descricao\":\"01\",\"descricaoCurta\":\"01\",\"descricaoComplementar\":\"01\",\"un\":\"01\",\"vlr_unit\":\"01\",\"preco_custo\":\"01\",\"peso_bruto\":\"01\",\"peso_liq\":\"01\",\"class_fiscal\":\"01\",\"marca\":\"01\",\"origem\":\"01\",\"gtin\":\"01\",\"gtinEmbalagem\":\"01\",\"largura\":\"01\",\"altura\":\"01\",\"profundidade\":\"01\",\"estoqueMinimo\":\"01\",\"estoqueMaximo\":\"01\",\"cest\":\"01\",\"idGrupoProduto\":\"01\",\"condicao\":\"01\",\"freteGratis\":\"01\",\"linkExterno\":\"01\",\"observacoes\":\"01\",\"producao\":\"01\",\"dataValidade\":\"01\",\"descricaoFornecedor\":\"01\",\"idFabricante\":\"01\",\"codigoFabricante\":\"01\",\"unidadeMedida\":\"01\",\"crossdocking\":\"01\",\"garantia\":\"01\",\"itensPorCaixa\":\"01\",\"volumes\":\"01\",\"urlVideo\":\"01\",\"idCategoria\":\"01\",\"imagens\":{\"url\":\"01\"},\"estrutura\":{\"tipoEstoque\":\"01\",\"lancarEstoque\":\"01\",\"componente\":[{\"nome\":\"01\",\"codigo\":\"01\",\"quantidade\":\"01\"},{\"nome\":\"01\",\"codigo\":\"01\",\"quantidade\":\"01\"}]}}}]}}";
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":456489798,\"descricao\":\"Kit 001\",\"descricaoCurta\":\"Kit caneca e copo\",\"descricaoComplementar\":\"Descrição complementar\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"imagens\":{\"url\":\"https://www.bling.com.br/bling.jpg\"},\"estrutura\":{\"tipoEstoque\":\"F\",\"lancarEstoque\":\"P\",\"componente\":[{\"nome\":\"Caneca Vermelha\",\"codigo\":\"caneca123\",\"quantidade\":2},{\"nome\":\"Copo 300 ml\",\"codigo\":\"copo123\",\"quantidade\":2}]}}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
         RespostaRequest result = produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUn());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPeso_bruto());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPeso_liq());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getMarca());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getOrigem());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGtin());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGtinEmbalagem());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getLargura());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getAltura());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getProfundidade());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMinimo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMaximo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCest());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCondicao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getFreteGratis());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getProducao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDataValidade());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoFornecedor());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdFabricante());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCodigoFabricante());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUnidadeMedida());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCrossdocking());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGarantia());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getItensPorCaixa());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVolumes());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdCategoria());
+        Assertions.assertEquals("456489798", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
+        Assertions.assertEquals("Kit 001", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
+        Assertions.assertEquals("Kit caneca e copo", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
+        Assertions.assertEquals("Descrição complementar", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
+        Assertions.assertEquals("Pc", result.getRetorno().getProdutos().get(0).getProduto().getUn());
+        Assertions.assertEquals(BigDecimal.valueOf(1.68), result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
+        Assertions.assertEquals(BigDecimal.valueOf(1.23), result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
+        Assertions.assertEquals(BigDecimal.valueOf(0.2), result.getRetorno().getProdutos().get(0).getProduto().getPeso_bruto());
+        Assertions.assertEquals(BigDecimal.valueOf(0.18), result.getRetorno().getProdutos().get(0).getProduto().getPeso_liq());
+        Assertions.assertEquals("1000.01.01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
+        Assertions.assertEquals("Marca da Caneta", result.getRetorno().getProdutos().get(0).getProduto().getMarca());
+        Assertions.assertEquals("0", result.getRetorno().getProdutos().get(0).getProduto().getOrigem());
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getGtin());
+        Assertions.assertEquals("54546", result.getRetorno().getProdutos().get(0).getProduto().getGtinEmbalagem());
+        Assertions.assertEquals("11", result.getRetorno().getProdutos().get(0).getProduto().getLargura());
+        Assertions.assertEquals("21", result.getRetorno().getProdutos().get(0).getProduto().getAltura());
+        Assertions.assertEquals("31", result.getRetorno().getProdutos().get(0).getProduto().getProfundidade());
+        Assertions.assertEquals(BigDecimal.valueOf(1), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMinimo());
+        Assertions.assertEquals(BigDecimal.valueOf(100), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMaximo());
+        Assertions.assertEquals("28.040.00", result.getRetorno().getProdutos().get(0).getProduto().getCest());
+        Assertions.assertEquals(BigDecimal.valueOf(12345), result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
+        Assertions.assertEquals("Usado", result.getRetorno().getProdutos().get(0).getProduto().getCondicao());
+        Assertions.assertEquals("S", result.getRetorno().getProdutos().get(0).getProduto().getFreteGratis());
+        Assertions.assertEquals("https://minhaloja.com.br/meu-produto", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
+        Assertions.assertEquals("Observações do meu produto", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
+        Assertions.assertEquals("P", result.getRetorno().getProdutos().get(0).getProduto().getProducao());
+        Assertions.assertEquals("20/11/2019", result.getRetorno().getProdutos().get(0).getProduto().getDataValidade());
+        Assertions.assertEquals("Descrição do fornecedor", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoFornecedor());
+        Assertions.assertEquals(BigDecimal.valueOf(0), result.getRetorno().getProdutos().get(0).getProduto().getIdFabricante());
+        Assertions.assertEquals("123", result.getRetorno().getProdutos().get(0).getProduto().getCodigoFabricante());
+        Assertions.assertEquals("Centímetros", result.getRetorno().getProdutos().get(0).getProduto().getUnidadeMedida());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getCrossdocking());
+        Assertions.assertEquals(4, result.getRetorno().getProdutos().get(0).getProduto().getGarantia());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getItensPorCaixa());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getVolumes());
+        Assertions.assertEquals("https://www.youtube.com/watch?v=zKKL-SgC5lY", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
+        Assertions.assertEquals(BigDecimal.valueOf(1234), result.getRetorno().getProdutos().get(0).getProduto().getIdCategoria());
         //ImagemRequest
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getImagens().getUrl());
+        Assertions.assertEquals("https://www.bling.com.br/bling.jpg", result.getRetorno().getProdutos().get(0).getProduto().getImagens().get(0).getUrl());
         //ComponenteRequest
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getTipoEstoque());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getLancarEstoque());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getComponente().get(0).getNome());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getComponente().get(0).getCodigo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getComponente().get(0).getQuantidade());
+        Assertions.assertEquals("F", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getTipoEstoque());
+        Assertions.assertEquals("P", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getLancarEstoque());
+        Assertions.assertEquals("Caneca Vermelha", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getComponente().get(0).getNome());
+        Assertions.assertEquals("caneca123", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getComponente().get(0).getCodigo());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getComponente().get(0).getQuantidade());
 
 
         System.out.println("TEST POST CREATE PRODUCT WITH COMPOSITION: " + result);
@@ -500,73 +500,232 @@ class ProdutoServiceImplTest {
         Assertions.assertEquals("Descrição complementar do serviço", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
         Assertions.assertEquals("UN", result.getRetorno().getProdutos().get(0).getProduto().getUn());
 
-        Assertions.assertEquals("1675", result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
+        Assertions.assertEquals(BigDecimal.valueOf(1675), result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
         Assertions.assertEquals("https://site.com.br/servico", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
         Assertions.assertEquals("Observações do serviço", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
-        Assertions.assertEquals("85", result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
-        Assertions.assertEquals("50", result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
+        Assertions.assertEquals(BigDecimal.valueOf(85), result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
+        Assertions.assertEquals(BigDecimal.valueOf(50), result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
         Assertions.assertEquals("https://www.youtube.com/watch?v=zKKL-SgC5lY", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
 
         System.out.println("TEST POST CREATE PRODUCT SERVICE: " + result);
 
     }
+
     @Test
-    void testUpdateProduct() {
+    void testUpdateProductSimple() {
 
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"id\":\"01\",\"codigo\":\"01\",\"codigoItem\":\"01\",\"descricao\":\"01\",\"tipo\":\"01\",\"situacao\":\"01\",\"descricaoCurta\":\"01\",\"descricaoComplementar\":\"01\",\"un\":\"01\",\"vlr_unit\":\"01\",\"preco_custo\":\"01\",\"peso_bruto\":\"01\",\"peso_liq\":\"01\",\"class_fiscal\":\"01\",\"marca\":\"01\",\"cest\":\"01\",\"origem\":\"01\",\"idGrupoProduto\":\"01\",\"condicao\":\"01\",\"freteGratis\":\"01\",\"linkExterno\":\"01\",\"observacoes\":\"01\",\"producao\":\"01\",\"unidadeMedida\":\"01\",\"dataValidade\":\"01\",\"descricaoFornecedor\":\"01\",\"idFabricante\":\"01\",\"codigoFabricante\":\"01\",\"deposito\":{\"id\":\"01\",\"estoque\":\"01\"},\"gtin\":\"01\",\"gtinEmbalagem\":\"01\",\"largura\":\"01\",\"altura\":\"01\",\"profundidade\":\"01\",\"estoqueMinimo\":\"01\",\"estoqueMaximo\":\"01\",\"itensPorCaixa\":\"01\",\"volumes\":\"01\",\"urlVideo\":\"01\",\"localizacao\":\"01\",\"crossdocking\":\"01\",\"garantia\":\"01\",\"spedTipoItem\":\"01\",\"idCategoria\":\"01\"}}]}}";
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"situacao\":\"Ativo\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"estoque\":10,\"deposito\":{\"id\":123456,\"estoque\":200},\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Novo\",\"freteGratis\":\"N\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produtos\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"imagens\":{\"url\":\"https://bling.com.br/bling.jpg\"},\"camposCustomizados\":{\"alias\":16},\"idCategoria\":1234}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
         RespostaRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getId());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCodigoItem());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getTipo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getSituacao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUn());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPeso_bruto());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getPeso_liq());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getMarca());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCest());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getOrigem());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCondicao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getFreteGratis());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getProducao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUnidadeMedida());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDataValidade());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoFornecedor());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdFabricante());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCodigoFabricante());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDeposito().getId());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getDeposito().getEstoque());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGtin());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGtinEmbalagem());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getLargura());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getAltura());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getProfundidade());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMinimo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMaximo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getItensPorCaixa());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getVolumes());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getLocalizacao());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getCrossdocking());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getGarantia());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getSpedTipoItem());
-        Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getIdCategoria());
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
+        Assertions.assertEquals("Caneta 001", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
+        Assertions.assertEquals("Ativo", result.getRetorno().getProdutos().get(0).getProduto().getSituacao());
+        Assertions.assertEquals("Descrição curta da caneta", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
+        Assertions.assertEquals("Descrição complementar da caneta", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
+        Assertions.assertEquals("Pc", result.getRetorno().getProdutos().get(0).getProduto().getUn());
+        Assertions.assertEquals(BigDecimal.valueOf(1.68), result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
+        Assertions.assertEquals(BigDecimal.valueOf(1.23), result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
+        Assertions.assertEquals(BigDecimal.valueOf(0.2), result.getRetorno().getProdutos().get(0).getProduto().getPeso_bruto());
+        Assertions.assertEquals(BigDecimal.valueOf(0.18), result.getRetorno().getProdutos().get(0).getProduto().getPeso_liq());
+        Assertions.assertEquals("1000.01.01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
+        Assertions.assertEquals("Marca da Caneta", result.getRetorno().getProdutos().get(0).getProduto().getMarca());
+        Assertions.assertEquals("0", result.getRetorno().getProdutos().get(0).getProduto().getOrigem());
+        Assertions.assertEquals(10, result.getRetorno().getProdutos().get(0).getProduto().getEstoque());
+        //DepositoRequest
+        Assertions.assertEquals(BigDecimal.valueOf(123456), result.getRetorno().getProdutos().get(0).getProduto().getDeposito().getId());
+        Assertions.assertEquals(BigDecimal.valueOf(200), result.getRetorno().getProdutos().get(0).getProduto().getDeposito().getEstoque());
+        /*---------------------------------------------------------------------------------------------------------------------*/
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getGtin());
+        Assertions.assertEquals("54546", result.getRetorno().getProdutos().get(0).getProduto().getGtinEmbalagem());
+        Assertions.assertEquals("11", result.getRetorno().getProdutos().get(0).getProduto().getLargura());
+        Assertions.assertEquals("21", result.getRetorno().getProdutos().get(0).getProduto().getAltura());
+        Assertions.assertEquals("31", result.getRetorno().getProdutos().get(0).getProduto().getProfundidade());
+        Assertions.assertEquals(BigDecimal.valueOf(1), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMinimo());
+        Assertions.assertEquals(BigDecimal.valueOf(100), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMaximo());
+        Assertions.assertEquals("28.040.00", result.getRetorno().getProdutos().get(0).getProduto().getCest());
+        Assertions.assertEquals(BigDecimal.valueOf(12345), result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
+        Assertions.assertEquals("Novo", result.getRetorno().getProdutos().get(0).getProduto().getCondicao());
+        Assertions.assertEquals("N", result.getRetorno().getProdutos().get(0).getProduto().getFreteGratis());
+        Assertions.assertEquals("https://minhaloja.com.br/meu-produto", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
+        Assertions.assertEquals("Observações do meu produtos", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
+        Assertions.assertEquals("P", result.getRetorno().getProdutos().get(0).getProduto().getProducao());
+        Assertions.assertEquals("20/11/2019", result.getRetorno().getProdutos().get(0).getProduto().getDataValidade());
+        Assertions.assertEquals("Descrição do fornecedor", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoFornecedor());
+        Assertions.assertEquals(BigDecimal.valueOf(0), result.getRetorno().getProdutos().get(0).getProduto().getIdFabricante());
+        Assertions.assertEquals("123", result.getRetorno().getProdutos().get(0).getProduto().getCodigoFabricante());
+        Assertions.assertEquals("Centímetros", result.getRetorno().getProdutos().get(0).getProduto().getUnidadeMedida());
+        Assertions.assertEquals(4, result.getRetorno().getProdutos().get(0).getProduto().getGarantia());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getItensPorCaixa());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getVolumes());
+        Assertions.assertEquals("https://www.youtube.com/watch?v=zKKL-SgC5lY", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
+        //ImagemRequest
+        Assertions.assertEquals("https://bling.com.br/bling.jpg", result.getRetorno().getProdutos().get(0).getProduto().getImagens().get(0).getUrl());
+        //CamposCustomizadosReques
+        Assertions.assertEquals("16", result.getRetorno().getProdutos().get(0).getProduto().getCamposCustomizados().getAlias());
+        /*---------------------------------------------------------------------------------------------------------------------*/
+        Assertions.assertEquals(BigDecimal.valueOf(1234), result.getRetorno().getProdutos().get(0).getProduto().getIdCategoria());
 
-        System.out.println("TEST POST UPDATE: " + result);
+        System.out.println("TEST POST UPDATE PRODUCT SIMPLE: " + result);
+    }
+
+    @Test
+    void testUpdateProductVariation() {     //TESTE PRODUTO COM VARIAÇÃO.
+        // Simula a resposta da chamada para a API externa
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"variacoes\":{\"variacao\":[{\"nome\":\"Cor:Preto\",\"codigo\":\"223435780\",\"clonarDadosPai\":\"S\",\"vlr_unit\":150,\"estoque\":120,\"un\":\"1\",\"deposito\":{\"id\":123456,\"estoque\":200}}]},\"imagens\":{\"url\":\"https://www.bling.com.br/bling.jpg\"}}}]}}";
+        when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+
+        // Chama o método que deve converter a resposta em um objeto RespostaRequest
+        RespostaRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+
+        // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
+        Assertions.assertEquals("Caneta 001", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
+        Assertions.assertEquals("Descrição curta da caneta", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
+        Assertions.assertEquals("Descrição complementar da caneta", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
+        Assertions.assertEquals("Pc", result.getRetorno().getProdutos().get(0).getProduto().getUn());
+        Assertions.assertEquals(BigDecimal.valueOf(1.68), result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
+        Assertions.assertEquals(BigDecimal.valueOf(1.23), result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
+        Assertions.assertEquals(BigDecimal.valueOf(0.2), result.getRetorno().getProdutos().get(0).getProduto().getPeso_bruto());
+        Assertions.assertEquals(BigDecimal.valueOf(0.18), result.getRetorno().getProdutos().get(0).getProduto().getPeso_liq());
+        Assertions.assertEquals("1000.01.01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
+        Assertions.assertEquals("Marca da Caneta", result.getRetorno().getProdutos().get(0).getProduto().getMarca());
+        Assertions.assertEquals("0", result.getRetorno().getProdutos().get(0).getProduto().getOrigem());
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getGtin());
+        Assertions.assertEquals("54546", result.getRetorno().getProdutos().get(0).getProduto().getGtinEmbalagem());
+        Assertions.assertEquals("11", result.getRetorno().getProdutos().get(0).getProduto().getLargura());
+        Assertions.assertEquals("21", result.getRetorno().getProdutos().get(0).getProduto().getAltura());
+        Assertions.assertEquals("31", result.getRetorno().getProdutos().get(0).getProduto().getProfundidade());
+        Assertions.assertEquals(BigDecimal.valueOf(1), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMinimo());
+        Assertions.assertEquals(BigDecimal.valueOf(100), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMaximo());
+        Assertions.assertEquals("1000.01.01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
+        Assertions.assertEquals("28.040.00", result.getRetorno().getProdutos().get(0).getProduto().getCest());
+        Assertions.assertEquals(BigDecimal.valueOf(12345), result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
+        Assertions.assertEquals("Usado", result.getRetorno().getProdutos().get(0).getProduto().getCondicao());
+        Assertions.assertEquals("S", result.getRetorno().getProdutos().get(0).getProduto().getFreteGratis());
+        Assertions.assertEquals("https://minhaloja.com.br/meu-produto", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
+        Assertions.assertEquals("Observações do meu produto", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
+        Assertions.assertEquals("P", result.getRetorno().getProdutos().get(0).getProduto().getProducao());
+        Assertions.assertEquals("20/11/2019", result.getRetorno().getProdutos().get(0).getProduto().getDataValidade());
+        Assertions.assertEquals("Descrição do fornecedor", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoFornecedor());
+        Assertions.assertEquals(BigDecimal.valueOf(0), result.getRetorno().getProdutos().get(0).getProduto().getIdFabricante());
+        Assertions.assertEquals("123", result.getRetorno().getProdutos().get(0).getProduto().getCodigoFabricante());
+        Assertions.assertEquals("Centímetros", result.getRetorno().getProdutos().get(0).getProduto().getUnidadeMedida());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getCrossdocking());
+        Assertions.assertEquals(4, result.getRetorno().getProdutos().get(0).getProduto().getGarantia());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getItensPorCaixa());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getVolumes());
+        Assertions.assertEquals("https://www.youtube.com/watch?v=zKKL-SgC5lY", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
+        Assertions.assertEquals(BigDecimal.valueOf(1234), result.getRetorno().getProdutos().get(0).getProduto().getIdCategoria());
+        //VariacaoRequest
+        Assertions.assertEquals("Cor:Preto", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getNome());
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getCodigo());
+        Assertions.assertEquals("S", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getClonarDadosPai());
+        Assertions.assertEquals(BigDecimal.valueOf(120), result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getEstoque());
+        Assertions.assertEquals("1", result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getUn());
+        Assertions.assertEquals(BigDecimal.valueOf(150), result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getVlr_unit());
+        //DepositoRequest
+        Assertions.assertEquals(BigDecimal.valueOf(123456), result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getDeposito().getId());
+        Assertions.assertEquals(BigDecimal.valueOf(200), result.getRetorno().getProdutos().get(0).getProduto().getVariacoes().getVariacao().get(0).getDeposito().getEstoque());
+        //ImagemRequest
+        Assertions.assertEquals("https://www.bling.com.br/bling.jpg", result.getRetorno().getProdutos().get(0).getProduto().getImagens().get(0).getUrl());
+
+        System.out.println("TEST POST UPDATE PRODUCT WITH VARIATION: " + result);
+
+    }
+
+    @Test
+    void testCreateUpdateComposition() {     //TESTE PRODUTO COM COMPOSIÇÃO.
+        // Simula a resposta da chamada para a API externa
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":456489798,\"descricao\":\"Kit 001\",\"descricaoCurta\":\"Kit caneca e copo\",\"descricaoComplementar\":\"Descrição complementar\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"imagens\":{\"url\":\"https://www.bling.com.br/bling.jpg\"},\"estrutura\":{\"tipoEstoque\":\"F\",\"lancarEstoque\":\"P\",\"componente\":[{\"nome\":\"Caneca Vermelha\",\"codigo\":\"caneca123\",\"quantidade\":2},{\"nome\":\"Copo 300 ml\",\"codigo\":\"copo123\",\"quantidade\":2}]}}}]}}";
+        when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+
+        // Chama o método que deve converter a resposta em um objeto RespostaRequest
+        RespostaRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+
+        // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
+        Assertions.assertEquals("456489798", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
+        Assertions.assertEquals("Kit 001", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
+        Assertions.assertEquals("Kit caneca e copo", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
+        Assertions.assertEquals("Descrição complementar", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
+        Assertions.assertEquals("Pc", result.getRetorno().getProdutos().get(0).getProduto().getUn());
+        Assertions.assertEquals(BigDecimal.valueOf(1.68), result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
+        Assertions.assertEquals(BigDecimal.valueOf(1.23), result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
+        Assertions.assertEquals(BigDecimal.valueOf(0.2), result.getRetorno().getProdutos().get(0).getProduto().getPeso_bruto());
+        Assertions.assertEquals(BigDecimal.valueOf(0.18), result.getRetorno().getProdutos().get(0).getProduto().getPeso_liq());
+        Assertions.assertEquals("1000.01.01", result.getRetorno().getProdutos().get(0).getProduto().getClass_fiscal());
+        Assertions.assertEquals("Marca da Caneta", result.getRetorno().getProdutos().get(0).getProduto().getMarca());
+        Assertions.assertEquals("0", result.getRetorno().getProdutos().get(0).getProduto().getOrigem());
+        Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getGtin());
+        Assertions.assertEquals("54546", result.getRetorno().getProdutos().get(0).getProduto().getGtinEmbalagem());
+        Assertions.assertEquals("11", result.getRetorno().getProdutos().get(0).getProduto().getLargura());
+        Assertions.assertEquals("21", result.getRetorno().getProdutos().get(0).getProduto().getAltura());
+        Assertions.assertEquals("31", result.getRetorno().getProdutos().get(0).getProduto().getProfundidade());
+        Assertions.assertEquals(BigDecimal.valueOf(1), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMinimo());
+        Assertions.assertEquals(BigDecimal.valueOf(100), result.getRetorno().getProdutos().get(0).getProduto().getEstoqueMaximo());
+        Assertions.assertEquals("28.040.00", result.getRetorno().getProdutos().get(0).getProduto().getCest());
+        Assertions.assertEquals(BigDecimal.valueOf(12345), result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
+        Assertions.assertEquals("Usado", result.getRetorno().getProdutos().get(0).getProduto().getCondicao());
+        Assertions.assertEquals("S", result.getRetorno().getProdutos().get(0).getProduto().getFreteGratis());
+        Assertions.assertEquals("https://minhaloja.com.br/meu-produto", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
+        Assertions.assertEquals("Observações do meu produto", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
+        Assertions.assertEquals("P", result.getRetorno().getProdutos().get(0).getProduto().getProducao());
+        Assertions.assertEquals("20/11/2019", result.getRetorno().getProdutos().get(0).getProduto().getDataValidade());
+        Assertions.assertEquals("Descrição do fornecedor", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoFornecedor());
+        Assertions.assertEquals(BigDecimal.valueOf(0), result.getRetorno().getProdutos().get(0).getProduto().getIdFabricante());
+        Assertions.assertEquals("123", result.getRetorno().getProdutos().get(0).getProduto().getCodigoFabricante());
+        Assertions.assertEquals("Centímetros", result.getRetorno().getProdutos().get(0).getProduto().getUnidadeMedida());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getCrossdocking());
+        Assertions.assertEquals(4, result.getRetorno().getProdutos().get(0).getProduto().getGarantia());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getItensPorCaixa());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getVolumes());
+        Assertions.assertEquals("https://www.youtube.com/watch?v=zKKL-SgC5lY", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
+        Assertions.assertEquals(BigDecimal.valueOf(1234), result.getRetorno().getProdutos().get(0).getProduto().getIdCategoria());
+        //ImagemRequest
+        Assertions.assertEquals("https://www.bling.com.br/bling.jpg", result.getRetorno().getProdutos().get(0).getProduto().getImagens().get(0).getUrl());
+        //ComponenteRequest
+        Assertions.assertEquals("F", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getTipoEstoque());
+        Assertions.assertEquals("P", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getLancarEstoque());
+        Assertions.assertEquals("Caneca Vermelha", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getComponente().get(0).getNome());
+        Assertions.assertEquals("caneca123", result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getComponente().get(0).getCodigo());
+        Assertions.assertEquals(BigDecimal.valueOf(2), result.getRetorno().getProdutos().get(0).getProduto().getEstrutura().getComponente().get(0).getQuantidade());
+
+
+        System.out.println("TEST POST UPDATE PRODUCT WITH COMPOSITION: " + result);
+
+    }
+
+    @Test
+    void testUpdateProductService() {     //TESTE PRODUTO SERVIÇO.
+        // Simula a resposta da chamada para a API externa
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":123456,\"tipo\":\"S\",\"situacao\":\"Ativo\",\"descricao\":\"Formatação PC\",\"descricaoCurta\":\"Descrição curta do serviço\",\"descricaoComplementar\":\"Descrição complementar do serviço\",\"un\":\"UN\",\"idGrupoProduto\":1675,\"linkExterno\":\"https://site.com.br/servico\",\"observacoes\":\"Observações do serviço\",\"vlr_unit\":85,\"preco_custo\":50,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\"}}]}}";
+        when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+
+        // Chama o método que deve converter a resposta em um objeto RespostaRequest
+        RespostaRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+
+        // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
+        Assertions.assertEquals("123456", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
+        Assertions.assertEquals("S", result.getRetorno().getProdutos().get(0).getProduto().getTipo());
+        Assertions.assertEquals("Ativo", result.getRetorno().getProdutos().get(0).getProduto().getSituacao());
+
+        Assertions.assertEquals("Formatação PC", result.getRetorno().getProdutos().get(0).getProduto().getDescricao());
+        Assertions.assertEquals("Descrição curta do serviço", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoCurta());
+        Assertions.assertEquals("Descrição complementar do serviço", result.getRetorno().getProdutos().get(0).getProduto().getDescricaoComplementar());
+        Assertions.assertEquals("UN", result.getRetorno().getProdutos().get(0).getProduto().getUn());
+
+        Assertions.assertEquals(BigDecimal.valueOf(1675), result.getRetorno().getProdutos().get(0).getProduto().getIdGrupoProduto());
+        Assertions.assertEquals("https://site.com.br/servico", result.getRetorno().getProdutos().get(0).getProduto().getLinkExterno());
+        Assertions.assertEquals("Observações do serviço", result.getRetorno().getProdutos().get(0).getProduto().getObservacoes());
+        Assertions.assertEquals(BigDecimal.valueOf(85), result.getRetorno().getProdutos().get(0).getProduto().getVlr_unit());
+        Assertions.assertEquals(BigDecimal.valueOf(50), result.getRetorno().getProdutos().get(0).getProduto().getPreco_custo());
+        Assertions.assertEquals("https://www.youtube.com/watch?v=zKKL-SgC5lY", result.getRetorno().getProdutos().get(0).getProduto().getUrlVideo());
+
+        System.out.println("TEST POST UPDATE PRODUCT SERVICE: " + result);
+
     }
 }

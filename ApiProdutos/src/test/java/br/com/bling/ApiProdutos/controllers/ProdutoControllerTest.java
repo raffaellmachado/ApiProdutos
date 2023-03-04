@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -173,7 +174,7 @@ class ProdutoControllerTest {
         when(produtoService.getAllProducts()).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(ProdutoListaNaoEncontradoException.class, () -> {
+        assertThrows(ProdutoListaException.class, () -> {
             produtoController.getAllProducts();
         });
 
@@ -262,7 +263,7 @@ class ProdutoControllerTest {
         when(produtoService.getProductByCode(codigo)).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(ProdutoCodigoNaoEncontradoException.class, () -> {
+        assertThrows(ProdutoCodigoException.class, () -> {
             produtoController.getProductByCode(codigo);
         });
 
@@ -353,7 +354,7 @@ class ProdutoControllerTest {
         when(produtoService.getProductByCodeSupplier(codigo, id_fornecedor)).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(ProdutoCodigoNaoEncontradoException.class, () -> {
+        assertThrows(ProdutoCodigoException.class, () -> {
             produtoController.getProductByCodeSupplier(codigo, id_fornecedor);
         });
 
@@ -396,8 +397,8 @@ class ProdutoControllerTest {
         when(produtoService.getProductByCode(codigo)).thenReturn(null);
 
         // Chama o método sendo testado
-        ProdutoNaoEncontradoExclusaoException thrown = assertThrows(
-                ProdutoNaoEncontradoExclusaoException.class,
+        ProdutoExclusaoException thrown = assertThrows(
+                ProdutoExclusaoException.class,
                 () -> produtoController.deleteProductByCode(codigo)
         );
 
@@ -499,72 +500,72 @@ class ProdutoControllerTest {
         produto.produto = new ProdutoRequest();
         produto.produto.setId("16023906762");
         produto.produto.setCodigo("150");
-        produto.produto.setCodigoItem("10");
+        produto.produto.setCodigoItem(10);
         produto.produto.setDescricao("S");
         produto.produto.setTipo("Ativo");
         produto.produto.setSituacao("10");
         produto.produto.setDescricaoCurta("10.0000000000");
         produto.produto.setDescricaoComplementar("1212.0000000000");
-        produto.produto.setVlr_unit("10.00");
-        produto.produto.setPreco_custo("Descrição Complementar");
-        produto.produto.setPeso_bruto("2023-03-02");
-        produto.produto.setPeso_liq("2023-03-02");
+        produto.produto.setVlr_unit(BigDecimal.valueOf(10.00));
+        produto.produto.setPreco_custo(BigDecimal.valueOf(10));
+        produto.produto.setPeso_bruto(BigDecimal.valueOf(2023));
+        produto.produto.setPeso_liq(BigDecimal.valueOf(2023));
         produto.produto.setClass_fiscal("null");
         produto.produto.setMarca("http://www.video.com");
         produto.produto.setCest("nomeFornecedor");
         produto.produto.setOrigem("21313");
-        produto.produto.setIdGrupoProduto("Tesla");
+        produto.produto.setIdGrupoProduto(BigDecimal.valueOf(555));
         produto.produto.setCondicao("1010.10.10");
         produto.produto.setFreteGratis("28.999.00");
         produto.produto.setLinkExterno("0");
         produto.produto.setObservacoes("365638");
         produto.produto.setProducao("https://bling.com.br/Api/v2/contato");
         produto.produto.setUnidadeMedida("Observações");
-        produto.produto.setDataValidade("Grupo de produttos teste");
+        produto.produto.setDataValidade("10.10.2022");
         produto.produto.setDescricaoFornecedor("3");
-        produto.produto.setIdFabricante("Vendedor");
-        produto.produto.setCodigoFabricante("16054055910");
+        produto.produto.setIdFabricante(BigDecimal.valueOf(258));
+        produto.produto.setCodigoFabricante("1025");
         /*-----------------------------------*/
         produto.produto.setDeposito(new DepositoRequest());
-        produto.produto.getDeposito().setId("6801141");
-        produto.produto.getDeposito().setEstoque("Categoria padrão");
+        produto.produto.getDeposito().setId(BigDecimal.valueOf(6801141));
+        produto.produto.getDeposito().setEstoque(BigDecimal.valueOf(852));
         /*-----------------------------------*/
-        produto.produto.setGtin("150.00000");
-        produto.produto.setGtinEmbalagem("4.00000");
-        produto.produto.setLargura("500.00");
-        produto.produto.setAltura("200.00");
+        produto.produto.setGtin("150");
+        produto.produto.setGtinEmbalagem("4");
+        produto.produto.setLargura("500");
+        produto.produto.setAltura("200");
         produto.produto.setProfundidade("1");
-        produto.produto.setEstoqueMinimo("1");
-        produto.produto.setEstoqueMaximo("13");
-        produto.produto.setItensPorCaixa("12");
-        produto.produto.setVolumes("11");
+        produto.produto.setEstoqueMinimo(BigDecimal.valueOf(1));
+        produto.produto.setEstoqueMaximo(BigDecimal.valueOf(13));
+        produto.produto.setItensPorCaixa(BigDecimal.valueOf(12));
+        produto.produto.setVolumes(BigDecimal.valueOf(11));
         produto.produto.setUrlVideo("Metros");
         produto.produto.setLocalizacao("9");
-        produto.produto.setCrossdocking("10");
-        produto.produto.setGarantia("Bahia");
-        produto.produto.setSpedTipoItem("100");
+        produto.produto.setCrossdocking(BigDecimal.valueOf(10));
+        produto.produto.setGarantia(85);
+        produto.produto.setSpedTipoItem(159);
         /*-----------------------------------*/
         produto.produto.setVariacoes(new VariacoesRequest());
         produto.produto.getVariacoes().setVariacao(new ArrayList<>());
         VariacaoRequest variacao = new VariacaoRequest();
         variacao.setNome("1");
         variacao.setCodigo("1");
-        variacao.setVlr_unit("1");
+        variacao.setVlr_unit(BigDecimal.valueOf(1));
         variacao.setClonarDadosPai("1");
-        variacao.setEstoque("1");
+        variacao.setEstoque(BigDecimal.valueOf(1));
         variacao.setDeposito(new DepositoRequest());
-        variacao.getDeposito().setId("1");
-        variacao.getDeposito().setEstoque("1");
+        variacao.getDeposito().setId(BigDecimal.valueOf(1));
+        variacao.getDeposito().setEstoque(BigDecimal.valueOf(1));
         produto.produto.getVariacoes().getVariacao().add(variacao);
         /*-----------------------------------*/
-        produto.produto.setImagens(new ImagemRequest());
-        produto.produto.getImagens().setUrl("6801141");
+        produto.produto.setImagens(new ArrayList<>()); // Inicializa a lista de imagens
+        produto.produto.getImagens().add(new ImagemRequest("6801141"));
         /*-----------------------------------*/
         produto.produto.setCamposCustomizados(new CamposCustomizadosRequest());
         produto.produto.getCamposCustomizados().setAlias("6801141");
         /*-----------------------------------*/
         produto.produto.setCondicao("Recondicionado");
-        produto.produto.setIdCategoria("1");
+        produto.produto.setIdCategoria(BigDecimal.valueOf(1));
         produto.produto.setEstrutura(new EstruturaRequest());
         produto.produto.getEstrutura().setTipoEstoque("6801141");
         produto.produto.getEstrutura().setLancarEstoque("6801141");
@@ -572,7 +573,7 @@ class ProdutoControllerTest {
         ComponenteRequest componentes = new ComponenteRequest();
         componentes.setNome("1");
         componentes.setCodigo("Vendedor");
-        componentes.setQuantidade("1");
+        componentes.setQuantidade(BigDecimal.valueOf(1));
         produto.produto.getEstrutura().getComponente().add(componentes);
 
         produtoList.add(produto);
@@ -690,72 +691,72 @@ class ProdutoControllerTest {
         produto.produto = new ProdutoRequest();
         produto.produto.setId("16023906762");
         produto.produto.setCodigo("150");
-        produto.produto.setCodigoItem(codigo);
+        produto.produto.setCodigoItem(10);
         produto.produto.setDescricao("S");
         produto.produto.setTipo("Ativo");
         produto.produto.setSituacao("10");
         produto.produto.setDescricaoCurta("10.0000000000");
         produto.produto.setDescricaoComplementar("1212.0000000000");
-        produto.produto.setVlr_unit("10.00");
-        produto.produto.setPreco_custo("Descrição Complementar");
-        produto.produto.setPeso_bruto("2023-03-02");
-        produto.produto.setPeso_liq("2023-03-02");
+        produto.produto.setVlr_unit(BigDecimal.valueOf(10.00));
+        produto.produto.setPreco_custo(BigDecimal.valueOf(10));
+        produto.produto.setPeso_bruto(BigDecimal.valueOf(2023));
+        produto.produto.setPeso_liq(BigDecimal.valueOf(2023));
         produto.produto.setClass_fiscal("null");
         produto.produto.setMarca("http://www.video.com");
         produto.produto.setCest("nomeFornecedor");
         produto.produto.setOrigem("21313");
-        produto.produto.setIdGrupoProduto("Tesla");
+        produto.produto.setIdGrupoProduto(BigDecimal.valueOf(555));
         produto.produto.setCondicao("1010.10.10");
         produto.produto.setFreteGratis("28.999.00");
         produto.produto.setLinkExterno("0");
         produto.produto.setObservacoes("365638");
         produto.produto.setProducao("https://bling.com.br/Api/v2/contato");
         produto.produto.setUnidadeMedida("Observações");
-        produto.produto.setDataValidade("Grupo de produttos teste");
+        produto.produto.setDataValidade("10.10.2022");
         produto.produto.setDescricaoFornecedor("3");
-        produto.produto.setIdFabricante("Vendedor");
-        produto.produto.setCodigoFabricante("16054055910");
+        produto.produto.setIdFabricante(BigDecimal.valueOf(258));
+        produto.produto.setCodigoFabricante("1025");
         /*-----------------------------------*/
         produto.produto.setDeposito(new DepositoRequest());
-        produto.produto.getDeposito().setId("6801141");
-        produto.produto.getDeposito().setEstoque("Categoria padrão");
+        produto.produto.getDeposito().setId(BigDecimal.valueOf(6801141));
+        produto.produto.getDeposito().setEstoque(BigDecimal.valueOf(852));
         /*-----------------------------------*/
-        produto.produto.setGtin("150.00000");
-        produto.produto.setGtinEmbalagem("4.00000");
-        produto.produto.setLargura("500.00");
-        produto.produto.setAltura("200.00");
+        produto.produto.setGtin("150");
+        produto.produto.setGtinEmbalagem("4");
+        produto.produto.setLargura("500");
+        produto.produto.setAltura("200");
         produto.produto.setProfundidade("1");
-        produto.produto.setEstoqueMinimo("1");
-        produto.produto.setEstoqueMaximo("13");
-        produto.produto.setItensPorCaixa("12");
-        produto.produto.setVolumes("11");
+        produto.produto.setEstoqueMinimo(BigDecimal.valueOf(1));
+        produto.produto.setEstoqueMaximo(BigDecimal.valueOf(13));
+        produto.produto.setItensPorCaixa(BigDecimal.valueOf(12));
+        produto.produto.setVolumes(BigDecimal.valueOf(11));
         produto.produto.setUrlVideo("Metros");
         produto.produto.setLocalizacao("9");
-        produto.produto.setCrossdocking("10");
-        produto.produto.setGarantia("Bahia");
-        produto.produto.setSpedTipoItem("100");
+        produto.produto.setCrossdocking(BigDecimal.valueOf(10));
+        produto.produto.setGarantia(85);
+        produto.produto.setSpedTipoItem(159);
         /*-----------------------------------*/
         produto.produto.setVariacoes(new VariacoesRequest());
         produto.produto.getVariacoes().setVariacao(new ArrayList<>());
         VariacaoRequest variacao = new VariacaoRequest();
         variacao.setNome("1");
         variacao.setCodigo("1");
-        variacao.setVlr_unit("1");
+        variacao.setVlr_unit(BigDecimal.valueOf(1));
         variacao.setClonarDadosPai("1");
-        variacao.setEstoque("1");
+        variacao.setEstoque(BigDecimal.valueOf(1));
         variacao.setDeposito(new DepositoRequest());
-        variacao.getDeposito().setId("1");
-        variacao.getDeposito().setEstoque("1");
+        variacao.getDeposito().setId(BigDecimal.valueOf(1));
+        variacao.getDeposito().setEstoque(BigDecimal.valueOf(1));
         produto.produto.getVariacoes().getVariacao().add(variacao);
         /*-----------------------------------*/
-        produto.produto.setImagens(new ImagemRequest());
-        produto.produto.getImagens().setUrl("6801141");
+        produto.produto.setImagens(new ArrayList<>()); // Inicializa a lista de imagens
+        produto.produto.getImagens().add(new ImagemRequest("6801141"));
         /*-----------------------------------*/
         produto.produto.setCamposCustomizados(new CamposCustomizadosRequest());
         produto.produto.getCamposCustomizados().setAlias("6801141");
         /*-----------------------------------*/
         produto.produto.setCondicao("Recondicionado");
-        produto.produto.setIdCategoria("1");
+        produto.produto.setIdCategoria(BigDecimal.valueOf(1));
         produto.produto.setEstrutura(new EstruturaRequest());
         produto.produto.getEstrutura().setTipoEstoque("6801141");
         produto.produto.getEstrutura().setLancarEstoque("6801141");
@@ -763,8 +764,12 @@ class ProdutoControllerTest {
         ComponenteRequest componentes = new ComponenteRequest();
         componentes.setNome("1");
         componentes.setCodigo("Vendedor");
-        componentes.setQuantidade("1");
+        componentes.setQuantidade(BigDecimal.valueOf(1));
         produto.produto.getEstrutura().getComponente().add(componentes);
+
+        produtoList.add(produto);
+        retorno.setProdutos(produtoList);
+        resposta.setRetorno(retorno);
 
         produtoList.add(produto);
         retorno.setProdutos(produtoList);
