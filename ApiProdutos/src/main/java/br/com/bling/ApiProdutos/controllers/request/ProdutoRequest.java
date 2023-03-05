@@ -1,6 +1,5 @@
 package br.com.bling.ApiProdutos.controllers.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -113,14 +112,9 @@ public class ProdutoRequest {
     public Integer spedTipoItem;
     @Size(max = 11, message = "Quantidade de itens por caixa")
     public BigDecimal idCategoria;
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public DepositoRequest deposito;
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public VariacoesRequest variacoes;
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public ArrayList<ImagemRequest> imagens;
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public CamposCustomizadosRequest camposCustomizados;
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public EstruturaRequest estrutura;
 }
