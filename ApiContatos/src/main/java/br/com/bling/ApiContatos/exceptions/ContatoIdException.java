@@ -1,7 +1,7 @@
 package br.com.bling.ApiContatos.exceptions;
 
-public class ContatoIdNaoEncontradoException extends RuntimeException {
-    public ContatoIdNaoEncontradoException(String cpf_cnpj) {
+public class ContatoIdException extends RuntimeException {
+    public ContatoIdException(String cpf_cnpj) {
         super("Contato com o número de CPF/CNPJ: " + cpf_cnpj + " não encontrado.");
     }
 }

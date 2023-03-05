@@ -3,8 +3,8 @@ package br.com.bling.ApiContatos.controllers;
 import br.com.bling.ApiContatos.controllers.request.*;
 import br.com.bling.ApiContatos.controllers.response.*;
 import br.com.bling.ApiContatos.exceptions.ContatoCadastroException;
-import br.com.bling.ApiContatos.exceptions.ContatoIdNaoEncontradoException;
-import br.com.bling.ApiContatos.exceptions.ContatoListaNaoEncontradoException;
+import br.com.bling.ApiContatos.exceptions.ContatoIdException;
+import br.com.bling.ApiContatos.exceptions.ContatoListaException;
 import br.com.bling.ApiContatos.service.ContatoService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -144,7 +144,7 @@ class ContatoControllerTest {
         when(contatosService.getAllContacts()).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(ContatoListaNaoEncontradoException.class, () -> {
+        assertThrows(ContatoListaException.class, () -> {
             contatoController.getAllContacts();
         });
 
@@ -221,7 +221,7 @@ class ContatoControllerTest {
         when(contatosService.getContactsById(cpf_cnpj)).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(ContatoIdNaoEncontradoException.class, () -> {
+        assertThrows(ContatoIdException.class, () -> {
             contatoController.getContactsById(cpf_cnpj);
         });
 

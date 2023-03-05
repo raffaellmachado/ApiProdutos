@@ -6,8 +6,8 @@ import br.com.bling.ApiContatos.controllers.response.JsonResponse;
 import br.com.bling.ApiContatos.controllers.response.RetornoResponse;
 import br.com.bling.ApiContatos.exceptions.ApiContatoException;
 import br.com.bling.ApiContatos.exceptions.ContatoCadastroException;
-import br.com.bling.ApiContatos.exceptions.ContatoIdNaoEncontradoException;
-import br.com.bling.ApiContatos.exceptions.ContatoListaNaoEncontradoException;
+import br.com.bling.ApiContatos.exceptions.ContatoIdException;
+import br.com.bling.ApiContatos.exceptions.ContatoListaException;
 import br.com.bling.ApiContatos.service.ContatoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,7 +42,7 @@ public class ContatoController {
             JsonResponse request = contatosService.getAllContacts();
 
             if (request.retorno.contatos == null || request.getRetorno() == null) {
-                throw new ContatoListaNaoEncontradoException();
+                throw new ContatoListaException();
             }
 
             for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
@@ -81,7 +81,7 @@ public class ContatoController {
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
-            throw new ContatoListaNaoEncontradoException();
+            throw new ContatoListaException();
         }
     }
 
@@ -95,7 +95,7 @@ public class ContatoController {
             JsonResponse request = contatosService.getContactsById(cpf_cnpj);
 
             if (request.retorno.contatos == null || request.getRetorno() == null) {
-                throw new ContatoIdNaoEncontradoException(cpf_cnpj);
+                throw new ContatoIdException(cpf_cnpj);
             }
 
             for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
@@ -135,7 +135,7 @@ public class ContatoController {
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
-            throw new ContatoIdNaoEncontradoException(cpf_cnpj);
+            throw new ContatoIdException(cpf_cnpj);
         }
     }
 

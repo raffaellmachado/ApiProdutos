@@ -15,13 +15,13 @@ public class ApplicationContatoExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ContatoListaNaoEncontradoException.class)
-    public ResponseEntity<String> handleContatoListaNaoEncontradoException(ContatoListaNaoEncontradoException ex) {
+    @ExceptionHandler(ContatoListaException.class)
+    public ResponseEntity<String> handleContatoListaNaoEncontradoException(ContatoListaException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ContatoIdNaoEncontradoException.class)
-    public ResponseEntity<String> handleContatoIdNaoEncontradoException(ContatoIdNaoEncontradoException ex) {
+    @ExceptionHandler(ContatoIdException.class)
+    public ResponseEntity<String> handleContatoIdNaoEncontradoException(ContatoIdException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
