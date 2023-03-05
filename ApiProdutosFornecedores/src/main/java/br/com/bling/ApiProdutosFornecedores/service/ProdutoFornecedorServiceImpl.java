@@ -1,8 +1,8 @@
 package br.com.bling.ApiProdutosFornecedores.service;
 
-import br.com.bling.ApiProdutosFornecedores.controllers.request.RespostaRequest;
+import br.com.bling.ApiProdutosFornecedores.controllers.request.JsonRequest;
+import br.com.bling.ApiProdutosFornecedores.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutosFornecedores.exceptions.ApiProdutoFornecedorException;
-import br.com.bling.ApiProdutosFornecedores.controllers.response.RespostaResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +31,11 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
      * GET "BUSCAR LISTA DE PRODUTOS FORNECEDORES".
      */
     @Override
-    public RespostaResponse getAllProducts() throws ApiProdutoFornecedorException {
+    public JsonResponse getAllProducts() throws ApiProdutoFornecedorException {
         try {
             String request = restTemplate.getForObject(apiBaseUrl + "/produtosfornecedores/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaResponse response =  objectMapper.readValue(request, RespostaResponse.class);
+            JsonResponse response =  objectMapper.readValue(request, JsonResponse.class);
 
             return response;
 
@@ -50,11 +50,11 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
      * GET "BUSCAR UM PRODUTO FORNECEDOR PELO ID".
      */
     @Override
-    public RespostaResponse getProducId(String idProdutoFornecedor) throws ApiProdutoFornecedorException {
+    public JsonResponse getProducId(String idProdutoFornecedor) throws ApiProdutoFornecedorException {
         try {
             String request = restTemplate.getForObject(apiBaseUrl + "/produtofornecedor/" + idProdutoFornecedor + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaResponse response =  objectMapper.readValue(request, RespostaResponse.class);
+            JsonResponse response =  objectMapper.readValue(request, JsonResponse.class);
 
             return response;
 
@@ -69,7 +69,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
      * POST "CADASTRAR UM NOVO PRODUTO FORNECEDOR" UTILIZANDO XML.
      */
     @Override
-    public RespostaRequest createProduct(String xml) throws ApiProdutoFornecedorException {
+    public JsonRequest createProduct(String xml) throws ApiProdutoFornecedorException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -79,7 +79,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
             String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaRequest response = objectMapper.readValue(json, RespostaRequest.class);
+            JsonRequest response = objectMapper.readValue(json, JsonRequest.class);
 
             return response;
 
@@ -94,7 +94,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
      * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML. -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
      */
     @Override
-    public RespostaRequest updateProduct(String xml, String idProdutoFornecedor) throws ApiProdutoFornecedorException {
+    public JsonRequest updateProduct(String xml, String idProdutoFornecedor) throws ApiProdutoFornecedorException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -104,7 +104,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
             ResponseEntity<String> json = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaRequest response = objectMapper.readValue(json.getBody(), RespostaRequest.class);
+            JsonRequest response = objectMapper.readValue(json.getBody(), JsonRequest.class);
 
             return response;
 

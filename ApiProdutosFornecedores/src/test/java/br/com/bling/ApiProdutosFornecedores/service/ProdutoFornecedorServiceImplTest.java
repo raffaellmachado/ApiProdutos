@@ -1,7 +1,7 @@
 package br.com.bling.ApiProdutosFornecedores.service;
 
-import br.com.bling.ApiProdutosFornecedores.controllers.request.RespostaRequest;
-import br.com.bling.ApiProdutosFornecedores.controllers.response.RespostaResponse;
+import br.com.bling.ApiProdutosFornecedores.controllers.request.JsonRequest;
+import br.com.bling.ApiProdutosFornecedores.controllers.response.JsonResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class ProdutoFornecedorServiceImplTest {
         Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
-        RespostaResponse result = produtoFornecedorServiceImpl.getAllProducts();
+        JsonResponse result = produtoFornecedorServiceImpl.getAllProducts();
 
         // Verifica se a lista de categorias foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals(1, result.getRetorno().getProdutosfornecedores().size());
@@ -64,7 +64,7 @@ class ProdutoFornecedorServiceImplTest {
         Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
-        RespostaResponse result = produtoFornecedorServiceImpl.getProducId("idProdutoFornecedor");
+        JsonResponse result = produtoFornecedorServiceImpl.getProducId("idProdutoFornecedor");
         Assertions.assertEquals(1, result.getRetorno().getProdutosfornecedores().size());
         Assertions.assertEquals("16023092137", result.getRetorno().getProdutosfornecedores().get(0).getProdutofornecedores().getIdProduto());
         Assertions.assertEquals("478963346", result.getRetorno().getProdutosfornecedores().get(0).getProdutofornecedores().getFornecedores().get(0).getProdutoFornecedor().getIdProdutoFornecedor());
@@ -89,7 +89,7 @@ class ProdutoFornecedorServiceImplTest {
         Mockito.when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = produtoFornecedorServiceImpl.createProduct("xml");
+        JsonRequest result = produtoFornecedorServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("16023092137", result.getRetorno().getProdutosfornecedores().get(0).getProdutoFornecedor().getIdProdutoFornecedor());

@@ -1,7 +1,7 @@
 package br.com.bling.ApiProdutosFornecedores.controllers;
 
+import br.com.bling.ApiProdutosFornecedores.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.request.ProdutoFornecedor2Request;
-import br.com.bling.ApiProdutosFornecedores.controllers.request.RespostaRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.request.RetornoRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.*;
 import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorIdException;
@@ -82,14 +82,14 @@ class ProdutoFornecedorControllerTest {
         retorno.produtosfornecedores.add(produtosfornecedores1);
         retorno.produtosfornecedores.add(produtosfornecedores2);
 
-        RespostaResponse resposta = new RespostaResponse();
+        JsonResponse resposta = new JsonResponse();
         resposta.retorno = retorno;
 
         // Configura o comportamento do serviço simulado
         when(produtoFornecedorService.getAllProducts()).thenReturn(resposta);
 
         // Chama o método sendo testado
-        RespostaResponse result = this.produtoFornecedorController.getAllProducts();
+        JsonResponse result = this.produtoFornecedorController.getAllProducts().getBody();
 
         // Verifica se o serviço simulado foi chamado corretamente e se o resultado foi o esperado
         verify(produtoFornecedorService).getAllProducts();
@@ -141,14 +141,14 @@ class ProdutoFornecedorControllerTest {
         retorno.produtosfornecedores = new ArrayList<>();
         retorno.produtosfornecedores.add(produtosfornecedores1);
 
-        RespostaResponse resposta = new RespostaResponse();
+        JsonResponse resposta = new JsonResponse();
         resposta.setRetorno(retorno);
 
         // Configura o comportamento do serviço simulado
         when(produtoFornecedorService.getProducId(idProdutoFornecedor)).thenReturn(resposta);
 
         // Chama o método sendo testado
-        RespostaResponse result = this.produtoFornecedorController.getProducId(idProdutoFornecedor);
+        JsonResponse result = this.produtoFornecedorController.getProducId(idProdutoFornecedor).getBody();
 
         // Verifica se o serviço simulado foi chamado corretamente e se o resultado foi o esperado
         verify(produtoFornecedorService).getProducId(idProdutoFornecedor);
@@ -190,7 +190,7 @@ class ProdutoFornecedorControllerTest {
                 "</produtoFornecedor>";
 
         // Simula a resposta da chamada para o serviço de categoria
-        RespostaRequest resposta = new RespostaRequest();
+        JsonRequest resposta = new JsonRequest();
         RetornoRequest retorno = new RetornoRequest();
 
         ArrayList<RetornoRequest.Produtosfornecedore> produtosfornecedores = new ArrayList<>();
@@ -213,7 +213,7 @@ class ProdutoFornecedorControllerTest {
 
         when(produtoFornecedorService.createProduct(xml)).thenReturn(resposta);
 
-        RespostaRequest result = this.produtoFornecedorController.createProduct(xml);
+        JsonRequest result = this.produtoFornecedorController.createProduct(xml).getBody();
         verify(produtoFornecedorService).createProduct(xml);
         assertEquals(resposta, result);
     }
