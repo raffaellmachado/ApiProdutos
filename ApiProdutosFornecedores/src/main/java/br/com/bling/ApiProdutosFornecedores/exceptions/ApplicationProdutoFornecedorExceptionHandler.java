@@ -15,13 +15,13 @@ public class ApplicationProdutoFornecedorExceptionHandler extends ResponseEntity
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ProdutoFornecedorListaNaoEncontradoException.class)
-    public ResponseEntity<String> handleListaProdutoFornecedorListaNaoEncontradoException(ProdutoFornecedorListaNaoEncontradoException ex) {
+    @ExceptionHandler(ProdutoFornecedorListaException.class)
+    public ResponseEntity<String> handleListaProdutoFornecedorListaException(ProdutoFornecedorListaException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(IdProdutoFornecedorNaoEncontradoException.class)
-    public ResponseEntity<String> handleIdProdutoFornecedorNaoEncontradoException(IdProdutoFornecedorNaoEncontradoException ex) {
+    @ExceptionHandler(ProdutoFornecedorIdException.class)
+    public ResponseEntity<String> handleIdProdutoFornecedorIdException(ProdutoFornecedorIdException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 

@@ -61,7 +61,7 @@ public class ProdutoFornecedorController {
 
         return request;
     } catch (Exception e) {
-        throw new ProdutoFornecedorListaNaoEncontradoException();
+        throw new ProdutoFornecedorListaException();
     }
     }
 
@@ -100,7 +100,7 @@ public class ProdutoFornecedorController {
 
             return request;
         } catch (Exception e) {
-            throw new IdProdutoFornecedorNaoEncontradoException(idProdutoFornecedor);
+            throw new ProdutoFornecedorIdException(idProdutoFornecedor);
         }
     }
 

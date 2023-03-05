@@ -4,9 +4,9 @@ import br.com.bling.ApiProdutosFornecedores.controllers.request.ProdutoFornecedo
 import br.com.bling.ApiProdutosFornecedores.controllers.request.RespostaRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.request.RetornoRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.*;
-import br.com.bling.ApiProdutosFornecedores.exceptions.IdProdutoFornecedorNaoEncontradoException;
+import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorIdException;
 import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorCadastroException;
-import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorListaNaoEncontradoException;
+import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorListaException;
 import br.com.bling.ApiProdutosFornecedores.service.ProdutoFornecedorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,33 +44,38 @@ class ProdutoFornecedorControllerTest {
         // Cria uma resposta simulada do serviço
         RetornoResponse.Produtosfornecedores produtosfornecedores1 = new RetornoResponse.Produtosfornecedores();
         produtosfornecedores1.produtofornecedores = new ProdutofornecedoreResponse();
-        produtosfornecedores1.produtofornecedores.idProduto = "16023092137";
+        produtosfornecedores1.produtofornecedores.setIdProduto("16023092137");
+
         produtosfornecedores1.produtofornecedores.fornecedores = new ArrayList<>();
         produtosfornecedores1.produtofornecedores.fornecedores.add(new FornecedoreResponse());
         produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor = new ProdutoFornecedor2Response();
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.idProdutoFornecedor = "478963346";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.idFornecedor = "0";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.produtoDescricao = "Descricao do fornecedor";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.produtoCodigo = "123";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.precoCompra = "0.0000000000";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.precoCusto = "1.2300000000";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.produtoGarantia = "4";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.padrao = "1";
+
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setIdProdutoFornecedor("478963346");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setIdFornecedor("0");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setProdutoDescricao("Descricao do fornecedor 1");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setProdutoCodigo("123");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setPrecoCompra("0.0000000000");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setPrecoCusto("1.2300000000");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setProdutoGarantia("4");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setPadrao("1");
 
         RetornoResponse.Produtosfornecedores produtosfornecedores2 = new RetornoResponse.Produtosfornecedores();
         produtosfornecedores2.produtofornecedores = new ProdutofornecedoreResponse();
         produtosfornecedores2.produtofornecedores.idProduto = "16023092137";
+
         produtosfornecedores2.produtofornecedores.fornecedores = new ArrayList<>();
         produtosfornecedores2.produtofornecedores.fornecedores.add(new FornecedoreResponse());
         produtosfornecedores2.produtofornecedores.fornecedores.get(0).produtoFornecedor = new ProdutoFornecedor2Response();
-        produtosfornecedores2.produtofornecedores.fornecedores.get(0).produtoFornecedor.idProdutoFornecedor = "478963347";
-        produtosfornecedores2.produtofornecedores.fornecedores.get(0).produtoFornecedor.idFornecedor = "1";
-        produtosfornecedores2.produtofornecedores.fornecedores.get(0).produtoFornecedor.produtoDescricao = "Descricao do fornecedor 2";
-        produtosfornecedores2.produtofornecedores.fornecedores.get(0).produtoFornecedor.produtoCodigo = "456";
-        produtosfornecedores2.produtofornecedores.fornecedores.get(0).produtoFornecedor.precoCompra = "1.0000000000";
-        produtosfornecedores2.produtofornecedores.fornecedores.get(0).produtoFornecedor.precoCusto = "2.4600000000";
-        produtosfornecedores2.produtofornecedores.fornecedores.get(0).produtoFornecedor.produtoGarantia = "8";
-        produtosfornecedores2.produtofornecedores.fornecedores.get(0).produtoFornecedor.padrao = "2";
+
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setIdProdutoFornecedor("478963346");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setIdFornecedor("0");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setProdutoDescricao("Descricao do fornecedor 2");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setProdutoCodigo("123");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setPrecoCompra("0.0000000000");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setPrecoCusto("1.2300000000");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setProdutoGarantia("6");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setPadrao("2");
+
 
         RetornoResponse retorno = new RetornoResponse();
         retorno.produtosfornecedores = new ArrayList<>();
@@ -98,7 +104,7 @@ class ProdutoFornecedorControllerTest {
         when(produtoFornecedorService.getAllProducts()).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(ProdutoFornecedorListaNaoEncontradoException.class, () -> {
+        assertThrows(ProdutoFornecedorListaException.class, () -> {
             produtoFornecedorController.getAllProducts();
         });
 
@@ -116,17 +122,20 @@ class ProdutoFornecedorControllerTest {
         RetornoResponse.Produtosfornecedores produtosfornecedores1 = new RetornoResponse.Produtosfornecedores();
         produtosfornecedores1.produtofornecedores = new ProdutofornecedoreResponse();
         produtosfornecedores1.produtofornecedores.idProduto = "16023092137";
+
         produtosfornecedores1.produtofornecedores.fornecedores = new ArrayList<>();
         produtosfornecedores1.produtofornecedores.fornecedores.add(new FornecedoreResponse());
         produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor = new ProdutoFornecedor2Response();
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.idProdutoFornecedor = idProdutoFornecedor;
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.idFornecedor = "0";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.produtoDescricao = "Descricao do fornecedor";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.produtoCodigo = "123";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.precoCompra = "0.0000000000";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.precoCusto = "1.2300000000";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.produtoGarantia = "4";
-        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.padrao = "1";
+
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setIdProdutoFornecedor(idProdutoFornecedor);
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setIdProdutoFornecedor("478963346");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setIdFornecedor("0");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setProdutoDescricao("Descricao do fornecedor 1");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setProdutoCodigo("123");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setPrecoCompra("0.0000000000");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setPrecoCusto("1.2300000000");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setProdutoGarantia("4");
+        produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setPadrao("1");
 
         RetornoResponse retorno = new RetornoResponse();
         retorno.produtosfornecedores = new ArrayList<>();
@@ -155,7 +164,7 @@ class ProdutoFornecedorControllerTest {
         when(produtoFornecedorService.getProducId(idProdutoFornecedor)).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(IdProdutoFornecedorNaoEncontradoException.class, () -> {
+        assertThrows(ProdutoFornecedorIdException.class, () -> {
             produtoFornecedorController.getProducId(idProdutoFornecedor);
         });
 
@@ -189,14 +198,14 @@ class ProdutoFornecedorControllerTest {
 
         produtoFornecedor.produtoFornecedor = new ProdutoFornecedor2Request();
         produtoFornecedor.produtoFornecedor.id = "01";
-        produtoFornecedor.produtoFornecedor.idProdutoFornecedor = "16023092137";
-        produtoFornecedor.produtoFornecedor.idFornecedor = "478963346";
-        produtoFornecedor.produtoFornecedor.produtoDescricao = "Descricao do fornecedor";
-        produtoFornecedor.produtoFornecedor.produtoCodigo = "159";
-        produtoFornecedor.produtoFornecedor.precoCompra = "0.0000000000";
-        produtoFornecedor.produtoFornecedor.precoCusto = "1.2300000000";
-        produtoFornecedor.produtoFornecedor.produtoGarantia = "4";
-        produtoFornecedor.produtoFornecedor.padrao = "1";
+        produtoFornecedor.produtoFornecedor.setIdProdutoFornecedor("16023092137");
+        produtoFornecedor.produtoFornecedor.setIdFornecedor(478963346);
+        produtoFornecedor.produtoFornecedor.setProdutoDescricao("Descricao do fornecedor");
+        produtoFornecedor.produtoFornecedor.setProdutoCodigo("159");
+        produtoFornecedor.produtoFornecedor.setPrecoCompra(BigDecimal.valueOf(0.0000000000));
+        produtoFornecedor.produtoFornecedor.setPrecoCusto(BigDecimal.valueOf(1.2300000000));
+        produtoFornecedor.produtoFornecedor.setProdutoGarantia(4);
+        produtoFornecedor.produtoFornecedor.setPadrao(1);
 
         produtosfornecedores.add(produtoFornecedor);
         retorno.setProdutosfornecedores(produtosfornecedores);
