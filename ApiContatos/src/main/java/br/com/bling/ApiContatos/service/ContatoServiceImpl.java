@@ -1,7 +1,7 @@
 package br.com.bling.ApiContatos.service;
 
-import br.com.bling.ApiContatos.controllers.request.RespostaRequest;
-import br.com.bling.ApiContatos.controllers.response.RespostaResponse;
+import br.com.bling.ApiContatos.controllers.request.JsonRequest;
+import br.com.bling.ApiContatos.controllers.response.JsonResponse;
 import br.com.bling.ApiContatos.exceptions.ApiContatoException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,11 +31,11 @@ public class ContatoServiceImpl implements ContatoService {
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
     @Override
-    public RespostaResponse getAllContacts() throws ApiContatoException {
+    public JsonResponse getAllContacts() throws ApiContatoException {
         try {
             String json = restTemplate.getForObject(apiBaseUrl + "/contatos/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaResponse response = objectMapper.readValue(json, RespostaResponse.class);
+            JsonResponse response = objectMapper.readValue(json, JsonResponse.class);
 
             return response;
 
@@ -50,11 +50,11 @@ public class ContatoServiceImpl implements ContatoService {
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU)".
      */
     @Override
-    public RespostaResponse getContactsById(String cpf_cnpj) throws ApiContatoException {
+    public JsonResponse getContactsById(String cpf_cnpj) throws ApiContatoException {
         try {
             String json = restTemplate.getForObject(apiBaseUrl + "/contato/" + cpf_cnpj + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaResponse response = objectMapper.readValue(json, RespostaResponse.class);
+            JsonResponse response = objectMapper.readValue(json, JsonResponse.class);
 
             return response;
 
@@ -69,7 +69,7 @@ public class ContatoServiceImpl implements ContatoService {
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
     @Override
-    public RespostaRequest createContact(String xml) throws ApiContatoException {
+    public JsonRequest createContact(String xml) throws ApiContatoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -79,7 +79,7 @@ public class ContatoServiceImpl implements ContatoService {
             String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaRequest response = objectMapper.readValue(json, RespostaRequest.class);
+            JsonRequest response = objectMapper.readValue(json, JsonRequest.class);
 
             return response;
 
@@ -94,7 +94,7 @@ public class ContatoServiceImpl implements ContatoService {
      * PUT "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML. -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
      */
     @Override
-    public RespostaRequest updateContact(String xml, String id) throws ApiContatoException {
+    public JsonRequest updateContact(String xml, String id) throws ApiContatoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -104,7 +104,7 @@ public class ContatoServiceImpl implements ContatoService {
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaRequest response = objectMapper.readValue(responseEntity.getBody(), RespostaRequest.class);
+            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
 
             return response;
 

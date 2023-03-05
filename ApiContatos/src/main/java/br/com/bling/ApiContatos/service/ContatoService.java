@@ -1,17 +1,17 @@
 package br.com.bling.ApiContatos.service;
 
-import br.com.bling.ApiContatos.controllers.request.RespostaRequest;
-import br.com.bling.ApiContatos.controllers.response.RespostaResponse;
+import br.com.bling.ApiContatos.controllers.request.JsonRequest;
+import br.com.bling.ApiContatos.controllers.response.JsonResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ContatoService {
 
-    public RespostaResponse getAllContacts();
+    public JsonResponse getAllContacts();
 
-    public RespostaResponse getContactsById(@PathVariable String cpf_cnpj);
+    public JsonResponse getContactsById(@PathVariable String cpf_cnpj);
 
-    public RespostaRequest createContact(@RequestBody String xml);
+    public JsonRequest createContact(@RequestBody String xml);
 
-    public RespostaRequest updateContact(@RequestBody String xml, @PathVariable String id);
+    public JsonRequest updateContact(@RequestBody String xml, @PathVariable String id);
 }

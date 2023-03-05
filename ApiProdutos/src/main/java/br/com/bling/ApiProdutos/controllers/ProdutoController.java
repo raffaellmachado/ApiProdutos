@@ -1,6 +1,7 @@
 package br.com.bling.ApiProdutos.controllers;
 
 import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
+import br.com.bling.ApiProdutos.controllers.request.RetornoRequest;
 import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutos.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutos.exceptions.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 
 
 @RestController
@@ -292,6 +294,16 @@ public class ProdutoController {
 
             if (request.retorno.produtos == null) {
                 throw new ApiProdutoException("Não foi possível criar o produto");
+            }
+
+            for (RetornoRequest.Produtos listaContatos : request.getRetorno().getProdutos()) {
+                System.out.println("-----------------------------------------------------------------------------------");
+                System.out.println("Id: " + listaContatos.produto.id);
+                System.out.println("Nome: " + listaContatos.get(0).contato.nome);
+                System.out.println("tipoPessoa: " + listaContatos.get(0).contato.tipoPessoa);
+                System.out.println("contribuinte: " + listaContatos.get(0).contato.contribuinte);
+                System.out.println("cpf_cnpj: " + listaContatos.get(0).contato.cpf_cnpj);
+                System.out.println("-----------------------------------------------------------------------------------");
             }
             System.out.println("Produto cadastrado com sucesso!");
 

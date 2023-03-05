@@ -639,7 +639,7 @@ class ProdutoServiceImplTest {
     }
 
     @Test
-    void testCreateUpdateComposition() {     //TESTE PRODUTO COM COMPOSIÇÃO.
+    void testUpdateComposition() {     //TESTE PRODUTO COM COMPOSIÇÃO.
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":456489798,\"descricao\":\"Kit 001\",\"descricaoCurta\":\"Kit caneca e copo\",\"descricaoComplementar\":\"Descrição complementar\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"imagens\":[{\"url\":\"https://www.bling.com.br/bling.jpg\"}],\"estrutura\":{\"tipoEstoque\":\"F\",\"lancarEstoque\":\"P\",\"componente\":[{\"nome\":\"Caneca Vermelha\",\"codigo\":\"caneca123\",\"quantidade\":2},{\"nome\":\"Copo 300 ml\",\"codigo\":\"copo123\",\"quantidade\":2}]}}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);

@@ -1,18 +1,22 @@
 package br.com.bling.ApiContatos.controllers.request;
 
-import br.com.bling.ApiContatos.controllers.response.TiposContatoResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ContatoRequest {
 
@@ -24,10 +28,10 @@ public class ContatoRequest {
     public String fantasia;
     @NotEmpty
     @Max(value = 1, message = "Tipo do contato")
-    public String tipoPessoa = "F";
+    public String tipoPessoa;
     @NotEmpty
     @Max(value = 1, message = "1 - Contribuinte do ICMS, 2 - Contribuinte isento do ICMS ou 9 - Não contribuinte")
-    public String contribuinte = "9";
+    public Integer contribuinte;
     @CNPJ
     @CPF
     @NotEmpty
@@ -66,7 +70,7 @@ public class ContatoRequest {
     public String informacaoContato;
     @Digits(integer = 11, fraction = 2)
     @Max(value = 50, message = "Limite de credito do cliente")
-    public String limiteCredito;
+    public BigDecimal limiteCredito;
     @Max(value = 50, message = "País de origem do cliente estrangeiro")
     public String paisOrigem;
     @Max(value = 15, message = "Código do contato")

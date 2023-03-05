@@ -1,7 +1,7 @@
 package br.com.bling.ApiContatos.service;
 
-import br.com.bling.ApiContatos.controllers.request.RespostaRequest;
-import br.com.bling.ApiContatos.controllers.response.RespostaResponse;
+import br.com.bling.ApiContatos.controllers.request.JsonRequest;
+import br.com.bling.ApiContatos.controllers.response.JsonResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
 
 import static org.mockito.Mockito.*;
 
@@ -32,7 +34,7 @@ class ContatoServiceImplTest {
         Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
-        RespostaResponse result = contatoServiceImpl.getAllContacts();
+        JsonResponse result = contatoServiceImpl.getAllContacts();
 
         // Verifica se a lista de categorias foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals(2, result.getRetorno().getContatos().size());
@@ -86,7 +88,7 @@ class ContatoServiceImplTest {
         Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
-        RespostaResponse result = contatoServiceImpl.getContactsById("11.111.111/1111-11");
+        JsonResponse result = contatoServiceImpl.getContactsById("11.111.111/1111-11");
 
         // Verifica se a categoria foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals("01", result.getRetorno().getContatos().get(0).getContato().getId());
@@ -114,37 +116,80 @@ class ContatoServiceImplTest {
     @Test
     void testCreateContact() throws Exception {
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"contatos\":[{\"contato\":{\"id\":\"01\",\"nome\":\"Nome do contato\",\"fantasia\":\"Contato Corp\",\"tipoPessoa\":\"F\",\"contribuinte\":\"9\",\"cpf_cnpj\":\"11.111.111/1111-11\",\"ie_rg\":\"146849932111\",\"endereco\":\"Rua João Moura Teste\",\"numero\":\"1251\",\"complemento\":\"null\",\"bairro\":\"Pinheiros\",\"cep\":\"05.412-001\",\"cidade\":\"São Paulo\",\"uf\":\"SP\",\"fone\":\"(11) 999999999\",\"email\":\"contato@teste.com\",\"limiteCredito\":\"9999.99\"}}]}}";
+        String jsonResponse = "{\"retorno\":{\"contatos\":[{\"contato\":{\"id\":\"01\",\"nome\":\"Eduardo\",\"fantasia\":\"RMS\",\"tipoPessoa\":\"F\",\"contribuinte\":\"9\",\"cpf_cnpj\":\"00.000.000/0000-00\",\"cnpj\":\"000.000.000-00\",\"ie_rg\":\"00.000.000-0\",\"endereco\":\"Rua das Oliveirass\",\"numero\":\"1200\",\"complemento\":\"503\",\"bairro\":\"Centro\",\"cep\":\"00000-000\",\"cidade\":\"Londrina\",\"uf\":\"PR\",\"fone\":\"(43) 99999-9999\",\"celular\":\"(43) 99620-9999\",\"email\":\"contato@teste.com\",\"emailNfe\":\"testeNfe@mail.com.br\",\"informacaoContato\":\"Informações adicionais do contato\",\"limiteCredito\":\"9999.99\",\"paisOrigem\":\"Brasil\",\"codigo\":\"01\",\"site\":\"http://www.teste.com.br\",\"obs\":\"Observação teste\",\"tiposContato\":[{\"tipoContato\":{\"descricao\":\"Vendedor\"}}]}}]}}";
         Mockito.when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = contatoServiceImpl.createContact("xml");
+        JsonRequest result = contatoServiceImpl.createContact("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("01", result.getRetorno().getContatos().get(0).get(0).getContato().getId());
-        Assertions.assertEquals("Nome do contato", result.getRetorno().getContatos().get(0).get(0).getContato().getNome());
-        Assertions.assertEquals("Contato Corp", result.getRetorno().getContatos().get(0).get(0).getContato().getFantasia());
+        Assertions.assertEquals("Eduardo", result.getRetorno().getContatos().get(0).get(0).getContato().getNome());
+        Assertions.assertEquals("RMS", result.getRetorno().getContatos().get(0).get(0).getContato().getFantasia());
         Assertions.assertEquals("F", result.getRetorno().getContatos().get(0).get(0).getContato().getTipoPessoa());
-        Assertions.assertEquals("9", result.getRetorno().getContatos().get(0).get(0).getContato().getContribuinte());
-        Assertions.assertEquals("11.111.111/1111-11", result.getRetorno().getContatos().get(0).get(0).getContato().getCpf_cnpj());
-        Assertions.assertEquals("146849932111", result.getRetorno().getContatos().get(0).get(0).getContato().getIe_rg());
-        Assertions.assertEquals("Rua João Moura Teste", result.getRetorno().getContatos().get(0).get(0).getContato().getEndereco());
-        Assertions.assertEquals("1251", result.getRetorno().getContatos().get(0).get(0).getContato().getNumero());
-        Assertions.assertEquals("null", result.getRetorno().getContatos().get(0).get(0).getContato().getComplemento());
-        Assertions.assertEquals("Pinheiros", result.getRetorno().getContatos().get(0).get(0).getContato().getBairro());
-        Assertions.assertEquals("05.412-001", result.getRetorno().getContatos().get(0).get(0).getContato().getCep());
-        Assertions.assertEquals("São Paulo", result.getRetorno().getContatos().get(0).get(0).getContato().getCidade());
-        Assertions.assertEquals("SP", result.getRetorno().getContatos().get(0).get(0).getContato().getUf());
-        Assertions.assertEquals("(11) 999999999", result.getRetorno().getContatos().get(0).get(0).getContato().getFone());
+        Assertions.assertEquals(9, result.getRetorno().getContatos().get(0).get(0).getContato().getContribuinte());
+        Assertions.assertEquals("00.000.000/0000-00", result.getRetorno().getContatos().get(0).get(0).getContato().getCpf_cnpj());
+        Assertions.assertEquals("000.000.000-00", result.getRetorno().getContatos().get(0).get(0).getContato().getCnpj());
+        Assertions.assertEquals("00.000.000-0", result.getRetorno().getContatos().get(0).get(0).getContato().getIe_rg());
+        Assertions.assertEquals("Rua das Oliveirass", result.getRetorno().getContatos().get(0).get(0).getContato().getEndereco());
+        Assertions.assertEquals("1200", result.getRetorno().getContatos().get(0).get(0).getContato().getNumero());
+        Assertions.assertEquals("503", result.getRetorno().getContatos().get(0).get(0).getContato().getComplemento());
+        Assertions.assertEquals("Centro", result.getRetorno().getContatos().get(0).get(0).getContato().getBairro());
+        Assertions.assertEquals("00000-000", result.getRetorno().getContatos().get(0).get(0).getContato().getCep());
+        Assertions.assertEquals("Londrina", result.getRetorno().getContatos().get(0).get(0).getContato().getCidade());
+        Assertions.assertEquals("PR", result.getRetorno().getContatos().get(0).get(0).getContato().getUf());
+        Assertions.assertEquals("(43) 99999-9999", result.getRetorno().getContatos().get(0).get(0).getContato().getFone());
+        Assertions.assertEquals("(43) 99620-9999", result.getRetorno().getContatos().get(0).get(0).getContato().getCelular());
         Assertions.assertEquals("contato@teste.com", result.getRetorno().getContatos().get(0).get(0).getContato().getEmail());
-        Assertions.assertEquals("9999.99", result.getRetorno().getContatos().get(0).get(0).getContato().getLimiteCredito());
+        Assertions.assertEquals("testeNfe@mail.com.br", result.getRetorno().getContatos().get(0).get(0).getContato().getEmailNfe());
+        Assertions.assertEquals("Informações adicionais do contato", result.getRetorno().getContatos().get(0).get(0).getContato().getInformacaoContato());
+        Assertions.assertEquals(BigDecimal.valueOf(9999.99), result.getRetorno().getContatos().get(0).get(0).getContato().getLimiteCredito());
+        Assertions.assertEquals("Brasil", result.getRetorno().getContatos().get(0).get(0).getContato().getPaisOrigem());
+        Assertions.assertEquals("01", result.getRetorno().getContatos().get(0).get(0).getContato().getCodigo());
+        Assertions.assertEquals("http://www.teste.com.br", result.getRetorno().getContatos().get(0).get(0).getContato().getSite());
+        Assertions.assertEquals("Observação teste", result.getRetorno().getContatos().get(0).get(0).getContato().getObs());
+        Assertions.assertEquals("Vendedor", result.getRetorno().getContatos().get(0).get(0).getContato().getTiposContato().get(0).getTipoContato().getDescricao());
 
         System.out.println("POST: " + result);
     }
 
 //    @Test
-//    void testUpdateContact() {
+//    void testUpdateContact() throws Exception {
+//        // Simula a resposta da chamada para a API externa
+//        String jsonResponse = "{\"retorno\":{\"contatos\":[{\"contato\":{\"id\":\"01\",\"nome\":\"Eduardo\",\"fantasia\":\"RMS\",\"tipoPessoa\":\"F\",\"contribuinte\":\"9\",\"cpf_cnpj\":\"00.000.000/0000-00\",\"cnpj\":\"000.000.000-00\",\"ie_rg\":\"00.000.000-0\",\"endereco\":\"Rua das Oliveirass\",\"numero\":\"1200\",\"complemento\":\"503\",\"bairro\":\"Centro\",\"cep\":\"00000-000\",\"cidade\":\"Londrina\",\"uf\":\"PR\",\"fone\":\"(43) 99999-9999\",\"celular\":\"(43) 99620-9999\",\"email\":\"contato@teste.com\",\"emailNfe\":\"testeNfe@mail.com.br\",\"informacaoContato\":\"Informações adicionais do contato\",\"limiteCredito\":\"9999.99\",\"paisOrigem\":\"Brasil\",\"codigo\":\"01\",\"site\":\"http://www.teste.com.br\",\"obs\":\"Observação teste\",\"tiposContato\":[{\"tipoContato\":{\"descricao\":\"Vendedor\"}}]}}]}}";
+//        Mockito.when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+//
+//        // Chama o método que deve converter a resposta em um objeto RespostaRequest
 //        RespostaRequest result = contatoServiceImpl.updateContact("xml", "id");
-//        Assertions.assertEquals(new RespostaRequest(), result);
-//   }
+//
+//        // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
+//        Assertions.assertEquals("01", result.getRetorno().getContatos().get(0).get(0).getContato().getId());
+//        Assertions.assertEquals("Eduardo", result.getRetorno().getContatos().get(0).get(0).getContato().getNome());
+//        Assertions.assertEquals("RMS", result.getRetorno().getContatos().get(0).get(0).getContato().getFantasia());
+//        Assertions.assertEquals("F", result.getRetorno().getContatos().get(0).get(0).getContato().getTipoPessoa());
+//        Assertions.assertEquals(9, result.getRetorno().getContatos().get(0).get(0).getContato().getContribuinte());
+//        Assertions.assertEquals("00.000.000/0000-00", result.getRetorno().getContatos().get(0).get(0).getContato().getCpf_cnpj());
+//        Assertions.assertEquals("000.000.000-00", result.getRetorno().getContatos().get(0).get(0).getContato().getCnpj());
+//        Assertions.assertEquals("00.000.000-0", result.getRetorno().getContatos().get(0).get(0).getContato().getIe_rg());
+//        Assertions.assertEquals("Rua das Oliveirass", result.getRetorno().getContatos().get(0).get(0).getContato().getEndereco());
+//        Assertions.assertEquals("1200", result.getRetorno().getContatos().get(0).get(0).getContato().getNumero());
+//        Assertions.assertEquals("503", result.getRetorno().getContatos().get(0).get(0).getContato().getComplemento());
+//        Assertions.assertEquals("Centro", result.getRetorno().getContatos().get(0).get(0).getContato().getBairro());
+//        Assertions.assertEquals("00000-000", result.getRetorno().getContatos().get(0).get(0).getContato().getCep());
+//        Assertions.assertEquals("Londrina", result.getRetorno().getContatos().get(0).get(0).getContato().getCidade());
+//        Assertions.assertEquals("PR", result.getRetorno().getContatos().get(0).get(0).getContato().getUf());
+//        Assertions.assertEquals("(43) 99999-9999", result.getRetorno().getContatos().get(0).get(0).getContato().getFone());
+//        Assertions.assertEquals("(43) 99620-9999", result.getRetorno().getContatos().get(0).get(0).getContato().getCelular());
+//        Assertions.assertEquals("contato@teste.com", result.getRetorno().getContatos().get(0).get(0).getContato().getEmail());
+//        Assertions.assertEquals("testeNfe@mail.com.br", result.getRetorno().getContatos().get(0).get(0).getContato().getEmailNfe());
+//        Assertions.assertEquals("Informações adicionais do contato", result.getRetorno().getContatos().get(0).get(0).getContato().getInformacaoContato());
+//        Assertions.assertEquals(BigDecimal.valueOf(9999.99), result.getRetorno().getContatos().get(0).get(0).getContato().getLimiteCredito());
+//        Assertions.assertEquals("Brasil", result.getRetorno().getContatos().get(0).get(0).getContato().getPaisOrigem());
+//        Assertions.assertEquals("01", result.getRetorno().getContatos().get(0).get(0).getContato().getCodigo());
+//        Assertions.assertEquals("http://www.teste.com.br", result.getRetorno().getContatos().get(0).get(0).getContato().getSite());
+//        Assertions.assertEquals("Observação teste", result.getRetorno().getContatos().get(0).get(0).getContato().getObs());
+//        Assertions.assertEquals("Vendedor", result.getRetorno().getContatos().get(0).get(0).getContato().getTiposContato().get(0).getTipoContato().getDescricao());
+//
+//        System.out.println("POST: " + result);
+//    }
 }

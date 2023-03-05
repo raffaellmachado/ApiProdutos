@@ -1,8 +1,8 @@
 package br.com.bling.ApiContatos.controllers;
 
-import br.com.bling.ApiContatos.controllers.request.RespostaRequest;
+import br.com.bling.ApiContatos.controllers.request.JsonRequest;
 import br.com.bling.ApiContatos.controllers.request.RetornoRequest;
-import br.com.bling.ApiContatos.controllers.response.RespostaResponse;
+import br.com.bling.ApiContatos.controllers.response.JsonResponse;
 import br.com.bling.ApiContatos.controllers.response.RetornoResponse;
 import br.com.bling.ApiContatos.exceptions.ApiContatoException;
 import br.com.bling.ApiContatos.exceptions.ContatoCadastroException;
@@ -12,7 +12,9 @@ import br.com.bling.ApiContatos.service.ContatoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -35,9 +37,9 @@ public class ContatoController {
      */
     @GetMapping("/contatos")
     @ApiOperation(value = "Retorna uma lista de contatos")
-    public RespostaResponse getAllContacts() {
+    public ResponseEntity<JsonResponse> getAllContacts() {
         try {
-            RespostaResponse request = contatosService.getAllContacts();
+            JsonResponse request = contatosService.getAllContacts();
 
             if (request.retorno.contatos == null || request.getRetorno() == null) {
                 throw new ContatoListaNaoEncontradoException();
@@ -77,7 +79,7 @@ public class ContatoController {
 
             System.out.println(request);
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
             throw new ContatoListaNaoEncontradoException();
         }
@@ -88,9 +90,9 @@ public class ContatoController {
      */
     @GetMapping("/contato/{cpf_cnpj}")
     @ApiOperation(value = "Retorna um contato pelo CPF ou CNPJ")
-    public RespostaResponse getContactsById(@PathVariable String cpf_cnpj) {
+    public ResponseEntity<JsonResponse> getContactsById(@PathVariable String cpf_cnpj) {
         try {
-            RespostaResponse request = contatosService.getContactsById(cpf_cnpj);
+            JsonResponse request = contatosService.getContactsById(cpf_cnpj);
 
             if (request.retorno.contatos == null || request.getRetorno() == null) {
                 throw new ContatoIdNaoEncontradoException(cpf_cnpj);
@@ -131,7 +133,7 @@ public class ContatoController {
 
             System.out.println(request);
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
             throw new ContatoIdNaoEncontradoException(cpf_cnpj);
         }
@@ -142,9 +144,9 @@ public class ContatoController {
      */
     @PostMapping(path = "/cadastrarcontato", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo contato")
-    public RespostaRequest createContact(@RequestBody String xml) {
+    public ResponseEntity<JsonRequest> createContact(@RequestBody String xml) {
         try {
-        RespostaRequest request = contatosService.createContact(xml);
+        JsonRequest request = contatosService.createContact(xml);
 
         if (request.retorno.contatos == null || request.getRetorno() == null) {
             throw new ContatoCadastroException();
@@ -162,7 +164,7 @@ public class ContatoController {
 
         System.out.println(request);
 
-        return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
             throw new ContatoCadastroException();
         }
@@ -173,16 +175,26 @@ public class ContatoController {
      */
     @PutMapping(path = "/atualizarcontato/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto existente")
-    public RespostaRequest updateContact(@RequestBody String xml, @PathVariable String id) {
+    public ResponseEntity<JsonRequest> updateContact(@RequestBody String xml, @PathVariable String id) {
         try {
-            RespostaRequest request = contatosService.updateContact(xml, id);
+            JsonRequest request = contatosService.updateContact(xml, id);
 
             if (request.retorno.contatos == null || request.getRetorno() == null) {
                 throw new ApiContatoException("Não foi possível atualizar o deposito", null);
             }
+
+            for (ArrayList<RetornoRequest.Contatos> listaContatos : request.getRetorno().getContatos()) {
+                System.out.println("-----------------------------------------------------------------------------------");
+                System.out.println("Id: " + listaContatos.get(0).contato.id);
+                System.out.println("Nome: " + listaContatos.get(0).contato.nome);
+                System.out.println("tipoPessoa: " + listaContatos.get(0).contato.tipoPessoa);
+                System.out.println("contribuinte: " + listaContatos.get(0).contato.contribuinte);
+                System.out.println("cpf_cnpj: " + listaContatos.get(0).contato.cpf_cnpj);
+                System.out.println("-----------------------------------------------------------------------------------");
+            }
             System.out.println(request);
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
             throw new ContatoCadastroException();
         }
