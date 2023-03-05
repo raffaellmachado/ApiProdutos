@@ -73,7 +73,6 @@ class ContatoControllerTest {
 
         contato1.contato.tiposContato = new ArrayList<>(); // Criar lista vazia para evitar NullPointerException
         TiposContatoResponse tiposContatoResponse1 = new TiposContatoResponse();
-
         tiposContatoResponse1.tipoContato = new TipoContatoResponse();
         tiposContatoResponse1.tipoContato.descricao = "Vendedor";
         contato1.contato.tiposContato.add(tiposContatoResponse1);

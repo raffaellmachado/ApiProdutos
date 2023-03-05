@@ -1,7 +1,7 @@
 package br.com.bling.ApiProdutos.service;
 
-import br.com.bling.ApiProdutos.controllers.request.RespostaRequest;
-import br.com.bling.ApiProdutos.controllers.response.RespostaResponse;
+import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
+import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class ProdutoServiceImplTest {
         String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"id\":\"01\",\"codigo\":\"CAD00011\",\"descricao\":\"CADEIRA XYZ F5\",\"tipo\":\"P\",\"situacao\":\"A\",\"unidade\":\"01\",\"preco\":\"100.0000000000\",\"precoCusto\":\"85.0000000000\",\"descricaoCurta\":\"CADEIRA XYZ\",\"descricaoComplementar\":\"CADEIRA em detalhes\",\"dataInclusao\":\"2016-08-17\",\"dataAlteracao\":\"2016-08-17\",\"imageThumbnail\":\"01\",\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"nomeFornecedor\":\"Bling\",\"codigoFabricante\":\"01\",\"marca\":\"Marca de teste\",\"class_fiscal\":\"1234.56.78\",\"cest\":\"28.040.00\",\"origem\":\"1\",\"idGrupoProduto\":\"12345\",\"linkExterno\":\"https://minhaloja.com.br/cadeira-xyz-f5\",\"observacoes\":\"Observações da CADEIRA XYZ F5\",\"grupoProduto\":\"Móveis\",\"garantia\":\"4\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":\"01\",\"categoria\":{\"id\":\"51212592\",\"descricao\":\"Geral\"},\"pesoLiq\":\"85.0000000000\",\"pesoBruto\":\"1.000\",\"estoqueMinimo\":\"1.000\",\"estoqueMaximo\":\"1.000\",\"gtin\":\"01\",\"gtinEmbalagem\":\"01\",\"larguraProduto\":\"10\",\"alturaProduto\":\"89\",\"profundidadeProduto\":\"67\",\"unidadeMedida\":\"Centímetros\",\"itensPorCaixa\":\"2\",\"volumes\":\"2\",\"localizacao\":\"Prateleira B\",\"crossdocking\":\"2\",\"condicao\":\"Novo\",\"freteGratis\":\"S\",\"producao\":\"P\",\"dataValidade\":\"2019-11-20\",\"spedTipoItem\":\"01\"}},{\"produto\":{\"id\":\"01\",\"codigo\":\"CAD00011\",\"descricao\":\"CADEIRA XYZ F5\",\"tipo\":\"P\",\"situacao\":\"A\",\"unidade\":\"01\",\"preco\":\"100.0000000000\",\"precoCusto\":\"85.0000000000\",\"descricaoCurta\":\"CADEIRA XYZ\",\"descricaoComplementar\":\"CADEIRA em detalhes\",\"dataInclusao\":\"2016-08-17\",\"dataAlteracao\":\"2016-08-17\",\"imageThumbnail\":\"01\",\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"nomeFornecedor\":\"Bling\",\"codigoFabricante\":\"01\",\"marca\":\"Marca de teste\",\"class_fiscal\":\"1234.56.78\",\"cest\":\"28.040.00\",\"origem\":\"1\",\"idGrupoProduto\":\"12345\",\"linkExterno\":\"https://minhaloja.com.br/cadeira-xyz-f5\",\"observacoes\":\"Observações da CADEIRA XYZ F5\",\"grupoProduto\":\"Móveis\",\"garantia\":\"4\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":\"01\",\"categoria\":{\"id\":\"51212592\",\"descricao\":\"Geral\"},\"pesoLiq\":\"85.0000000000\",\"pesoBruto\":\"1.000\",\"estoqueMinimo\":\"1.000\",\"estoqueMaximo\":\"1.000\",\"gtin\":\"01\",\"gtinEmbalagem\":\"01\",\"larguraProduto\":\"10\",\"alturaProduto\":\"89\",\"profundidadeProduto\":\"67\",\"unidadeMedida\":\"Centímetros\",\"itensPorCaixa\":\"2\",\"volumes\":\"2\",\"localizacao\":\"Prateleira B\",\"crossdocking\":\"2\",\"condicao\":\"Novo\",\"freteGratis\":\"S\",\"producao\":\"P\",\"dataValidade\":\"2019-11-20\",\"spedTipoItem\":\"01\"}}]}}";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
-        RespostaResponse result = produtoServiceImpl.getAllProducts();
+        JsonResponse result = produtoServiceImpl.getAllProducts();
 
         // Verifica se a lista de categorias foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals(2, result.getRetorno().getProdutos().size());
@@ -156,7 +156,7 @@ class ProdutoServiceImplTest {
         String codigo = "150";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
-        RespostaResponse result = produtoServiceImpl.getProductByCode(codigo);
+        JsonResponse result = produtoServiceImpl.getProductByCode(codigo);
 
         // Verifica se a lista de categorias foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getId());
@@ -222,7 +222,7 @@ class ProdutoServiceImplTest {
         String idFornecedor = "159";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
-        RespostaResponse result = produtoServiceImpl.getProductByCodeSupplier(codigo, idFornecedor);
+        JsonResponse result = produtoServiceImpl.getProductByCodeSupplier(codigo, idFornecedor);
 
         // Verifica se a lista de categorias foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals("01", result.getRetorno().getProdutos().get(0).getProduto().getId());
@@ -297,11 +297,11 @@ class ProdutoServiceImplTest {
     @Test
     void testCreateProductSimple() {     //TESTE PRODUTO SIMPLES
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"situacao\":\"Ativo\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"estoque\":10,\"deposito\":{\"id\":123456,\"estoque\":200},\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Novo\",\"freteGratis\":\"N\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produtos\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"imagens\":{\"url\":\"https://bling.com.br/bling.jpg\"},\"camposCustomizados\":{\"alias\":16},\"idCategoria\":1234}}]}}";
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"situacao\":\"Ativo\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"estoque\":10,\"deposito\":{\"id\":123456,\"estoque\":200},\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Novo\",\"freteGratis\":\"N\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produtos\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"imagens\":[{\"url\":\"https://bling.com.br/bling.jpg\"}],\"camposCustomizados\":{\"alias\":16},\"idCategoria\":1234}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = produtoServiceImpl.createProduct("xml");
+        JsonRequest result = produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -358,11 +358,11 @@ class ProdutoServiceImplTest {
     @Test
     void testCreateProductVariation() {     //TESTE PRODUTO COM VARIAÇÃO.
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"variacoes\":{\"variacao\":[{\"nome\":\"Cor:Preto\",\"codigo\":\"223435780\",\"clonarDadosPai\":\"S\",\"vlr_unit\":150,\"estoque\":120,\"un\":\"1\",\"deposito\":{\"id\":123456,\"estoque\":200}}]},\"imagens\":{\"url\":\"https://www.bling.com.br/bling.jpg\"}}}]}}";
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"variacoes\":{\"variacao\":[{\"nome\":\"Cor:Preto\",\"codigo\":\"223435780\",\"clonarDadosPai\":\"S\",\"vlr_unit\":150,\"estoque\":120,\"un\":\"1\",\"deposito\":{\"id\":123456,\"estoque\":200}}]},\"imagens\":[{\"url\":\"https://www.bling.com.br/bling.jpg\"}]}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = produtoServiceImpl.createProduct("xml");
+        JsonRequest result = produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -423,11 +423,11 @@ class ProdutoServiceImplTest {
     @Test
     void testCreateProductComposition() {     //TESTE PRODUTO COM COMPOSIÇÃO.
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":456489798,\"descricao\":\"Kit 001\",\"descricaoCurta\":\"Kit caneca e copo\",\"descricaoComplementar\":\"Descrição complementar\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"imagens\":{\"url\":\"https://www.bling.com.br/bling.jpg\"},\"estrutura\":{\"tipoEstoque\":\"F\",\"lancarEstoque\":\"P\",\"componente\":[{\"nome\":\"Caneca Vermelha\",\"codigo\":\"caneca123\",\"quantidade\":2},{\"nome\":\"Copo 300 ml\",\"codigo\":\"copo123\",\"quantidade\":2}]}}}]}}";
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":456489798,\"descricao\":\"Kit 001\",\"descricaoCurta\":\"Kit caneca e copo\",\"descricaoComplementar\":\"Descrição complementar\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"imagens\":[{\"url\":\"https://www.bling.com.br/bling.jpg\"}],\"estrutura\":{\"tipoEstoque\":\"F\",\"lancarEstoque\":\"P\",\"componente\":[{\"nome\":\"Caneca Vermelha\",\"codigo\":\"caneca123\",\"quantidade\":2},{\"nome\":\"Copo 300 ml\",\"codigo\":\"copo123\",\"quantidade\":2}]}}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = produtoServiceImpl.createProduct("xml");
+        JsonRequest result = produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("456489798", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -488,7 +488,7 @@ class ProdutoServiceImplTest {
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = produtoServiceImpl.createProduct("xml");
+        JsonRequest result = produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("123456", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -515,11 +515,11 @@ class ProdutoServiceImplTest {
     void testUpdateProductSimple() {
 
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"situacao\":\"Ativo\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"estoque\":10,\"deposito\":{\"id\":123456,\"estoque\":200},\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Novo\",\"freteGratis\":\"N\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produtos\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"imagens\":{\"url\":\"https://bling.com.br/bling.jpg\"},\"camposCustomizados\":{\"alias\":16},\"idCategoria\":1234}}]}}";
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"situacao\":\"Ativo\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"estoque\":10,\"deposito\":{\"id\":123456,\"estoque\":200},\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Novo\",\"freteGratis\":\"N\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produtos\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"imagens\":[{\"url\":\"https://bling.com.br/bling.jpg\"}],\"camposCustomizados\":{\"alias\":16},\"idCategoria\":1234}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+        JsonRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -576,11 +576,11 @@ class ProdutoServiceImplTest {
     @Test
     void testUpdateProductVariation() {     //TESTE PRODUTO COM VARIAÇÃO.
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"variacoes\":{\"variacao\":[{\"nome\":\"Cor:Preto\",\"codigo\":\"223435780\",\"clonarDadosPai\":\"S\",\"vlr_unit\":150,\"estoque\":120,\"un\":\"1\",\"deposito\":{\"id\":123456,\"estoque\":200}}]},\"imagens\":{\"url\":\"https://www.bling.com.br/bling.jpg\"}}}]}}";
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"variacoes\":{\"variacao\":[{\"nome\":\"Cor:Preto\",\"codigo\":\"223435780\",\"clonarDadosPai\":\"S\",\"vlr_unit\":150,\"estoque\":120,\"un\":\"1\",\"deposito\":{\"id\":123456,\"estoque\":200}}]},\"imagens\":[{\"url\":\"https://www.bling.com.br/bling.jpg\"}]}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+        JsonRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -641,11 +641,11 @@ class ProdutoServiceImplTest {
     @Test
     void testCreateUpdateComposition() {     //TESTE PRODUTO COM COMPOSIÇÃO.
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":456489798,\"descricao\":\"Kit 001\",\"descricaoCurta\":\"Kit caneca e copo\",\"descricaoComplementar\":\"Descrição complementar\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"imagens\":{\"url\":\"https://www.bling.com.br/bling.jpg\"},\"estrutura\":{\"tipoEstoque\":\"F\",\"lancarEstoque\":\"P\",\"componente\":[{\"nome\":\"Caneca Vermelha\",\"codigo\":\"caneca123\",\"quantidade\":2},{\"nome\":\"Copo 300 ml\",\"codigo\":\"copo123\",\"quantidade\":2}]}}}]}}";
+        String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":456489798,\"descricao\":\"Kit 001\",\"descricaoCurta\":\"Kit caneca e copo\",\"descricaoComplementar\":\"Descrição complementar\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"imagens\":[{\"url\":\"https://www.bling.com.br/bling.jpg\"}],\"estrutura\":{\"tipoEstoque\":\"F\",\"lancarEstoque\":\"P\",\"componente\":[{\"nome\":\"Caneca Vermelha\",\"codigo\":\"caneca123\",\"quantidade\":2},{\"nome\":\"Copo 300 ml\",\"codigo\":\"copo123\",\"quantidade\":2}]}}}]}}";
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+        JsonRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("456489798", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -706,7 +706,7 @@ class ProdutoServiceImplTest {
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+        JsonRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("123456", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());

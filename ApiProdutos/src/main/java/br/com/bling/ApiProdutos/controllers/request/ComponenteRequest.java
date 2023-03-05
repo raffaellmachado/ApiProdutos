@@ -1,12 +1,16 @@
 package br.com.bling.ApiProdutos.controllers.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ComponenteRequest {
     @Size(max = 120, message = "valor unitário da variação")
     public String nome;

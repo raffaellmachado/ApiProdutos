@@ -1,7 +1,9 @@
 package br.com.bling.ApiProdutos.controllers.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.*;
@@ -9,6 +11,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProdutoRequest {
 
     public String id;

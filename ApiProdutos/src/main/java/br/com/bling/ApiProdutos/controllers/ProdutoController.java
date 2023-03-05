@@ -1,22 +1,26 @@
 package br.com.bling.ApiProdutos.controllers;
 
-import br.com.bling.ApiProdutos.controllers.request.RespostaRequest;
-import br.com.bling.ApiProdutos.controllers.response.RespostaResponse;
+import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
+import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutos.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutos.exceptions.*;
 import br.com.bling.ApiProdutos.service.ProdutoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import javax.validation.Valid;
 
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
 @Api(value = "API REST PRODUTOS")    //Swagger
-@CrossOrigin(origins = "*")        // Liberar os dominios da API
+@CrossOrigin(origins = "*", maxAge = 3600)        // Liberar os dominios da API
 public class ProdutoController {
 
     @Autowired
@@ -30,9 +34,9 @@ public class ProdutoController {
      */
     @GetMapping("/produtos")
     @ApiOperation(value = "Retorna uma lista de produtos")
-    public RespostaResponse getAllProducts() {
+    public ResponseEntity<JsonResponse> getAllProducts() {
         try {
-            RespostaResponse request = produtoService.getAllProducts();
+            JsonResponse request = produtoService.getAllProducts();
 
             if (request.retorno.produtos == null || request.getRetorno() == null) {
                 throw new ApiProdutoException("Nenhum produto foi encontrado.");
@@ -96,7 +100,7 @@ public class ProdutoController {
 
             System.out.println(request);
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
             throw new ProdutoListaException();
         }
@@ -107,9 +111,9 @@ public class ProdutoController {
      */
     @GetMapping("/produto/{codigo}")
     @ApiOperation(value = "Retorna um produto pelo código")
-    public RespostaResponse getProductByCode(@PathVariable String codigo) {
+    public ResponseEntity<JsonResponse> getProductByCode(@PathVariable String codigo) {
         try {
-        RespostaResponse request = produtoService.getProductByCode(codigo);
+        JsonResponse request = produtoService.getProductByCode(codigo);
 
         if (request.retorno.produtos == null || request.getRetorno() == null) {
             throw new ApiProdutoException("Contato com o número de CPF/CNPJ: " + codigo + " não encontrado.");
@@ -174,7 +178,7 @@ public class ProdutoController {
 
         System.out.println(request);
 
-        return request;
+        return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
             throw new ProdutoCodigoException(codigo);
         }
@@ -183,10 +187,10 @@ public class ProdutoController {
     /**
      * GET "PRODUTO UTILIZANDO O CÓDIGO E NOME DO FORNECEDOR.
      */
-    @GetMapping("/produto/{codigo}/{id_fornecedor}")
+    @GetMapping("/produto/{codigo}/{codigoFabricante}")
     @ApiOperation(value = "Retorna um produto pelo código e nome do fornecedor")
-    public RespostaResponse getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String codigoFabricante) {
-        RespostaResponse request = produtoService.getProductByCodeSupplier(codigo, codigoFabricante);
+    public ResponseEntity<JsonResponse> getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String codigoFabricante) {
+        JsonResponse request = produtoService.getProductByCodeSupplier(codigo, codigoFabricante);
         try {
             if (request.retorno.produtos == null || request.getRetorno() == null) {
                 throw new ApiProdutoException("Produto com código " + codigo + " não encontrado.");
@@ -250,9 +254,9 @@ public class ProdutoController {
 
             System.out.println(request);
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
     } catch (Exception e) {
-        throw new ProdutoCodigoFornecedorException(codigoFabricante, codigoFabricante);
+        throw new ProdutoCodigoFornecedorException(codigo, codigoFabricante);
     }
     }
 
@@ -261,9 +265,9 @@ public class ProdutoController {
      */
     @DeleteMapping("/produto/{codigo}")
     @ApiOperation(value = "Deletar um produto pelo código")
-    public String deleteProductByCode(@PathVariable String codigo) {
+    public ResponseEntity<Object> deleteProductByCode(@PathVariable String codigo) {
         try {
-            RespostaResponse request = produtoService.getProductByCode(codigo);
+            JsonResponse request = produtoService.getProductByCode(codigo);
 
             if (request.retorno.produtos == null || request.getRetorno() == null) {
                 throw new ApiProdutoException("Produto com código " + codigo + " não encontrado para exclusão");
@@ -271,7 +275,7 @@ public class ProdutoController {
             produtoService.deleteProductByCode(codigo);
             System.out.println("Codigo deletado = " + codigo);
 
-            return "Produto com o código " + codigo + " foi deletado com sucesso!";
+            return ResponseEntity.status(HttpStatus.OK).body("Produto com o código " + codigo + " foi deletado com sucesso!");
         } catch (Exception e) {
             throw new ProdutoExclusaoException(codigo);
         }
@@ -282,16 +286,16 @@ public class ProdutoController {
      */
     @PostMapping(path = "/cadastrarproduto", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo produto")
-    public RespostaRequest createProduct(@RequestBody String xml) {
+    public ResponseEntity<JsonRequest> createProduct(@RequestBody @Valid String xml) {
         try {
-            RespostaRequest request = produtoService.createProduct(xml);
+            JsonRequest request = produtoService.createProduct(xml);
 
             if (request.retorno.produtos == null) {
                 throw new ApiProdutoException("Não foi possível criar o produto");
             }
             System.out.println("Produto cadastrado com sucesso!");
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
             throw new ProdutoCadastroException(xml);
         }
@@ -302,16 +306,16 @@ public class ProdutoController {
      */
     @PostMapping(path = "/atualizarproduto/{codigo}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto existente")
-    public RespostaRequest updateProduct(@RequestBody String xml, @PathVariable String codigo) {
+    public ResponseEntity<JsonRequest> updateProduct(@RequestBody @Valid String xml, @PathVariable String codigo) {
         try {
-            RespostaRequest request = produtoService.updateProduct(xml, codigo);
+            JsonRequest request = produtoService.updateProduct(xml, codigo);
 
             if (request.retorno.produtos == null) {
                 throw new ProdutoAtualizarException(codigo);
             }
             System.out.println("Produto cadastrado com sucesso!");
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
             throw new ProdutoAtualizarException(codigo);
         }

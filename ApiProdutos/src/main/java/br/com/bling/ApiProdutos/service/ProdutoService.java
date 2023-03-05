@@ -1,21 +1,23 @@
 package br.com.bling.ApiProdutos.service;
 
-import br.com.bling.ApiProdutos.controllers.request.RespostaRequest;
-import br.com.bling.ApiProdutos.controllers.response.RespostaResponse;
+import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
+import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.validation.Valid;
+
 public interface ProdutoService {
 
-    public RespostaResponse getAllProducts();
+    public JsonResponse getAllProducts();
 
-    public RespostaResponse getProductByCode(@PathVariable String codigo);
+    public JsonResponse getProductByCode(@PathVariable String codigo);
 
-    public RespostaResponse getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String codigoFabricante);
+    public JsonResponse getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String codigoFabricante);
 
     public void deleteProductByCode(@PathVariable String codigo);
 
-    public RespostaRequest createProduct(@RequestBody String xml);
+    public JsonRequest createProduct(@RequestBody String xml);
 
-    public RespostaRequest updateProduct(@RequestBody String xml, @PathVariable String codigo);
+    public JsonRequest updateProduct(@RequestBody @Valid String xml, @PathVariable String codigo);
 }

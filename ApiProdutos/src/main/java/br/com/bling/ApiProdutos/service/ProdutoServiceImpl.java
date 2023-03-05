@@ -1,8 +1,8 @@
 package br.com.bling.ApiProdutos.service;
 
 
-import br.com.bling.ApiProdutos.controllers.request.RespostaRequest;
-import br.com.bling.ApiProdutos.controllers.response.RespostaResponse;
+import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
+import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutos.exceptions.ApiProdutoException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,11 +32,11 @@ public class ProdutoServiceImpl implements ProdutoService {
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
     @Override
-    public RespostaResponse getAllProducts() throws ApiProdutoException {
+    public JsonResponse getAllProducts() throws ApiProdutoException {
         try {
             String json = restTemplate.getForObject(apiBaseUrl + "/produtos/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaResponse request =  objectMapper.readValue(json, RespostaResponse.class);
+            JsonResponse request =  objectMapper.readValue(json, JsonResponse.class);
 
             return request;
 
@@ -51,11 +51,11 @@ public class ProdutoServiceImpl implements ProdutoService {
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU)".
      */
     @Override
-    public RespostaResponse getProductByCode(String codigo) throws ApiProdutoException {
+    public JsonResponse getProductByCode(String codigo) throws ApiProdutoException {
         try {
             String json = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaResponse request =  objectMapper.readValue(json, RespostaResponse.class);
+            JsonResponse request =  objectMapper.readValue(json, JsonResponse.class);
 
             return request;
         } catch (JsonProcessingException e) {
@@ -69,11 +69,11 @@ public class ProdutoServiceImpl implements ProdutoService {
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU) E NOME DO FORNECEDOR".
      */
     @Override
-    public RespostaResponse getProductByCodeSupplier(String codigo, String codigoFabricante) throws ApiProdutoException {
+    public JsonResponse getProductByCodeSupplier(String codigo, String codigoFabricante) throws ApiProdutoException {
         try {
             String json = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + codigoFabricante + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaResponse request =  objectMapper.readValue(json, RespostaResponse.class);
+            JsonResponse request =  objectMapper.readValue(json, JsonResponse.class);
 
             return request;
         } catch (JsonProcessingException e) {
@@ -92,7 +92,7 @@ public class ProdutoServiceImpl implements ProdutoService {
             ResponseEntity<String> response = restTemplate.exchange(apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey, HttpMethod.DELETE, null, String.class);
             String json = response.getBody();
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaResponse resposta = objectMapper.readValue(json, RespostaResponse.class);
+            JsonResponse resposta = objectMapper.readValue(json, JsonResponse.class);
 
         } catch (JsonProcessingException e) {
             throw new ApiProdutoException("Erro ao processar JSON");
@@ -114,7 +114,7 @@ public class ProdutoServiceImpl implements ProdutoService {
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
     @Override
-    public RespostaRequest createProduct(String xml) throws ApiProdutoException {
+    public JsonRequest createProduct(String xml) throws ApiProdutoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -124,7 +124,7 @@ public class ProdutoServiceImpl implements ProdutoService {
             String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaRequest result = objectMapper.readValue(json, RespostaRequest.class);
+            JsonRequest result = objectMapper.readValue(json, JsonRequest.class);
 
             return result;
 
@@ -139,7 +139,7 @@ public class ProdutoServiceImpl implements ProdutoService {
      * POST "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
      */
     @Override
-    public RespostaRequest updateProduct(String xml, String codigo) throws ApiProdutoException {
+    public JsonRequest updateProduct(String xml, String codigo) throws ApiProdutoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -149,7 +149,7 @@ public class ProdutoServiceImpl implements ProdutoService {
             String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaRequest result = objectMapper.readValue(json, RespostaRequest.class);
+            JsonRequest result = objectMapper.readValue(json, JsonRequest.class);
 
             return result;
 

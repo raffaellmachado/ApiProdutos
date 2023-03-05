@@ -2,8 +2,8 @@ package br.com.bling.ApiProdutos.controllers;
 
 import br.com.bling.ApiProdutos.controllers.request.*;
 import br.com.bling.ApiProdutos.controllers.response.CategoriaResponse;
+import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutos.controllers.response.ProdutoResponse;
-import br.com.bling.ApiProdutos.controllers.response.RespostaResponse;
 import br.com.bling.ApiProdutos.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutos.exceptions.*;
 import br.com.bling.ApiProdutos.service.ProdutoService;
@@ -154,14 +154,14 @@ class ProdutoControllerTest {
         retorno.produtos.add(produto1);
         retorno.produtos.add(produto2);
 
-        RespostaResponse resposta = new RespostaResponse();
+        JsonResponse resposta = new JsonResponse();
         resposta.retorno = retorno;
 
         // Configura o comportamento do serviço simulado
         when(produtoService.getAllProducts()).thenReturn(resposta);
 
         // Chama o método sendo testado
-        RespostaResponse result = produtoController.getAllProducts();
+        JsonResponse result = produtoController.getAllProducts().getBody();
 
         // Verifica se o serviço simulado foi chamado corretamente e se o resultado foi o esperado
         verify(produtoService).getAllProducts();
@@ -186,7 +186,7 @@ class ProdutoControllerTest {
     void testGetProductByCode() {
         String codigo = "825";
 
-        RespostaResponse resposta = new RespostaResponse();
+        JsonResponse resposta = new JsonResponse();
         RetornoResponse retorno = new RetornoResponse();
 
         ArrayList<RetornoResponse.Produtos> produtos = new ArrayList<>();
@@ -253,7 +253,7 @@ class ProdutoControllerTest {
 
         Mockito.when(produtoService.getProductByCode(codigo)).thenReturn(resposta);
 
-        RespostaResponse result = produtoController.getProductByCode(codigo);
+        JsonResponse result = produtoController.getProductByCode(codigo).getBody();
         Assertions.assertEquals(resposta, result);
     }
 
@@ -277,7 +277,7 @@ class ProdutoControllerTest {
         String codigo = "825";
         String nomeFornecedor = "Teste fornecedor";
 
-        RespostaResponse resposta = new RespostaResponse();
+        JsonResponse resposta = new JsonResponse();
         RetornoResponse retorno = new RetornoResponse();
 
         ArrayList<RetornoResponse.Produtos> produtos = new ArrayList<>();
@@ -343,7 +343,7 @@ class ProdutoControllerTest {
 
         Mockito.when(produtoService.getProductByCodeSupplier(codigo,nomeFornecedor)).thenReturn(resposta);
 
-        RespostaResponse result = produtoController.getProductByCodeSupplier(codigo, nomeFornecedor);
+        JsonResponse result = produtoController.getProductByCodeSupplier(codigo, nomeFornecedor).getBody();
         Assertions.assertEquals(resposta, result);
     }
 
@@ -354,7 +354,7 @@ class ProdutoControllerTest {
         when(produtoService.getProductByCodeSupplier(codigo, id_fornecedor)).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(ProdutoCodigoException.class, () -> {
+        assertThrows(ProdutoCodigoFornecedorException.class, () -> {
             produtoController.getProductByCodeSupplier(codigo, id_fornecedor);
         });
 
@@ -367,7 +367,7 @@ class ProdutoControllerTest {
         String codigo = "825";
 
         // Cria resposta simulada do serviço
-        RespostaResponse resposta = new RespostaResponse();
+        JsonResponse resposta = new JsonResponse();
         RetornoResponse retorno = new RetornoResponse();
         ArrayList<RetornoResponse.Produtos> produtos = new ArrayList<>();
         RetornoResponse.Produtos produto = new RetornoResponse.Produtos();
@@ -384,7 +384,7 @@ class ProdutoControllerTest {
         Mockito.when(produtoService.getProductByCode(codigo)).thenReturn(resposta);
 
         // Chama o método que será testado
-        String result = produtoController.deleteProductByCode(codigo);
+        Object result = (produtoController.deleteProductByCode(codigo)).getBody();
 
         // Verifica o resultado
         String expected = "Produto com o código " + codigo + " foi deletado com sucesso!";
@@ -491,7 +491,7 @@ class ProdutoControllerTest {
                 "</produto>";
 
         // Simula a resposta da chamada para o serviço de categoria
-        RespostaRequest resposta = new RespostaRequest();
+        JsonRequest resposta = new JsonRequest();
         RetornoRequest retorno = new RetornoRequest();
 
         ArrayList<RetornoRequest.Produtos> produtoList = new ArrayList<>();
@@ -582,7 +582,7 @@ class ProdutoControllerTest {
 
         when(produtoService.createProduct(xml)).thenReturn(resposta);
 
-        RespostaRequest result = produtoController.createProduct(xml);
+        JsonRequest result = produtoController.createProduct(xml).getBody();
         assertEquals(resposta, result);
     }
 
@@ -682,7 +682,7 @@ class ProdutoControllerTest {
                 "</produto>";
 
         // Simula a resposta da chamada para o serviço de categoria
-        RespostaRequest resposta = new RespostaRequest();
+        JsonRequest resposta = new JsonRequest();
         RetornoRequest retorno = new RetornoRequest();
 
         ArrayList<RetornoRequest.Produtos> produtoList = new ArrayList<>();
@@ -777,7 +777,7 @@ class ProdutoControllerTest {
 
         when(produtoService.updateProduct(xml, codigo)).thenReturn(resposta);
 
-        RespostaRequest result = produtoController.updateProduct(xml,codigo);
+        JsonRequest result = produtoController.updateProduct(xml,codigo).getBody();
         assertEquals(resposta, result);
     }
 
