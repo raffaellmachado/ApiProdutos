@@ -47,9 +47,9 @@ public class CategoriaServiceImpl implements CategoriaService {
             return response;
 
         } catch (JsonProcessingException e) {
-            throw new ApiCategoriaException("Erro ao processar JSON");
+            throw new ApiCategoriaException("Erro ao processar JSON:" + e);
         } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API");
+            throw new ApiCategoriaException("Erro ao chamar API: " + e);
         }
 
     }
@@ -68,9 +68,9 @@ public class CategoriaServiceImpl implements CategoriaService {
             return response;
 
         } catch (JsonProcessingException e) {
-            throw new ApiCategoriaException("Erro ao processar JSON");
+            throw new ApiCategoriaException("Erro ao processar JSON:" + e);
         } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API");
+            throw new ApiCategoriaException("Erro ao chamar API:" + e);
         }
     }
 
@@ -93,9 +93,9 @@ public class CategoriaServiceImpl implements CategoriaService {
             return response;
 
         } catch (JsonProcessingException e) {
-            throw new ApiCategoriaException("Erro ao processar JSON");
+            throw new ApiCategoriaException("Erro ao processar JSON:" + e);
         } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API");
+            throw new ApiCategoriaException("Erro ao chamar API: " + e);
         }
     }
 
@@ -118,9 +118,9 @@ public class CategoriaServiceImpl implements CategoriaService {
             return response;
 
         } catch (JsonProcessingException e) {
-            throw new ApiCategoriaException("Erro ao processar JSON");
+            throw new ApiCategoriaException("Erro ao processar JSON: " + e);
         } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API: ");
+            throw new ApiCategoriaException("Erro ao chamar API: " + e);
         }
     }
 }

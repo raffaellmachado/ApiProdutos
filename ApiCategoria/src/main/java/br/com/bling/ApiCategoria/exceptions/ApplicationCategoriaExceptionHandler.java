@@ -15,13 +15,13 @@ public class ApplicationCategoriaExceptionHandler extends ResponseEntityExceptio
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(CategoriaListaNaoEncontradoException.class)
-    public ResponseEntity<String> handleCategoriaListaNaoEncontradoException(CategoriaListaNaoEncontradoException ex) {
+    @ExceptionHandler(CategoriaListaException.class)
+    public ResponseEntity<String> handleCategoriaListaNaoEncontradoException(CategoriaListaException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(CategoriaIdCategoriaNaoEncontradoException.class)
-    public ResponseEntity<String> handleCategoriaIdCategoriaNaoEncontradoException(CategoriaIdCategoriaNaoEncontradoException ex) {
+    @ExceptionHandler(CategoriaIdCategoriaException.class)
+    public ResponseEntity<String> handleCategoriaIdCategoriaNaoEncontradoException(CategoriaIdCategoriaException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 

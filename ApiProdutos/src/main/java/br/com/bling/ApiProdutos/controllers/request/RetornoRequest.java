@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)

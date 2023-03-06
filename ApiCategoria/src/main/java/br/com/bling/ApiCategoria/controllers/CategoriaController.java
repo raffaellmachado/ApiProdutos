@@ -5,14 +5,16 @@ import br.com.bling.ApiCategoria.controllers.request.RetornoRequest;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaCadastroException;
-import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaNaoEncontradoException;
-import br.com.bling.ApiCategoria.exceptions.CategoriaListaNaoEncontradoException;
+import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaException;
+import br.com.bling.ApiCategoria.exceptions.CategoriaListaException;
 import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
 import br.com.bling.ApiCategoria.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +38,7 @@ public class CategoriaController {
      */
     @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
-    public RespostaResponse getAllCategory() {
+    public ResponseEntity<RespostaResponse> getAllCategory() {
         try {
             RespostaResponse request = categoriaService.getAllCategory();
 
@@ -54,9 +56,9 @@ public class CategoriaController {
 
             System.out.println(request);
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
-            throw new CategoriaListaNaoEncontradoException();
+            throw new CategoriaListaException();
         }
     }
 
@@ -65,7 +67,7 @@ public class CategoriaController {
      */
     @GetMapping("/categoria/{idCategoria}")
     @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
-    public RespostaResponse getCategoryByIdCategory(@PathVariable String idCategoria) {
+    public ResponseEntity<RespostaResponse> getCategoryByIdCategory(@PathVariable String idCategoria) {
         try {
             RespostaResponse request = categoriaService.getCategoryByIdCategoria(idCategoria);
 
@@ -83,9 +85,9 @@ public class CategoriaController {
 
             System.out.println(request);
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
-            throw new CategoriaIdCategoriaNaoEncontradoException(idCategoria);
+            throw new CategoriaIdCategoriaException(idCategoria);
         }
     }
 
@@ -94,7 +96,7 @@ public class CategoriaController {
      */
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public RespostaRequest createCategory(@RequestBody String xml) {
+    public ResponseEntity<RespostaRequest> createCategory(@RequestBody String xml) {
         try {
             RespostaRequest request = categoriaService.createCategory(xml);
 
@@ -111,7 +113,7 @@ public class CategoriaController {
             }
             System.out.println(request);
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
             throw new CategoriaCadastroException();
         }
@@ -122,7 +124,7 @@ public class CategoriaController {
      */
     @PutMapping(path = "/atualizarcategoria/{idCategoria}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public RespostaRequest updateCategory(@RequestBody String xml, @PathVariable String idCategoria) {
+    public ResponseEntity<RespostaRequest> updateCategory(@RequestBody String xml, @PathVariable String idCategoria) {
         try {
             RespostaRequest request = categoriaService.updateCategory(xml, idCategoria);
 
@@ -131,7 +133,7 @@ public class CategoriaController {
             }
             System.out.println(request);
 
-            return request;
+            return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
             throw new CategoriaCadastroException();
         }
