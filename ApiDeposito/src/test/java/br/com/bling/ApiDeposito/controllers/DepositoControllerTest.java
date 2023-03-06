@@ -6,7 +6,7 @@ import br.com.bling.ApiDeposito.controllers.request.RetornoRequest;
 import br.com.bling.ApiDeposito.controllers.response.DepositoResponse;
 import br.com.bling.ApiDeposito.controllers.response.JsonResponse;
 import br.com.bling.ApiDeposito.controllers.response.RetornoResponse;
-import br.com.bling.ApiDeposito.exceptions.DepositoIdDepositoNaoEncontradoException;
+import br.com.bling.ApiDeposito.exceptions.DepositoIdDepositoException;
 import br.com.bling.ApiDeposito.exceptions.DepositoListaException;
 import br.com.bling.ApiDeposito.services.DepositoService;
 import org.junit.jupiter.api.Assertions;
@@ -136,7 +136,7 @@ class DepositoControllerTest {
         when(depositoService.getDepositByIdDeposit(idDeposito)).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(DepositoIdDepositoNaoEncontradoException.class, () -> {
+        assertThrows(DepositoIdDepositoException.class, () -> {
             depositoController.getDepositByIdDeposit(idDeposito);
         });
 

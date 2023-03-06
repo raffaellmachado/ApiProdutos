@@ -4,7 +4,7 @@ import br.com.bling.ApiDeposito.controllers.request.JsonRequest;
 import br.com.bling.ApiDeposito.controllers.response.JsonResponse;
 import br.com.bling.ApiDeposito.controllers.response.RetornoResponse;
 import br.com.bling.ApiDeposito.exceptions.ApiDepositoException;
-import br.com.bling.ApiDeposito.exceptions.DepositoIdDepositoNaoEncontradoException;
+import br.com.bling.ApiDeposito.exceptions.DepositoIdDepositoException;
 import br.com.bling.ApiDeposito.exceptions.DepositoListaException;
 import br.com.bling.ApiDeposito.services.DepositoService;
 import io.swagger.annotations.Api;
@@ -85,7 +85,7 @@ public class DepositoController {
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
-            throw new DepositoIdDepositoNaoEncontradoException(idDeposito);
+            throw new DepositoIdDepositoException(idDeposito);
         }
     }
 

@@ -21,8 +21,8 @@ public class ApplicationDepositoExceptionHandler extends ResponseEntityException
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(DepositoIdDepositoNaoEncontradoException.class)
-    public ResponseEntity<String> handleCodigoProdutoNaoEncontradoException(DepositoIdDepositoNaoEncontradoException ex) {
+    @ExceptionHandler(DepositoIdDepositoException.class)
+    public ResponseEntity<String> handleCodigoProdutoNaoEncontradoException(DepositoIdDepositoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
