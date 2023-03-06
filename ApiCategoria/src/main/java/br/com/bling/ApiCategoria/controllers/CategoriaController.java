@@ -1,13 +1,13 @@
 package br.com.bling.ApiCategoria.controllers;
 
+import br.com.bling.ApiCategoria.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategoria.controllers.request.JsonRequest;
 import br.com.bling.ApiCategoria.controllers.request.RetornoRequest;
+import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
-import br.com.bling.ApiCategoria.exceptions.CategoriaCadastroException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaListaException;
-import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import br.com.bling.ApiCategoria.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,8 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 
-import java.util.ArrayList;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -67,7 +68,7 @@ public class CategoriaController {
      */
     @GetMapping("/categoria/{idCategoria}")
     @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
-    public ResponseEntity<JsonResponse> getCategoryByIdCategory(@PathVariable String idCategoria) {
+    public ResponseEntity<JsonResponse> getCategoryByIdCategory(@PathVariable("idCategoria") String idCategoria) {
         try {
             JsonResponse request = categoriaService.getCategoryByIdCategoria(idCategoria);
 
@@ -96,26 +97,23 @@ public class CategoriaController {
      */
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public ResponseEntity<JsonRequest> createCategory(@RequestBody String xml) {
+    public ResponseEntity<?> createCategory(@RequestBody @Valid String xmlCategoria) {
         try {
-            JsonRequest request = categoriaService.createCategory(xml);
+            Object request = categoriaService.createCategory(xmlCategoria);
 
-            if (request.retorno.categorias == null || request.getRetorno() == null) {
+            if (request == null) {
                 throw new ApiCategoriaException("Não foi possível cadastrar a categoria");
-            }
-
-            for (ArrayList<RetornoRequest.Categorias> listaCategoria : request.getRetorno().getCategorias()) {
-                System.out.println("-------------------------------------------------------------------");
-                System.out.println("Id Categoria: " + listaCategoria.get(0).categoria.id);
-                System.out.println("Descrição: " + listaCategoria.get(0).categoria.descricao);
-                System.out.println("Id Categoria Pai: " + listaCategoria.get(0).categoria.idCategoriaPai);
-                System.out.println("-------------------------------------------------------------------");
             }
             System.out.println(request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
+
+        } catch (ApiCategoriaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            throw new CategoriaCadastroException();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
         }
     }
 
@@ -124,18 +122,20 @@ public class CategoriaController {
      */
     @PutMapping(path = "/atualizarcategoria/{idCategoria}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public ResponseEntity<JsonRequest> updateCategory(@RequestBody String xml, @PathVariable String idCategoria) {
+    public ResponseEntity<?> updateCategory(@PathVariable("idCategoria") String idCategoria, @RequestBody String xmlCategoria) {
         try {
-            JsonRequest request = categoriaService.updateCategory(xml, idCategoria);
+            Object request = categoriaService.updateCategory(idCategoria, xmlCategoria);
 
-            if (request.retorno.categorias == null || request.getRetorno() == null) {
-                throw new ApiCategoriaException("Não foi possível atualizar a categoria");
-            }
             System.out.println(request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
+
+        } catch (ApiCategoriaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            throw new CategoriaCadastroException();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
         }
     }
 }

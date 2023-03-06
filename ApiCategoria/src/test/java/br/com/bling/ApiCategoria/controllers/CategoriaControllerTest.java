@@ -6,7 +6,6 @@ import br.com.bling.ApiCategoria.controllers.request.RetornoRequest;
 import br.com.bling.ApiCategoria.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
-import br.com.bling.ApiCategoria.exceptions.CategoriaCadastroException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaListaException;
 import br.com.bling.ApiCategoria.service.CategoriaService;
@@ -15,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 
@@ -44,13 +45,13 @@ class CategoriaControllerTest {
         categoria1.categoria = new CategoriaResponse();
         categoria1.categoria.id = "1";
         categoria1.categoria.descricao = "Categoria 1";
-        categoria1.categoria.idCategoriaPai = Integer.parseInt("0");
+        categoria1.categoria.idCategoriaPai = "0";
 
         RetornoResponse.Categorias categoria2 = new RetornoResponse.Categorias();
         categoria2.categoria = new CategoriaResponse();
         categoria2.categoria.id = "2";
         categoria2.categoria.descricao = "Categoria 2";
-        categoria2.categoria.idCategoriaPai = Integer.parseInt("1");
+        categoria2.categoria.idCategoriaPai = "1";
 
         RetornoResponse retorno = new RetornoResponse();
         retorno.categorias = new ArrayList<>();
@@ -103,7 +104,7 @@ class CategoriaControllerTest {
         categoria.categoria = new CategoriaResponse();
         categoria.categoria.id = idCategoria;
         categoria.categoria.descricao = "Categoria 1";
-        categoria.categoria.idCategoriaPai = Integer.parseInt("456");
+        categoria.categoria.idCategoriaPai = "456";
 
         categorias.add(categoria);
         retorno.setCategorias(categorias);
@@ -156,7 +157,7 @@ class CategoriaControllerTest {
         categoria.categoria = new CategoriaRequest();
         categoria.categoria.id = "01";
         categoria.categoria.descricao = "Calçado";
-        categoria.categoria.idCategoriaPai = "0";
+        categoria.categoria.idCategoriaPai = 0;
 
         categoriasList.add(categoria);
         categorias.add(categoriasList);
@@ -165,7 +166,7 @@ class CategoriaControllerTest {
 
         when(categoriaService.createCategory(xml)).thenReturn(resposta);
 
-        JsonRequest result = categoriaController.createCategory(xml).getBody();
+        JsonRequest result = (JsonRequest) categoriaController.createCategory(xml).getBody();
         assertEquals(resposta, result);
     }
 
@@ -182,14 +183,12 @@ class CategoriaControllerTest {
                 "      </categoria>\n" +
                 "   </categorias>";
 
-
         // Cria um mock do serviço que retorna null
         when(categoriaService.createCategory(xml)).thenReturn(null);
 
-        // Chama o método sendo testado
-        assertThrows(CategoriaCadastroException.class, () -> {
-            categoriaController.createCategory(xml);
-        });
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = categoriaController.createCategory(xml);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
         // Verifica se o serviço foi chamado
         verify(categoriaService).createCategory(xml);

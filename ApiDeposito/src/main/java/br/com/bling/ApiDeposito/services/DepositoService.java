@@ -5,14 +5,16 @@ import br.com.bling.ApiDeposito.controllers.response.JsonResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.websocket.server.PathParam;
+
 public interface DepositoService {
 
     public JsonResponse getAllDeposit();
 
-    public JsonResponse getDepositByIdDeposit(@PathVariable String idDeposito);
+    public JsonResponse getDepositByIdDeposit(@PathVariable("idDeposito") String idDeposito);
 
-    public Object createDeposit(@RequestBody String xml);
+    public Object createDeposit(@RequestBody String xmlDeposito);
 
-    public Object updateDeposit(String xml, String idDeposito);
+    public Object updateDeposit(@RequestBody String xmlDeposito, @PathVariable("idDeposito") String idDeposito);
 
 }

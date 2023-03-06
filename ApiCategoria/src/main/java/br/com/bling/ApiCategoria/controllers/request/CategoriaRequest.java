@@ -2,6 +2,7 @@ package br.com.bling.ApiCategoria.controllers.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,10 +15,13 @@ import javax.validation.constraints.NotEmpty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CategoriaRequest {
 
+    @JsonProperty("id")
     public String id;
     @NotEmpty(message = "Campo Obrigatorio")
     @Max(value = 50, message = "Descrição da categoria")
+    @JsonProperty("descricao")
     public String descricao;
     @Max(value =  11, message = "ID da categoria pai")
-    public String idCategoriaPai = "0";
+    @JsonProperty("idCategoriaPai")
+    public Integer idCategoriaPai = 0;
 }

@@ -13,6 +13,7 @@ import javax.validation.constraints.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DepositoRequest {
 
+    @JsonProperty("id")
     public String id;
     @NotEmpty(message = "Campo Obrigatorio")
     @Max(value = 120, message = "Descrição do depósito")

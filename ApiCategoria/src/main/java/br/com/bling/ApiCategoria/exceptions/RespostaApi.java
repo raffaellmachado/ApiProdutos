@@ -1,6 +1,5 @@
-package br.com.bling.ApiDeposito.exceptions;
+package br.com.bling.ApiCategoria.exceptions;
 
-import br.com.bling.ApiDeposito.controllers.request.RetornoRequest;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 

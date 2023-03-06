@@ -9,9 +9,9 @@ public interface CategoriaService {
 
     public JsonResponse getAllCategory();
 
-    public JsonResponse getCategoryByIdCategoria(@PathVariable String idCategoria);
+    public JsonResponse getCategoryByIdCategoria(@PathVariable("idCategoria") String idCategoria);
 
-    public JsonRequest createCategory(@RequestBody String xml);
+    public Object createCategory(@RequestBody String xmlCategoria);
 
-    public JsonRequest updateCategory(@RequestBody String xml, @PathVariable String idCategoria);
+    public Object updateCategory(@RequestBody String xmlCategoria, @PathVariable("idCategoria") String idCategoria);
 }

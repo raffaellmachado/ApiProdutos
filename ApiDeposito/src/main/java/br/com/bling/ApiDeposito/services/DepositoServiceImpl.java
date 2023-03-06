@@ -71,13 +71,13 @@ public class DepositoServiceImpl implements DepositoService {
      * POST "CADASTRAR UM NOVO DEPOSITO" UTILIZANDO XML.
      */
     @Override
-    public Object createDeposit(String xml) throws ApiDepositoException  {
+    public Object createDeposit(String xmlDeposito) throws ApiDepositoException  {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
 
-            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url = apiBaseUrl + "/deposito/json/" + apiKey + apiXmlParam + xml;
+            HttpEntity<String> request = new HttpEntity<>(xmlDeposito, headers);
+            String url = apiBaseUrl + "/deposito/json/" + apiKey + apiXmlParam + xmlDeposito;
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
             // verifica se a resposta contém algum erro
@@ -125,13 +125,13 @@ public class DepositoServiceImpl implements DepositoService {
      * PUT "ATUALIZAR UMA NOVA CATEGORIA UTILIZANDO XML". -----> CORRIGIR e INSERIR EXCEPTION
      */
     @Override
-    public Object updateDeposit(String xml, String idDeposito) throws ApiDepositoException {
+    public Object updateDeposit(String xmlDeposito, String idDeposito) throws ApiDepositoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
 
-            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey + apiXmlParam + xml;
+            HttpEntity<String> request = new HttpEntity<>(xmlDeposito, headers);
+            String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey + apiXmlParam + xmlDeposito;
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             // verifica se a resposta contém algum erro

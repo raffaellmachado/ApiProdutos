@@ -4,5 +4,6 @@ public class ApiDepositoException extends RuntimeException {
     public ApiDepositoException(String message) {
         super(message);
     }
+
 }
 

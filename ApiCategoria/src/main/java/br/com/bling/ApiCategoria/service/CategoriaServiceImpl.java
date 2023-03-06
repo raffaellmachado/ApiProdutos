@@ -1,16 +1,21 @@
 package br.com.bling.ApiCategoria.service;
 
 import br.com.bling.ApiCategoria.controllers.request.JsonRequest;
-import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
 import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
+import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
+import br.com.bling.ApiCategoria.exceptions.RespostaApi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
 
 @Service
 public class CategoriaServiceImpl implements CategoriaService {
@@ -77,39 +82,21 @@ public class CategoriaServiceImpl implements CategoriaService {
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @Override
-    public JsonRequest createCategory(String xml) throws ApiCategoriaException {
+    public Object createCategory(String xmlCategoria) throws ApiCategoriaException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
 
-            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xml;
-            String json = restTemplate.postForObject(url, request, String.class);
+            HttpEntity<String> request = new HttpEntity<>(xmlCategoria, headers);
+            String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xmlCategoria;
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest response = objectMapper.readValue(json, JsonRequest.class);
-
-            return response;
-
-        } catch (JsonProcessingException e) {
-            throw new ApiCategoriaException("Erro ao processar JSON:" + e);
-        } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API: " + e);
-        }
-    }
-
-    /**
-     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
-     */
-    @Override
-    public JsonRequest updateCategory(String xml, String idCategoria) throws ApiCategoriaException {
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_XML);
-
-            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey + apiXmlParam + xml;
-            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+            // verifica se a resposta contém algum erro
+            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
+                return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
+            }
 
             ObjectMapper objectMapper = new ObjectMapper();
             JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
@@ -117,9 +104,45 @@ public class CategoriaServiceImpl implements CategoriaService {
             return response;
 
         } catch (JsonProcessingException e) {
-            throw new ApiCategoriaException("Erro ao processar JSON: " + e);
+            throw new ApiCategoriaException("Erro ao processar JSON");
         } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API: " + e);
+            return ("Erro ao chamar API: " + e);
         }
     }
+
+    /**
+     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
+     */
+    @Override
+    public Object updateCategory(String idCategoria, String xmlCategoria) throws ApiCategoriaException {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_XML);
+
+            HttpEntity<String> request = new HttpEntity<>(xmlCategoria, headers);
+            String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xmlCategoria;
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+            // verifica se a resposta contém algum erro
+            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
+                return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
+
+            return response;
+
+        } catch (JsonProcessingException e) {
+            throw new ApiCategoriaException("Erro ao processar JSON");
+        } catch (RestClientException e) {
+            return ("Erro ao chamar API: " + e);
+        }
+    }
+
+
+
+
 }

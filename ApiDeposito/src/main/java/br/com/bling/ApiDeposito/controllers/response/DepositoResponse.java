@@ -2,6 +2,7 @@ package br.com.bling.ApiDeposito.controllers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,10 +12,15 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DepositoResponse {
 
+    @JsonProperty("id")
     public String id;
+    @JsonProperty("descricao")
     public String descricao;
-    public String situacao = "A";
+    @JsonProperty("situacao")
+    public String situacao;
+    @JsonProperty("depositoPadrao")
     public boolean depositoPadrao = false;
+    @JsonProperty("desconsiderarSaldo")
     public boolean desconsiderarSaldo = false;
 
 }

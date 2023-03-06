@@ -16,19 +16,19 @@ public class ApplicationCategoriaExceptionHandler extends ResponseEntityExceptio
     }
 
     @ExceptionHandler(CategoriaListaException.class)
-    public ResponseEntity<String> handleCategoriaListaNaoEncontradoException(CategoriaListaException ex) {
+    public ResponseEntity<String> handleCategoriaListaException(CategoriaListaException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
     @ExceptionHandler(CategoriaIdCategoriaException.class)
-    public ResponseEntity<String> handleCategoriaIdCategoriaNaoEncontradoException(CategoriaIdCategoriaException ex) {
+    public ResponseEntity<String> handleCategoriaIdCategoriException(CategoriaIdCategoriaException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(CategoriaCadastroException.class)
-    public ResponseEntity<String> handleCategoriaCadastroException(CategoriaCadastroException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-    }
+//    @ExceptionHandler(CategoriaCadastroException.class)
+//    public ResponseEntity<String> handleCategoriaCadastroException(CategoriaCadastroException ex) {
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+//    }
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<Object> handleNullPointerException(NullPointerException ex) {
         return new ResponseEntity<>("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.", HttpStatus.INTERNAL_SERVER_ERROR);

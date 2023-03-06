@@ -94,9 +94,9 @@ public class DepositoController {
      */
     @PostMapping(path = "/cadastrardeposito", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo deposito")
-    public ResponseEntity<?> createDeposit(@RequestBody @Valid String xml) {
+    public ResponseEntity<?> createDeposit(@RequestBody @Valid String xmlDeposito) {
         try {
-            Object request = depositoService.createDeposit(xml);
+            Object request = depositoService.createDeposit(xmlDeposito);
 
             if (request == null) {
                 throw new ApiDepositoException("Não foi possível cadastrar o deposito");
@@ -120,9 +120,9 @@ public class DepositoController {
      */
     @PutMapping(path = "/atualizardeposito/{idDeposito}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public ResponseEntity<?> updateDeposit(@RequestBody @Valid String xml, @PathVariable String idDeposito) {
+    public ResponseEntity<?> updateDeposit(@RequestBody @Valid String xmlDeposito, @PathVariable String idDeposito) {
         try {
-            Object request = depositoService.updateDeposit(xml, idDeposito);
+            Object request = depositoService.updateDeposit(xmlDeposito, idDeposito);
 
             if (request == null) {
                 throw new ApiDepositoException("Não foi possível cadastrar o deposito");
