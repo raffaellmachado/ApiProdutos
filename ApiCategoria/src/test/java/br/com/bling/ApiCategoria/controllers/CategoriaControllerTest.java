@@ -1,10 +1,10 @@
 package br.com.bling.ApiCategoria.controllers;
 
 import br.com.bling.ApiCategoria.controllers.request.CategoriaRequest;
-import br.com.bling.ApiCategoria.controllers.request.RespostaRequest;
+import br.com.bling.ApiCategoria.controllers.request.JsonRequest;
 import br.com.bling.ApiCategoria.controllers.request.RetornoRequest;
 import br.com.bling.ApiCategoria.controllers.response.CategoriaResponse;
-import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
+import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategoria.exceptions.CategoriaCadastroException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaException;
@@ -57,14 +57,14 @@ class CategoriaControllerTest {
         retorno.categorias.add(categoria1);
         retorno.categorias.add(categoria2);
 
-        RespostaResponse resposta = new RespostaResponse();
+        JsonResponse resposta = new JsonResponse();
         resposta.retorno = retorno;
 
         // Configura o comportamento do serviço simulado
         when(categoriaService.getAllCategory()).thenReturn(resposta);
 
         // Chama o método sendo testado
-        RespostaResponse result = categoriaController.getAllCategory().getBody();
+        JsonResponse result = categoriaController.getAllCategory().getBody();
 
         // Verifica se o serviço simulado foi chamado corretamente e se o resultado foi o esperado
         verify(categoriaService).getAllCategory();
@@ -94,7 +94,7 @@ class CategoriaControllerTest {
     void testGetCategoryByIdCategory() {
         String idCategoria = "123";
 
-        RespostaResponse resposta = new RespostaResponse();
+        JsonResponse resposta = new JsonResponse();
         RetornoResponse retorno = new RetornoResponse();
 
         ArrayList<RetornoResponse.Categorias> categorias = new ArrayList<>();
@@ -111,7 +111,7 @@ class CategoriaControllerTest {
 
         when(categoriaService.getCategoryByIdCategoria(idCategoria)).thenReturn(resposta);
 
-        RespostaResponse result = categoriaController.getCategoryByIdCategory(idCategoria).getBody();
+        JsonResponse result = categoriaController.getCategoryByIdCategory(idCategoria).getBody();
         assertEquals(resposta, result);
     }
 
@@ -146,7 +146,7 @@ class CategoriaControllerTest {
                 "   </categorias>";
 
         // Simula a resposta da chamada para o serviço de categoria
-        RespostaRequest resposta = new RespostaRequest();
+        JsonRequest resposta = new JsonRequest();
         RetornoRequest retorno = new RetornoRequest();
 
         ArrayList<ArrayList<RetornoRequest.Categorias>> categorias = new ArrayList<>();
@@ -165,7 +165,7 @@ class CategoriaControllerTest {
 
         when(categoriaService.createCategory(xml)).thenReturn(resposta);
 
-        RespostaRequest result = categoriaController.createCategory(xml).getBody();
+        JsonRequest result = categoriaController.createCategory(xml).getBody();
         assertEquals(resposta, result);
     }
 

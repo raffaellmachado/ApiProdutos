@@ -1,7 +1,7 @@
 package br.com.bling.ApiCategoria.service;
 
-import br.com.bling.ApiCategoria.controllers.request.RespostaRequest;
-import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
+import br.com.bling.ApiCategoria.controllers.request.JsonRequest;
+import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class CategoriaServiceImplTest {
         Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
-        RespostaResponse result = categoriaServiceImpl.getAllCategory();
+        JsonResponse result = categoriaServiceImpl.getAllCategory();
 
         // Verifica se a lista de categorias foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals(2, result.getRetorno().getCategorias().size());
@@ -59,7 +59,7 @@ class CategoriaServiceImplTest {
         Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
-        RespostaResponse result = categoriaServiceImpl.getCategoryByIdCategoria("idCategoria");
+        JsonResponse result = categoriaServiceImpl.getCategoryByIdCategoria("idCategoria");
 
         // Verifica se a categoria foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals(1, result.getRetorno().getCategorias().size());
@@ -79,7 +79,7 @@ class CategoriaServiceImplTest {
         Mockito.when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = categoriaServiceImpl.createCategory("xml");
+        JsonRequest result = categoriaServiceImpl.createCategory("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("007", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getId());

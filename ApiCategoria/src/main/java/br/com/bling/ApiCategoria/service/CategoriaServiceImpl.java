@@ -1,11 +1,10 @@
 package br.com.bling.ApiCategoria.service;
 
-import br.com.bling.ApiCategoria.controllers.request.RespostaRequest;
+import br.com.bling.ApiCategoria.controllers.request.JsonRequest;
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
-import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
+import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -35,12 +34,12 @@ public class CategoriaServiceImpl implements CategoriaService {
      * GET "BUSCAR A LISTA DE CATEGORIA CADASTRADOS NO BLING".
      */
     @Override
-    public RespostaResponse getAllCategory() throws ApiCategoriaException {
+    public JsonResponse getAllCategory() throws ApiCategoriaException {
         try {
             String request = restTemplate.getForObject(apiBaseUrl + "/categorias/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
 
-            RespostaResponse response = objectMapper.readValue(request, RespostaResponse.class);
+            JsonResponse response = objectMapper.readValue(request, JsonResponse.class);
 
             System.out.println(response);
 
@@ -58,12 +57,12 @@ public class CategoriaServiceImpl implements CategoriaService {
      * GET "BUSCA CATEGORIA PELO IDCATEGORIA".
      */
     @Override
-    public RespostaResponse getCategoryByIdCategoria(String idCategoria) throws ApiCategoriaException {
+    public JsonResponse getCategoryByIdCategoria(String idCategoria) throws ApiCategoriaException {
         try {
             String request = restTemplate.getForObject(apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
 
-            RespostaResponse response = objectMapper.readValue(request, RespostaResponse.class);
+            JsonResponse response = objectMapper.readValue(request, JsonResponse.class);
 
             return response;
 
@@ -78,7 +77,7 @@ public class CategoriaServiceImpl implements CategoriaService {
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @Override
-    public RespostaRequest createCategory(String xml) throws ApiCategoriaException {
+    public JsonRequest createCategory(String xml) throws ApiCategoriaException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -88,7 +87,7 @@ public class CategoriaServiceImpl implements CategoriaService {
             String json = restTemplate.postForObject(url, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaRequest response = objectMapper.readValue(json, RespostaRequest.class);
+            JsonRequest response = objectMapper.readValue(json, JsonRequest.class);
 
             return response;
 
@@ -103,7 +102,7 @@ public class CategoriaServiceImpl implements CategoriaService {
      * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
      */
     @Override
-    public RespostaRequest updateCategory(String xml, String idCategoria) throws ApiCategoriaException {
+    public JsonRequest updateCategory(String xml, String idCategoria) throws ApiCategoriaException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -113,7 +112,7 @@ public class CategoriaServiceImpl implements CategoriaService {
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            RespostaRequest response = objectMapper.readValue(responseEntity.getBody(), RespostaRequest.class);
+            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
 
             return response;
 

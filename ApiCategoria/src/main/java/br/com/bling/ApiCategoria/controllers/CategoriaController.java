@@ -1,13 +1,13 @@
 package br.com.bling.ApiCategoria.controllers;
 
-import br.com.bling.ApiCategoria.controllers.request.RespostaRequest;
+import br.com.bling.ApiCategoria.controllers.request.JsonRequest;
 import br.com.bling.ApiCategoria.controllers.request.RetornoRequest;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaCadastroException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaException;
 import br.com.bling.ApiCategoria.exceptions.CategoriaListaException;
-import br.com.bling.ApiCategoria.controllers.response.RespostaResponse;
+import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import br.com.bling.ApiCategoria.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,9 +38,9 @@ public class CategoriaController {
      */
     @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
-    public ResponseEntity<RespostaResponse> getAllCategory() {
+    public ResponseEntity<JsonResponse> getAllCategory() {
         try {
-            RespostaResponse request = categoriaService.getAllCategory();
+            JsonResponse request = categoriaService.getAllCategory();
 
             if (request.retorno.getCategorias() == null || request.getRetorno() == null) {
                 throw new ApiCategoriaException("Não foi possível localizar a lista de categorias");
@@ -67,9 +67,9 @@ public class CategoriaController {
      */
     @GetMapping("/categoria/{idCategoria}")
     @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
-    public ResponseEntity<RespostaResponse> getCategoryByIdCategory(@PathVariable String idCategoria) {
+    public ResponseEntity<JsonResponse> getCategoryByIdCategory(@PathVariable String idCategoria) {
         try {
-            RespostaResponse request = categoriaService.getCategoryByIdCategoria(idCategoria);
+            JsonResponse request = categoriaService.getCategoryByIdCategoria(idCategoria);
 
             if (request.retorno.categorias == null || request.getRetorno() == null) {
                 throw new ApiCategoriaException("Não foi possível localizar a categoria pelo idCategoria");
@@ -96,9 +96,9 @@ public class CategoriaController {
      */
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public ResponseEntity<RespostaRequest> createCategory(@RequestBody String xml) {
+    public ResponseEntity<JsonRequest> createCategory(@RequestBody String xml) {
         try {
-            RespostaRequest request = categoriaService.createCategory(xml);
+            JsonRequest request = categoriaService.createCategory(xml);
 
             if (request.retorno.categorias == null || request.getRetorno() == null) {
                 throw new ApiCategoriaException("Não foi possível cadastrar a categoria");
@@ -124,9 +124,9 @@ public class CategoriaController {
      */
     @PutMapping(path = "/atualizarcategoria/{idCategoria}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public ResponseEntity<RespostaRequest> updateCategory(@RequestBody String xml, @PathVariable String idCategoria) {
+    public ResponseEntity<JsonRequest> updateCategory(@RequestBody String xml, @PathVariable String idCategoria) {
         try {
-            RespostaRequest request = categoriaService.updateCategory(xml, idCategoria);
+            JsonRequest request = categoriaService.updateCategory(xml, idCategoria);
 
             if (request.retorno.categorias == null || request.getRetorno() == null) {
                 throw new ApiCategoriaException("Não foi possível atualizar a categoria");

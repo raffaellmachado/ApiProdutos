@@ -1,4 +1,4 @@
-package br.com.bling.ApiCategoria.controllers.response;
+package br.com.bling.ApiCategoria.controllers.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RespostaResponse {
+public class JsonRequest {
 
 	@JsonProperty("retorno")
-	public RetornoResponse retorno;
+	public RetornoRequest retorno;
 }
