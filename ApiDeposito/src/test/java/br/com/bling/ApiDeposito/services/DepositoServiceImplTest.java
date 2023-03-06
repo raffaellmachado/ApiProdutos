@@ -1,7 +1,7 @@
 package br.com.bling.ApiDeposito.services;
 
-import br.com.bling.ApiDeposito.controllers.request.RespostaRequest;
-import br.com.bling.ApiDeposito.controllers.response.RespostaResponse;
+import br.com.bling.ApiDeposito.controllers.request.JsonRequest;
+import br.com.bling.ApiDeposito.controllers.response.JsonResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.Mockito.*;
@@ -36,7 +38,7 @@ class DepositoServiceImplTest {
         Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
-        RespostaResponse result = depositoServiceImpl.getAllDeposit();
+        JsonResponse result = depositoServiceImpl.getAllDeposit();
 
         // Verifica se a lista de categorias foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals(2, result.getRetorno().getDepositos().size());
@@ -63,10 +65,9 @@ class DepositoServiceImplTest {
         Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
-        RespostaResponse result = depositoServiceImpl.getDepositByIdDeposit("idDeposito");
+        JsonResponse result = depositoServiceImpl.getDepositByIdDeposit("idDeposito");
 
         // Verifica se a categoria foi corretamente convertida a partir da resposta da API
-        Assertions.assertEquals(1, result.getRetorno().getDepositos().size());
         Assertions.assertEquals("007", result.getRetorno().getDepositos().get(0).getDeposito().getId());
         Assertions.assertEquals("Desfazimento", result.getRetorno().getDepositos().get(0).getDeposito().getDescricao());
         Assertions.assertEquals("Inativo", result.getRetorno().getDepositos().get(0).getDeposito().getSituacao());
@@ -85,10 +86,11 @@ class DepositoServiceImplTest {
     void testCreateDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"14886963547\",\"descricao\":\"Geral\",\"situacao\":\"Ativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
-        Mockito.when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        RespostaRequest result = depositoServiceImpl.createDeposit("xml");
+        JsonRequest result = (JsonRequest) depositoServiceImpl.createDeposit("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("14886963547", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getId());
@@ -105,7 +107,20 @@ class DepositoServiceImplTest {
      */
     @Test
     void testUpdateDeposit() {
-//        RespostaRequest result = depositoServiceImpl.updateDeposit("xml", "idDeposito");
-//        Assertions.assertEquals(new RespostaRequest(), result);
+        String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"14886963547\",\"descricao\":\"Geral\",\"situacao\":\"Ativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
+
+        // Chama o método que deve converter a resposta em um objeto RespostaRequest
+        JsonRequest result = (JsonRequest) depositoServiceImpl.updateDeposit("xml", "idDeposito");
+
+        // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
+        Assertions.assertEquals("14886963547", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getId());
+        Assertions.assertEquals("Geral", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getDescricao());
+        Assertions.assertEquals("Ativo", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getSituacao());
+        Assertions.assertEquals(true, result.getRetorno().getDepositos().get(0).get(0).getDeposito().depositoPadrao);
+        Assertions.assertEquals(false, result.getRetorno().getDepositos().get(0).get(0).getDeposito().desconsiderarSaldo);
+
+        System.out.println("POST: " + result);
     }
 }

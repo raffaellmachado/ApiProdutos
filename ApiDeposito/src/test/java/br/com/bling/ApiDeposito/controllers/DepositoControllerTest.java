@@ -1,14 +1,13 @@
 package br.com.bling.ApiDeposito.controllers;
 
 import br.com.bling.ApiDeposito.controllers.request.DepositoRequest;
-import br.com.bling.ApiDeposito.controllers.request.RespostaRequest;
+import br.com.bling.ApiDeposito.controllers.request.JsonRequest;
 import br.com.bling.ApiDeposito.controllers.request.RetornoRequest;
 import br.com.bling.ApiDeposito.controllers.response.DepositoResponse;
-import br.com.bling.ApiDeposito.controllers.response.RespostaResponse;
+import br.com.bling.ApiDeposito.controllers.response.JsonResponse;
 import br.com.bling.ApiDeposito.controllers.response.RetornoResponse;
-import br.com.bling.ApiDeposito.exceptions.DepositoCadastroException;
 import br.com.bling.ApiDeposito.exceptions.DepositoIdDepositoNaoEncontradoException;
-import br.com.bling.ApiDeposito.exceptions.DepositoListaNaoEncontradoException;
+import br.com.bling.ApiDeposito.exceptions.DepositoListaException;
 import br.com.bling.ApiDeposito.services.DepositoService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 
@@ -28,8 +28,7 @@ import static org.mockito.Mockito.*;
 class DepositoControllerTest {
     @Mock
     DepositoService depositoService;
-    @Mock
-    RestTemplate restTemplate;
+
     @InjectMocks
     DepositoController depositoController;
 
@@ -47,34 +46,34 @@ class DepositoControllerTest {
         // Deposito teste 01
         RetornoResponse.Depositos deposito1 = new RetornoResponse.Depositos();
         deposito1.deposito = new DepositoResponse();
-        deposito1.deposito.id = "1";
-        deposito1.deposito.descricao = "Deposito 1";
-        deposito1.deposito.situacao = "1";
-        deposito1.deposito.depositoPadrao = false ;
-        deposito1.deposito.desconsiderarSaldo = false;
+        deposito1.deposito.setId("1");
+        deposito1.deposito.setDescricao("Deposito 1");
+        deposito1.deposito.setSituacao("A");
+        deposito1.deposito.setDepositoPadrao(false);
+        deposito1.deposito.setDesconsiderarSaldo(false);
 
         // Deposito teste 02
         RetornoResponse.Depositos deposito2 = new RetornoResponse.Depositos();
         deposito2.deposito = new DepositoResponse();
-        deposito2.deposito.id = "2";
-        deposito2.deposito.descricao = "Deposito 2";
-        deposito2.deposito.situacao = "1";
-        deposito2.deposito.depositoPadrao = true;
-        deposito2.deposito.desconsiderarSaldo = false;
+        deposito2.deposito.setId("2");
+        deposito2.deposito.setDescricao("Deposito 2");
+        deposito2.deposito.setSituacao("A");
+        deposito2.deposito.setDepositoPadrao(true);
+        deposito2.deposito.setDesconsiderarSaldo(false);
 
         RetornoResponse retorno = new RetornoResponse();
         retorno.depositos = new ArrayList<>();
         retorno.depositos.add(deposito1);
         retorno.depositos.add(deposito2);
 
-        RespostaResponse resposta = new RespostaResponse();
+        JsonResponse resposta = new JsonResponse();
         resposta.retorno = retorno;
 
         // Configura o comportamento do serviço simulado
         when(depositoService.getAllDeposit()).thenReturn(resposta);
 
         // Chama o método sendo testado
-        RespostaResponse result = depositoController.getCategoria();
+        JsonResponse result = depositoController.getCategoria().getBody();
 
         // Verifica se o serviço simulado foi chamado corretamente e se o resultado foi o esperado
         verify(depositoService).getAllDeposit();
@@ -90,7 +89,7 @@ class DepositoControllerTest {
         when(depositoService.getAllDeposit()).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(DepositoListaNaoEncontradoException.class, () -> {
+        assertThrows(DepositoListaException.class, () -> {
             depositoController.getCategoria();
         });
 
@@ -103,20 +102,20 @@ class DepositoControllerTest {
      */
     @Test
     void testGetDepositByIdDeposit() {
-        String idDeposito = "123";
+        String idDeposito = "783698524";
 
-        RespostaResponse resposta = new RespostaResponse();
+        JsonResponse resposta = new JsonResponse();
         RetornoResponse retorno = new RetornoResponse();
 
         ArrayList<RetornoResponse.Depositos> depositos = new ArrayList<>();
         RetornoResponse.Depositos deposito = new RetornoResponse.Depositos();
 
         deposito.deposito = new DepositoResponse();
-        deposito.deposito.id = idDeposito;
-        deposito.deposito.situacao = "1";
-        deposito.deposito.descricao = "Deposito 1";
-        deposito.deposito.depositoPadrao = false;
-        deposito.deposito.desconsiderarSaldo = true;
+        deposito.deposito.setId(idDeposito);
+        deposito.deposito.setDescricao("Deposito 1");
+        deposito.deposito.setSituacao("A");
+        deposito.deposito.setDepositoPadrao(false);
+        deposito.deposito.setDesconsiderarSaldo(true);
 
         depositos.add(deposito);
         retorno.setDepositos(depositos);
@@ -124,7 +123,7 @@ class DepositoControllerTest {
 
         Mockito.when(depositoService.getDepositByIdDeposit(idDeposito)).thenReturn(resposta);
 
-        RespostaResponse result = depositoController.getDepositByIdDeposit(idDeposito);
+        JsonResponse result = depositoController.getDepositByIdDeposit(idDeposito).getBody();
         Assertions.assertEquals(resposta, result);
     }
 
@@ -133,7 +132,7 @@ class DepositoControllerTest {
      */
     @Test
     void testGetCategoryByIdCategoryException() {
-        String idDeposito = "123";
+        String idDeposito = "783698524";
         when(depositoService.getDepositByIdDeposit(idDeposito)).thenReturn(null);
 
         // Chama o método sendo testado
@@ -161,7 +160,7 @@ class DepositoControllerTest {
                 "</depositos>";
 
         // Simula a resposta da chamada para o serviço de categoria
-        RespostaRequest resposta = new RespostaRequest();
+        JsonRequest resposta = new JsonRequest();
         RetornoRequest retorno = new RetornoRequest();
 
         ArrayList<ArrayList<RetornoRequest.Deposito>> depositos = new ArrayList<>();
@@ -169,11 +168,11 @@ class DepositoControllerTest {
         RetornoRequest.Deposito deposito = new RetornoRequest.Deposito();
 
         deposito.deposito = new DepositoRequest();
-        deposito.deposito.id = "01";
-        deposito.deposito.descricao = "Deposito padrão";
-        deposito.deposito.situacao = "A";
-        deposito.deposito.depositoPadrao = true;
-        deposito.deposito.desconsiderarSaldo = true;
+        deposito.deposito.setId("01");
+        deposito.deposito.setDescricao("Deposito Padrão");
+        deposito.deposito.setSituacao("A");
+        deposito.deposito.setDepositoPadrao(true);
+        deposito.deposito.setDesconsiderarSaldo(true);
 
         depositosList.add(deposito);
         depositos.add(depositosList);
@@ -182,7 +181,7 @@ class DepositoControllerTest {
 
         when(depositoService.createDeposit(xml)).thenReturn(resposta);
 
-        RespostaRequest result = depositoController.createDeposit(xml);
+        JsonRequest result = (JsonRequest) depositoController.createDeposit(xml).getBody();
         assertEquals(resposta, result);
     }
 
@@ -191,22 +190,19 @@ class DepositoControllerTest {
      */
     @Test
     void testCreateProductException() {
-        // Cria o XML de categoria a ser enviado na requisição
-        String xml = "<categorias>\n" +
-                "     <categoria>\n" +
-                "          <descricao>Calçado</descricao>\n" +
-                "          <idCategoriaPai>0</idCategoriaPai>\n" +
-                "      </categoria>\n" +
-                "   </categorias>";
-
+        // Cria o XML de deposito a ser enviado na requisição
+        String xml = "<depositos>\n" +
+                "     <deposito>\n" +
+                "          <descricao>Deposito 1</descricao>\n" +
+                "      </deposito>\n" +
+                "   </depositos>";
 
         // Cria um mock do serviço que retorna null
         when(depositoService.createDeposit(xml)).thenReturn(null);
 
-        // Chama o método sendo testado
-        assertThrows(DepositoCadastroException.class, () -> {
-            depositoController.createDeposit(xml);
-        });
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = depositoController.createDeposit(xml);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
         // Verifica se o serviço foi chamado
         verify(depositoService).createDeposit(xml);
@@ -214,9 +210,22 @@ class DepositoControllerTest {
 
     @Test
     void testUpdateCategory() {
-//        when(depositoService.updateDeposit(anyString(), anyString())).thenReturn(new RespostaRequest());
-//
-//        RespostaRequest result = depositoController.updateCategory("xml", "idDeposito");
-//        Assertions.assertEquals(new RespostaRequest(), result);
+        // Cria o XML de deposito a ser enviado na requisição
+        String idDeposito = "158365";
+        String xml = "<depositos>\n" +
+                "     <deposito>\n" +
+                "          <descricao>Deposito 1</descricao>\n" +
+                "      </deposito>\n" +
+                "   </depositos>";
+
+        // Cria um mock do serviço que retorna null
+        when(depositoService.updateDeposit(xml, idDeposito)).thenReturn(null);
+
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = depositoController.updateDeposit(xml, idDeposito);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        // Verifica se o serviço foi chamado
+        verify(depositoService).updateDeposit(xml, idDeposito);
     }
 }

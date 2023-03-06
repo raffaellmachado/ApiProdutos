@@ -1,19 +1,18 @@
 package br.com.bling.ApiDeposito.services;
 
 
-import br.com.bling.ApiDeposito.controllers.request.RespostaRequest;
-import br.com.bling.ApiDeposito.controllers.response.RespostaResponse;
+import br.com.bling.ApiDeposito.controllers.response.JsonResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface DepositoService {
 
-    public RespostaResponse getAllDeposit();
+    public JsonResponse getAllDeposit();
 
-    public RespostaResponse getDepositByIdDeposit(@PathVariable String idDeposito);
+    public JsonResponse getDepositByIdDeposit(@PathVariable String idDeposito);
 
-    public RespostaRequest createDeposit(@RequestBody String xml);
+    public Object createDeposit(@RequestBody String xml);
 
-    public RespostaRequest updateDeposit(@RequestBody String xml, @PathVariable String idDeposito);
+    public Object updateDeposit(String xml, String idDeposito);
 
 }
