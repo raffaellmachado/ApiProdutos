@@ -119,9 +119,9 @@ public class CategoriaController {
      */
     @PutMapping(path = "/atualizarcategoria/{idCategoria}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public ResponseEntity<?> updateCategory(@PathVariable("idCategoria") String idCategoria, @RequestBody String xmlCategoria) {
+    public ResponseEntity<?> updateCategory(@RequestBody String xmlCategoria, @PathVariable("idCategoria") String idCategoria) {
         try {
-            Object request = categoriaService.updateCategory(idCategoria, xmlCategoria);
+            Object request = categoriaService.updateCategory(xmlCategoria, idCategoria);
 
             if (request == null) {
                 throw new ApiCategoriaException("Não foi possível atualizar a categoria");

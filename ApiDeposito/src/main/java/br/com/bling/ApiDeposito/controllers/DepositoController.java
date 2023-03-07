@@ -125,7 +125,7 @@ public class DepositoController {
             Object request = depositoService.updateDeposit(xmlDeposito, idDeposito);
 
             if (request == null) {
-                throw new ApiDepositoException("Não foi possível cadastrar o deposito");
+                throw new ApiDepositoException("Não foi possível atualizar o deposito");
             }
 
             System.out.println(request);
