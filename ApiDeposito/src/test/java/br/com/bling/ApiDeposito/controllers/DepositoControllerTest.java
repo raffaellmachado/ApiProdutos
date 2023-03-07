@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.util.ArrayList;
 
@@ -41,7 +42,7 @@ class DepositoControllerTest {
      * TESTE CONTROLLER - GET "BUSCAR A LISTA DE DEPOSITOS CADASTRADOS NO BLING".
      */
     @Test
-    void testGetCategoria() throws Exception {
+    void testGetDeposit() throws Exception {
 
         // Deposito teste 01
         RetornoResponse.Depositos deposito1 = new RetornoResponse.Depositos();
@@ -84,7 +85,7 @@ class DepositoControllerTest {
      * TESTE CONTROLLER - GET "FORÇA O METODO BUSCAR A LISTA DE DEPOSITOS A ENTRAR NO EXCEPTION".
      */
     @Test
-    void testGetAllCategoryException() {
+    void testGetAllDepositException() {
         String idProdutoFornecedor = "123";
         when(depositoService.getAllDeposit()).thenReturn(null);
 
@@ -131,7 +132,7 @@ class DepositoControllerTest {
      * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA DEPOSITO PELO IDDEPOSITO A ENTRAR NO EXCEPTION".
      */
     @Test
-    void testGetCategoryByIdCategoryException() {
+    void testGetDepositByIdDepositException() {
         String idDeposito = "783698524";
         when(depositoService.getDepositByIdDeposit(idDeposito)).thenReturn(null);
 
@@ -189,7 +190,7 @@ class DepositoControllerTest {
      * TESTE CONTROLLER - POST "FORÇA O METODO DE DEPOSITO A ENTRAR NO EXCEPTION".
      */
     @Test
-    void testCreateProductException() {
+    void testCreateDepositException_1() {
         // Cria o XML de deposito a ser enviado na requisição
         String xml = "<depositos>\n" +
                 "     <deposito>\n" +
@@ -209,7 +210,53 @@ class DepositoControllerTest {
     }
 
     @Test
-    void testUpdateCategory() {
+    void testCreateDepositException_2() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        // Cria um mock do serviço que lança uma HttpStatusCodeException
+        when(depositoService.createDeposit(xml)).thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {});
+
+        // Chama o método sendo testado e verifica se a resposta é a esperada
+        ResponseEntity<?> response = depositoController.createDeposit(xml);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(new JsonRequest(), response.getBody());
+
+        // Verifica se o serviço foi chamado
+        verify(depositoService).createDeposit(xml);
+    }
+
+    @Test
+    void testCreateDepositException_3() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        // Cria um mock do serviço que lança uma exceção
+        when(depositoService.createDeposit(xml)).thenThrow(new RuntimeException());
+
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = depositoController.createDeposit(xml);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+
+        // Verifica se o serviço foi chamado
+        verify(depositoService).createDeposit(xml);
+    }
+
+    /**
+     * TESTE CONTROLLER - PUT "ATUALIZA UM DEPOSITO UTILIZANDO XML/JSON".
+     */
+    @Test
+    void testUpdateDeposit() {
         // Cria o XML de deposito a ser enviado na requisição
         String idDeposito = "158365";
         String xml = "<depositos>\n" +
@@ -227,5 +274,73 @@ class DepositoControllerTest {
 
         // Verifica se o serviço foi chamado
         verify(depositoService).updateDeposit(xml, idDeposito);
+    }
+
+
+    /**
+     * TESTE CONTROLLER - PUT "FORÇA O METODO DE ATUALIZAR DEPOSITO A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testUpdateDepositException_1() {
+        String idCategoria = "159357";
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        // Cria um mock do serviço que retorna null
+        when(depositoService.updateDeposit(xml, idCategoria)).thenReturn(null);
+
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = depositoController.updateDeposit(xml, idCategoria);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        // Verifica se o serviço foi chamado
+        verify(depositoService).updateDeposit(xml, idCategoria);
+    }
+
+    @Test
+    void testUpdateDepositException_2() {
+        String idCategoria = "159357";
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        // Cria um mock do serviço que lança uma HttpStatusCodeException
+        when(depositoService.updateDeposit(xml, idCategoria)).thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {});
+
+        // Chama o método sendo testado e verifica se a resposta é a esperada
+        ResponseEntity<?> response = depositoController.updateDeposit(xml, idCategoria);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(new JsonRequest(), response.getBody());
+
+        // Verifica se o serviço foi chamado
+        verify(depositoService).updateDeposit(xml, idCategoria);
+    }
+
+    @Test
+    void testUpdateDepositException_3() {
+        String idCategoria = "159357";
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        // Cria um mock do serviço que lança uma exceção
+        when(depositoService.updateDeposit(xml, idCategoria)).thenThrow(new RuntimeException());
+
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = depositoController.updateDeposit(xml, idCategoria);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+
+        // Verifica se o serviço foi chamado
+        verify(depositoService).updateDeposit(xml, idCategoria);
     }
 }

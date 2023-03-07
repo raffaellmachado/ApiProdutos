@@ -1,8 +1,6 @@
 package br.com.bling.ApiCategoria.controllers;
 
-import br.com.bling.ApiCategoria.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategoria.controllers.request.JsonRequest;
-import br.com.bling.ApiCategoria.controllers.request.RetornoRequest;
 import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
@@ -31,7 +29,6 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
     private String idCategoria;
-
     private String id;
 
     /**
@@ -126,6 +123,9 @@ public class CategoriaController {
         try {
             Object request = categoriaService.updateCategory(idCategoria, xmlCategoria);
 
+            if (request == null) {
+                throw new ApiCategoriaException("Não foi possível atualizar a categoria");
+            }
             System.out.println(request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);

@@ -7,11 +7,12 @@ import java.util.Map;
 
 @Data
 public class RespostaApi {
+
     private RetornoRequest retorno;
 
     public class RetornoRequest {
-        private String id;
-        private String data;
+        public String id;
+        public String data;
 
         @JsonProperty("erros")
         private Map<String, String> erros;
