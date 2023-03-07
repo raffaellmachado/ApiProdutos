@@ -4,8 +4,8 @@ import br.com.bling.ApiProdutosFornecedores.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.request.ProdutoFornecedor2Request;
 import br.com.bling.ApiProdutosFornecedores.controllers.request.RetornoRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.*;
+import br.com.bling.ApiProdutosFornecedores.exceptions.ApiProdutoFornecedorException;
 import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorIdException;
-import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorCadastroException;
 import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorListaException;
 import br.com.bling.ApiProdutosFornecedores.service.ProdutoFornecedorService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -148,7 +151,7 @@ class ProdutoFornecedorControllerTest {
         when(produtoFornecedorService.getProducId(idProdutoFornecedor)).thenReturn(resposta);
 
         // Chama o método sendo testado
-        JsonResponse result = this.produtoFornecedorController.getProducId(idProdutoFornecedor).getBody();
+        JsonResponse result = (JsonResponse) this.produtoFornecedorController.getProducId(idProdutoFornecedor).getBody();
 
         // Verifica se o serviço simulado foi chamado corretamente e se o resultado foi o esperado
         verify(produtoFornecedorService).getProducId(idProdutoFornecedor);
@@ -213,7 +216,7 @@ class ProdutoFornecedorControllerTest {
 
         when(produtoFornecedorService.createProduct(xml)).thenReturn(resposta);
 
-        JsonRequest result = this.produtoFornecedorController.createProduct(xml).getBody();
+        JsonRequest result = (JsonRequest) this.produtoFornecedorController.createProduct(xml).getBody();
         verify(produtoFornecedorService).createProduct(xml);
         assertEquals(resposta, result);
     }
@@ -222,37 +225,162 @@ class ProdutoFornecedorControllerTest {
      * TESTE CONTROLLER - POST "FORÇA O METODO DE CADASTRO DE PRODUTO FORNECEDOR A ENTRAR NO EXCEPTION".
      */
     @Test
-    void testCreateProductException() {
-        // Cria o XML de categoria a ser enviado na requisição
-        String xml = "<produtoFornecedor>\n" +
-                "   <idProduto>16023124986</idProduto>\n" +
-                "   <idFornecedor>16054055910</idFornecedor>\n" +
-                "   <produtoDescricao>Fralda Descartável 54P</produtoDescricao>\n" +
-                "   <produtoCodigo>6706322</produtoCodigo>\n" +
-                "   <precoCompra>10.6300000000</precoCompra>\n" +
-                "   <precoCusto>13.5000000000</precoCusto>\n" +
-                "   <produtoGarantia>36</produtoGarantia>\n" +
-                "   <padrao>0</padrao>\n" +
-                "</produtoFornecedor>";
+    void testCreateProductException_1() {
+        // Cria o XML de deposito a ser enviado na requisição
+        String xml = "<depositos>\n" +
+                "     <deposito>\n" +
+                "          <descricao>Deposito 1</descricao>\n" +
+                "      </deposito>\n" +
+                "   </depositos>";
 
         // Cria um mock do serviço que retorna null
         when(produtoFornecedorService.createProduct(xml)).thenReturn(null);
 
-        // Chama o método sendo testado
-        assertThrows(ProdutoFornecedorCadastroException.class, () -> {
-            produtoFornecedorController.createProduct(xml);
-        });
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = produtoFornecedorController.createProduct(xml);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 
         // Verifica se o serviço foi chamado
         verify(produtoFornecedorService).createProduct(xml);
     }
 
+    @Test
+    void testCreateProductException_2() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        // Cria um mock do serviço que lança uma HttpStatusCodeException
+        when(produtoFornecedorService.createProduct(xml)).thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {});
+
+        // Chama o método sendo testado e verifica se a resposta é a esperada
+        ResponseEntity<?> response = produtoFornecedorController.createProduct(xml);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(new JsonRequest(), response.getBody());
+
+        // Verifica se o serviço foi chamado
+        verify(produtoFornecedorService).createProduct(xml);
+    }
 
     @Test
-    void testUpdateProduct() {
-//        when(produtoFornecedorService.updateProduct(anyString(), anyString())).thenReturn(new RespostaRequest());
-//
-//        RespostaRequest result = produtoFornecedorController.updateProduct("xml", "idProdutoFornecedor");
-//        Assertions.assertEquals(new RespostaRequest(), result);
+    void testCreateProductException_3() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        // Cria um mock do serviço que lança uma exceção
+        when(produtoFornecedorService.createProduct(xml)).thenThrow(new RuntimeException());
+
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = produtoFornecedorController.createProduct(xml);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+
+        // Verifica se o serviço foi chamado
+        verify(produtoFornecedorService).createProduct(xml);
     }
+
+    /**
+     * TESTE CONTROLLER - PUT "ATUALIZA UM PRODUTO FORNECEDOR UTILIZANDO XML/JSON".
+     */
+    @Test
+    void testUpdateProduct() {
+        // Cria o XML de deposito a ser enviado na requisição
+        String idProdutoFornecedor = "158365";
+        String xml = "<depositos>\n" +
+                "     <deposito>\n" +
+                "          <descricao>Deposito 1</descricao>\n" +
+                "      </deposito>\n" +
+                "   </depositos>";
+
+        // Cria um mock do serviço que retorna null
+        when(produtoFornecedorService.updateProduct(xml, idProdutoFornecedor)).thenReturn(null);
+
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = produtoFornecedorController.updateProduct(xml, idProdutoFornecedor);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        // Verifica se o serviço foi chamado
+        verify(produtoFornecedorService).updateProduct(xml, idProdutoFornecedor);
+    }
+
+
+    /**
+     * TESTE CONTROLLER - PUT "FORÇA O METODO DE ATUALIZAR PRODUTO FORNECEDOR A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testUpdatePrductException_1() {
+        String idProdutoFornecedor = "159357";
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        // Cria um mock do serviço que retorna null
+        when(produtoFornecedorService.updateProduct(xml, idProdutoFornecedor)).thenReturn(null);
+
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = produtoFornecedorController.updateProduct(xml, idProdutoFornecedor);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        // Verifica se o serviço foi chamado
+        verify(produtoFornecedorService).updateProduct(xml, idProdutoFornecedor);
+    }
+
+
+    @Test
+    void testUpdatePrductException_2() {
+        String idProdutoFornecedor = "159357";
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        // Cria um mock do serviço que lança uma HttpStatusCodeException com o status NOT_FOUND
+        when(produtoFornecedorService.updateProduct(xml, idProdutoFornecedor))
+                .thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {
+                });
+
+        // Chama o método sendo testado e verifica se a resposta é a esperada
+        ResponseEntity<?> response = produtoFornecedorController.updateProduct(xml, idProdutoFornecedor);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(new JsonRequest(), response.getBody());
+
+        // Verifica se o serviço foi chamado
+        verify(produtoFornecedorService).updateProduct(xml, idProdutoFornecedor);
+    }
+
+    @Test
+    void testUpdatePrductException_3() {
+        String idProdutoFornecedor = "159357";
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        // Cria um mock do serviço que lança uma exceção
+        when(produtoFornecedorService.updateProduct(xml, idProdutoFornecedor)).thenThrow(new ApiProdutoFornecedorException("Não foi possível atualizar o produto fornecedor"));
+
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = produtoFornecedorController.updateProduct(xml, idProdutoFornecedor);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        // Verifica se o serviço foi chamado
+        verify(produtoFornecedorService).updateProduct(xml, idProdutoFornecedor);
+    }
+
+
 }

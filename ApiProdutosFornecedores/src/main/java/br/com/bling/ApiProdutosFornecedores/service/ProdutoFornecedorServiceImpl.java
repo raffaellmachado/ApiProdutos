@@ -3,6 +3,7 @@ package br.com.bling.ApiProdutosFornecedores.service;
 import br.com.bling.ApiProdutosFornecedores.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutosFornecedores.exceptions.ApiProdutoFornecedorException;
+import br.com.bling.ApiProdutosFornecedores.exceptions.RespostaApi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Service
 public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
@@ -69,24 +72,34 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
      * POST "CADASTRAR UM NOVO PRODUTO FORNECEDOR" UTILIZANDO XML.
      */
     @Override
-    public JsonRequest createProduct(String xml) throws ApiProdutoFornecedorException {
+    public Object createProduct(String xmlProdutoFornecedor) throws ApiProdutoFornecedorException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
+            HttpEntity<String> request = new HttpEntity<>(xmlProdutoFornecedor, headers);
 
-            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url  = apiBaseUrl + "/produtofornecedor/json/" + apiKey + apiXmlParam + xml;
-            String json = restTemplate.postForObject(url, request, String.class);
+            String url  = apiBaseUrl + "/produtofornecedor/json/" + apiKey + apiXmlParam + xmlProdutoFornecedor;
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+            // verifica se a resposta contém algum erro
+            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
+                List<RespostaApi.Erro> erros = respostaApi.getRetornoRequest().getErros();
+                if (!erros.isEmpty()) {
+                    return erros.get(0).getMsg();
+                }
+            }
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest response = objectMapper.readValue(json, JsonRequest.class);
+            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
 
             return response;
 
         } catch (JsonProcessingException e) {
-            throw new ApiProdutoFornecedorException("Erro ao processar JSON");
+            throw new ApiProdutoFornecedorException("Erro ao processar JSON: " + e);
         } catch (RestClientException e) {
-            throw new ApiProdutoFornecedorException("Erro ao chamar API");
+            return ("Erro ao chamar API: " + e);
         }
     }
 
@@ -94,17 +107,27 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
      * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML. -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
      */
     @Override
-    public JsonRequest updateProduct(String xml, String idProdutoFornecedor) throws ApiProdutoFornecedorException {
+    public Object updateProduct(String xmlProdutoFornecedor, String idProdutoFornecedor) throws ApiProdutoFornecedorException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
+            HttpEntity<String> request = new HttpEntity<>(xmlProdutoFornecedor, headers);
 
-            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url  = apiBaseUrl + "/produtofornecedor/" + idProdutoFornecedor + "/json/" + apiKey + apiXmlParam + xml;
-            ResponseEntity<String> json = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+            String url  = apiBaseUrl + "/produtofornecedor/" + idProdutoFornecedor + "/json/" + apiKey + apiXmlParam + xmlProdutoFornecedor;
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+
+            // verifica se a resposta contém algum erro
+            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
+                List<RespostaApi.Erro> erros = respostaApi.getRetornoRequest().getErros();
+                if (!erros.isEmpty()) {
+                    return erros.get(0).getMsg();
+                }
+            }
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest response = objectMapper.readValue(json.getBody(), JsonRequest.class);
+            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
 
             return response;
 

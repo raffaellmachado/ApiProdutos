@@ -1,19 +1,22 @@
 package br.com.bling.ApiProdutosFornecedores.controllers;
 
 import br.com.bling.ApiProdutosFornecedores.controllers.request.JsonRequest;
-import br.com.bling.ApiProdutosFornecedores.controllers.request.RetornoRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.FornecedoreResponse;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.RetornoResponse;
-import br.com.bling.ApiProdutosFornecedores.exceptions.*;
+import br.com.bling.ApiProdutosFornecedores.exceptions.ApiProdutoFornecedorException;
+import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorIdException;
+import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorListaException;
 import br.com.bling.ApiProdutosFornecedores.service.ProdutoFornecedorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.aop.AopInvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -111,31 +114,26 @@ public class ProdutoFornecedorController {
      */
     @PostMapping(path = "/cadastrarprodutofornecedor", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo produto fornecedor")
-    public ResponseEntity<JsonRequest> createProduct(@RequestBody String xml) {
+    public ResponseEntity<?> createProduct(@RequestBody String xmlProdutoFornecedor) {
         try {
-            JsonRequest request = produtoFornecedorService.createProduct(xml);
+            Object request = produtoFornecedorService.createProduct(xmlProdutoFornecedor);
 
-            if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
-                throw new ApiProdutoFornecedorException("Não foi possível cadastrar o produto");
+            if (request == null || request.toString().contains("404")) {
+                throw new ApiProdutoFornecedorException("Não foi possível cadastrar o produto fornecedor");
             }
 
-            for (RetornoRequest.Produtosfornecedore listaProdutoFornecedor : request.getRetorno().getProdutosfornecedores()) {
-                System.out.println("idProdutoFornecedor: " + listaProdutoFornecedor.produtoFornecedor.idFornecedor);
-                System.out.println("idFornecedor " + listaProdutoFornecedor.produtoFornecedor.idFornecedor);
-                System.out.println("produtoDescricao: " + listaProdutoFornecedor.produtoFornecedor.produtoDescricao);
-                System.out.println("produtoCodigo: " + listaProdutoFornecedor.produtoFornecedor.produtoCodigo);
-                System.out.println("precoCompra: " + listaProdutoFornecedor.produtoFornecedor.precoCompra);
-                System.out.println("precoCusto: " + listaProdutoFornecedor.produtoFornecedor.precoCusto);
-                System.out.println("produtoGarantia : " + listaProdutoFornecedor.produtoFornecedor.produtoGarantia);
-                System.out.println("padrao: " + listaProdutoFornecedor.produtoFornecedor.padrao);
-                System.out.println("-----------------------------------------------------------------------------------");
-            }
-
-            System.out.println("Produto cadastrado com sucesso!");
+            System.out.println(request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
+
+        } catch (AopInvocationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            throw new ProdutoFornecedorCadastroException();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível cadastrar o produto fornecedor, " +
+                    "este fornecedor está vinculado ao produto informado. \n"  +
+                    "Desvincule o fornecedor do produto e tente novamente.");
         }
     }
 
@@ -144,18 +142,24 @@ public class ProdutoFornecedorController {
      */
     @PutMapping(path = "/atualizarprodutofornecedor/{idProdutoFornecedor}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto fornecedor existente")
-    public ResponseEntity<JsonRequest> updateProduct(@RequestBody String xml, @PathVariable String idProdutoFornecedor) {
+    public ResponseEntity<?> updateProduct(@RequestBody String xmlProdutoFornecedor, @PathVariable("idProdutoFornecedor") String idProdutoFornecedor) {
         try {
-            JsonRequest request = produtoFornecedorService.updateProduct(xml, idProdutoFornecedor);
+            Object request = produtoFornecedorService.updateProduct(xmlProdutoFornecedor, idProdutoFornecedor);
 
-            if (request.retorno.produtosfornecedores == null || request.getRetorno() == null) {
-                throw new ApiProdutoFornecedorException(idProdutoFornecedor);
+            if (request == null) {
+                throw new ApiProdutoFornecedorException("Não foi possível atualizar o produto fornecedor");
             }
-            System.out.println("Produto cadastrado com sucesso!");
+
+            System.out.println(request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
+
+        } catch (ApiProdutoFornecedorException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            throw new ProdutoFornecedorAtualizarException(idProdutoFornecedor);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
         }
     }
 }

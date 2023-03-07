@@ -5,16 +5,16 @@ import br.com.bling.ApiProdutosFornecedores.controllers.response.JsonResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 
 class ProdutoFornecedorServiceImplTest {
     @Mock
@@ -86,10 +86,11 @@ class ProdutoFornecedorServiceImplTest {
     void testCreateProduct() {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"produtosfornecedores\":[{\"produtoFornecedor\":{\"idProdutoFornecedor\":\"16023092137\",\"idFornecedor\":\"478963346\",\"produtoDescricao\":\"Descrição do fornecedor\",\"produtoCodigo\":\"123\",\"precoCompra\":\"0.0\",\"precoCusto\":\"1.23\",\"produtoGarantia\":\"4\",\"padrao\":\"1\"}}]}}]}}";
-        Mockito.when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), ArgumentMatchers.any(HttpMethod.class), ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = produtoFornecedorServiceImpl.createProduct("xml");
+        JsonRequest result = (JsonRequest) produtoFornecedorServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("16023092137", result.getRetorno().getProdutosfornecedores().get(0).getProdutoFornecedor().getIdProdutoFornecedor());
@@ -107,7 +108,24 @@ class ProdutoFornecedorServiceImplTest {
 
     @Test
     void testUpdateProduct() {
-//        RespostaRequest result = produtoFornecedorServiceImpl.updateProduct("xml", "idProdutoFornecedor");
-//        Assertions.assertEquals(new RespostaRequest(), result);
+        // Simula a resposta da chamada para a API externa
+        String jsonResponse = "{\"retorno\":{\"produtosfornecedores\":[{\"produtoFornecedor\":{\"idProdutoFornecedor\":\"16023092137\",\"idFornecedor\":\"478963346\",\"produtoDescricao\":\"Descrição do fornecedor\",\"produtoCodigo\":\"123\",\"precoCompra\":\"0.0\",\"precoCusto\":\"1.23\",\"produtoGarantia\":\"4\",\"padrao\":\"1\"}}]}}]}}";
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), ArgumentMatchers.any(HttpMethod.class), ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
+
+        // Chama o método que deve converter a resposta em um objeto RespostaRequest
+        JsonRequest result = (JsonRequest) produtoFornecedorServiceImpl.updateProduct("xml", "idProdutoFornecedor");
+
+        // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
+        Assertions.assertEquals("16023092137", result.getRetorno().getProdutosfornecedores().get(0).getProdutoFornecedor().getIdProdutoFornecedor());
+        Assertions.assertEquals(478963346, result.getRetorno().getProdutosfornecedores().get(0).getProdutoFornecedor().getIdFornecedor());
+        Assertions.assertEquals("Descrição do fornecedor", result.getRetorno().getProdutosfornecedores().get(0).getProdutoFornecedor().getProdutoDescricao());
+        Assertions.assertEquals("123", result.getRetorno().getProdutosfornecedores().get(0).getProdutoFornecedor().getProdutoCodigo());
+        Assertions.assertEquals(BigDecimal.valueOf(0.0), result.getRetorno().getProdutosfornecedores().get(0).getProdutoFornecedor().getPrecoCompra());
+        Assertions.assertEquals(BigDecimal.valueOf(1.23), result.getRetorno().getProdutosfornecedores().get(0).getProdutoFornecedor().getPrecoCusto());
+        Assertions.assertEquals(4, result.getRetorno().getProdutosfornecedores().get(0).getProdutoFornecedor().getProdutoGarantia());
+        Assertions.assertEquals(1, result.getRetorno().getProdutosfornecedores().get(0).getProdutoFornecedor().getPadrao());
+
+        System.out.println("POST: " + result);
     }
 }
