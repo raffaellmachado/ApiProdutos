@@ -36,8 +36,9 @@ public class DepositoServiceImpl implements DepositoService {
     public JsonResponse getAllDeposit() throws ApiDepositoException {
         try {
             String request = restTemplate.getForObject(apiBaseUrl + "/depositos/json/" + apiKey, String.class);
+
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse response =  objectMapper.readValue(request, JsonResponse.class);
+            JsonResponse response = objectMapper.readValue(request, JsonResponse.class);
 
             return response;
 
@@ -55,6 +56,7 @@ public class DepositoServiceImpl implements DepositoService {
     public JsonResponse getDepositByIdDeposit(String idDeposito) throws ApiDepositoException {
         try {
             String request = restTemplate.getForObject(apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey, String.class);
+
             ObjectMapper objectMapper = new ObjectMapper();
             JsonResponse response = objectMapper.readValue(request, JsonResponse.class);
 
@@ -71,7 +73,7 @@ public class DepositoServiceImpl implements DepositoService {
      * POST "CADASTRAR UM NOVO DEPOSITO" UTILIZANDO XML.
      */
     @Override
-    public Object createDeposit(String xmlDeposito) throws ApiDepositoException  {
+    public Object createDeposit(String xmlDeposito) throws ApiDepositoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -129,8 +131,8 @@ public class DepositoServiceImpl implements DepositoService {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
-
             HttpEntity<String> request = new HttpEntity<>(xmlDeposito, headers);
+
             String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey + apiXmlParam + xmlDeposito;
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
@@ -143,7 +145,9 @@ public class DepositoServiceImpl implements DepositoService {
 
             ObjectMapper objectMapper = new ObjectMapper();
             JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
+
             return response;
+
         } catch (JsonProcessingException e) {
             throw new ApiDepositoException("Erro ao processar JSON: " + e);
         } catch (RestClientException e) {
