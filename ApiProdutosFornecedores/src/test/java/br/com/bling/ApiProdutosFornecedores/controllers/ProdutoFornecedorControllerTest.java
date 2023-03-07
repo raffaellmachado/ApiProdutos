@@ -225,23 +225,24 @@ class ProdutoFornecedorControllerTest {
      * TESTE CONTROLLER - POST "FORÇA O METODO DE CADASTRO DE PRODUTO FORNECEDOR A ENTRAR NO EXCEPTION".
      */
     @Test
-    void testCreateProductException_1() {
-        // Cria o XML de deposito a ser enviado na requisição
-        String xml = "<depositos>\n" +
-                "     <deposito>\n" +
-                "          <descricao>Deposito 1</descricao>\n" +
-                "      </deposito>\n" +
-                "   </depositos>";
+    void testUpdateDepositException_1() {
+        String idCategoria = "159357";
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
 
         // Cria um mock do serviço que retorna null
-        when(produtoFornecedorService.createProduct(xml)).thenReturn(null);
+        when(produtoFornecedorService.updateProduct(xml, idCategoria)).thenReturn(null);
 
         // Chama o método sendo testado e espera a exceção correta
-        ResponseEntity<?> response = produtoFornecedorController.createProduct(xml);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        ResponseEntity<?> response = produtoFornecedorController.updateProduct(xml, idCategoria);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
         // Verifica se o serviço foi chamado
-        verify(produtoFornecedorService).createProduct(xml);
+        verify(produtoFornecedorService).updateProduct(xml, idCategoria);
     }
 
     @Test

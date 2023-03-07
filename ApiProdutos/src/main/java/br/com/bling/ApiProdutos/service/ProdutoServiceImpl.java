@@ -13,20 +13,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import org.springframework.http.HttpHeaders;
+
+
 @Service
 public class ProdutoServiceImpl implements ProdutoService {
 
     @Value("${external.api.url}")
-    private String apiBaseUrl;
+    public String apiBaseUrl;
 
     @Value("${external.api.apikey}")
-    private String apiKey;
+    public String apiKey;
 
     @Value("${external.api.xmlparam}")
-    private String apiXmlParam;
+    public String apiXmlParam;
 
     @Autowired
-    private RestTemplate restTemplate;
+    public RestTemplate restTemplate;
 
     /**
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
@@ -48,7 +51,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     /**
-     * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU)".
+     * GET "BUSCAR UM PRODUTO PELO CODIGO (SKU)".
      */
     @Override
     public JsonResponse getProductByCode(String codigo) throws ApiProdutoException {
@@ -66,7 +69,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     /**
-     * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU) E NOME DO FORNECEDOR".
+     * GET "BUSCAR UM PRODUTO PELO CODIGO (SKU) E NOME DO FORNECEDOR".
      */
     @Override
     public JsonResponse getProductByCodeSupplier(String codigo, String codigoFabricante) throws ApiProdutoException {
@@ -117,7 +120,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     public JsonRequest createProduct(String xml) throws ApiProdutoException {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_XML);
+            headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
             String url  = apiBaseUrl + "/produto/json/" + apiKey + apiXmlParam + xml;
@@ -142,7 +145,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     public JsonRequest updateProduct(String xml, String codigo) throws ApiProdutoException {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_XML);
+            headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
             String url  = apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey + apiXmlParam + xml;

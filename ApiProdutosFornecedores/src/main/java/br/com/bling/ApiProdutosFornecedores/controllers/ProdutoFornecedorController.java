@@ -10,7 +10,6 @@ import br.com.bling.ApiProdutosFornecedores.exceptions.ProdutoFornecedorListaExc
 import br.com.bling.ApiProdutosFornecedores.service.ProdutoFornecedorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.aop.AopInvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -119,21 +118,21 @@ public class ProdutoFornecedorController {
             Object request = produtoFornecedorService.createProduct(xmlProdutoFornecedor);
 
             if (request == null || request.toString().contains("404")) {
-                throw new ApiProdutoFornecedorException("Não foi possível cadastrar o produto fornecedor");
+                throw new ApiProdutoFornecedorException("Não foi possível cadastrar o produto fornecedor, " +
+                        "este fornecedor está vinculado ao produto informado. \n"  +
+                        "Desvincule o fornecedor do produto e tente novamente.");
             }
 
             System.out.println(request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
 
-        } catch (AopInvocationException e) {
+        } catch (ApiProdutoFornecedorException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (HttpStatusCodeException e) {
             return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível cadastrar o produto fornecedor, " +
-                    "este fornecedor está vinculado ao produto informado. \n"  +
-                    "Desvincule o fornecedor do produto e tente novamente.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
         }
     }
 

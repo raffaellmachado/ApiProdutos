@@ -24,7 +24,7 @@ public class ApplicationProdutoFornecedorExceptionHandler extends ResponseEntity
     public ResponseEntity<String> handleIdProdutoFornecedorIdException(ProdutoFornecedorIdException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
-
+//
 //    @ExceptionHandler(ProdutoFornecedorCadastroException.class)
 //    public ResponseEntity<String> handleProdutoFornecedorCadastroException(ProdutoFornecedorCadastroException ex) {
 //        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
