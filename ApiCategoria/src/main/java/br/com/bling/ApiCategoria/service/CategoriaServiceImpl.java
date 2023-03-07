@@ -83,8 +83,8 @@ public class CategoriaServiceImpl implements CategoriaService {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
-
             HttpEntity<String> request = new HttpEntity<>(xmlCategoria, headers);
+
             String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xmlCategoria;
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
