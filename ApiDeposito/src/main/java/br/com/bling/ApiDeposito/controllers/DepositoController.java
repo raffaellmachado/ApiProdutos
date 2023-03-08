@@ -140,26 +140,4 @@ public class DepositoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
         }
     }
-    @PutMapping(path = "/atualizardeposito/{idDeposito}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Atualiza um deposito existente")
-    public ResponseEntity<?> updateCategory(@RequestBody @Valid String xmlDeposito, @PathVariable String idDeposito) {
-        try {
-            Object request = depositoService.updateDeposit(xmlDeposito, idDeposito);
-
-            if (request == null) {
-                throw new ApiDepositoException("Não foi possível atualizar o produto fornecedor");
-            }
-
-            System.out.println(request);
-
-            return ResponseEntity.status(HttpStatus.OK).body(request);
-
-        } catch (ApiDepositoException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
-        }
-    }
 }

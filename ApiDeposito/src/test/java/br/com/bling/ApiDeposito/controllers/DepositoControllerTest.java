@@ -220,7 +220,8 @@ class DepositoControllerTest {
                 "   </categorias>";
 
         // Cria um mock do serviço que lança uma HttpStatusCodeException
-        when(depositoService.createDeposit(xml)).thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {});
+        when(depositoService.createDeposit(xml)).thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {
+        });
 
         // Chama o método sendo testado e verifica se a resposta é a esperada
         ResponseEntity<?> response = depositoController.createDeposit(xml);
@@ -312,7 +313,8 @@ class DepositoControllerTest {
                 "   </categorias>";
 
         // Cria um mock do serviço que lança uma HttpStatusCodeException
-        when(depositoService.updateDeposit(xml, idCategoria)).thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {});
+        when(depositoService.updateDeposit(xml, idCategoria)).thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {
+        });
 
         // Chama o método sendo testado e verifica se a resposta é a esperada
         ResponseEntity<?> response = depositoController.updateDeposit(xml, idCategoria);

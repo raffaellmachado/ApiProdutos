@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,6 +24,9 @@ public class DepositoServiceImpl implements DepositoService {
 
     @Value("${external.api.apikey}")
     private String apiKey;
+
+    @Value("${external.api.apikeyparam}")
+    private String apikeyparam;
 
     @Value("${external.api.xmlparam}")
     private String apiXmlParam;
@@ -35,7 +40,7 @@ public class DepositoServiceImpl implements DepositoService {
     @Override
     public JsonResponse getAllDeposit() throws ApiDepositoException {
         try {
-            String request = restTemplate.getForObject(apiBaseUrl + "/depositos/json/" + apiKey, String.class);
+            String request = restTemplate.getForObject(apiBaseUrl + "/depositos/json/" + apikeyparam + apiKey, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
             JsonResponse response = objectMapper.readValue(request, JsonResponse.class);
@@ -55,7 +60,7 @@ public class DepositoServiceImpl implements DepositoService {
     @Override
     public JsonResponse getDepositByIdDeposit(String idDeposito) throws ApiDepositoException {
         try {
-            String request = restTemplate.getForObject(apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey, String.class);
+            String request = restTemplate.getForObject(apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apikeyparam + apiKey, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
             JsonResponse response = objectMapper.readValue(request, JsonResponse.class);
@@ -79,7 +84,7 @@ public class DepositoServiceImpl implements DepositoService {
             headers.setContentType(MediaType.APPLICATION_XML);
 
             HttpEntity<String> request = new HttpEntity<>(xmlDeposito, headers);
-            String url = apiBaseUrl + "/deposito/json/" + apiKey + apiXmlParam + xmlDeposito;
+            String url = apiBaseUrl + "/deposito/json/" + apikeyparam + apiKey + apiXmlParam + xmlDeposito;
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
             // verifica se a resposta contém algum erro
@@ -129,29 +134,38 @@ public class DepositoServiceImpl implements DepositoService {
     @Override
     public Object updateDeposit(String xmlDeposito, String idDeposito) throws ApiDepositoException {
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_XML);
-            HttpEntity<String> request = new HttpEntity<>(xmlDeposito, headers);
+            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+            map.add("apikey", apiKey);
+            map.add("xml", xmlDeposito);
 
-            String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey + apiXmlParam + xmlDeposito;
-            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+            String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/";
+
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             // verifica se a resposta contém algum erro
-            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody().contains("\"erros\":")) {
                 ObjectMapper objectMapper = new ObjectMapper();
-                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
+                RespostaApi respostaApi = objectMapper.readValue(response.getBody(), RespostaApi.class);
                 return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
             }
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonRequest result = objectMapper.readValue(response.getBody(), JsonRequest.class);
 
-            return response;
+                return result;
 
+            } else {
+                throw new ApiDepositoException("Erro ao chamar API");
+            }
         } catch (JsonProcessingException e) {
-            throw new ApiDepositoException("Erro ao processar JSON: " + e);
+            throw new ApiDepositoException("Erro ao processar JSON");
         } catch (RestClientException e) {
-            return ("Erro ao chamar API: " + e);
+            throw new ApiDepositoException("Erro ao chamar API");
         }
     }
 //    @Override

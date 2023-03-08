@@ -25,8 +25,12 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Value("${external.api.apikey}")
     private String apiKey;
 
+    @Value("${external.api.apikeyparam}")
+    private String apikeyparam;
+
     @Value("${external.api.xmlparam}")
     private String apiXmlParam;
+
 
     @Autowired
     private RestTemplate restTemplate;
@@ -40,7 +44,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public JsonResponse getAllCategory() throws ApiCategoriaException {
         try {
-            String url = apiBaseUrl + "/categorias/json/" + apiKey;
+            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
             String response = restTemplate.getForObject(url, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -61,7 +65,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public JsonResponse getCategoryByIdCategoria(String idCategoria) throws ApiCategoriaException {
         try {
-            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey;
+            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apikeyparam + apiKey;
             String response = restTemplate.getForObject(url, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -85,7 +89,7 @@ public class CategoriaServiceImpl implements CategoriaService {
             headers.setContentType(MediaType.APPLICATION_XML);
             HttpEntity<String> request = new HttpEntity<>(xmlCategoria, headers);
 
-            String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xmlCategoria;
+            String url = apiBaseUrl + "/categoria/json/" + apikeyparam + apiKey + apiXmlParam + xmlCategoria;
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
             // verifica se a resposta contém algum erro
@@ -117,10 +121,8 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public Object updateCategory(String xmlCategoria, String idCategoria) throws ApiCategoriaException {
         try {
-
-            String apikey = "022b7fb8f90b4b49493aef825fcc0952e9fc98c318c317e214ecc92ce92fa05c8213f336";
             MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-            map.add("apikey", apikey);
+            map.add("apikey", apiKey);
             map.add("xml", xmlCategoria);
 
             HttpHeaders headers = new HttpHeaders();
