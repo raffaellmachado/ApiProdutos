@@ -11,13 +11,13 @@ public interface ProdutoService {
 
     public JsonResponse getAllProducts();
 
-    public JsonResponse getProductByCode(@PathVariable String codigo);
+    public JsonResponse getProductByCode(@PathVariable("codigo") String codigo);
 
-    public JsonResponse getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String codigoFabricante);
+    public JsonResponse getProductByCodeSupplier(@PathVariable("codigo") String codigo, @PathVariable("codigoFabricante") String id_fornecedor);
 
-    public void deleteProductByCode(@PathVariable String codigo);
+    public void deleteProductByCode(@PathVariable("codigo") String codigo);
 
-    public JsonRequest createProduct(@RequestBody String xml);
+    public Object createProduct(@RequestBody String xmlProdutos);
 
-    public JsonRequest updateProduct(@RequestBody @Valid String xml, @PathVariable String codigo);
+    public JsonRequest updateProduct(@RequestBody @Valid String xmlProdutos, @PathVariable("codigo") String codigo);
 }

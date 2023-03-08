@@ -1,6 +1,6 @@
 package br.com.bling.ApiProdutos.controllers;
 
-import br.com.bling.ApiProdutos.controllers.request.*;
+import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutos.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutos.exceptions.*;
@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
@@ -286,112 +287,24 @@ public class ProdutoController {
      */
     @PostMapping(path = "/cadastrarproduto", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo produto")
-    public ResponseEntity<JsonRequest> createProduct(@RequestBody @Valid String xml) {
+    public ResponseEntity<Object> createProduct(@RequestBody @Valid String xmlProdutos) {
         try {
-            JsonRequest request = produtoService.createProduct(xml);
+            Object request = produtoService.createProduct(xmlProdutos);
 
-            if (request.retorno.produtos == null) {
+            if (request == null) {
                 throw new ApiProdutoException("Não foi possível criar o produto");
             }
 
-            for (RetornoRequest.Produtos listaContatos : request.getRetorno().getProdutos()) {
-                System.out.println("-----------------------------------------------------------------------------------");
-                System.out.println("Id: " + listaContatos.produto.id);
-                System.out.println("codigo: " + listaContatos.produto.codigo);
-                System.out.println("codigoItem: " + listaContatos.produto.codigoItem);
-                System.out.println("descricao: " + listaContatos.produto.descricao);
-                System.out.println("tipo: " + listaContatos.produto.tipo);
-                System.out.println("situacao: " + listaContatos.produto.situacao);
-                System.out.println("descricaoCurta: " + listaContatos.produto.descricaoCurta);
-                System.out.println("descricaoComplementar: " + listaContatos.produto.descricaoComplementar);
-                System.out.println("un: " + listaContatos.produto.un);
-                System.out.println("vlr_unit: " + listaContatos.produto.vlr_unit);
-                System.out.println("preco_custo: " + listaContatos.produto.preco_custo);
-                System.out.println("peso_bruto: " + listaContatos.produto.peso_bruto);
-                System.out.println("peso_liq: " + listaContatos.produto.peso_liq);
-                System.out.println("class_fiscal: " + listaContatos.produto.class_fiscal);
-                System.out.println("marca: " + listaContatos.produto.marca);
-                System.out.println("cest: " + listaContatos.produto.cest);
-                System.out.println("origem: " + listaContatos.produto.origem);
-                System.out.println("idGrupoProduto: " + listaContatos.produto.idGrupoProduto);
-                System.out.println("condicao: " + listaContatos.produto.condicao);
-                System.out.println("freteGratis: " + listaContatos.produto.freteGratis);
-                System.out.println("linkExterno: " + listaContatos.produto.linkExterno);
-                System.out.println("observacoes: " + listaContatos.produto.observacoes);
-                System.out.println("unidadeMedida: " + listaContatos.produto.unidadeMedida);
-                System.out.println("dataValidade: " + listaContatos.produto.dataValidade);
-                System.out.println("descricaoFornecedor: " + listaContatos.produto.descricaoFornecedor);
-                System.out.println("idFabricante: " + listaContatos.produto.idFabricante);
-                System.out.println("codigoFabricante: " + listaContatos.produto.codigoFabricante);
-                System.out.println("gtin: " + listaContatos.produto.gtin);
-                System.out.println("gtinEmbalagem: " + listaContatos.produto.gtinEmbalagem);
-                System.out.println("largura: " + listaContatos.produto.largura);
-                System.out.println("altura: " + listaContatos.produto.altura);
-                System.out.println("profundidade: " + listaContatos.produto.profundidade);
-                System.out.println("estoqueMinimo: " + listaContatos.produto.estoqueMinimo);
-                System.out.println("estoqueMaximo: " + listaContatos.produto.estoqueMaximo);
-                System.out.println("estoque: " + listaContatos.produto.estoque);
-                System.out.println("itensPorCaixa: " + listaContatos.produto.itensPorCaixa);
-                System.out.println("volumes: " + listaContatos.produto.volumes);
-                System.out.println("urlVideo: " + listaContatos.produto.urlVideo);
-                System.out.println("localizacao: " + listaContatos.produto.localizacao);
-                System.out.println("crossdocking: " + listaContatos.produto.crossdocking);
-                System.out.println("garantia: " + listaContatos.produto.garantia);
-                System.out.println("spedTipoItem: " + listaContatos.produto.spedTipoItem);
-                System.out.println("idCategoria: " + listaContatos.produto.idCategoria);
-                if (listaContatos.produto.variacoes != null) {
-                    for (VariacaoRequest variacao : listaContatos.produto.variacoes.variacao) {
-                        System.out.println("--------------------Variacoes---------------------");
-                        System.out.println("Variação Nome: " + variacao.nome);
-                        System.out.println("Variação codigo: " + variacao.codigo);
-                        System.out.println("Variação vlr_unit: " + variacao.vlr_unit);
-                        System.out.println("Variação clonarDadosPau: " + variacao.clonarDadosPai);
-                        System.out.println("Variação estoque: " + variacao.estoque);
-                        System.out.println("Variação un: " + variacao.un);
-                        System.out.println("--------------------------------------------------");
-                    }
-                }
-                if (listaContatos.produto.imagens != null) {
-                    for (ImagemRequest imagem : listaContatos.produto.imagens) {
-                        System.out.println("--------------------Imagens---------------------");
-                        System.out.println("Imagem url: " + imagem.url);
-                        System.out.println("------------------------------------------------");
-                    }
-                }
-                if (listaContatos.produto.deposito != null) {
-                    System.out.println("--------------------Imagens---------------------");
-                    System.out.println("Deposito Id: " + listaContatos.produto.deposito.id);
-                    System.out.println("Deposito Estoque: " + listaContatos.produto.deposito.estoque);
-
-                    System.out.println("------------------------------------------------");
-                }
-                if (listaContatos.produto.camposCustomizados != null) {
-                    System.out.println("--------------Campos Customizados---------------");
-                    System.out.println("Campo Customizado Alias: " + listaContatos.produto.camposCustomizados.alias);
-                    System.out.println("------------------------------------------------");
-                }
-                if (listaContatos.produto.estrutura != null) {
-                    System.out.println("--------------------Estrutura-------------------");
-                    System.out.println("Estrutura tipoEstoque: " + listaContatos.produto.estrutura.tipoEstoque);
-                    System.out.println("Estrutura lancarEstoque: " + listaContatos.produto.estrutura.lancarEstoque);
-                    System.out.println("------------------------------------------------");
-                }
-                if (listaContatos.produto.estrutura != null) {
-                    for (ComponenteRequest estrutura : listaContatos.produto.estrutura.componente) {
-                        System.out.println("--------------------Componentes-----------------");
-                        System.out.println("Compoenente nome: " + estrutura.nome);
-                        System.out.println("Compoenente codigo: " + estrutura.codigo);
-                        System.out.println("Compoenente quantidade: " + estrutura.quantidade);
-                    }
-                }
-
-                System.out.println("-----------------------------------------------------------------------------------");
-            }
             System.out.println("Produto cadastrado com sucesso!");
 
-            return ResponseEntity.status(HttpStatus.OK).body(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(request);
+
+        } catch (ApiProdutoException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            throw new ProdutoCadastroException(xml);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
         }
     }
 

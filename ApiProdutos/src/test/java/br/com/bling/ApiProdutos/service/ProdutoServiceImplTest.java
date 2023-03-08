@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -298,10 +299,11 @@ class ProdutoServiceImplTest {
     void testCreateProductSimple() {     //TESTE PRODUTO SIMPLES
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"situacao\":\"Ativo\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"estoque\":10,\"deposito\":{\"id\":123456,\"estoque\":200},\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Novo\",\"freteGratis\":\"N\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produtos\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"imagens\":[{\"url\":\"https://bling.com.br/bling.jpg\"}],\"camposCustomizados\":{\"alias\":16},\"idCategoria\":1234}}]}}";
-        when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = produtoServiceImpl.createProduct("xml");
+        JsonRequest result = (JsonRequest) produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -359,10 +361,11 @@ class ProdutoServiceImplTest {
     void testCreateProductVariation() {     //TESTE PRODUTO COM VARIAÇÃO.
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":223435780,\"descricao\":\"Caneta 001\",\"descricaoCurta\":\"Descrição curta da caneta\",\"descricaoComplementar\":\"Descrição complementar da caneta\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"variacoes\":{\"variacao\":[{\"nome\":\"Cor:Preto\",\"codigo\":\"223435780\",\"clonarDadosPai\":\"S\",\"vlr_unit\":150,\"estoque\":120,\"un\":\"1\",\"deposito\":{\"id\":123456,\"estoque\":200}}]},\"imagens\":[{\"url\":\"https://www.bling.com.br/bling.jpg\"}]}}]}}";
-        when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = produtoServiceImpl.createProduct("xml");
+        JsonRequest result = (JsonRequest) produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -424,10 +427,11 @@ class ProdutoServiceImplTest {
     void testCreateProductComposition() {     //TESTE PRODUTO COM COMPOSIÇÃO.
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":456489798,\"descricao\":\"Kit 001\",\"descricaoCurta\":\"Kit caneca e copo\",\"descricaoComplementar\":\"Descrição complementar\",\"un\":\"Pc\",\"vlr_unit\":1.68,\"preco_custo\":1.23,\"peso_bruto\":0.2,\"peso_liq\":0.18,\"class_fiscal\":\"1000.01.01\",\"marca\":\"Marca da Caneta\",\"origem\":0,\"gtin\":223435780,\"gtinEmbalagem\":54546,\"largura\":11,\"altura\":21,\"profundidade\":31,\"estoqueMinimo\":1,\"estoqueMaximo\":100,\"cest\":\"28.040.00\",\"idGrupoProduto\":12345,\"condicao\":\"Usado\",\"freteGratis\":\"S\",\"linkExterno\":\"https://minhaloja.com.br/meu-produto\",\"observacoes\":\"Observações do meu produto\",\"producao\":\"P\",\"dataValidade\":\"20/11/2019\",\"descricaoFornecedor\":\"Descrição do fornecedor\",\"idFabricante\":0,\"codigoFabricante\":123,\"unidadeMedida\":\"Centímetros\",\"crossdocking\":2,\"garantia\":4,\"itensPorCaixa\":2,\"volumes\":2,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\",\"idCategoria\":1234,\"imagens\":[{\"url\":\"https://www.bling.com.br/bling.jpg\"}],\"estrutura\":{\"tipoEstoque\":\"F\",\"lancarEstoque\":\"P\",\"componente\":[{\"nome\":\"Caneca Vermelha\",\"codigo\":\"caneca123\",\"quantidade\":2},{\"nome\":\"Copo 300 ml\",\"codigo\":\"copo123\",\"quantidade\":2}]}}}]}}";
-        when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = produtoServiceImpl.createProduct("xml");
+        JsonRequest result = (JsonRequest) produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("456489798", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -485,10 +489,11 @@ class ProdutoServiceImplTest {
     void testCreateProductService() {     //TESTE PRODUTO SERVIÇO.
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"codigo\":123456,\"tipo\":\"S\",\"situacao\":\"Ativo\",\"descricao\":\"Formatação PC\",\"descricaoCurta\":\"Descrição curta do serviço\",\"descricaoComplementar\":\"Descrição complementar do serviço\",\"un\":\"UN\",\"idGrupoProduto\":1675,\"linkExterno\":\"https://site.com.br/servico\",\"observacoes\":\"Observações do serviço\",\"vlr_unit\":85,\"preco_custo\":50,\"urlVideo\":\"https://www.youtube.com/watch?v=zKKL-SgC5lY\"}}]}}";
-        when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = produtoServiceImpl.createProduct("xml");
+        JsonRequest result = (JsonRequest) produtoServiceImpl.createProduct("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("123456", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());

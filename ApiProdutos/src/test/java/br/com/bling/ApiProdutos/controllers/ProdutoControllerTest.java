@@ -14,6 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -582,19 +585,52 @@ class ProdutoControllerTest {
 
         when(produtoService.createProduct(xml)).thenReturn(resposta);
 
-        JsonRequest result = produtoController.createProduct(xml).getBody();
+        JsonRequest result = (JsonRequest) produtoController.createProduct(xml).getBody();
         assertEquals(resposta, result);
     }
 
     @Test
-    void testCreateProductException() {
+    void testCreateProductException_1() {
+        // Cria o XML de categoria a ser enviado na requisição
         String xml = "<xml>...</xml>";
         when(produtoService.createProduct(xml)).thenReturn(null);
 
         // Chama o método sendo testado
-        assertThrows(ProdutoCadastroException.class, () -> {
-            produtoController.createProduct(xml);
-        });
+        ResponseEntity<?> response = produtoController.createProduct(xml);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        // Verifica se o serviço foi chamado
+        verify(produtoService).createProduct(xml);
+    }
+
+    @Test
+    void testCreateCategoryException_2() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<xml>...</xml>";
+
+        // Cria um mock do serviço que lança uma HttpStatusCodeException
+        when(produtoService.createProduct(xml)).thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {});
+
+        // Chama o método sendo testado e verifica se a resposta é a esperada
+        ResponseEntity<?> response = produtoController.createProduct(xml);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(new JsonRequest(), response.getBody());
+
+        // Verifica se o serviço foi chamado
+        verify(produtoService).createProduct(xml);
+    }
+
+    @Test
+    void testCreateCategoryException_3() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<xml>...</xml>";
+
+        // Cria um mock do serviço que lança uma exceção
+        when(produtoService.createProduct(xml)).thenThrow(new RuntimeException());
+
+        // Chama o método sendo testado e espera a exceção correta
+        ResponseEntity<?> response = produtoController.createProduct(xml);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 
         // Verifica se o serviço foi chamado
         verify(produtoService).createProduct(xml);

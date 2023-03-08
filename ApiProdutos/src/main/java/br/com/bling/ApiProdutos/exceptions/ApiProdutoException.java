@@ -5,4 +5,3 @@ public class ApiProdutoException extends RuntimeException {
         super(message);
     }
 }
-

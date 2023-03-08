@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import org.springframework.http.HttpHeaders;
-
 
 @Service
 public class ProdutoServiceImpl implements ProdutoService {
@@ -72,9 +70,9 @@ public class ProdutoServiceImpl implements ProdutoService {
      * GET "BUSCAR UM PRODUTO PELO CODIGO (SKU) E NOME DO FORNECEDOR".
      */
     @Override
-    public JsonResponse getProductByCodeSupplier(String codigo, String codigoFabricante) throws ApiProdutoException {
+    public JsonResponse getProductByCodeSupplier(String codigo, String id_fornecedor) throws ApiProdutoException {
         try {
-            String json = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + codigoFabricante + "/json/" + apiKey, String.class);
+            String json = restTemplate.getForObject(apiBaseUrl + "/produto/" + codigo + "/" + id_fornecedor + "/json/" + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
             JsonResponse request =  objectMapper.readValue(json, JsonResponse.class);
 
@@ -82,7 +80,7 @@ public class ProdutoServiceImpl implements ProdutoService {
         } catch (JsonProcessingException e) {
             throw new ApiProdutoException("Erro ao processar JSON");
         } catch (RestClientException e) {
-            throw new ApiProdutoException("Não foi possível recuperar o produto do fornecedor. Código: " + codigo + ", Nome do Fornecedor: " + codigoFabricante);
+            throw new ApiProdutoException("Não foi possível recuperar o produto do fornecedor. Código: " + codigo + ", Nome do Fornecedor: " + id_fornecedor);
         }
     }
 
@@ -117,24 +115,30 @@ public class ProdutoServiceImpl implements ProdutoService {
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
     @Override
-    public JsonRequest createProduct(String xml) throws ApiProdutoException {
+    public Object createProduct(String xmlProdutos) throws ApiProdutoException {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
+            headers.setContentType(MediaType.APPLICATION_XML);
+            HttpEntity<String> request = new HttpEntity<>(xmlProdutos, headers);
 
-            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url  = apiBaseUrl + "/produto/json/" + apiKey + apiXmlParam + xml;
-            String json = restTemplate.postForObject(url, request, String.class);
+            String url = apiBaseUrl + "/produto/json/" + apiKey + apiXmlParam + xmlProdutos;
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
+            // verifica se a resposta contém algum erro
+            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                br.com.bling.ApiCategoria.exceptions.RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), br.com.bling.ApiCategoria.exceptions.RespostaApi.class);
+                return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
+            }
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest result = objectMapper.readValue(json, JsonRequest.class);
+            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
 
-            return result;
+            return response;
 
         } catch (JsonProcessingException e) {
-            throw new ApiProdutoException("Erro ao processar JSON");
+            throw new ApiProdutoException("Erro ao processar JSON: " + e);
         } catch (RestClientException e) {
-            throw new ApiProdutoException("Erro ao chamar API");
+            return ("Erro ao chamar API: " + e);
         }
     }
 
