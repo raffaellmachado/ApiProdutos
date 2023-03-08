@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,6 +26,9 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
     @Value("${external.api.apikey}")
     private String apiKey;
 
+    @Value("${external.api.apikeyparam}")
+    private String apikeyparam;
+
     @Value("${external.api.xmlparam}")
     private String apiXmlParam;
 
@@ -36,7 +41,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
     @Override
     public JsonResponse getAllProducts() throws ApiProdutoFornecedorException {
         try {
-            String request = restTemplate.getForObject(apiBaseUrl + "/produtosfornecedores/json/" + apiKey, String.class);
+            String request = restTemplate.getForObject(apiBaseUrl + "/produtosfornecedores/json/" + apikeyparam + apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
             JsonResponse response =  objectMapper.readValue(request, JsonResponse.class);
 
@@ -55,7 +60,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
     @Override
     public JsonResponse getProducId(String idProdutoFornecedor) throws ApiProdutoFornecedorException {
         try {
-            String request = restTemplate.getForObject(apiBaseUrl + "/produtofornecedor/" + idProdutoFornecedor + "/json/" + apiKey, String.class);
+            String request = restTemplate.getForObject(apiBaseUrl + "/produtofornecedor/" + idProdutoFornecedor + "/json/" + apikeyparam +  apiKey, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
             JsonResponse response =  objectMapper.readValue(request, JsonResponse.class);
 
@@ -78,7 +83,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
             headers.setContentType(MediaType.APPLICATION_XML);
             HttpEntity<String> request = new HttpEntity<>(xmlProdutoFornecedor, headers);
 
-            String url  = apiBaseUrl + "/produtofornecedor/json/" + apiKey + apiXmlParam + xmlProdutoFornecedor;
+            String url  = apiBaseUrl + "/produtofornecedor/json/" + apikeyparam + apiKey + apiXmlParam + xmlProdutoFornecedor;
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
             // verifica se a resposta contém algum erro
@@ -109,28 +114,37 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
     @Override
     public Object updateProduct(String xmlProdutoFornecedor, String idProdutoFornecedor) throws ApiProdutoFornecedorException {
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_XML);
-            HttpEntity<String> request = new HttpEntity<>(xmlProdutoFornecedor, headers);
+            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+            map.add("apikey", apiKey);
+            map.add("xml", xmlProdutoFornecedor);
 
-            String url  = apiBaseUrl + "/produtofornecedor/" + idProdutoFornecedor + "/json/" + apiKey + apiXmlParam + xmlProdutoFornecedor;
-            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+            String url = apiBaseUrl + "/produtofornecedor/" + idProdutoFornecedor + "/json/";
+
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             // verifica se a resposta contém algum erro
-            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody().contains("\"erros\":")) {
                 ObjectMapper objectMapper = new ObjectMapper();
-                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
+                RespostaApi respostaApi = objectMapper.readValue(response.getBody(), RespostaApi.class);
                 List<RespostaApi.Erro> erros = respostaApi.getRetornoRequest().getErros();
                 if (!erros.isEmpty()) {
                     return erros.get(0).getMsg();
                 }
             }
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonRequest result = objectMapper.readValue(response.getBody(), JsonRequest.class);
 
-            return response;
+                return result;
 
+            } else {
+                throw new ApiProdutoFornecedorException("Erro ao chamar API");
+            }
         } catch (JsonProcessingException e) {
             throw new ApiProdutoFornecedorException("Erro ao processar JSON");
         } catch (RestClientException e) {
