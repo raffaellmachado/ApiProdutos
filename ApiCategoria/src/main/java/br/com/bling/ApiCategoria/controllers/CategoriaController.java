@@ -54,7 +54,7 @@ public class CategoriaController {
 
             System.out.println(request);
 
-            return ResponseEntity.status(HttpStatus.OK).body(request);
+            return ResponseEntity.ok(request);
         } catch (Exception e) {
             throw new CategoriaListaException();
         }
@@ -83,7 +83,7 @@ public class CategoriaController {
 
             System.out.println(request);
 
-            return ResponseEntity.status(HttpStatus.OK).body(request);
+            return ResponseEntity.ok(request);
         } catch (Exception e) {
             throw new CategoriaIdCategoriaException(idCategoria);
         }
@@ -103,7 +103,7 @@ public class CategoriaController {
             }
             System.out.println(request);
 
-            return ResponseEntity.status(HttpStatus.OK).body(request);
+            return ResponseEntity.ok(request);
 
         } catch (ApiCategoriaException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -128,7 +128,7 @@ public class CategoriaController {
             }
             System.out.println(request);
 
-            return ResponseEntity.status(HttpStatus.OK).body(request);
+            return ResponseEntity.ok(request);
 
         } catch (ApiCategoriaException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

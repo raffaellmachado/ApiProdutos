@@ -315,7 +315,7 @@ public class ProdutoController {
     @ApiOperation(value = "Atualizar um produto existente")
     public ResponseEntity<JsonRequest> updateProduct(@RequestBody @Valid String xml, @PathVariable String codigo) {
         try {
-            JsonRequest request = produtoService.updateProduct(xml, codigo);
+            JsonRequest request = (JsonRequest) produtoService.updateProduct(xml, codigo);
 
             if (request.retorno.produtos == null) {
                 throw new ProdutoAtualizarException(codigo);

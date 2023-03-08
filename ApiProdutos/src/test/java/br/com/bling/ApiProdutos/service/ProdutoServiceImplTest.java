@@ -524,7 +524,7 @@ class ProdutoServiceImplTest {
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+        JsonRequest result = (JsonRequest) produtoServiceImpl.updateProduct("xml", "codigo");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -585,7 +585,7 @@ class ProdutoServiceImplTest {
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+        JsonRequest result = (JsonRequest) produtoServiceImpl.updateProduct("xml", "codigo");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("223435780", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -650,7 +650,7 @@ class ProdutoServiceImplTest {
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+        JsonRequest result = (JsonRequest) produtoServiceImpl.updateProduct("xml", "codigo");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("456489798", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());
@@ -711,7 +711,7 @@ class ProdutoServiceImplTest {
         when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = produtoServiceImpl.updateProduct("xml", "codigo");
+        JsonRequest result = (JsonRequest) produtoServiceImpl.updateProduct("xml", "codigo");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("123456", result.getRetorno().getProdutos().get(0).getProduto().getCodigo());

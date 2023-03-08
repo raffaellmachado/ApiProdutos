@@ -15,8 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.*;
 
 class CategoriaServiceImplTest {
     @Mock
@@ -38,7 +37,7 @@ class CategoriaServiceImplTest {
     void testGetAllCategory() throws Exception {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\": {\"categorias\": [{\"categoria\": {\"id\": \"123\", \"descricao\": \"Categoria 1\"}}, {\"categoria\": {\"id\": \"456\", \"descricao\": \"Categoria 2\"}}]}}";
-        Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
+        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
         JsonResponse result = categoriaServiceImpl.getAllCategory();
@@ -61,11 +60,12 @@ class CategoriaServiceImplTest {
     @Test
     void testGetCategoryByIdCategoria() throws Exception {
         // Simula a resposta da chamada para a API externa
+        String idCategoria = "159753";
         String jsonResponse = "{\"retorno\": {\"categorias\": [{\"categoria\": {\"id\": \"123\", \"descricao\": \"Categoria 1\"}}]}}";
-        Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
+        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
-        JsonResponse result = categoriaServiceImpl.getCategoryByIdCategoria("idCategoria");
+        JsonResponse result = categoriaServiceImpl.getCategoryByIdCategoria(idCategoria);
 
         // Verifica se a categoria foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals("123", result.getRetorno().getCategorias().get(0).getCategoria().getId());
@@ -85,7 +85,7 @@ class CategoriaServiceImplTest {
         Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = (JsonRequest) categoriaServiceImpl.createCategory("xml");
+        JsonRequest result = (JsonRequest) categoriaServiceImpl.createCategory(jsonResponse);
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("007", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getId());
@@ -99,12 +99,13 @@ class CategoriaServiceImplTest {
      */
     @Test
     void testUpdateCategory() {
+        String idCategoria = "951357";
         String jsonResponse = "{\"retorno\": {\"categorias\": {\"categoria\": {\"id\": \"159\", \"descricao\": \"Canecas\"}}}}";
         ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
         Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = (JsonRequest) categoriaServiceImpl.updateCategory("xml", "idDeposito");
+        JsonRequest result = (JsonRequest) categoriaServiceImpl.updateCategory(jsonResponse, idCategoria);
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
         Assertions.assertEquals("159", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getId());

@@ -1,6 +1,5 @@
 package br.com.bling.ApiProdutos.service;
 
-import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,5 +18,5 @@ public interface ProdutoService {
 
     public Object createProduct(@RequestBody String xmlProdutos);
 
-    public JsonRequest updateProduct(@RequestBody @Valid String xmlProdutos, @PathVariable("codigo") String codigo);
+    public Object updateProduct(@RequestBody @Valid String xmlProdutos, @PathVariable("codigo") String codigo);
 }

@@ -146,24 +146,31 @@ public class ProdutoServiceImpl implements ProdutoService {
      * POST "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
      */
     @Override
-    public JsonRequest updateProduct(String xml, String codigo) throws ApiProdutoException {
+    public Object updateProduct(String xmlProdutos, String codigo) throws ApiProdutoException {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
+            headers.setContentType(MediaType.APPLICATION_XML);
+            HttpEntity<String> request = new HttpEntity<>(xmlProdutos, headers);
 
-            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url  = apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey + apiXmlParam + xml;
-            String json = restTemplate.postForObject(url, request, String.class);
+            String url = apiBaseUrl + "/produto/" + codigo + "/json/" + apiKey + apiXmlParam + xmlProdutos;
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
+            // verifica se a resposta contém algum erro
+            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                br.com.bling.ApiCategoria.exceptions.RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), br.com.bling.ApiCategoria.exceptions.RespostaApi.class);
+                return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
+            }
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest result = objectMapper.readValue(json, JsonRequest.class);
+            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
 
-            return result;
+            return response;
 
         } catch (JsonProcessingException e) {
-            throw new ApiProdutoException("Erro ao processar JSON");
+            throw new ApiProdutoException("Erro ao processar JSON: " + e);
         } catch (RestClientException e) {
-            throw new ApiProdutoException("Erro ao chamar API");
+            return ("Erro ao chamar API: " + e);
         }
+
     }
 }

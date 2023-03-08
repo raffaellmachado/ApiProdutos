@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,21 +40,19 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public JsonResponse getAllCategory() throws ApiCategoriaException {
         try {
-            String request = restTemplate.getForObject(apiBaseUrl + "/categorias/json/" + apiKey, String.class);
+            String url = apiBaseUrl + "/categorias/json/" + apiKey;
+            String response = restTemplate.getForObject(url, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse response = objectMapper.readValue(request, JsonResponse.class);
+            JsonResponse result = objectMapper.readValue(response, JsonResponse.class);
 
-            System.out.println(response);
-
-            return response;
+            return result;
 
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON: " + e);
         } catch (RestClientException e) {
             throw new ApiCategoriaException("Erro ao chamar API: " + e);
         }
-
     }
 
     /**
@@ -61,12 +61,12 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public JsonResponse getCategoryByIdCategoria(String idCategoria) throws ApiCategoriaException {
         try {
-            String request = restTemplate.getForObject(apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey, String.class);
+            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey;
+            String response = restTemplate.getForObject(url, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse response = objectMapper.readValue(request, JsonResponse.class);
-
-            return response;
+            JsonResponse result = objectMapper.readValue(response, JsonResponse.class);
+            return result;
 
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON: " + e);
@@ -86,20 +86,24 @@ public class CategoriaServiceImpl implements CategoriaService {
             HttpEntity<String> request = new HttpEntity<>(xmlCategoria, headers);
 
             String url = apiBaseUrl + "/categoria/json/" + apiKey + apiXmlParam + xmlCategoria;
-            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
             // verifica se a resposta contém algum erro
-            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody().contains("\"erros\":")) {
                 ObjectMapper objectMapper = new ObjectMapper();
-                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
+                RespostaApi respostaApi = objectMapper.readValue(response.getBody(), RespostaApi.class);
                 return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
             }
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
+            if (response.getStatusCode() == HttpStatus.CREATED || response.getStatusCode() == HttpStatus.OK) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonRequest result = objectMapper.readValue(response.getBody(), JsonRequest.class);
 
-            return response;
+                return result;
 
+            } else {
+                throw new ApiCategoriaException("Erro ao chamar API");
+            }
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON: " + e);
         } catch (RestClientException e) {
@@ -113,29 +117,70 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public Object updateCategory(String xmlCategoria, String idCategoria) throws ApiCategoriaException {
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_XML);
-            HttpEntity<String> request = new HttpEntity<>(xmlCategoria, headers);
 
-            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey + apiXmlParam + xmlCategoria;
-            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+            String apikey = "022b7fb8f90b4b49493aef825fcc0952e9fc98c318c317e214ecc92ce92fa05c8213f336";
+            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+            map.add("apikey", apikey);
+            map.add("xml", xmlCategoria);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/";
+
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             // verifica se a resposta contém algum erro
-            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody().contains("\"erros\":")) {
                 ObjectMapper objectMapper = new ObjectMapper();
-                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
+                RespostaApi respostaApi = objectMapper.readValue(response.getBody(), RespostaApi.class);
                 return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
             }
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonRequest result = objectMapper.readValue(response.getBody(), JsonRequest.class);
 
-            return response;
+                return result;
 
+            } else {
+                throw new ApiCategoriaException("Erro ao chamar API");
+            }
         } catch (JsonProcessingException e) {
-            throw new ApiCategoriaException("Erro ao processar JSON: " + e);
+            throw new ApiCategoriaException("Erro ao processar JSON");
         } catch (RestClientException e) {
-            return ("Erro ao chamar API: " + e);
+            throw new ApiCategoriaException("Erro ao chamar API");
         }
     }
+
+
+//    @Override
+//    public Object updateCategory(String xmlCategoria, String idCategoria) throws ApiCategoriaException {
+//        try {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_XML);
+//            HttpEntity<String> request = new HttpEntity<>(xmlCategoria, headers);
+//
+//            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey + apiXmlParam + xmlCategoria;
+//            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+//
+//            // verifica se a resposta contém algum erro
+//            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
+//                ObjectMapper objectMapper = new ObjectMapper();
+//                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
+//                return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
+//            }
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
+//
+//            return response;
+//
+//        } catch (JsonProcessingException e) {
+//            throw new ApiCategoriaException("Erro ao processar JSON: " + e);
+//        } catch (RestClientException e) {
+//            return ("Erro ao chamar API: " + e);
+//        }
+//    }
 }
