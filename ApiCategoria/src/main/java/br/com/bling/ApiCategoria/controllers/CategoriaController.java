@@ -1,6 +1,7 @@
 package br.com.bling.ApiCategoria.controllers;
 
 import br.com.bling.ApiCategoria.controllers.request.JsonRequest;
+import br.com.bling.ApiCategoria.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
@@ -55,6 +56,7 @@ public class CategoriaController {
             System.out.println(request);
 
             return ResponseEntity.ok(request);
+
         } catch (Exception e) {
             throw new CategoriaListaException();
         }
@@ -101,18 +103,22 @@ public class CategoriaController {
             if (request == null) {
                 throw new ApiCategoriaException("Não foi possível cadastrar a categoria");
             }
+
             System.out.println(request);
 
             return ResponseEntity.ok(request);
 
-        } catch (ApiCategoriaException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
+            if (e instanceof ApiCategoriaException) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            } else if (e instanceof HttpStatusCodeException) {
+                return ResponseEntity.status(((HttpStatusCodeException) e).getStatusCode()).body(new JsonRequest());
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
+            }
         }
     }
+
 
     /**
      * PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".  -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
@@ -130,12 +136,14 @@ public class CategoriaController {
 
             return ResponseEntity.ok(request);
 
-        } catch (ApiCategoriaException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
+            if (e instanceof ApiCategoriaException) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            } else if (e instanceof HttpStatusCodeException) {
+                return ResponseEntity.status(((HttpStatusCodeException) e).getStatusCode()).body(new JsonRequest());
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
+            }
         }
     }
 }

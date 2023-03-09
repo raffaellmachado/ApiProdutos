@@ -9,8 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import javax.validation.Valid;
 
 @Service
 public class ContatoServiceImpl implements ContatoService {
@@ -20,6 +26,9 @@ public class ContatoServiceImpl implements ContatoService {
 
     @Value("${external.api.apikey}")
     private String apiKey;
+
+    @Value("${external.api.apikeyparam}")
+    private String apikeyparam;
 
     @Value("${external.api.xmlparam}")
     private String apiXmlParam;
@@ -33,11 +42,17 @@ public class ContatoServiceImpl implements ContatoService {
     @Override
     public JsonResponse getAllContacts() throws ApiContatoException {
         try {
-            String json = restTemplate.getForObject(apiBaseUrl + "/contatos/json/" + apiKey, String.class);
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse response = objectMapper.readValue(json, JsonResponse.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>(headers);
 
-            return response;
+            String url = apiBaseUrl + "/contatos/json/" + apikeyparam + apiKey;
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+
+            return result;
 
         } catch (JsonProcessingException e) {
             throw new ApiContatoException("Erro ao processar JSON", e);
@@ -52,11 +67,17 @@ public class ContatoServiceImpl implements ContatoService {
     @Override
     public JsonResponse getContactsById(String cpf_cnpj) throws ApiContatoException {
         try {
-            String json = restTemplate.getForObject(apiBaseUrl + "/contato/" + cpf_cnpj + "/json/" + apiKey, String.class);
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse response = objectMapper.readValue(json, JsonResponse.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>(cpf_cnpj, headers);
 
-            return response;
+            String url = apiBaseUrl + "/contato/" + cpf_cnpj + "/json/" + apikeyparam + apiKey;
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+
+            return result;
 
         } catch (JsonProcessingException e) {
             throw new ApiContatoException("Erro ao processar JSON", e);
@@ -69,49 +90,59 @@ public class ContatoServiceImpl implements ContatoService {
      * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
      */
     @Override
-    public JsonRequest createContact(String xml) throws ApiContatoException {
+    public JsonRequest createContact(String xmlContato) throws ApiContatoException {
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_XML);
+            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+            map.add("apikey", apiKey);
+            map.add("xml", xmlContato);
 
-            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url  = apiBaseUrl + "/contato/json/" + apiKey + apiXmlParam + xml;
-            String json = restTemplate.postForObject(url, request, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+            String url = apiBaseUrl + "/contato/json/";
+
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest response = objectMapper.readValue(json, JsonRequest.class);
+            JsonRequest result = objectMapper.readValue(response.getBody(), JsonRequest.class);
 
-            return response;
+            return result;
 
         } catch (JsonProcessingException e) {
-            throw new ApiContatoException("Erro ao processar JSON", e);
+            throw new RuntimeException("Erro ao processar JSON: ", e);
         } catch (RestClientException e) {
-            throw new ApiContatoException("Erro ao chamar API", e);
+            throw new RuntimeException("Erro ao chamar API: ", e);
         }
     }
 
     /**
-     * PUT "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML. -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
+     * PUT "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
      */
     @Override
-    public JsonRequest updateContact(String xml, String id) throws ApiContatoException {
+    public JsonRequest updateContact(@RequestBody @Valid String xmlContato, @PathVariable("cpf_cnpj") String cpf_cnpj) throws ApiContatoException {
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_XML);
+            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+            map.add("apikey", apiKey);
+            map.add("xml", xmlContato);
 
-            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-            String url = apiBaseUrl + "/contato/" + id + "/json/" + apiKey + apiXmlParam + xml;
-            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+            String url = apiBaseUrl + "/contato/" + cpf_cnpj + "/json/";
+
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
+            JsonRequest result = objectMapper.readValue(response.getBody(), JsonRequest.class);
 
-            return response;
+            return result;
 
         } catch (JsonProcessingException e) {
-            throw new ApiContatoException("Erro ao processar JSON", null);
+            throw new ApiContatoException("Erro ao processar JSON: ", e);
         } catch (RestClientException e) {
-            throw new ApiContatoException("Erro ao chamar API", null);
+            throw new ApiContatoException("Erro ao chamar API", e);
         }
     }
 }

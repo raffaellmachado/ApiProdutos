@@ -37,7 +37,8 @@ class CategoriaServiceImplTest {
     void testGetAllCategory() throws Exception {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\": {\"categorias\": [{\"categoria\": {\"id\": \"123\", \"descricao\": \"Categoria 1\"}}, {\"categoria\": {\"id\": \"456\", \"descricao\": \"Categoria 2\"}}]}}";
-        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
         JsonResponse result = categoriaServiceImpl.getAllCategory();
@@ -62,7 +63,8 @@ class CategoriaServiceImplTest {
         // Simula a resposta da chamada para a API externa
         String idCategoria = "159753";
         String jsonResponse = "{\"retorno\": {\"categorias\": [{\"categoria\": {\"id\": \"123\", \"descricao\": \"Categoria 1\"}}]}}";
-        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
         JsonResponse result = categoriaServiceImpl.getCategoryByIdCategoria(idCategoria);

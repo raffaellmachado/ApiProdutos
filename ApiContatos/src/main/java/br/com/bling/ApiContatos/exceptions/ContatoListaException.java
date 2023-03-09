@@ -1,7 +1,7 @@
 package br.com.bling.ApiContatos.exceptions;
 
 public class ContatoListaException extends RuntimeException {
-    public ContatoListaException() {
-        super("Nenhum contato foi localizado.");
+    public ContatoListaException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

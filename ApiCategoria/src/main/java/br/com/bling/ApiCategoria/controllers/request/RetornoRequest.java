@@ -15,8 +15,8 @@ import java.util.ArrayList;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RetornoRequest {
 
-    @JsonProperty("categorias")
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+    @JsonProperty("categorias")
     public ArrayList<ArrayList<Categorias>> categorias;
 
     @Data

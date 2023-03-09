@@ -8,11 +8,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TiposContatosRequest {
     @JsonProperty("tipoContato")
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public TipoContatoRequest tipoContato;
 }

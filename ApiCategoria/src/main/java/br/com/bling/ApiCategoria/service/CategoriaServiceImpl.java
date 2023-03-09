@@ -44,11 +44,15 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public JsonResponse getAllCategory() throws ApiCategoriaException {
         try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+
             String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
-            String response = restTemplate.getForObject(url, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse result = objectMapper.readValue(response, JsonResponse.class);
+            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
             return result;
 
@@ -65,11 +69,16 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public JsonResponse getCategoryByIdCategoria(String idCategoria) throws ApiCategoriaException {
         try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>(idCategoria, headers);
+
             String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apikeyparam + apiKey;
-            String response = restTemplate.getForObject(url, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse result = objectMapper.readValue(response, JsonResponse.class);
+            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+
             return result;
 
         } catch (JsonProcessingException e) {
@@ -155,7 +164,6 @@ public class CategoriaServiceImpl implements CategoriaService {
             throw new ApiCategoriaException("Erro ao chamar API");
         }
     }
-
 
 //    @Override
 //    public Object updateCategory(String xmlCategoria, String idCategoria) throws ApiCategoriaException {

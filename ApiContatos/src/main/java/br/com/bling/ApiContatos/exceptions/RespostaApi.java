@@ -1,4 +1,4 @@
-package br.com.bling.ApiCategoria.exceptions;
+package br.com.bling.ApiContatos.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -9,8 +9,7 @@ import java.util.Map;
 public class RespostaApi {
 
     private RetornoRequest retorno;
-
-    @Data
+@Data
     public class RetornoRequest {
         @JsonProperty("id")
         public String id;

@@ -4,10 +4,7 @@ import br.com.bling.ApiContatos.controllers.request.JsonRequest;
 import br.com.bling.ApiContatos.controllers.request.RetornoRequest;
 import br.com.bling.ApiContatos.controllers.response.JsonResponse;
 import br.com.bling.ApiContatos.controllers.response.RetornoResponse;
-import br.com.bling.ApiContatos.exceptions.ApiContatoException;
-import br.com.bling.ApiContatos.exceptions.ContatoCadastroException;
-import br.com.bling.ApiContatos.exceptions.ContatoIdException;
-import br.com.bling.ApiContatos.exceptions.ContatoListaException;
+import br.com.bling.ApiContatos.exceptions.*;
 import br.com.bling.ApiContatos.service.ContatoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,8 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 
 
@@ -42,7 +41,7 @@ public class ContatoController {
             JsonResponse request = contatosService.getAllContacts();
 
             if (request.retorno.contatos == null || request.getRetorno() == null) {
-                throw new ContatoListaException();
+                throw new ContatoListaException("Nenhum contato foi localizado.", null);
             }
 
             for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
@@ -77,11 +76,17 @@ public class ContatoController {
                 System.out.println("descricao: " + listaContatos.contato.getTiposContato().get(0).tipoContato.descricao);
             }
 
-            System.out.println(request);
+            System.out.println("Retorno: " + request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
+
+        } catch (ApiContatoException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Erro ao cadastrar novo contato: " + e.getMessage()));
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new JsonResponse());
         } catch (Exception e) {
-            throw new ContatoListaException();
+            JsonResponse JsonResponse = new JsonResponse("Ocorreu um erro ao processar sua solicitação: " + e.getMessage());;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(JsonResponse);
         }
     }
 
@@ -95,7 +100,7 @@ public class ContatoController {
             JsonResponse request = contatosService.getContactsById(cpf_cnpj);
 
             if (request.retorno.contatos == null || request.getRetorno() == null) {
-                throw new ContatoIdException(cpf_cnpj);
+                throw new ContatoIdException("Contato com o número de CPF/CNPJ: " + cpf_cnpj + " não encontrado.", null);
             }
 
             for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
@@ -131,11 +136,16 @@ public class ContatoController {
 
             }
 
-            System.out.println(request);
+            System.out.println("Retorno: " + request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
+        } catch (ApiContatoException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Erro ao cadastrar novo contato: " + e.getMessage()));
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new JsonResponse());
         } catch (Exception e) {
-            throw new ContatoIdException(cpf_cnpj);
+            JsonResponse JsonResponse = new JsonResponse("Ocorreu um erro ao processar sua solicitação: " + e.getMessage());;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(JsonResponse);
         }
     }
 
@@ -146,57 +156,50 @@ public class ContatoController {
     @ApiOperation(value = "Cadastrar um novo contato")
     public ResponseEntity<JsonRequest> createContact(@RequestBody String xml) {
         try {
-        JsonRequest request = contatosService.createContact(xml);
+            JsonRequest request = contatosService.createContact(xml);
 
-        if (request.retorno.contatos == null || request.getRetorno() == null) {
-            throw new ContatoCadastroException();
-        }
+            if (request.retorno.contatos == null || request.getRetorno() == null) {
+                throw new ContatoCadastroException("Cadastro não efetuado, revise os campos e tente novamente!", null);
+            }
+            System.out.println("Retorno: " + request);
 
-        for (ArrayList<RetornoRequest.Contatos> listaContatos : request.getRetorno().getContatos()) {
-            System.out.println("-----------------------------------------------------------------------------------");
-            System.out.println("Id: " + listaContatos.get(0).contato.id);
-            System.out.println("Nome: " + listaContatos.get(0).contato.nome);
-            System.out.println("tipoPessoa: " + listaContatos.get(0).contato.tipoPessoa);
-            System.out.println("contribuinte: " + listaContatos.get(0).contato.contribuinte);
-            System.out.println("cpf_cnpj: " + listaContatos.get(0).contato.cpf_cnpj);
-            System.out.println("-----------------------------------------------------------------------------------");
-        }
+            return ResponseEntity.ok(request);
 
-        System.out.println(request);
-
-            return ResponseEntity.status(HttpStatus.OK).body(request);
+        } catch (ApiContatoException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonRequest("Erro ao cadastrar novo contato: " + e.getMessage()));
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            throw new ContatoCadastroException();
+            JsonRequest jsonRequest = new JsonRequest("Ocorreu um erro ao processar sua solicitação: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonRequest);
         }
+
     }
 
     /**
-     * PUT "ATUALIZAR CONTATO PELO CPF e CNPJ" UTILIZANDO XML. -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
+     * PUT "ATUALIZAR CONTATO PELO CPF e CNPJ" UTILIZANDO XML.
      */
-    @PutMapping(path = "/atualizarcontato/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/atualizarcontato/{cpf_cnpj}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto existente")
-    public ResponseEntity<JsonRequest> updateContact(@RequestBody String xml, @PathVariable String id) {
+    public ResponseEntity<JsonRequest> updateContact(@RequestBody @Valid String xmlContato, @PathVariable("cpf_cnpj") String cpf_cnpj) {
         try {
-            JsonRequest request = contatosService.updateContact(xml, id);
+            JsonRequest request = contatosService.updateContact(xmlContato, cpf_cnpj);
 
             if (request.retorno.contatos == null || request.getRetorno() == null) {
-                throw new ApiContatoException("Não foi possível atualizar o deposito", null);
+                throw new ContatoAtualizarException("Não foi possivel atualizar o contato.", null);
             }
 
-            for (ArrayList<RetornoRequest.Contatos> listaContatos : request.getRetorno().getContatos()) {
-                System.out.println("-----------------------------------------------------------------------------------");
-                System.out.println("Id: " + listaContatos.get(0).contato.id);
-                System.out.println("Nome: " + listaContatos.get(0).contato.nome);
-                System.out.println("tipoPessoa: " + listaContatos.get(0).contato.tipoPessoa);
-                System.out.println("contribuinte: " + listaContatos.get(0).contato.contribuinte);
-                System.out.println("cpf_cnpj: " + listaContatos.get(0).contato.cpf_cnpj);
-                System.out.println("-----------------------------------------------------------------------------------");
-            }
-            System.out.println(request);
+            System.out.println("Retorno: " + request);
 
-            return ResponseEntity.status(HttpStatus.OK).body(request);
+            return ResponseEntity.ok(request);
+
+        } catch (ApiContatoException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonRequest("Erro ao cadastrar novo contato: " + e.getMessage()));
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            throw new ContatoCadastroException();
+            JsonRequest jsonRequest = new JsonRequest("Ocorreu um erro ao processar sua solicitação: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonRequest);
         }
     }
 }
