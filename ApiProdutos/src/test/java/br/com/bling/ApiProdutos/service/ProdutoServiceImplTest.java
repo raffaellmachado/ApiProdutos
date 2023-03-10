@@ -11,7 +11,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,7 +18,6 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
 
 class ProdutoServiceImplTest {
     @Mock
@@ -32,6 +30,9 @@ class ProdutoServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * TESTE SERVICE - GET "BUSCAR A LISTA DE PRODUTOS CADASTRADOS NO BLING".
+     */
     @Test
     void testGetAllProducts() {
         // Simula a resposta da chamada para a API externa
@@ -150,6 +151,9 @@ class ProdutoServiceImplTest {
         System.out.println("GET LIST: " + result);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCA PRODUTO PELO CODIGO".
+     */
     @Test
     void testGetProductByCode() {
         // Simula a resposta da chamada para a API externa
@@ -215,6 +219,9 @@ class ProdutoServiceImplTest {
 
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCA PRODUTO PELO CODIGO E PELO IDFORNECEDOR".
+     */
     @Test
     void testGetProductByCodeSupplier() {
         // Simula a resposta da chamada para a API externa
@@ -281,13 +288,17 @@ class ProdutoServiceImplTest {
 
     }
 
+    /**
+     * TESTE CONTROLLER - DELETE "DELETA UM PRODUTO EXISTE UTILIZANDO O CODIGO".
+     */
     @Test
     void testDeleteProductByCode() {
         String codigo = "333";
 
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"produtos\":[{\"produto\":{\"id\":\"01\",\"codigo\":\"" + codigo + "\",\"codigoItem\":\"01\",\"descricao\":\"01\",\"tipo\":\"01\",\"situacao\":\"01\",\"descricaoCurta\":\"01\",\"descricaoComplementar\":\"01\",\"un\":\"01\",\"vlr_unit\":\"01\",\"preco_custo\":\"01\",\"peso_bruto\":\"01\",\"peso_liq\":\"01\",\"class_fiscal\":\"01\",\"marca\":\"01\",\"cest\":\"01\",\"origem\":\"01\",\"idGrupoProduto\":\"01\",\"condicao\":\"01\",\"freteGratis\":\"01\",\"linkExterno\":\"01\",\"observacoes\":\"01\",\"producao\":\"01\",\"unidadeMedida\":\"01\",\"dataValidade\":\"01\",\"descricaoFornecedor\":\"01\",\"idFabricante\":\"01\",\"codigoFabricante\":\"01\",\"deposito\":{\"id\":\"01\",\"estoque\":\"01\"},\"gtin\":\"01\",\"gtinEmbalagem\":\"01\",\"largura\":\"01\",\"altura\":\"01\",\"profundidade\":\"01\",\"estoqueMinimo\":\"01\",\"estoqueMaximo\":\"01\",\"itensPorCaixa\":\"01\",\"volumes\":\"01\",\"urlVideo\":\"01\",\"localizacao\":\"01\",\"crossdocking\":\"01\",\"garantia\":\"01\",\"spedTipoItem\":\"01\",\"idCategoria\":\"01\"}}]}}";
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), any(), eq(String.class))).thenReturn(new ResponseEntity<>(jsonResponse, HttpStatus.OK));
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deleta o produto pelo código
         assertDoesNotThrow(() -> produtoServiceImpl.deleteProductByCode(codigo));
@@ -295,6 +306,9 @@ class ProdutoServiceImplTest {
         System.out.println("TEST DELETE: " + "Código deletado no teste: " + codigo);
     }
 
+    /**
+     * TESTE CONTROLLER - POST "CADASTRA UM NOVO PRODUTO DO TIPO SIMPLES UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateProductSimple() {     //TESTE PRODUTO SIMPLES
         // Simula a resposta da chamada para a API externa
@@ -357,6 +371,9 @@ class ProdutoServiceImplTest {
         System.out.println("TEST POST CREATE PRODUCT SIMPLE: " + result);
     }
 
+    /**
+     * TESTE CONTROLLER - POST "CADASTRA UM NOVO PRODUTO COM VARIAÇÃO UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateProductVariation() {     //TESTE PRODUTO COM VARIAÇÃO.
         // Simula a resposta da chamada para a API externa
@@ -423,6 +440,9 @@ class ProdutoServiceImplTest {
 
     }
 
+    /**
+     * TESTE CONTROLLER - POST "CADASTRA UM NOVO PRODUTO COM COMPOSIÇÃO UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateProductComposition() {     //TESTE PRODUTO COM COMPOSIÇÃO.
         // Simula a resposta da chamada para a API externa
@@ -485,6 +505,9 @@ class ProdutoServiceImplTest {
 
     }
 
+    /**
+     * TESTE CONTROLLER - POST "CADASTRA UM NOVO PRODUTO DE SERVIÇO UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateProductService() {     //TESTE PRODUTO SERVIÇO.
         // Simula a resposta da chamada para a API externa
@@ -516,6 +539,9 @@ class ProdutoServiceImplTest {
 
     }
 
+    /**
+     * TESTE CONTROLLER - PUT "ATUALIZA UMA PRODUTO DO TIPO SIMPLES EXISTENTE UTILIZANDO XML".
+     */
     @Test
     void testUpdateProductSimple() {
 
@@ -579,6 +605,9 @@ class ProdutoServiceImplTest {
         System.out.println("TEST POST UPDATE PRODUCT SIMPLE: " + result);
     }
 
+    /**
+     * TESTE CONTROLLER - PUT "ATUALIZA UMA PRODUTO COM VARIAÇÃO UTILIZANDO XML".
+     */
     @Test
     void testUpdateProductVariation() {     //TESTE PRODUTO COM VARIAÇÃO.
         // Simula a resposta da chamada para a API externa
@@ -645,6 +674,9 @@ class ProdutoServiceImplTest {
 
     }
 
+    /**
+     * TESTE CONTROLLER - PUT "ATUALIZA UMA PRODUTO COM COMPOSIÇÃO UTILIZANDO XML".
+     */
     @Test
     void testUpdateComposition() {     //TESTE PRODUTO COM COMPOSIÇÃO.
         // Simula a resposta da chamada para a API externa
@@ -707,6 +739,9 @@ class ProdutoServiceImplTest {
 
     }
 
+    /**
+     * TESTE CONTROLLER - PUT "ATUALIZA UMA PRODUTO SERVIÇO UTILIZANDO XML".
+     */
     @Test
     void testUpdateProductService() {     //TESTE PRODUTO SERVIÇO.
         // Simula a resposta da chamada para a API externa

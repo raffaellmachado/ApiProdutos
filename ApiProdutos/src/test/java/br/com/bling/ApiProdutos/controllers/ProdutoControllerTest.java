@@ -5,7 +5,12 @@ import br.com.bling.ApiProdutos.controllers.response.CategoriaResponse;
 import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutos.controllers.response.ProdutoResponse;
 import br.com.bling.ApiProdutos.controllers.response.RetornoResponse;
+import br.com.bling.ApiProdutos.exceptions.ApiProdutoException;
+import br.com.bling.ApiProdutos.exceptions.DetalhesErroResponse;
+import br.com.bling.ApiProdutos.exceptions.ErroResponse;
 import br.com.bling.ApiProdutos.service.ProdutoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +23,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 class ProdutoControllerTest {
     @Mock
@@ -32,6 +37,9 @@ class ProdutoControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCAR A LISTA DE PRODUTOS CADASTRADOS NO BLING".
+     */
     @Test
     void testGetAllProducts() {
 
@@ -166,20 +174,27 @@ class ProdutoControllerTest {
         assertEquals(resposta, result);
     }
 
-//    @Test
-//    void testGetAllProductsException() {
-//
-//        when(produtoService.getAllProducts()).thenReturn(null);
-//
-//        // Chama o método sendo testado
-//        assertThrows(ProdutoListaException.class, () -> {
-//            produtoController.getAllProducts();
-//        });
-//
-//        // Verifica se o serviço foi chamado
-//        verify(produtoService).getAllProducts();
-//    }
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCAR A LISTA DE PRODUTOS A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testGetAllProductsException() {
+        JsonResponse jsonResponse = new JsonResponse();
+        RetornoResponse retornoResponse = new RetornoResponse();
 
+        retornoResponse.setProdutos(null);
+        retornoResponse.setErros(null);
+        jsonResponse.setRetorno(retornoResponse);
+
+        when(produtoService.getAllProducts()).thenReturn(jsonResponse);
+
+        // Act
+        assertThrows(ApiProdutoException.class, () -> produtoController.getAllProducts());
+    }
+
+    /**
+     * TESTE CONTROLLER - GET "BUSCA PRODUTO PELO CODIGO".
+     */
     @Test
     void testGetProductByCode() {
         String codigo = "825";
@@ -255,20 +270,28 @@ class ProdutoControllerTest {
         Assertions.assertEquals(resposta, result);
     }
 
-//    @Test
-//    void testGetProductByCodeException() {
-//        String codigo = "123";
-//        when(produtoService.getProductByCode(codigo)).thenReturn(null);
-//
-//        // Chama o método sendo testado
-//        assertThrows(ProdutoCodigoException.class, () -> {
-//            produtoController.getProductByCode(codigo);
-//        });
-//
-//        // Verifica se o serviço foi chamado
-//        verify(produtoService).getProductByCode(codigo);
-//    }
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA PRODUTO PELO CODIGO A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testGetProductByCodeException() {
+        String codigo = "123";
+        JsonResponse jsonResponse = new JsonResponse();
+        RetornoResponse retornoResponse = new RetornoResponse();
 
+        retornoResponse.setProdutos(null);
+        retornoResponse.setErros(null);
+        jsonResponse.setRetorno(retornoResponse);
+
+        when(produtoService.getProductByCode(codigo)).thenReturn(jsonResponse);
+
+        // Act
+        assertThrows(ApiProdutoException.class, () -> produtoController.getProductByCode(codigo));
+    }
+
+    /**
+     * TESTE CONTROLLER - GET "BUSCA PRODUTO PELO CODIGO E PELO IDFORNECEDOR".
+     */
     @Test
     void testGetProductByCodeSupplier() {
 
@@ -345,21 +368,29 @@ class ProdutoControllerTest {
         Assertions.assertEquals(resposta, result);
     }
 
-//    @Test
-//    void testGetProductByCodeSupplierException() {
-//        String codigo = "123";
-//        String id_fornecedor = "Teste";
-//        when(produtoService.getProductByCodeSupplier(codigo, id_fornecedor)).thenReturn(null);
-//
-//        // Chama o método sendo testado
-//        assertThrows(ProdutoCodigoFornecedorException.class, () -> {
-//            produtoController.getProductByCodeSupplier(codigo, id_fornecedor);
-//        });
-//
-//        // Verifica se o serviço foi chamado
-//        verify(produtoService).getProductByCodeSupplier(codigo, id_fornecedor);
-//    }
+    /**
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA PRODUTO PELO CODIGO E IDFORNECEDOR A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testGetProductByCodeSupplierException() {
+        String codigo = "123";
+        String id_fornecedor = "Teste";
+        JsonResponse jsonResponse = new JsonResponse();
+        RetornoResponse retornoResponse = new RetornoResponse();
 
+        retornoResponse.setProdutos(null);
+        retornoResponse.setErros(null);
+        jsonResponse.setRetorno(retornoResponse);
+
+        when(produtoService.getProductByCodeSupplier(codigo, id_fornecedor)).thenReturn(jsonResponse);
+
+        // Act
+        assertThrows(ApiProdutoException.class, () -> produtoController.getProductByCodeSupplier(codigo, id_fornecedor));
+    }
+
+    /**
+     * TESTE CONTROLLER - DELETE "DELETA UM PRODUTO EXISTE UTILIZANDO O CODIGO".
+     */
     @Test
     void testDeleteProductByCode() {
         String codigo = "825";
@@ -389,24 +420,24 @@ class ProdutoControllerTest {
         Assertions.assertEquals(expected, result);
     }
 
-//    @Test
-//    void testDeleteProductByCodeException() throws Exception {
-//        String codigo = "12345";
-//        when(produtoService.getProductByCode(codigo)).thenReturn(null);
-//
-//        // Chama o método sendo testado
-//        ProdutoExclusaoException thrown = assertThrows(
-//                ProdutoExclusaoException.class,
-//                () -> produtoController.deleteProductByCode(codigo)
-//        );
-//
-//        // Verifica se a mensagem da exceção é a esperada
-//        assertEquals("Produto com código " + codigo + " não encontrado para exclusão", thrown.getMessage());
-//
-//        // Verifica se o serviço foi chamado
-//        verify(produtoService).getProductByCode(codigo);
-//    }
+    /**
+     * TESTE CONTROLLER - DELETE "DELETA UM PRODUTO EXISTE UTILIZANDO O CODIGO A ENTRAS NO EXCEPTION".
+     */
+    @Test
+    void testDeleteProductByCodeException() throws Exception {
+        String codigo = "12345";
+        doNothing().when(produtoService).deleteProductByCode(codigo);
 
+        // Act
+        assertThrows(ApiProdutoException.class, () -> produtoController.deleteProductByCode(codigo));
+
+        // Assert
+        verify(produtoService).getProductByCode(codigo);
+    }
+
+    /**
+     * TESTE CONTROLLER - POST "CADASTRA UM NOVO PRODUTO UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateProduct() {
         // Cria o XML de categoria a ser enviado na requisição
@@ -584,53 +615,34 @@ class ProdutoControllerTest {
         assertEquals(resposta, result);
     }
 
-//    @Test
-//    void testCreateProductException_1() {
-//        // Cria o XML de categoria a ser enviado na requisição
-//        String xml = "<xml>...</xml>";
-//        when(produtoService.createProduct(xml)).thenReturn(null);
-//
-//        // Chama o método sendo testado
-//        ResponseEntity<?> response = produtoController.createProduct(xml);
-//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-//
-//        // Verifica se o serviço foi chamado
-//        verify(produtoService).createProduct(xml);
-//    }
+    /**
+     * TESTE CONTROLLER - POST "FORÇA O METODO DE CADASTRO DE PRODUTO A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testCreateProductException() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
 
-//    @Test
-//    void testCreateCategoryException_2() {
-//        // Cria o XML de categoria a ser enviado na requisição
-//        String xml = "<xml>...</xml>";
-//
-//        // Cria um mock do serviço que lança uma HttpStatusCodeException
-//        when(produtoService.createProduct(xml)).thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {});
-//
-//        // Chama o método sendo testado e verifica se a resposta é a esperada
-//        ResponseEntity<?> response = produtoController.createProduct(xml);
-//        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-//        assertEquals(new JsonRequest(), response.getBody());
-//
-//        // Verifica se o serviço foi chamado
-//        verify(produtoService).createProduct(xml);
-//    }
-//
-//    @Test
-//    void testCreateCategoryException_3() {
-//        // Cria o XML de categoria a ser enviado na requisição
-//        String xml = "<xml>...</xml>";
-//
-//        // Cria um mock do serviço que lança uma exceção
-//        when(produtoService.createProduct(xml)).thenThrow(new RuntimeException());
-//
-//        // Chama o método sendo testado e espera a exceção correta
-//        ResponseEntity<?> response = produtoController.createProduct(xml);
-//        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-//
-//        // Verifica se o serviço foi chamado
-//        verify(produtoService).createProduct(xml);
-//    }
+        JsonRequest jsonRequest = new JsonRequest();
+        RetornoRequest retornoRequest = new RetornoRequest();
 
+        retornoRequest.setProdutos(null);
+        retornoRequest.setErros(null);
+        jsonRequest.setRetorno(retornoRequest);
+
+        when(produtoService.createProduct(xml)).thenReturn(jsonRequest);
+
+        assertThrows(ApiProdutoException.class, () -> produtoController.createProduct(xml));
+    }
+
+    /**
+     * TESTE CONTROLLER - PUT "ATUALIZA UMA PRODUTO EXISTENTE UTILIZANDO XML".
+     */
     @Test
     void testUpdateProduct() {
         String codigo = "10";
@@ -812,18 +824,48 @@ class ProdutoControllerTest {
         assertEquals(resposta, result);
     }
 
-//    @Test
-//    void testUpdateProductException() {
-//        String xml = "<xml>...</xml>";
-//        String codigo = "1257";
-//        when(produtoService.updateProduct(xml, codigo)).thenReturn(null);
-//
-//        // Chama o método sendo testado
-//        assertThrows(ProdutoAtualizarException.class, () -> {
-//            produtoController.updateProduct(xml, codigo);
-//        });
-//
-//        // Verifica se o serviço foi chamado
-//        verify(produtoService).updateProduct(xml, codigo);
-//    }
+    /**
+     * TESTE CONTROLLER - PUT "FORÇA O METODO DE CADASTRO DE PRODUTOS A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testUpdateProductException() {
+        String codigo = "1257";
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        JsonRequest jsonRequest = new JsonRequest();
+        RetornoRequest retornoRequest = new RetornoRequest();
+
+        retornoRequest.setProdutos(null);
+        retornoRequest.setErros(null);
+        jsonRequest.setRetorno(retornoRequest);
+
+        when(produtoService.updateProduct(xml, codigo)).thenReturn(jsonRequest);
+
+        assertThrows(ApiProdutoException.class, () -> produtoController.updateProduct(xml, codigo));
+    }
+
+    /**
+     * TESTE CONTROLLER - GET "TESTE DO ERROS MAPEADOS QUE RETORNA DA API EXTERNA".
+     */
+    @Test
+    void testErroResponse() throws JsonProcessingException {
+        int codigoErro = 404;
+        String mensagemErro = "A informação desejada não foi encontrada.";
+
+        DetalhesErroResponse detalhesErro = new DetalhesErroResponse(codigoErro, mensagemErro);
+        ErroResponse erroResponse = new ErroResponse();
+        erroResponse.setErro(detalhesErro);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(erroResponse);
+
+        ErroResponse erroResponseDeserialized = objectMapper.readValue(json, ErroResponse.class);
+
+        assertEquals(erroResponse, erroResponseDeserialized);
+    }
 }

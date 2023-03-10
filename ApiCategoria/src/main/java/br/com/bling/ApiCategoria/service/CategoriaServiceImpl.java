@@ -117,7 +117,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     /**
-     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML". -----> HttpClientErrorException$Unauthorized: 401 Unauthorized: [no body]
+     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @Override
     public JsonRequest updateCategory(String xmlCategoria, String idCategoria) throws ApiCategoriaException {
