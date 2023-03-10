@@ -2,7 +2,12 @@ package br.com.bling.ApiContatos.controllers;
 
 import br.com.bling.ApiContatos.controllers.request.*;
 import br.com.bling.ApiContatos.controllers.response.*;
+import br.com.bling.ApiContatos.exceptions.ApiContatoException;
+import br.com.bling.ApiContatos.exceptions.DetalhesErroResponse;
+import br.com.bling.ApiContatos.exceptions.ErroResponse;
 import br.com.bling.ApiContatos.service.ContatoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -134,19 +140,20 @@ class ContatoControllerTest {
     /**
      * TESTE CONTROLLER - GET "FORÇA O METODO BUSCAR A LISTA DE CONTATOS A ENTRAR NO EXCEPTION".
      */
-//    @Test
-//    void testGetAllContactsException() {
-//
-//        when(contatosService.getAllContacts()).thenReturn(null);
-//
-//        // Chama o método sendo testado
-//        assertThrows(ContatoListaException.class, () -> {
-//            contatoController.getAllContacts();
-//        });
-//
-//        // Verifica se o serviço foi chamado
-//        verify(contatosService).getAllContacts();
-//    }
+    @Test
+    void testGetAllContactsException() {
+        JsonResponse jsonResponse = new JsonResponse();
+        RetornoResponse retornoResponse = new RetornoResponse();
+
+        retornoResponse.setContatos(null);
+        retornoResponse.setErros(null);
+        jsonResponse.setRetorno(retornoResponse);
+
+        when(contatosService.getAllContacts()).thenReturn(jsonResponse);
+
+        // Act
+        assertThrows(ApiContatoException.class, () -> contatoController.getAllContacts());
+    }
 
     /**
      * TESTE CONTROLLER - GET "BUSCA CONTATO PELO CPF_CNPJ".
@@ -211,18 +218,21 @@ class ContatoControllerTest {
     /**
      * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA CONTATO PELO CPF_CNPJ A ENTRAR NO EXCEPTIONv".
      */
-//    @Test
-//    public void testGetContactsByIdThrowsException() throws Exception {
-//        String cpf_cnpj = "12345678900";
-//
-//        when(contatosService.getContactsById(cpf_cnpj))
-//                .thenThrow(new ApiContatoException("Erro ao chamar API", null));
-//
-//        ResponseEntity<JsonResponse> response = contatoController.getContactsById(cpf_cnpj);
-//
-//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-//        assertEquals("Ocorreu um erro ao processar sua solicitação: Erro ao chamar API", response.getBody().getMsg());
-//    }
+    @Test
+    public void testGetContactsByIdThrowsException() throws Exception {
+        String cpf_cnpj = "1234";
+        JsonResponse jsonResponse = new JsonResponse();
+        RetornoResponse retornoResponse = new RetornoResponse();
+
+        retornoResponse.setContatos(null);
+        retornoResponse.setErros(null);
+        jsonResponse.setRetorno(retornoResponse);
+
+        when(contatosService.getContactsById(cpf_cnpj)).thenReturn(jsonResponse);
+
+        // Act
+        assertThrows(ApiContatoException.class, () -> contatoController.getContactsById(cpf_cnpj));
+    }
 
     /**
      * TESTE CONTROLLER - POST "CADASTRA UM NOVO CONTATO UTILIZANDO XML/JSON".
@@ -308,45 +318,48 @@ class ContatoControllerTest {
     /**
      * TESTE CONTROLLER - POST "FORÇA O METODO DE CADASTRO DE CONTATO A ENTRAR NO EXCEPTION".
      */
+    @Test
+    void testCreateContactException() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<contato>\n" +
+                "   <nome>Eduardo</nome>\n" +
+                "   <fantasia>RMS</fantasia>\n" +
+                "   <tipoPessoa>F</tipoPessoa>\n" +
+                "   <contribuinte>9</contribuinte> \n" +
+                "   <cpf_cnpj>000.000.000-00</cpf_cnpj>\n" +
+                "   <ie_rg>00.000.000-0</ie_rg>\n" +
+                "   <endereco>Rua das Oliveirass</endereco>\n" +
+                "   <numero>1200</numero>\n" +
+                "   <complemento>503</complemento>\n" +
+                "   <bairro>Centro</bairro>\n" +
+                "   <cep>00000-000</cep>\n" +
+                "   <cidade>Londrina</cidade>\n" +
+                "   <uf>PR</uf>\n" +
+                "   <fone>(99) 9999-9999</fone>\n" +
+                "   <celular>(43) 99620-9999</celular>\n" +
+                "   <email>teste@teste.com</email>\n" +
+                "   <emailNfe>testeNfe@mail.com.br</emailNfe>\n" +
+                "   <informacaoContato>Informações adicionais do contato</informacaoContato>\n" +
+                "   <limiteCredito>0.00</limiteCredito>\n" +
+                "   <site>http://www.teste.com.br</site>\n" +
+                "</contato>";
 
-//    @Test
-//    void testCreateContactException() {
-//        // Cria o XML de categoria a ser enviado na requisição
-//        String xml = "<contato>\n" +
-//                "   <nome>Eduardo</nome>\n" +
-//                "   <fantasia>RMS</fantasia>\n" +
-//                "   <tipoPessoa>F</tipoPessoa>\n" +
-//                "   <contribuinte>9</contribuinte> \n" +
-//                "   <cpf_cnpj>000.000.000-00</cpf_cnpj>\n" +
-//                "   <ie_rg>00.000.000-0</ie_rg>\n" +
-//                "   <endereco>Rua das Oliveirass</endereco>\n" +
-//                "   <numero>1200</numero>\n" +
-//                "   <complemento>503</complemento>\n" +
-//                "   <bairro>Centro</bairro>\n" +
-//                "   <cep>00000-000</cep>\n" +
-//                "   <cidade>Londrina</cidade>\n" +
-//                "   <uf>PR</uf>\n" +
-//                "   <fone>(99) 9999-9999</fone>\n" +
-//                "   <celular>(43) 99620-9999</celular>\n" +
-//                "   <email>teste@teste.com</email>\n" +
-//                "   <emailNfe>testeNfe@mail.com.br</emailNfe>\n" +
-//                "   <informacaoContato>Informações adicionais do contato</informacaoContato>\n" +
-//                "   <limiteCredito>0.00</limiteCredito>\n" +
-//                "   <site>http://www.teste.com.br</site>\n" +
-//                "</contato>";
-//
-//        // Cria um mock do serviço que retorna null
-//        when(contatosService.createContact(xml)).thenReturn(null);
-//
-//        // Chama o método sendo testado
-//        assertThrows(ContatoCadastroException.class, () -> {
-//            contatoController.createContact(xml);
-//        });
-//
-//        // Verifica se o serviço foi chamado
-//        verify(contatosService).createContact(xml);
-//    }
 
+        JsonRequest jsonRequest = new JsonRequest();
+        RetornoRequest retornoRequest = new RetornoRequest();
+
+        retornoRequest.setContatos(null);
+        retornoRequest.setErros(null);
+        jsonRequest.setRetorno(retornoRequest);
+
+        when(contatosService.createContact(xml)).thenReturn(jsonRequest);
+
+        assertThrows(ApiContatoException.class, () -> contatoController.createContact(xml));
+    }
+
+    /**
+     * TESTE CONTROLLER - PUT "CADASTRA UM NOVO CONTATO UTILIZANDO XML".
+     */
     @Test
     void testUpdateContact() {
         // Cria o XML de categoria a ser enviado na requisição
@@ -425,4 +438,67 @@ class ContatoControllerTest {
         JsonRequest result = contatoController.updateContact(xml,cpf_cnpj).getBody();
         assertEquals(resposta, result);
     }
+
+    /**
+     * TESTE CONTROLLER - PUT "FORÇA O METODO DE CADASTRO DE CONTATO A ENTRAR NO EXCEPTION".
+     */
+    @Test
+    void testUpdateContactException() {
+        String cpf_cnpj = "000.000.000-00";
+        String xml = "<contato>\n" +
+                "   <nome>Eduardo</nome>\n" +
+                "   <fantasia>RMS</fantasia>\n" +
+                "   <tipoPessoa>F</tipoPessoa>\n" +
+                "   <contribuinte>9</contribuinte> \n" +
+                "   <cpf_cnpj>000.000.000-00</cpf_cnpj>\n" +
+                "   <ie_rg>00.000.000-0</ie_rg>\n" +
+                "   <endereco>Rua das Oliveirass</endereco>\n" +
+                "   <numero>1200</numero>\n" +
+                "   <complemento>503</complemento>\n" +
+                "   <bairro>Centro</bairro>\n" +
+                "   <cep>00000-000</cep>\n" +
+                "   <cidade>Londrina</cidade>\n" +
+                "   <uf>PR</uf>\n" +
+                "   <fone>(99) 9999-9999</fone>\n" +
+                "   <celular>(43) 99620-9999</celular>\n" +
+                "   <email>teste@teste.com</email>\n" +
+                "   <emailNfe>testeNfe@mail.com.br</emailNfe>\n" +
+                "   <informacaoContato>Informações adicionais do contato</informacaoContato>\n" +
+                "   <limiteCredito>0.00</limiteCredito>\n" +
+                "   <site>http://www.teste.com.br</site>\n" +
+                "</contato>";
+
+
+        JsonRequest jsonRequest = new JsonRequest();
+        RetornoRequest retornoRequest = new RetornoRequest();
+
+        retornoRequest.setContatos(null);
+        retornoRequest.setErros(null);
+        jsonRequest.setRetorno(retornoRequest);
+
+        when(contatosService.updateContact(xml, cpf_cnpj)).thenReturn(jsonRequest);
+
+        assertThrows(ApiContatoException.class, () -> contatoController.updateContact(xml, cpf_cnpj));
+    }
+
+    /**
+     * TESTE CONTROLLER - GET "TESTE DO ERROS MAPEADOS QUE RETORNA DA API EXTERNA".
+     */
+    @Test
+    void testErroResponse() throws JsonProcessingException {
+        int codigoErro = 404;
+        String mensagemErro = "A informação desejada não foi encontrada.";
+
+        DetalhesErroResponse detalhesErro = new DetalhesErroResponse(codigoErro, mensagemErro);
+        ErroResponse erroResponse = new ErroResponse();
+        erroResponse.setErro(detalhesErro);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(erroResponse);
+
+        ErroResponse erroResponseDeserialized = objectMapper.readValue(json, ErroResponse.class);
+
+        assertEquals(erroResponse, erroResponseDeserialized);
+    }
+
 }
