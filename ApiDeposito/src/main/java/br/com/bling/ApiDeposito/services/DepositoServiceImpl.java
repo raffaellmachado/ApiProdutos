@@ -111,28 +111,6 @@ public class DepositoServiceImpl implements DepositoService {
             throw new ApiDepositoException("Erro ao chamar API", e);
         }
     }
-//    @Override
-//    public RespostaRequest createDeposit(String xml) throws ApiDepositoException  {
-//        try {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_XML);
-//
-//            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-//            String url = apiBaseUrl + "/deposito/json/" + apiKey + apiXmlParam + xml;
-//
-//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
-//
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            RespostaRequest resposta = objectMapper.readValue(response.getBody(), RespostaRequest.class);
-//
-//            return resposta;
-//
-//        } catch (JsonProcessingException e) {
-//            throw new ApiDepositoException("Erro ao processar JSON");
-//        } catch (RestClientException e) {
-//            throw new ApiDepositoException("Erro ao chamar API");
-//        }
-//    }
 
     /**
      * PUT "ATUALIZAR UMA NOVA CATEGORIA UTILIZANDO XML".
@@ -163,25 +141,4 @@ public class DepositoServiceImpl implements DepositoService {
             throw new ApiDepositoException("Erro ao chamar API", e);
         }
     }
-//    @Override
-//    public RespostaRequest updateDeposit(String xml, String idDeposito) throws ApiDepositoException {
-//        try {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_XML);
-//
-//            HttpEntity<String> request = new HttpEntity<>(xml, headers);
-//            String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apiKey + apiXmlParam + xml;
-//            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
-//
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            RespostaRequest response = objectMapper.readValue(responseEntity.getBody(), RespostaRequest.class);
-//
-//            return response;
-//
-//        } catch (JsonProcessingException e) {
-//            throw new ApiDepositoException("Erro ao processar JSON");
-//        } catch (RestClientException e) {
-//            throw new ApiDepositoException("Erro ao chamar API");
-//        }
-//    }
 }

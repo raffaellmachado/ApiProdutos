@@ -35,7 +35,8 @@ class DepositoServiceImplTest {
     void testGetAllDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\": {\"depositos\": [{\"deposito\": {\"id\": \"01\", \"situacao\": \"Deposito 1\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}, {\"deposito\": {\"id\": \"02\", \"situacao\": \"Deposito 2\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
-        Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
         JsonResponse result = depositoServiceImpl.getAllDeposit();
@@ -62,7 +63,8 @@ class DepositoServiceImplTest {
     void testGetDepositByIdDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"007\",\"descricao\":\"Desfazimento\",\"situacao\":\"Inativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
-        Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
         JsonResponse result = depositoServiceImpl.getDepositByIdDeposit("idDeposito");

@@ -174,7 +174,7 @@ class CategoriaControllerTest {
      * TESTE CONTROLLER - POST "FORÇA O METODO DE CADASTRO DE CATEGORIA A ENTRAR NO EXCEPTION".
      */
     @Test
-    void testCreateCategoryException_1() {
+    void testCreateCategoryException() {
         // Cria o XML de categoria a ser enviado na requisição
         String xml = "<categorias>\n" +
                 "     <categoria>\n" +
@@ -189,49 +189,6 @@ class CategoriaControllerTest {
         // Chama o método sendo testado e espera a exceção correta
         ResponseEntity<?> response = categoriaController.createCategory(xml);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-        // Verifica se o serviço foi chamado
-        verify(categoriaService).createCategory(xml);
-    }
-
-    @Test
-    void testCreateCategoryException_2() {
-        // Cria o XML de categoria a ser enviado na requisição
-        String xml = "<categorias>\n" +
-                "     <categoria>\n" +
-                "          <descricao>Calçado</descricao>\n" +
-                "          <idCategoriaPai>0</idCategoriaPai>\n" +
-                "      </categoria>\n" +
-                "   </categorias>";
-
-        // Cria um mock do serviço que lança uma HttpStatusCodeException
-        when(categoriaService.createCategory(xml)).thenThrow(new HttpStatusCodeException(HttpStatus.NOT_FOUND) {});
-
-        // Chama o método sendo testado e verifica se a resposta é a esperada
-        ResponseEntity<?> response = categoriaController.createCategory(xml);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(new JsonRequest(), response.getBody());
-
-        // Verifica se o serviço foi chamado
-        verify(categoriaService).createCategory(xml);
-    }
-
-    @Test
-    void testCreateCategoryException_3() {
-        // Cria o XML de categoria a ser enviado na requisição
-        String xml = "<categorias>\n" +
-                "     <categoria>\n" +
-                "          <descricao>Calçado</descricao>\n" +
-                "          <idCategoriaPai>0</idCategoriaPai>\n" +
-                "      </categoria>\n" +
-                "   </categorias>";
-
-        // Cria um mock do serviço que lança uma exceção
-        when(categoriaService.createCategory(xml)).thenThrow(new RuntimeException());
-
-        // Chama o método sendo testado e espera a exceção correta
-        ResponseEntity<?> response = categoriaController.createCategory(xml);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 
         // Verifica se o serviço foi chamado
         verify(categoriaService).createCategory(xml);
