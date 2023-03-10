@@ -62,7 +62,7 @@ public class DepositoServiceImpl implements DepositoService {
      * GET "BUSCAR UM DEPOSITO PELO CÒDIGO IDDEPOSITO".
      */
     @Override
-    public JsonResponse getDepositByIdDeposit(String idDeposito) throws ApiDepositoException {
+    public JsonResponse getDepositById(String idDeposito) throws ApiDepositoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);

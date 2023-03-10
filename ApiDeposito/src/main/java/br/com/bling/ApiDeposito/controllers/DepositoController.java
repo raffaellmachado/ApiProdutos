@@ -30,7 +30,7 @@ public class DepositoController {
      */
     @GetMapping("/depositos")
     @ApiOperation(value = "Retorna uma lista de depositos")
-    public ResponseEntity<JsonResponse> getCategoria() {
+    public ResponseEntity<JsonResponse> getAllDeposit() {
         try {
             JsonResponse request = depositoService.getAllDeposit();
 
@@ -63,9 +63,9 @@ public class DepositoController {
      */
     @GetMapping("/deposito/{idDeposito}")
     @ApiOperation(value = "Retorna um deposito pelo idDeposito")
-    public ResponseEntity<JsonResponse> getDepositByIdDeposit(@PathVariable String idDeposito) {
+    public ResponseEntity<JsonResponse> getDepositById(@PathVariable String idDeposito) {
         try {
-            JsonResponse request = depositoService.getDepositByIdDeposit(idDeposito);
+            JsonResponse request = depositoService.getDepositById(idDeposito);
 
             if (request.retorno.depositos == null && request.retorno.erros == null) {
                 throw new DepositoIdDepositoException("Contato com o número de CPF/CNPJ: " + idDeposito + " não encontrado.");

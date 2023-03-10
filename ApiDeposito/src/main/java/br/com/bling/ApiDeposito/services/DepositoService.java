@@ -10,7 +10,7 @@ public interface DepositoService {
 
     public JsonResponse getAllDeposit();
 
-    public JsonResponse getDepositByIdDeposit(@PathVariable("idDeposito") String idDeposito);
+    public JsonResponse getDepositById(@PathVariable("idDeposito") String idDeposito);
 
     public JsonRequest createDeposit(@RequestBody String xmlDeposito);
 

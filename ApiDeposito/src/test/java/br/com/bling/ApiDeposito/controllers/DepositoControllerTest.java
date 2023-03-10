@@ -6,9 +6,12 @@ import br.com.bling.ApiDeposito.controllers.request.RetornoRequest;
 import br.com.bling.ApiDeposito.controllers.response.DepositoResponse;
 import br.com.bling.ApiDeposito.controllers.response.JsonResponse;
 import br.com.bling.ApiDeposito.controllers.response.RetornoResponse;
-import br.com.bling.ApiDeposito.exceptions.DepositoIdDepositoException;
-import br.com.bling.ApiDeposito.exceptions.DepositoListaException;
+import br.com.bling.ApiDeposito.exceptions.ApiDepositoException;
+import br.com.bling.ApiDeposito.exceptions.DetalhesErroResponse;
+import br.com.bling.ApiDeposito.exceptions.ErroResponse;
 import br.com.bling.ApiDeposito.services.DepositoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,9 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import java.util.ArrayList;
 
@@ -74,7 +74,7 @@ class DepositoControllerTest {
         when(depositoService.getAllDeposit()).thenReturn(resposta);
 
         // Chama o método sendo testado
-        JsonResponse result = depositoController.getCategoria().getBody();
+        JsonResponse result = depositoController.getAllDeposit().getBody();
 
         // Verifica se o serviço simulado foi chamado corretamente e se o resultado foi o esperado
         verify(depositoService).getAllDeposit();
@@ -84,25 +84,25 @@ class DepositoControllerTest {
     /**
      * TESTE CONTROLLER - GET "FORÇA O METODO BUSCAR A LISTA DE DEPOSITOS A ENTRAR NO EXCEPTION".
      */
-//    @Test
-//    void testGetAllDepositException() {
-//        String idProdutoFornecedor = "123";
-//        when(depositoService.getAllDeposit()).thenReturn(null);
-//
-//        // Chama o método sendo testado
-//        assertThrows(DepositoListaException.class, () -> {
-//            depositoController.getCategoria();
-//        });
-//
-//        // Verifica se o serviço foi chamado
-//        verify(depositoService).getAllDeposit();
-//    }
+    @Test
+    void testGetAllDepositException() {
+        JsonResponse jsonResponse = new JsonResponse();
+        RetornoResponse retornoResponse = new RetornoResponse();
+
+        retornoResponse.setDepositos(null);
+        retornoResponse.setErros(null);
+        jsonResponse.setRetorno(retornoResponse);
+
+        when(depositoService.getAllDeposit()).thenReturn(jsonResponse);
+
+        assertThrows(ApiDepositoException.class, () -> depositoController.getAllDeposit());
+    }
 
     /**
      * TESTE CONTROLLER - GET "BUSCA DEPOSITO PELO IDDEPOSITO".
      */
     @Test
-    void testGetDepositByIdDeposit() {
+    void testGetDepositById() {
         String idDeposito = "783698524";
 
         JsonResponse resposta = new JsonResponse();
@@ -122,28 +122,29 @@ class DepositoControllerTest {
         retorno.setDepositos(depositos);
         resposta.setRetorno(retorno);
 
-        Mockito.when(depositoService.getDepositByIdDeposit(idDeposito)).thenReturn(resposta);
+        Mockito.when(depositoService.getDepositById(idDeposito)).thenReturn(resposta);
 
-        JsonResponse result = depositoController.getDepositByIdDeposit(idDeposito).getBody();
+        JsonResponse result = depositoController.getDepositById(idDeposito).getBody();
         Assertions.assertEquals(resposta, result);
     }
 
     /**
      * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA DEPOSITO PELO IDDEPOSITO A ENTRAR NO EXCEPTION".
      */
-//    @Test
-//    void testGetDepositByIdDepositException() {
-//        String idDeposito = "783698524";
-//        when(depositoService.getDepositByIdDeposit(idDeposito)).thenReturn(null);
-//
-//        // Chama o método sendo testado
-//        assertThrows(DepositoIdDepositoException.class, () -> {
-//            depositoController.getDepositByIdDeposit(idDeposito);
-//        });
-//
-//        // Verifica se o serviço foi chamado
-//        verify(depositoService).getDepositByIdDeposit(idDeposito);
-//    }
+    @Test
+    void testGetDepositByIdException() {
+        String idDeposito = "783698524";
+        JsonResponse jsonResponse = new JsonResponse();
+        RetornoResponse retornoResponse = new RetornoResponse();
+
+        retornoResponse.setDepositos(null);
+        retornoResponse.setErros(null);
+        jsonResponse.setRetorno(retornoResponse);
+
+        when(depositoService.getDepositById(idDeposito)).thenReturn(jsonResponse);
+
+        assertThrows(ApiDepositoException.class, () -> depositoController.getDepositById(idDeposito));
+    }
 
     /**
      * TESTE CONTROLLER - POST "CADASTRA UMA NOVO DEPOSITO UTILIZANDO XML/JSON".
@@ -189,25 +190,27 @@ class DepositoControllerTest {
     /**
      * TESTE CONTROLLER - POST "FORÇA O METODO DE DEPOSITO A ENTRAR NO EXCEPTION".
      */
-//    @Test
-//    void testCreateDepositException() {
-//        // Cria o XML de deposito a ser enviado na requisição
-//        String xml = "<depositos>\n" +
-//                "     <deposito>\n" +
-//                "          <descricao>Deposito 1</descricao>\n" +
-//                "      </deposito>\n" +
-//                "   </depositos>";
-//
-//        // Cria um mock do serviço que retorna null
-//        when(depositoService.createDeposit(xml)).thenReturn(null);
-//
-//        // Chama o método sendo testado e espera a exceção correta
-//        ResponseEntity<?> response = depositoController.createDeposit(xml);
-//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-//
-//        // Verifica se o serviço foi chamado
-//        verify(depositoService).createDeposit(xml);
-//    }
+    @Test
+    void testCreateDepositException() {
+        // Cria o XML de categoria a ser enviado na requisição
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        JsonRequest jsonRequest = new JsonRequest();
+        RetornoRequest retornoRequest = new RetornoRequest();
+
+        retornoRequest.setDepositos(null);
+        retornoRequest.setErros(null);
+        jsonRequest.setRetorno(retornoRequest);
+
+        when(depositoService.createDeposit(xml)).thenReturn(jsonRequest);
+
+        assertThrows(ApiDepositoException.class, () -> depositoController.createDeposit(xml));
+    }
 
     /**
      * TESTE CONTROLLER - PUT "ATUALIZA UM DEPOSITO UTILIZANDO XML/JSON".
@@ -250,24 +253,45 @@ class DepositoControllerTest {
     /**
      * TESTE CONTROLLER - PUT "FORÇA O METODO DE ATUALIZAR DEPOSITO A ENTRAR NO EXCEPTION".
      */
-//    @Test
-//    void testUpdateDepositException() {
-//        String idCategoria = "159357";
-//        String xml = "<categorias>\n" +
-//                "     <categoria>\n" +
-//                "          <descricao>Calçado</descricao>\n" +
-//                "          <idCategoriaPai>0</idCategoriaPai>\n" +
-//                "      </categoria>\n" +
-//                "   </categorias>";
-//
-//        // Cria um mock do serviço que retorna null
-//        when(depositoService.updateDeposit(xml, idCategoria)).thenReturn(null);
-//
-//        // Chama o método sendo testado e espera a exceção correta
-//        ResponseEntity<?> response = depositoController.updateDeposit(xml, idCategoria);
-//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-//
-//        // Verifica se o serviço foi chamado
-//        verify(depositoService).updateDeposit(xml, idCategoria);
-//    }
+    @Test
+    void testUpdateDepositException() {
+        String idCategoria = "159357";
+        String xml = "<categorias>\n" +
+                "     <categoria>\n" +
+                "          <descricao>Calçado</descricao>\n" +
+                "          <idCategoriaPai>0</idCategoriaPai>\n" +
+                "      </categoria>\n" +
+                "   </categorias>";
+
+        JsonRequest jsonRequest = new JsonRequest();
+        RetornoRequest retornoRequest = new RetornoRequest();
+
+        retornoRequest.setDepositos(null);
+        retornoRequest.setErros(null);
+        jsonRequest.setRetorno(retornoRequest);
+
+        when(depositoService.updateDeposit(xml, idCategoria)).thenReturn(jsonRequest);
+
+        assertThrows(ApiDepositoException.class, () -> depositoController.updateDeposit(xml, idCategoria));
+    }
+
+    /**
+     * TESTE CONTROLLER - GET "TESTE DO ERROS MAPEADOS QUE RETORNA DA API EXTERNA".
+     */
+    @Test
+    void testErroResponse() throws JsonProcessingException {
+        int codigoErro = 404;
+        String mensagemErro = "A informação desejada não foi encontrada.";
+
+        DetalhesErroResponse detalhesErro = new DetalhesErroResponse(codigoErro, mensagemErro);
+        ErroResponse erroResponse = new ErroResponse();
+        erroResponse.setErro(detalhesErro);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(erroResponse);
+
+        ErroResponse erroResponseDeserialized = objectMapper.readValue(json, ErroResponse.class);
+
+        assertEquals(erroResponse, erroResponseDeserialized);
+    }
 }

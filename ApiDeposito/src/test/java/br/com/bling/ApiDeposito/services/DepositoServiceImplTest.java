@@ -67,7 +67,7 @@ class DepositoServiceImplTest {
         Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
-        JsonResponse result = depositoServiceImpl.getDepositByIdDeposit("idDeposito");
+        JsonResponse result = depositoServiceImpl.getDepositById("idDeposito");
 
         // Verifica se a categoria foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals("007", result.getRetorno().getDepositos().get(0).getDeposito().getId());
