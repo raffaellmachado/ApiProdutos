@@ -34,7 +34,8 @@ class ProdutoFornecedorServiceImplTest {
     void testGetAllProducts() {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"produtosfornecedores\":[{\"produtofornecedores\":{\"idProduto\":16023092137,\"fornecedores\":[{\"produtoFornecedor\":{\"idProdutoFornecedor\":\"478963346\",\"idFornecedor\":\"0\",\"produtoDescricao\":\"Descrição do fornecedor\",\"produtoCodigo\":\"123\",\"precoCompra\":\"0.0000000000\",\"precoCusto\":\"1.2300000000\",\"produtoGarantia\":\"4\",\"padrao\":\"1\"}}]}}]}}";
-        Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), ArgumentMatchers.any(HttpMethod.class), ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
         JsonResponse result = produtoFornecedorServiceImpl.getAllProducts();
@@ -61,7 +62,8 @@ class ProdutoFornecedorServiceImplTest {
     void testGetProducId() {
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"produtosfornecedores\":[{\"produtofornecedores\":{\"idProduto\":16023092137,\"fornecedores\":[{\"produtoFornecedor\":{\"idProdutoFornecedor\":\"478963346\",\"idFornecedor\":\"0\",\"produtoDescricao\":\"Descrição do fornecedor\",\"produtoCodigo\":\"123\",\"precoCompra\":\"0.0000000000\",\"precoCusto\":\"1.2300000000\",\"produtoGarantia\":\"4\",\"padrao\":\"1\"}}]}}]}}";
-        Mockito.when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
+        Mockito.when(restTemplate.exchange(anyString(), ArgumentMatchers.any(HttpMethod.class), ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaResponse
         JsonResponse result = produtoFornecedorServiceImpl.getProducId("idProdutoFornecedor");
@@ -104,7 +106,6 @@ class ProdutoFornecedorServiceImplTest {
 
         System.out.println("POST: " + result);
     }
-
 
     @Test
     void testUpdateProduct() {
