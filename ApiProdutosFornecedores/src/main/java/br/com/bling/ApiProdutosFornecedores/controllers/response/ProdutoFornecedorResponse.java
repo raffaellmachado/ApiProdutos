@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProdutoFornecedor2Response {
+public class ProdutoFornecedorResponse {
 
     @JsonProperty("idProdutoFornecedor")
     public String idProdutoFornecedor;

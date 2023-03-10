@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class FornecedoreResponse {
 
     @JsonProperty("produtoFornecedor")
-    public ProdutoFornecedor2Response produtoFornecedor;
+    public ProdutoFornecedorResponse produtoFornecedor;
 }

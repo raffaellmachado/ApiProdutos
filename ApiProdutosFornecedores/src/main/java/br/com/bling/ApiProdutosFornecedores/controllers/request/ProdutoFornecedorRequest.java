@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProdutoFornecedor2Request {
+public class ProdutoFornecedorRequest {
 
     @JsonProperty("id")
     public String id;

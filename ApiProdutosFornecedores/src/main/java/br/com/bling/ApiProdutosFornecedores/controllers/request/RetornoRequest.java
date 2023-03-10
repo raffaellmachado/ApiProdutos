@@ -32,6 +32,6 @@ public class RetornoRequest {
     public static class Produtosfornecedore {
 
         @JsonProperty("produtoFornecedor")
-        public ProdutoFornecedor2Request produtoFornecedor;
+        public ProdutoFornecedorRequest produtoFornecedor;
     }
 }
