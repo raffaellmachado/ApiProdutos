@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
+import java.time.Instant;
 import java.util.ArrayList;
 
 
@@ -40,8 +42,8 @@ public class ContatoController {
         try {
             JsonResponse request = contatosService.getAllContacts();
 
-            if (request.retorno.contatos == null || request.getRetorno() == null) {
-                throw new ContatoListaException("Nenhum contato foi localizado.", null);
+            if (request.retorno.contatos == null && request.retorno.erros == null) {
+                throw new ContatoListaException("Nenhum contato foi localizado.");
             }
 
             for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
@@ -80,13 +82,8 @@ public class ContatoController {
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
 
-        } catch (ApiContatoException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Erro ao cadastrar novo contato: " + e.getMessage()));
-        } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(new JsonResponse());
         } catch (Exception e) {
-            JsonResponse JsonResponse = new JsonResponse("Ocorreu um erro ao processar sua solicitação: " + e.getMessage());;
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(JsonResponse);
+            throw new ApiContatoException("Houve algum erro sistemico, tente novamente", e);
         }
     }
 
@@ -99,53 +96,50 @@ public class ContatoController {
         try {
             JsonResponse request = contatosService.getContactsById(cpf_cnpj);
 
-            if (request.retorno.contatos == null || request.getRetorno() == null) {
+            if (request.retorno.contatos == null && request.retorno.erros == null) {
                 throw new ContatoIdException("Contato com o número de CPF/CNPJ: " + cpf_cnpj + " não encontrado.", null);
             }
 
-            for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
-                System.out.println("-----------------------------------------------------------------------------------");
-                System.out.println("Id: " + listaContatos.contato.id);
-                System.out.println("codigo: " + listaContatos.contato.codigo);
-                System.out.println("nome: " + listaContatos.contato.nome);
-                System.out.println("fantasia: " + listaContatos.contato.fantasia);
-                System.out.println("tipo: " + listaContatos.contato.tipo);
-                System.out.println("cnpj: " + listaContatos.contato.cnpj);
-                System.out.println("cpf_cnpj: " + listaContatos.contato.cpf_cnpj);
-                System.out.println("ie_rg: " + listaContatos.contato.ie_rg);
-                System.out.println("endereco: " + listaContatos.contato.endereco);
-                System.out.println("numero: " + listaContatos.contato.numero);
-                System.out.println("bairro: " + listaContatos.contato.bairro);
-                System.out.println("cep: " + listaContatos.contato.cep);
-                System.out.println("cidade: " + listaContatos.contato.cidade);
-                System.out.println("complemento: " + listaContatos.contato.complemento);
-                System.out.println("uf: " + listaContatos.contato.uf);
-                System.out.println("fone: " + listaContatos.contato.fone);
-                System.out.println("email: " + listaContatos.contato.email);
-                System.out.println("situacao: " + listaContatos.contato.situacao);
-                System.out.println("contribuinte: " + listaContatos.contato.contribuinte);
-                System.out.println("site: " + listaContatos.contato.site);
-                System.out.println("celular: " + listaContatos.contato.celular);
-                System.out.println("dataAlteracao: " + listaContatos.contato.dataAlteracao);
-                System.out.println("dataInclusao: " + listaContatos.contato.dataInclusao);
-                System.out.println("sexo: " + listaContatos.contato.sexo);
-                System.out.println("clienteDesde: " + listaContatos.contato.clienteDesde);
-                System.out.println("limiteCredito: " + listaContatos.contato.limiteCredito);
-                System.out.println("dataNascimento: " + listaContatos.contato.dataNascimento);
-                System.out.println("descricao: " + listaContatos.contato.getTiposContato().get(0).tipoContato.descricao);
+            if (request.retorno.contatos != null) {
+                for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
+                    System.out.println("-----------------------------------------------------------------------------------");
+                    System.out.println("Id: " + listaContatos.contato.id);
+                    System.out.println("codigo: " + listaContatos.contato.codigo);
+                    System.out.println("nome: " + listaContatos.contato.nome);
+                    System.out.println("fantasia: " + listaContatos.contato.fantasia);
+                    System.out.println("tipo: " + listaContatos.contato.tipo);
+                    System.out.println("cnpj: " + listaContatos.contato.cnpj);
+                    System.out.println("cpf_cnpj: " + listaContatos.contato.cpf_cnpj);
+                    System.out.println("ie_rg: " + listaContatos.contato.ie_rg);
+                    System.out.println("endereco: " + listaContatos.contato.endereco);
+                    System.out.println("numero: " + listaContatos.contato.numero);
+                    System.out.println("bairro: " + listaContatos.contato.bairro);
+                    System.out.println("cep: " + listaContatos.contato.cep);
+                    System.out.println("cidade: " + listaContatos.contato.cidade);
+                    System.out.println("complemento: " + listaContatos.contato.complemento);
+                    System.out.println("uf: " + listaContatos.contato.uf);
+                    System.out.println("fone: " + listaContatos.contato.fone);
+                    System.out.println("email: " + listaContatos.contato.email);
+                    System.out.println("situacao: " + listaContatos.contato.situacao);
+                    System.out.println("contribuinte: " + listaContatos.contato.contribuinte);
+                    System.out.println("site: " + listaContatos.contato.site);
+                    System.out.println("celular: " + listaContatos.contato.celular);
+                    System.out.println("dataAlteracao: " + listaContatos.contato.dataAlteracao);
+                    System.out.println("dataInclusao: " + listaContatos.contato.dataInclusao);
+                    System.out.println("sexo: " + listaContatos.contato.sexo);
+                    System.out.println("clienteDesde: " + listaContatos.contato.clienteDesde);
+                    System.out.println("limiteCredito: " + listaContatos.contato.limiteCredito);
+                    System.out.println("dataNascimento: " + listaContatos.contato.dataNascimento);
+                    System.out.println("descricao: " + listaContatos.contato.getTiposContato().get(0).tipoContato.descricao);
 
+                }
             }
 
             System.out.println("Retorno: " + request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
-        } catch (ApiContatoException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Erro ao cadastrar novo contato: " + e.getMessage()));
-        } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(new JsonResponse());
         } catch (Exception e) {
-            JsonResponse JsonResponse = new JsonResponse("Ocorreu um erro ao processar sua solicitação: " + e.getMessage());;
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(JsonResponse);
+            throw new ApiContatoException("Houve algum erro sistemico, tente novamente", e);
         }
     }
 
@@ -158,22 +152,17 @@ public class ContatoController {
         try {
             JsonRequest request = contatosService.createContact(xml);
 
-            if (request.retorno.contatos == null || request.getRetorno() == null) {
-                throw new ContatoCadastroException("Cadastro não efetuado, revise os campos e tente novamente!", null);
+            if (request.retorno.contatos == null && request.retorno.erros == null) {
+                throw new ContatoCadastroException("Cadastro não efetuado, revise os campos e tente novamente!");
             }
+
             System.out.println("Retorno: " + request);
 
             return ResponseEntity.ok(request);
 
-        } catch (ApiContatoException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonRequest("Erro ao cadastrar novo contato: " + e.getMessage()));
-        } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            JsonRequest jsonRequest = new JsonRequest("Ocorreu um erro ao processar sua solicitação: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonRequest);
+            throw new ApiContatoException("Houve algum erro sistemico, tente novamente", e);
         }
-
     }
 
     /**
@@ -185,7 +174,7 @@ public class ContatoController {
         try {
             JsonRequest request = contatosService.updateContact(xmlContato, cpf_cnpj);
 
-            if (request.retorno.contatos == null || request.getRetorno() == null) {
+            if (request.retorno.contatos == null && request.retorno.erros == null) {
                 throw new ContatoAtualizarException("Não foi possivel atualizar o contato.", null);
             }
 
@@ -193,13 +182,8 @@ public class ContatoController {
 
             return ResponseEntity.ok(request);
 
-        } catch (ApiContatoException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonRequest("Erro ao cadastrar novo contato: " + e.getMessage()));
-        } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(new JsonRequest());
         } catch (Exception e) {
-            JsonRequest jsonRequest = new JsonRequest("Ocorreu um erro ao processar sua solicitação: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonRequest);
+            throw new ApiContatoException("Houve algum erro sistemico, tente novamente", e);
         }
     }
 }

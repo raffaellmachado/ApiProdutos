@@ -1,7 +1,7 @@
 package br.com.bling.ApiCategoria.exceptions;
 
 public class CategoriaIdCategoriaException extends RuntimeException {
-    public CategoriaIdCategoriaException(String idCategoria) {
-        super("Produto com código " + idCategoria + " não localizado.");
+    public CategoriaIdCategoriaException(String message) {
+        super(message);
     }
 }

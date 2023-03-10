@@ -26,10 +26,10 @@ public class ApplicationCategoriaExceptionHandler extends ResponseEntityExceptio
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-//    @ExceptionHandler(CategoriaCadastroException.class)
-//    public ResponseEntity<String> handleCategoriaCadastroException(CategoriaCadastroException ex) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-//    }
+    @ExceptionHandler(CategoriaCadastroException.class)
+    public ResponseEntity<String> handleCategoriaCadastroException(CategoriaCadastroException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<Object> handleNullPointerException(NullPointerException ex) {

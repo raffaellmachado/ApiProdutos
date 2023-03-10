@@ -2,10 +2,7 @@ package br.com.bling.ApiContatos.controllers;
 
 import br.com.bling.ApiContatos.controllers.request.*;
 import br.com.bling.ApiContatos.controllers.response.*;
-import br.com.bling.ApiContatos.exceptions.ApiContatoException;
 import br.com.bling.ApiContatos.exceptions.ContatoCadastroException;
-import br.com.bling.ApiContatos.exceptions.ContatoIdException;
-import br.com.bling.ApiContatos.exceptions.ContatoListaException;
 import br.com.bling.ApiContatos.service.ContatoService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,12 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
+
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -217,7 +214,7 @@ class ContatoControllerTest {
     }
 
     /**
-     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA CONTATO PELO CPF_CNPJ A ENTRAR NO EXCEPTION".
+     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCA CONTATO PELO CPF_CNPJ A ENTRAR NO EXCEPTIONv".
      */
 //    @Test
 //    public void testGetContactsByIdThrowsException() throws Exception {
@@ -231,7 +228,7 @@ class ContatoControllerTest {
 //        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 //        assertEquals("Ocorreu um erro ao processar sua solicitação: Erro ao chamar API", response.getBody().getMsg());
 //    }
-//
+
 
 
 
@@ -320,6 +317,7 @@ class ContatoControllerTest {
     /**
      * TESTE CONTROLLER - POST "FORÇA O METODO DE CADASTRO DE CONTATO A ENTRAR NO EXCEPTION".
      */
+
 //    @Test
 //    void testCreateContactException() {
 //        // Cria o XML de categoria a ser enviado na requisição

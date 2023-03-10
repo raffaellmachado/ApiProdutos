@@ -14,16 +14,4 @@ public class JsonResponse {
 
 	@JsonProperty("retorno")
 	public RetornoResponse retorno;
-
-	@JsonProperty("success")
-	private String success;
-
-	@JsonProperty("msg")
-	private String msg;
-
-	public JsonResponse(String msg) {
-		this.msg = msg;
-	}
-
-
 }

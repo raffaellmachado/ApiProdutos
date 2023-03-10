@@ -1,22 +1,17 @@
 package br.com.bling.ApiCategoria.controllers;
 
 import br.com.bling.ApiCategoria.controllers.request.JsonRequest;
-import br.com.bling.ApiCategoria.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import br.com.bling.ApiCategoria.controllers.response.RetornoResponse;
-import br.com.bling.ApiCategoria.exceptions.ApiCategoriaException;
-import br.com.bling.ApiCategoria.exceptions.CategoriaIdCategoriaException;
-import br.com.bling.ApiCategoria.exceptions.CategoriaListaException;
+import br.com.bling.ApiCategoria.exceptions.*;
 import br.com.bling.ApiCategoria.service.CategoriaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import javax.validation.Valid;
 
@@ -41,16 +36,18 @@ public class CategoriaController {
         try {
             JsonResponse request = categoriaService.getAllCategory();
 
-            if (request.retorno.getCategorias() == null || request.getRetorno() == null) {
-                throw new ApiCategoriaException("Não foi possível localizar a lista de categorias");
+            if (request.retorno.categorias == null && request.retorno.erros == null) {
+                throw new CategoriaListaException("Não foi possível localizar a lista de categorias");
             }
 
-            for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
-                System.out.println("-------------------------------------------------------------------");
-                System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-                System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-                System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-                System.out.println("-------------------------------------------------------------------");
+            if (request.retorno.categorias != null) {
+                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+                    System.out.println("-------------------------------------------------------------------");
+                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+                    System.out.println("-------------------------------------------------------------------");
+                }
             }
 
             System.out.println(request);
@@ -58,7 +55,7 @@ public class CategoriaController {
             return ResponseEntity.ok(request);
 
         } catch (Exception e) {
-            throw new CategoriaListaException();
+            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
         }
     }
 
@@ -71,37 +68,40 @@ public class CategoriaController {
         try {
             JsonResponse request = categoriaService.getCategoryByIdCategoria(idCategoria);
 
-            if (request.retorno.categorias == null || request.getRetorno() == null) {
-                throw new ApiCategoriaException("Não foi possível localizar a categoria pelo idCategoria");
+            if (request.retorno.categorias == null && request.retorno.erros == null) {
+                throw new CategoriaIdCategoriaException("Contato com o número de CPF/CNPJ: " + idCategoria + " não encontrado.");
             }
-
-            for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
-                System.out.println("-------------------------------------------------------------------");
-                System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-                System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-                System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-                System.out.println("-------------------------------------------------------------------");
+            if (request.retorno.categorias != null) {
+                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+                    System.out.println("-------------------------------------------------------------------");
+                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+                    System.out.println("-------------------------------------------------------------------");
+                }
             }
 
             System.out.println(request);
 
             return ResponseEntity.ok(request);
+
         } catch (Exception e) {
-            throw new CategoriaIdCategoriaException(idCategoria);
+            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
         }
     }
+
 
     /**
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public ResponseEntity<?> createCategory(@RequestBody @Valid String xmlCategoria) {
+    public ResponseEntity<JsonRequest> createCategory(@RequestBody @Valid String xmlCategoria) {
         try {
-            Object request = categoriaService.createCategory(xmlCategoria);
+            JsonRequest request = categoriaService.createCategory(xmlCategoria);
 
-            if (request == null) {
-                throw new ApiCategoriaException("Não foi possível cadastrar a categoria");
+            if (request.retorno.categorias == null && request.retorno.erros == null) {
+                throw new CategoriaCadastroException("Cadastro não efetuado, revise os campos e tente novamente!");
             }
 
             System.out.println(request);
@@ -109,13 +109,7 @@ public class CategoriaController {
             return ResponseEntity.ok(request);
 
         } catch (Exception e) {
-            if (e instanceof ApiCategoriaException) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-            } else if (e instanceof HttpStatusCodeException) {
-                return ResponseEntity.status(((HttpStatusCodeException) e).getStatusCode()).body(new JsonRequest());
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
-            }
+            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
         }
     }
 
@@ -125,25 +119,19 @@ public class CategoriaController {
      */
     @PutMapping(path = "/atualizarcategoria/{idCategoria}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public ResponseEntity<?> updateCategory(@RequestBody String xmlCategoria, @PathVariable("idCategoria") String idCategoria) {
+    public ResponseEntity<JsonRequest> updateCategory(@RequestBody String xmlCategoria, @PathVariable("idCategoria") String idCategoria) {
         try {
-            Object request = categoriaService.updateCategory(xmlCategoria, idCategoria);
+            JsonRequest request = categoriaService.updateCategory(xmlCategoria, idCategoria);
 
-            if (request == null) {
-                throw new ApiCategoriaException("Não foi possível atualizar a categoria");
+            if (request.retorno.categorias == null && request.retorno.erros == null) {
+                throw new CategoriaAtualizarException("Não foi possível atualizar a categoria");
             }
             System.out.println(request);
 
             return ResponseEntity.ok(request);
 
         } catch (Exception e) {
-            if (e instanceof ApiCategoriaException) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-            } else if (e instanceof HttpStatusCodeException) {
-                return ResponseEntity.status(((HttpStatusCodeException) e).getStatusCode()).body(new JsonRequest());
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JsonRequest());
-            }
+            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
         }
     }
 }

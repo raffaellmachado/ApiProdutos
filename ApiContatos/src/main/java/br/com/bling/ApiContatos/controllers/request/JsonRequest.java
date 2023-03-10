@@ -15,13 +15,4 @@ public class JsonRequest {
     @JsonProperty("retorno")
     public RetornoRequest retorno;
 
-    @JsonProperty("success")
-    private String success;
-
-    @JsonProperty("msg")
-    private String msg;
-
-    public JsonRequest(String msg) {
-        this.msg = msg;
-    }
 }
