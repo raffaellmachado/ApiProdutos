@@ -1,7 +1,6 @@
 package br.com.bling.ApiContatos.controllers;
 
 import br.com.bling.ApiContatos.controllers.request.JsonRequest;
-import br.com.bling.ApiContatos.controllers.request.RetornoRequest;
 import br.com.bling.ApiContatos.controllers.response.JsonResponse;
 import br.com.bling.ApiContatos.controllers.response.RetornoResponse;
 import br.com.bling.ApiContatos.exceptions.*;
@@ -13,13 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
-import java.time.Instant;
-import java.util.ArrayList;
 
 
 @RestController
@@ -29,9 +23,7 @@ import java.util.ArrayList;
 public class ContatoController {
 
     @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
-    private ContatoService contatosService;
+    public ContatoService contatosService;
 
     /**
      * GET "BUSCAR LISTA DE CONTATOS".
@@ -43,7 +35,7 @@ public class ContatoController {
             JsonResponse request = contatosService.getAllContacts();
 
             if (request.retorno.contatos == null && request.retorno.erros == null) {
-                throw new ContatoListaException("Nenhum contato foi localizado.");
+                throw new ContatoListaException("Nenhum contato foi localizado.", null);
             }
 
             for (RetornoResponse.Contatos listaContatos : request.getRetorno().getContatos()) {
@@ -153,7 +145,7 @@ public class ContatoController {
             JsonRequest request = contatosService.createContact(xml);
 
             if (request.retorno.contatos == null && request.retorno.erros == null) {
-                throw new ContatoCadastroException("Cadastro não efetuado, revise os campos e tente novamente!");
+                throw new ContatoCadastroException("Cadastro não efetuado, revise os campos e tente novamente!", null);
             }
 
             System.out.println("Retorno: " + request);

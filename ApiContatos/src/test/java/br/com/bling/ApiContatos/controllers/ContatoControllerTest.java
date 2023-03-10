@@ -2,7 +2,6 @@ package br.com.bling.ApiContatos.controllers;
 
 import br.com.bling.ApiContatos.controllers.request.*;
 import br.com.bling.ApiContatos.controllers.response.*;
-import br.com.bling.ApiContatos.exceptions.ContatoCadastroException;
 import br.com.bling.ApiContatos.service.ContatoService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,15 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.*;
-
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -229,10 +224,6 @@ class ContatoControllerTest {
 //        assertEquals("Ocorreu um erro ao processar sua solicitação: Erro ao chamar API", response.getBody().getMsg());
 //    }
 
-
-
-
-
     /**
      * TESTE CONTROLLER - POST "CADASTRA UM NOVO CONTATO UTILIZANDO XML/JSON".
      */
@@ -355,7 +346,6 @@ class ContatoControllerTest {
 //        // Verifica se o serviço foi chamado
 //        verify(contatosService).createContact(xml);
 //    }
-
 
     @Test
     void testUpdateContact() {
