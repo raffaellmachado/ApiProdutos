@@ -36,10 +36,10 @@ public class ApplicationProdutoExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-//    @ExceptionHandler(ProdutoCadastroException.class)
-//    public ResponseEntity<String> handleProdutoCadastroException(ProdutoCadastroException ex) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-//    }
+    @ExceptionHandler(ProdutoCadastroException.class)
+    public ResponseEntity<String> handleProdutoCadastroException(ProdutoCadastroException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
 
     @ExceptionHandler(ProdutoAtualizarException.class)
     public ResponseEntity<String> handleProdutoAtualizarException(ProdutoAtualizarException ex) {
