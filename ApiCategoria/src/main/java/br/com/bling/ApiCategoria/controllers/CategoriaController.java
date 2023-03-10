@@ -124,7 +124,7 @@ public class CategoriaController {
             JsonRequest request = categoriaService.updateCategory(xmlCategoria, idCategoria);
 
             if (request.retorno.categorias == null && request.retorno.erros == null) {
-                throw new CategoriaAtualizarException("Não foi possível atualizar a categoria");
+                throw new CategoriaAtualizarException("Não foi possível atualizar a categoria pelo Id: " + idCategoria);
             }
             System.out.println(request);
 

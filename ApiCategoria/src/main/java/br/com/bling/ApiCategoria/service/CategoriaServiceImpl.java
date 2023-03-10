@@ -144,33 +144,4 @@ public class CategoriaServiceImpl implements CategoriaService {
             throw new ApiCategoriaException("Erro ao chamar API", e);
         }
     }
-
-//    @Override
-//    public Object updateCategory(String xmlCategoria, String idCategoria) throws ApiCategoriaException {
-//        try {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_XML);
-//            HttpEntity<String> request = new HttpEntity<>(xmlCategoria, headers);
-//
-//            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apiKey + apiXmlParam + xmlCategoria;
-//            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
-//
-//            // verifica se a resposta contém algum erro
-//            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
-//                ObjectMapper objectMapper = new ObjectMapper();
-//                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
-//                return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
-//            }
-//
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
-//
-//            return response;
-//
-//        } catch (JsonProcessingException e) {
-//            throw new ApiCategoriaException("Erro ao processar JSON: " + e);
-//        } catch (RestClientException e) {
-//            return ("Erro ao chamar API: " + e);
-//        }
-//    }
 }

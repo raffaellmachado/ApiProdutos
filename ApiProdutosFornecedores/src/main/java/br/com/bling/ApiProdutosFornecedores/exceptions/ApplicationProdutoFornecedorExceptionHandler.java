@@ -24,17 +24,17 @@ public class ApplicationProdutoFornecedorExceptionHandler extends ResponseEntity
     public ResponseEntity<String> handleIdProdutoFornecedorIdException(ProdutoFornecedorIdException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
-//
-//    @ExceptionHandler(ProdutoFornecedorCadastroException.class)
-//    public ResponseEntity<String> handleProdutoFornecedorCadastroException(ProdutoFornecedorCadastroException ex) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-//    }
 
-//    @ExceptionHandler(ProdutoFornecedorAtualizarException.class)
-//    public ResponseEntity<String> handleProdutoFornecedorAtualizarExceptionException(ProdutoFornecedorAtualizarException ex) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-//    }
-//
+    @ExceptionHandler(ProdutoFornecedorCadastroException.class)
+    public ResponseEntity<String> handleProdutoFornecedorCadastroException(ProdutoFornecedorCadastroException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ProdutoFornecedorAtualizarException.class)
+    public ResponseEntity<String> handleProdutoFornecedorAtualizarExceptionException(ProdutoFornecedorAtualizarException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<Object> handleNullPointerException(NullPointerException ex) {
         return new ResponseEntity<>("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.", HttpStatus.INTERNAL_SERVER_ERROR);
