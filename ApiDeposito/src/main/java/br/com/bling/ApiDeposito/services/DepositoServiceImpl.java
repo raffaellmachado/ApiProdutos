@@ -4,7 +4,6 @@ package br.com.bling.ApiDeposito.services;
 import br.com.bling.ApiDeposito.controllers.request.JsonRequest;
 import br.com.bling.ApiDeposito.controllers.response.JsonResponse;
 import br.com.bling.ApiDeposito.exceptions.ApiDepositoException;
-import br.com.bling.ApiDeposito.exceptions.RespostaApi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,17 +39,22 @@ public class DepositoServiceImpl implements DepositoService {
     @Override
     public JsonResponse getAllDeposit() throws ApiDepositoException {
         try {
-            String request = restTemplate.getForObject(apiBaseUrl + "/depositos/json/" + apikeyparam + apiKey, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+
+            String url = apiBaseUrl + "/depositos/json/" + apikeyparam + apiKey;
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse response = objectMapper.readValue(request, JsonResponse.class);
+            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
-            return response;
+            return result;
 
         } catch (JsonProcessingException e) {
-            throw new ApiDepositoException("Erro ao processar JSON: " + e);
+            throw new ApiDepositoException("Erro ao processar JSON: ", e);
         } catch (RestClientException e) {
-            throw new ApiDepositoException("Erro ao chamar API: " + e);
+            throw new ApiDepositoException("Erro ao chamar API: ", e);
         }
     }
 
@@ -60,17 +64,22 @@ public class DepositoServiceImpl implements DepositoService {
     @Override
     public JsonResponse getDepositByIdDeposit(String idDeposito) throws ApiDepositoException {
         try {
-            String request = restTemplate.getForObject(apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apikeyparam + apiKey, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>(idDeposito, headers);
+
+            String url = apiBaseUrl + "/deposito/" + idDeposito + "/json/" + apikeyparam + apiKey;
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse response = objectMapper.readValue(request, JsonResponse.class);
+            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
-            return response;
+            return result;
 
         } catch (JsonProcessingException e) {
-            throw new ApiDepositoException("Erro ao processar JSON: " + e);
+            throw new ApiDepositoException("Erro ao processar JSON: ", e);
         } catch (RestClientException e) {
-            throw new ApiDepositoException("Erro ao chamar API: " + e);
+            throw new ApiDepositoException("Erro ao chamar API: ", e);
         }
     }
 
@@ -78,31 +87,28 @@ public class DepositoServiceImpl implements DepositoService {
      * POST "CADASTRAR UM NOVO DEPOSITO" UTILIZANDO XML.
      */
     @Override
-    public Object createDeposit(String xmlDeposito) throws ApiDepositoException {
+    public JsonRequest createDeposit(String xmlDeposito) throws ApiDepositoException {
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_XML);
+            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+            map.add("apikey", apiKey);
+            map.add("xml", xmlDeposito);
 
-            HttpEntity<String> request = new HttpEntity<>(xmlDeposito, headers);
-            String url = apiBaseUrl + "/deposito/json/" + apikeyparam + apiKey + apiXmlParam + xmlDeposito;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+            String url = apiBaseUrl + "/deposito/json/";
             ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
-            // verifica se a resposta contém algum erro
-            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody().contains("\"erros\":")) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                RespostaApi respostaApi = objectMapper.readValue(responseEntity.getBody(), RespostaApi.class);
-                return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
-            }
-
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
+            JsonRequest result = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
 
-            return response;
+            return result;
 
         } catch (JsonProcessingException e) {
-            throw new ApiDepositoException("Erro ao processar JSON");
+            throw new ApiDepositoException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
-            return ("Erro ao chamar API: " + e);
+            throw new ApiDepositoException("Erro ao chamar API", e);
         }
     }
 //    @Override
@@ -129,10 +135,10 @@ public class DepositoServiceImpl implements DepositoService {
 //    }
 
     /**
-     * PUT "ATUALIZAR UMA NOVA CATEGORIA UTILIZANDO XML". -----> CORRIGIR e INSERIR EXCEPTION
+     * PUT "ATUALIZAR UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @Override
-    public Object updateDeposit(String xmlDeposito, String idDeposito) throws ApiDepositoException {
+    public JsonRequest updateDeposit(String xmlDeposito, String idDeposito) throws ApiDepositoException {
         try {
             MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
             map.add("apikey", apiKey);
@@ -146,26 +152,15 @@ public class DepositoServiceImpl implements DepositoService {
 
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
-            // verifica se a resposta contém algum erro
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody().contains("\"erros\":")) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                RespostaApi respostaApi = objectMapper.readValue(response.getBody(), RespostaApi.class);
-                return respostaApi.getRetorno().getErros().values().stream().findFirst().get();
-            }
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonRequest result = objectMapper.readValue(response.getBody(), JsonRequest.class);
 
-            if (response.getStatusCode() == HttpStatus.OK) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonRequest result = objectMapper.readValue(response.getBody(), JsonRequest.class);
+            return result;
 
-                return result;
-
-            } else {
-                throw new ApiDepositoException("Erro ao chamar API");
-            }
         } catch (JsonProcessingException e) {
-            throw new ApiDepositoException("Erro ao processar JSON");
+            throw new ApiDepositoException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
-            throw new ApiDepositoException("Erro ao chamar API");
+            throw new ApiDepositoException("Erro ao chamar API", e);
         }
     }
 //    @Override

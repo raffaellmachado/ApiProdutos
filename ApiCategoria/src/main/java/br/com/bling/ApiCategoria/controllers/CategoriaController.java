@@ -36,7 +36,7 @@ public class CategoriaController {
         try {
             JsonResponse request = categoriaService.getAllCategory();
 
-            if (request.getRetorno().getCategorias() == null && request.getRetorno().getErros() == null) {
+            if (request.retorno.categorias == null && request.retorno.erros == null) {
                 throw new CategoriaListaException("Não foi possível localizar a lista de categorias");
             }
 
