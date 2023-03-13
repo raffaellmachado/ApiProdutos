@@ -1,7 +1,6 @@
 package br.com.bling.ApiCategoria.service;
 
 import br.com.bling.ApiCategoria.controllers.request.JsonRequest;
-import br.com.bling.ApiCategoria.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategoria.controllers.response.JsonResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;

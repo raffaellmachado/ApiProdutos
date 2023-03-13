@@ -87,7 +87,6 @@ class CategoriaControllerTest {
 
         when(categoriaService.getAllCategory()).thenReturn(jsonResponse);
 
-        // Act
         assertThrows(ApiCategoriaException.class, () -> categoriaController.getAllCategory());
     }
 
@@ -134,7 +133,6 @@ class CategoriaControllerTest {
 
         when(categoriaService.getCategoryByIdCategoria(idCategoria)).thenReturn(jsonResponse);
 
-        // Act
         assertThrows(ApiCategoriaException.class, () -> categoriaController.getCategoryByIdCategory(idCategoria));
     }
 
