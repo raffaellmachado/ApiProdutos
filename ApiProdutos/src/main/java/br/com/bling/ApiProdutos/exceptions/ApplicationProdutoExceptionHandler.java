@@ -13,12 +13,12 @@ public class ApplicationProdutoExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(ApiProdutoException.class)
     public ResponseEntity<String> handleApiProdutoException(ApiProdutoException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(ProdutoListaException.class)
     public ResponseEntity<String> handleProdutoListaException(ProdutoListaException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(ProdutoCodigoException.class)
@@ -33,17 +33,17 @@ public class ApplicationProdutoExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(ProdutoExclusaoException.class)
     public ResponseEntity<String> ProdutoExclusaoException(ProdutoExclusaoException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(ProdutoCadastroException.class)
     public ResponseEntity<String> handleProdutoCadastroException(ProdutoCadastroException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(ProdutoAtualizarException.class)
     public ResponseEntity<String> handleProdutoAtualizarException(ProdutoAtualizarException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(NullPointerException.class)

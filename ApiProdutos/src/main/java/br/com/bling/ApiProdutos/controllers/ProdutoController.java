@@ -19,7 +19,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
 @Api(value = "API REST PRODUTOS")    //Swagger
-@CrossOrigin(origins = "*", maxAge = 3600)        // Liberar os dominios da API
+@CrossOrigin(origins = "*")        // Liberar os dominios da API
 public class ProdutoController {
 
     @Autowired
@@ -190,16 +190,16 @@ public class ProdutoController {
     }
 
     /**
-     * GET "PRODUTO UTILIZANDO O CÓDIGO E NOME DO FORNECEDOR.
+     * GET "PRODUTO UTILIZANDO O CODIGOFABRICANTE E IDFABRICANTE".
      */
-    @GetMapping("/produto/{codigo}/{codigoFabricante}")
-    @ApiOperation(value = "Retorna um produto pelo código e nome do fornecedor")
-    public ResponseEntity<JsonResponse> getProductByCodeSupplier(@PathVariable String codigo, @PathVariable String codigoFabricante) {
-        JsonResponse request = produtoService.getProductByCodeSupplier(codigo, codigoFabricante);
+    @GetMapping("/produto/{codigoFabricante}/{idFabricante}")
+    @ApiOperation(value = "Retorna um produto pelo código e idFabricante")
+    public ResponseEntity<JsonResponse> getProductByCodeSupplier(@PathVariable String codigoFabricante, @PathVariable String idFabricante) {
+        JsonResponse request = produtoService.getProductByCodeSupplier(codigoFabricante, idFabricante);
         try {
 
             if (request.retorno.produtos == null && request.retorno.erros == null) {
-                throw new ProdutoCodigoFornecedorException("Produto com código " + codigo + " não localizado.");
+                throw new ProdutoCodigoFornecedorException("Produto com código: " + codigoFabricante + " e idFabricante: " + idFabricante + " não localizado.");
             }
 
             if (request.retorno.produtos != null) {
@@ -279,7 +279,7 @@ public class ProdutoController {
             JsonResponse request = produtoService.getProductByCode(codigo);
 
             if (request.retorno.produtos == null && request.retorno.erros == null) {
-                throw new ProdutoExclusaoException("Cadastro não deletado, revise o c[odigo do produto e tente novamente!");
+                throw new ProdutoExclusaoException("Cadastro não deletado, revise o código do produto e tente novamente!");
             }
             produtoService.deleteProductByCode(codigo);
 
@@ -293,7 +293,7 @@ public class ProdutoController {
     }
 
     /**
-     * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
+     * POST "CADASTRAR UM NOVO PRODUTO UTILIZANDO XML".
      */
     @PostMapping(path = "/cadastrarproduto", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo produto")
@@ -315,7 +315,7 @@ public class ProdutoController {
     }
 
     /**
-     * POST "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
+     * POST "ATUALIZAR UM PRODUTO EXISTENTE PELO CODIGO UTILIZANDO XML".
      */
     @PostMapping(path = "/atualizarproduto/{codigo}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um produto existente")

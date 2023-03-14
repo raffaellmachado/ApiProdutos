@@ -13,7 +13,7 @@ public interface ProdutoService {
 
     public JsonResponse getProductByCode(@PathVariable("codigo") String codigo);
 
-    public JsonResponse getProductByCodeSupplier(@PathVariable("codigo") String codigo, @PathVariable("codigoFabricante") String id_fornecedor);
+    public JsonResponse getProductByCodeSupplier(@PathVariable("codigoFabricante") String codigoFabricante, @PathVariable("idFabricante") String idFabricante);
 
     public void deleteProductByCode(@PathVariable("codigo") String codigo);
 

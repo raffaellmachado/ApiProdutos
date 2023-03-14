@@ -1,6 +1,5 @@
 package br.com.bling.ApiProdutos.service;
 
-
 import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutos.exceptions.ApiProdutoException;
@@ -84,16 +83,16 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     /**
-     * GET "BUSCAR UM PRODUTO PELO CODIGO (SKU) E NOME DO FORNECEDOR".
+     * GET "BUSCAR UM PRODUTO PELO CODIGO (SKU) E IDFORNECEDOR".
      */
     @Override
-    public JsonResponse getProductByCodeSupplier(String codigo, String id_fornecedor) throws ApiProdutoException {
+    public JsonResponse getProductByCodeSupplier(String codigoFabricante, String idFabricante) throws ApiProdutoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(headers);
 
-            String url = apiBaseUrl + "/produto/" + codigo + "/" + id_fornecedor + "/json/" + apikeyparam + apiKey;
+            String url = apiBaseUrl + "/produto/" + codigoFabricante + "/" + idFabricante + "/json/" + apikeyparam + apiKey;
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -109,7 +108,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     /**
-     * DELETE "APAGAR UM PRODUTO PELO CÓDIGO (SKU)".
+     * DELETE "APAGA UM PRODUTO PELO CÓDIGO (SKU)".
      */
     @Override
     public void deleteProductByCode(String codigo) throws ApiProdutoException {
@@ -132,7 +131,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     /**
-     * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
+     * POST "CADASTRA UM NOVO PRODUTO" UTILIZANDO XML.
      */
     @Override
     public JsonRequest createProduct(String xmlProdutos) throws ApiProdutoException {
@@ -162,7 +161,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     /**
-     * POST "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
+     * POST "ATUALIZA UM PRODUTO EXISTENTE PELO CODIGO" UTILIZANDO XML.
      */
     @Override
     public JsonRequest updateProduct(String xmlProdutos, String codigo) throws ApiProdutoException {

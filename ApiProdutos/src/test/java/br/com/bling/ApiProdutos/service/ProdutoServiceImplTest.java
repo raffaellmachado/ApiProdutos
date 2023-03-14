@@ -289,7 +289,7 @@ class ProdutoServiceImplTest {
     }
 
     /**
-     * TESTE CONTROLLER - DELETE "DELETA UM PRODUTO EXISTE UTILIZANDO O CODIGO".
+     * TESTE CONTROLLER - DELETE "DELETA UM PRODUTO EXISTENTE UTILIZANDO O CODIGO".
      */
     @Test
     void testDeleteProductByCode() {
@@ -540,7 +540,7 @@ class ProdutoServiceImplTest {
     }
 
     /**
-     * TESTE CONTROLLER - PUT "ATUALIZA UMA PRODUTO DO TIPO SIMPLES EXISTENTE UTILIZANDO XML".
+     * TESTE CONTROLLER - PUT "ATUALIZA UM PRODUTO DO TIPO SIMPLES EXISTENTE UTILIZANDO XML".
      */
     @Test
     void testUpdateProductSimple() {
@@ -606,7 +606,7 @@ class ProdutoServiceImplTest {
     }
 
     /**
-     * TESTE CONTROLLER - PUT "ATUALIZA UMA PRODUTO COM VARIAÇÃO UTILIZANDO XML".
+     * TESTE CONTROLLER - PUT "ATUALIZA UM PRODUTO COM VARIAÇÃO UTILIZANDO XML".
      */
     @Test
     void testUpdateProductVariation() {     //TESTE PRODUTO COM VARIAÇÃO.
@@ -675,7 +675,7 @@ class ProdutoServiceImplTest {
     }
 
     /**
-     * TESTE CONTROLLER - PUT "ATUALIZA UMA PRODUTO COM COMPOSIÇÃO UTILIZANDO XML".
+     * TESTE CONTROLLER - PUT "ATUALIZA UM PRODUTO COM COMPOSIÇÃO UTILIZANDO XML".
      */
     @Test
     void testUpdateComposition() {     //TESTE PRODUTO COM COMPOSIÇÃO.
@@ -740,7 +740,7 @@ class ProdutoServiceImplTest {
     }
 
     /**
-     * TESTE CONTROLLER - PUT "ATUALIZA UMA PRODUTO SERVIÇO UTILIZANDO XML".
+     * TESTE CONTROLLER - PUT "ATUALIZA UM PRODUTO SERVIÇO UTILIZANDO XML".
      */
     @Test
     void testUpdateProductService() {     //TESTE PRODUTO SERVIÇO.
