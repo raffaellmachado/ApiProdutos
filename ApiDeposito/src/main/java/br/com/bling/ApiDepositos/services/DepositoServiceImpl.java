@@ -83,7 +83,7 @@ public class DepositoServiceImpl implements DepositoService {
     }
 
     /**
-     * POST "CADASTRAR UM NOVO DEPOSITO" UTILIZANDO XML.
+     * POST "CADASTRAR UM NOVO DEPOSITO UTILIZANDO XML".
      */
     @Override
     public JsonRequest createDeposit(String xmlDeposito) throws ApiDepositoException {
@@ -112,7 +112,7 @@ public class DepositoServiceImpl implements DepositoService {
     }
 
     /**
-     * PUT "ATUALIZAR UMA NOVA CATEGORIA UTILIZANDO XML".
+     * PUT "ATUALIZAR UM DEPOSITO UTILIZANDO XML".
      */
     @Override
     public JsonRequest updateDeposit(String xmlDeposito, String idDeposito) throws ApiDepositoException {
