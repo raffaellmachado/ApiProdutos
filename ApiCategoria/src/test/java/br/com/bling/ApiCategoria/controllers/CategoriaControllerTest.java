@@ -74,7 +74,7 @@ class CategoriaControllerTest {
     }
 
     /**
-     * TESTE CONTROLLER - GET "FORÇA O METODO BUSCAR A LISTA DE CATEGORIA A ENTRAR NO EXCEPTION".
+     * TESTE CONTROLLER - GET "FORÇA O METODO DE BUSCAR A LISTA DE CATEGORIA A ENTRAR NO EXCEPTION".
      */
     @Test
     void testGetAllCategoryException() {
@@ -199,7 +199,7 @@ class CategoriaControllerTest {
     }
 
     /**
-     * TESTE CONTROLLER - PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
+     * TESTE CONTROLLER - PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".
      */
     @Test
     void testUpdateCategory() {

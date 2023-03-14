@@ -90,7 +90,6 @@ public class CategoriaController {
         }
     }
 
-
     /**
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
@@ -112,7 +111,6 @@ public class CategoriaController {
             throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
         }
     }
-
 
     /**
      * PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".

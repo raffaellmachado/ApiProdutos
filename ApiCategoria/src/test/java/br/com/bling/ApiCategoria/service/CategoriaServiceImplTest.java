@@ -97,7 +97,7 @@ class CategoriaServiceImplTest {
     }
 
     /**
-     * TESTE SERVICE - PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
+     * TESTE SERVICE - PUT "ATUALIZA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @Test
     void testUpdateCategory() {
