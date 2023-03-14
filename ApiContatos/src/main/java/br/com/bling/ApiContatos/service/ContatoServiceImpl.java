@@ -117,10 +117,10 @@ public class ContatoServiceImpl implements ContatoService {
     }
 
     /**
-     * PUT "ATUALIZAR PRODUTO PELO "CPF_CNPJ" UTILIZANDO XML.
+     * PUT "ATUALIZAR PRODUTO PELO ID UTILIZANDO XML.
      */
     @Override
-    public JsonRequest updateContact(@RequestBody @Valid String xmlContato, @PathVariable("cpf_cnpj") String cpf_cnpj) throws ApiContatoException {
+    public JsonRequest updateContact(@RequestBody @Valid String xmlContato, @PathVariable("id") String id) throws ApiContatoException {
         try {
             MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
             map.add("apikey", apiKey);
@@ -130,7 +130,7 @@ public class ContatoServiceImpl implements ContatoService {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-            String url = apiBaseUrl + "/contato/" + cpf_cnpj + "/json/";
+            String url = apiBaseUrl + "/contato/" + id + "/json/";
 
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 

@@ -15,5 +15,5 @@ public interface ContatoService {
 
     public JsonRequest createContact(@RequestBody String xmlContato);
 
-    public JsonRequest updateContact(@RequestBody @Valid String xmlContato, @PathVariable("cpf_cnpj") String cpf_cnpj);
+    public JsonRequest updateContact(@RequestBody @Valid String xmlContato, @PathVariable("id") String id);
 }

@@ -18,7 +18,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
-@Api(value = "API REST CONTATOS")    //Swagger
+@Api(value = "API REST CONTATO")    //Swagger
 @CrossOrigin(origins = "*")        // Liberar os dominios da API
 public class ContatoController {
 
@@ -80,7 +80,7 @@ public class ContatoController {
     }
 
     /**
-     * GET "BUSCAR UM CONTETO PELO CPF ou CNPJ".
+     * GET "BUSCAR UM CONTATO PELO CPF ou CNPJ".
      */
     @GetMapping("/contato/{cpf_cnpj}")
     @ApiOperation(value = "Retorna um contato pelo CPF ou CNPJ")
@@ -89,7 +89,7 @@ public class ContatoController {
             JsonResponse request = contatosService.getContactsById(cpf_cnpj);
 
             if (request.retorno.contatos == null && request.retorno.erros == null) {
-                throw new ContatoIdException("Contato com o número de CPF/CNPJ: " + cpf_cnpj + " não encontrado.", null);
+                throw new ContatoIdException("Contato com o número de CPF/CNPJ: " + cpf_cnpj + " não localizado.", null);
             }
 
             if (request.retorno.contatos != null) {
@@ -136,7 +136,7 @@ public class ContatoController {
     }
 
     /**
-     * POST "CADASTRAR UM NOVO CONTATO" UTILIZANDO XML.
+     * POST "CADASTRAR UM NOVO CONTATO UTILIZANDO XML".
      */
     @PostMapping(path = "/cadastrarcontato", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar um novo contato")
@@ -158,13 +158,13 @@ public class ContatoController {
     }
 
     /**
-     * PUT "ATUALIZAR CONTATO PELO CPF e CNPJ" UTILIZANDO XML.
+     * PUT "ATUALIZAR CONTATO PELO CPF e CNPJ UTILIZANDO XML".
      */
-    @PutMapping(path = "/atualizarcontato/{cpf_cnpj}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/atualizarcontato/{id}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Atualizar um contato existente")
-    public ResponseEntity<JsonRequest> updateContact(@RequestBody @Valid String xmlContato, @PathVariable("cpf_cnpj") String cpf_cnpj) {
+    public ResponseEntity<JsonRequest> updateContact(@RequestBody @Valid String xmlContato, @PathVariable("id") String id) {
         try {
-            JsonRequest request = contatosService.updateContact(xmlContato, cpf_cnpj);
+            JsonRequest request = contatosService.updateContact(xmlContato, id);
 
             if (request.retorno.contatos == null && request.retorno.erros == null) {
                 throw new ContatoAtualizarException("Não foi possivel atualizar o contato.", null);
