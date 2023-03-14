@@ -28,7 +28,7 @@ public class SwaggerConfig {
 	private ApiInfo metaInfo() {
 
         ApiInfo apiInfo = new ApiInfo(
-                "API REST Categorias",
+                "API REST CATEGORIAS",
                 "API REST para consumo de categorias Bling.",
                 "1.0",
                 "Terms of Service",
