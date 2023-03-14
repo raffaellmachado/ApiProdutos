@@ -228,7 +228,7 @@ class ProdutoFornecedorControllerTest {
      * TESTE CONTROLLER - POST "FORÇA O METODO DE CADASTRO DE PRODUTO FORNECEDOR A ENTRAR NO EXCEPTION".
      */
     @Test
-    void testUpdateDepositException_1() {
+    void testUpdateDepositException() {
         String idCategoria = "159357";
         String xml = "<categorias>\n" +
                 "     <categoria>\n" +
@@ -296,12 +296,11 @@ class ProdutoFornecedorControllerTest {
         assertEquals(resposta, result);
     }
 
-
     /**
      * TESTE CONTROLLER - PUT "FORÇA O METODO DE ATUALIZAR PRODUTO FORNECEDOR A ENTRAR NO EXCEPTION".
      */
     @Test
-    void testUpdatePrductException_1() {
+    void testUpdatePrductException() {
         String idProdutoFornecedor = "159357";
         String xml = "<categorias>\n" +
                 "     <categoria>\n" +

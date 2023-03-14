@@ -107,6 +107,9 @@ class ProdutoFornecedorServiceImplTest {
         System.out.println("POST: " + result);
     }
 
+    /**
+     * TESTE SERVICE - PUT "ATUALIZA UM PRODUTO FORNECEDOR UTILIZANDO XML/JSON".
+     */
     @Test
     void testUpdateProduct() {
         // Simula a resposta da chamada para a API externa

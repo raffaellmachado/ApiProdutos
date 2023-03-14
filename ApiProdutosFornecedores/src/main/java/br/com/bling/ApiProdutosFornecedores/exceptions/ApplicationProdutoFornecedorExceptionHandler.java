@@ -6,18 +6,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 @Slf4j
 @ControllerAdvice
 public class ApplicationProdutoFornecedorExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ApiProdutoFornecedorException.class)
     public ResponseEntity<String> handleApiApiProdutoFornecedorException(ApiProdutoFornecedorException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(ProdutoFornecedorListaException.class)
     public ResponseEntity<String> handleListaProdutoFornecedorListaException(ProdutoFornecedorListaException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(ProdutoFornecedorIdException.class)
@@ -27,12 +28,12 @@ public class ApplicationProdutoFornecedorExceptionHandler extends ResponseEntity
 
     @ExceptionHandler(ProdutoFornecedorCadastroException.class)
     public ResponseEntity<String> handleProdutoFornecedorCadastroException(ProdutoFornecedorCadastroException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(ProdutoFornecedorAtualizarException.class)
     public ResponseEntity<String> handleProdutoFornecedorAtualizarExceptionException(ProdutoFornecedorAtualizarException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(NullPointerException.class)

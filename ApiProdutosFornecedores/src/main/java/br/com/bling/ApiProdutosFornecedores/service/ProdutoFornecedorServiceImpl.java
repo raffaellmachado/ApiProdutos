@@ -58,7 +58,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
     }
 
     /**
-     * GET "BUSCAR UM PRODUTO FORNECEDOR PELO ID".
+     * GET "BUSCAR UM PRODUTO FORNECEDOR PELO IDPRODUTOFORNECEDOR".
      */
     @Override
     public JsonResponse getProducId(String idProdutoFornecedor) throws ApiProdutoFornecedorException {
@@ -83,7 +83,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
     }
 
     /**
-     * POST "CADASTRAR UM NOVO PRODUTO FORNECEDOR" UTILIZANDO XML.
+     * POST "CADASTRAR UM NOVO PRODUTO FORNECEDOR UTILIZANDO XML".
      */
     @Override
     public JsonRequest createProduct(String xmlProdutoFornecedor) throws ApiProdutoFornecedorException {
@@ -112,7 +112,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
     }
 
     /**
-     * PUT "ATUALIZAR PRODUTO FORNECEDOR PELO ID" UTILIZANDO XML.
+     * PUT "ATUALIZA PRODUTO FORNECEDOR PELO IDPRODUTOFORNECEDOR UTILIZANDO XML".
      */
     @Override
     public JsonRequest updateProduct(String xmlProdutoFornecedor, String idProdutoFornecedor) throws ApiProdutoFornecedorException {
