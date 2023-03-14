@@ -117,7 +117,7 @@ public class ContatoServiceImpl implements ContatoService {
     }
 
     /**
-     * PUT "ATUALIZAR PRODUTO PELO CODIGO" UTILIZANDO XML.
+     * PUT "ATUALIZAR PRODUTO PELO "CPF_CNPJ" UTILIZANDO XML.
      */
     @Override
     public JsonRequest updateContact(@RequestBody @Valid String xmlContato, @PathVariable("cpf_cnpj") String cpf_cnpj) throws ApiContatoException {

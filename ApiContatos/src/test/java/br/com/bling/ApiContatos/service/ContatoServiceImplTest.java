@@ -29,8 +29,12 @@ class ContatoServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCAR A LISTA DE CONTATOS CADASTRADOS NO BLING".
+     */
     @Test
     void testGetAllContacts() throws Exception {
+
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\": {\"contatos\": [{\"contato\": {\"id\": \"01\", \"nome\": \"Nome do contato\", \"fantasia\": \"Contato Corp\", \"tipo\": \"F\", \"contribuinte\": \"02\", \"cpf_cnpj\": \"11.111.111/1111-11\", \"ie_rg\": \"146849932111\", \"endereco\": \"Rua João Moura Teste\", \"numero\": \"1251\", \"complemento\": \"null\", \"bairro\": \"Pinheiros\", \"cep\": \"05.412-001\", \"cidade\": \"São Paulo\", \"uf\": \"SP\", \"fone\": \"(11) 999999999\", \"email\": \"contato@teste.com\", \"limiteCredito\": \"0.00\"}}, {\"contato\": {\"id\": \"02\", \"nome\": \"Rafael\", \"fantasia\": \"RMS\", \"tipo\": \"F\", \"contribuinte\": \"02\", \"cpf_cnpj\": \"066.866.529-70\", \"ie_rg\": \"10.419.683-7\", \"endereco\": \"Mato Grosso\", \"numero\": \"1893\", \"complemento\": \"503\", \"bairro\": \"Centro\", \"cep\": \"86010-180\", \"cidade\": \"Londrina\", \"uf\": \"PR\", \"fone\": \"(43)996209269\", \"email\": \"rafael.machado@okeaatecnologia.com.br\", \"limiteCredito\": \"0.00\"}}]}}";
         ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
@@ -81,6 +85,9 @@ class ContatoServiceImplTest {
         System.out.println("GET LIST: " + result);
     }
 
+    /**
+     * TESTE CONTROLLER - GET "BUSCA CONTATO PELO CPF_CNPJ".
+     */
     @Test
     void testGetContactsById() throws Exception {
 
@@ -115,8 +122,12 @@ class ContatoServiceImplTest {
         System.out.println("GET ID: " + result);
     }
 
+    /**
+     * TESTE CONTROLLER - POST "CADASTRA UM NOVO CONTATO UTILIZANDO XML/JSON".
+     */
     @Test
     void testCreateContact() throws Exception {
+
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"contatos\":[{\"contato\":{\"id\":\"01\",\"nome\":\"Eduardo\",\"fantasia\":\"RMS\",\"tipoPessoa\":\"F\",\"contribuinte\":\"9\",\"cpf_cnpj\":\"00.000.000/0000-00\",\"cnpj\":\"000.000.000-00\",\"ie_rg\":\"00.000.000-0\",\"endereco\":\"Rua das Oliveirass\",\"numero\":\"1200\",\"complemento\":\"503\",\"bairro\":\"Centro\",\"cep\":\"00000-000\",\"cidade\":\"Londrina\",\"uf\":\"PR\",\"fone\":\"(43) 99999-9999\",\"celular\":\"(43) 99620-9999\",\"email\":\"contato@teste.com\",\"emailNfe\":\"testeNfe@mail.com.br\",\"informacaoContato\":\"Informações adicionais do contato\",\"limiteCredito\":\"9999.99\",\"paisOrigem\":\"Brasil\",\"codigo\":\"01\",\"site\":\"http://www.teste.com.br\",\"obs\":\"Observação teste\",\"tiposContato\":[{\"tipoContato\":{\"descricao\":\"Vendedor\"}}]}}]}}";
         ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
@@ -156,8 +167,12 @@ class ContatoServiceImplTest {
         System.out.println("POST: " + result);
     }
 
+    /**
+     * TESTE CONTROLLER - PUT "CADASTRA UM NOVO CONTATO UTILIZANDO XML".
+     */
     @Test
     void testUpdateContact() throws Exception {
+
         // Simula a resposta da chamada para a API externa
         String jsonResponse = "{\"retorno\":{\"contatos\":[{\"contato\":{\"id\":\"01\",\"nome\":\"Eduardo\",\"fantasia\":\"RMS\",\"tipoPessoa\":\"F\",\"contribuinte\":\"9\",\"cpf_cnpj\":\"00.000.000/0000-00\",\"cnpj\":\"000.000.000-00\",\"ie_rg\":\"00.000.000-0\",\"endereco\":\"Rua das Oliveirass\",\"numero\":\"1200\",\"complemento\":\"503\",\"bairro\":\"Centro\",\"cep\":\"00000-000\",\"cidade\":\"Londrina\",\"uf\":\"PR\",\"fone\":\"(43) 99999-9999\",\"celular\":\"(43) 99620-9999\",\"email\":\"contato@teste.com\",\"emailNfe\":\"testeNfe@mail.com.br\",\"informacaoContato\":\"Informações adicionais do contato\",\"limiteCredito\":\"9999.99\",\"paisOrigem\":\"Brasil\",\"codigo\":\"01\",\"site\":\"http://www.teste.com.br\",\"obs\":\"Observação teste\",\"tiposContato\":[{\"tipoContato\":{\"descricao\":\"Vendedor\"}}]}}]}}";
         ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);

@@ -161,7 +161,7 @@ public class ContatoController {
      * PUT "ATUALIZAR CONTATO PELO CPF e CNPJ" UTILIZANDO XML.
      */
     @PutMapping(path = "/atualizarcontato/{cpf_cnpj}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Atualizar um produto existente")
+    @ApiOperation(value = "Atualizar um contato existente")
     public ResponseEntity<JsonRequest> updateContact(@RequestBody @Valid String xmlContato, @PathVariable("cpf_cnpj") String cpf_cnpj) {
         try {
             JsonRequest request = contatosService.updateContact(xmlContato, cpf_cnpj);
