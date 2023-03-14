@@ -30,7 +30,7 @@ public class SwaggerConfig {
 	private ApiInfo metaInfo() {
 
         ApiInfo apiInfo = new ApiInfo(
-                "API REST Depositos",
+                "API REST DEPOSITOS",
                 "API REST para consumo de depositos Bling.",
                 "1.0",
                 "Terms of Service",
