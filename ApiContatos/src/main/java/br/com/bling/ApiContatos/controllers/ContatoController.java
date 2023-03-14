@@ -17,9 +17,9 @@ import javax.validation.Valid;
 
 
 @RestController
-@RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
+@RequestMapping(value = "/api/v1")   //Padrão para os métodos /api/...
 @Api(value = "API REST CONTATOS")    //Swagger
-@CrossOrigin(origins = "*")        // Liberar os dominios da API
+@CrossOrigin(origins = "*")          // Liberar os dominios da API
 public class ContatoController {
 
     @Autowired
