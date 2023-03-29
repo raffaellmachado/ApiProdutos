@@ -1,0 +1,65 @@
+body {
+  padding-top: 40px; /* ajuste o valor de acordo com a altura da sua barra */
+}
+
+.contato {
+  background-color: #1b1b1b;
+}
+
+.cadastro-button {
+  margin: 20px;
+  font-family: Helvetica;
+  font-size: 100px;
+  line-height: 12px;
+  text-align: center;
+  letter-spacing: normal;
+  color: #ffffff;
+  background-color: #34ad61;
+  fill: #ffffff;
+  box-shadow: none;
+  border-radius: 8px;
+}
+
+.tabela {
+  padding: auto;
+  height: auto;
+  width: auto;
+  font-family: arial, helvetica, sans-serif;
+  font-size: 12px;
+  line-height: normal;
+  text-align: left;
+  letter-spacing: normal;
+  fill: #000000;
+  background: #18191a;
+}
+
+.salvar-button {
+  padding: 15;
+  height: 32px;
+  width: 285px;
+  font-family: Helvetica;
+  font-size: 12px;
+  line-height: normal;
+  text-align: center;
+  letter-spacing: normal;
+  background: #34ad61;
+  fill: #ffffff;
+  box-shadow: none;
+  border-radius: 8px;
+}
+
+.cancelar-button {
+  padding: 15;
+  height: 32px;
+  width: 285px;
+  font-family: Helvetica;
+  font-size: 12px;
+  line-height: normal;
+  text-align: center;
+  letter-spacing: normal;
+  background: #242526;
+  fill: #34ad61;
+  box-shadow: none;
+  border-radius: 8px;
+  color: #ffffff;
+}
