@@ -1,4 +1,4 @@
-package br.com.bling.ApiContatos.config;
+package br.com.bling.ApiProdutos.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

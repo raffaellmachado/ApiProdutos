@@ -1,14 +1,15 @@
-.modal-backdrop-black {
-  background-color: #000000;
+body {
+  padding-top: 40px; /* ajuste o valor de acordo com a altura da sua barra */
 }
 
-.produto {
+.contato {
   background-color: #1b1b1b;
 }
 
 .cadastro-button {
+  margin: 20px;
   font-family: Helvetica;
-  font-size: 12px;
+  font-size: 100px;
   line-height: 12px;
   text-align: center;
   letter-spacing: normal;
@@ -57,7 +58,8 @@
   text-align: center;
   letter-spacing: normal;
   background: #242526;
-  fill: #ffffff;
+  fill: #34ad61;
   box-shadow: none;
   border-radius: 8px;
+  color: #ffffff;
 }

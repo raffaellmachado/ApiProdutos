@@ -7,6 +7,7 @@ import Table from 'react-bootstrap/Table';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
+
 import '../css/Contato.css';
 import { parse } from 'js2xmlparser';
 
@@ -59,7 +60,6 @@ class Contato extends React.Component {
 
     componentDidMount() {
         this.buscarContato();
-
     }
 
     componentWillUnmount() {
@@ -131,6 +131,7 @@ class Contato extends React.Component {
                 }
                 this.setState({ carregando: false });
                 this.abrirModal();
+                this.buscarContato();
             })
             .catch(error => console.error(error));
     }
@@ -356,23 +357,6 @@ class Contato extends React.Component {
         console.log("cnpj: ", this.state.cnpj);
         console.log("cpf_cnpj: ", this.state.cpf_cnpj);
 
-        const form = event.currentTarget;
-        console.log(form.checkValidity())
-        if (form.checkValidity() === false) {
-            console.log(form.checkValidity())
-            event.preventDefault();
-            console.log(event.stopPropagation())
-            event.stopPropagation();
-        }
-
-        this.setState({ validated: true });
-
-        if (form.checkValidity() === true) {
-            // apenas chama a função fecharModal se o formulário for válido
-            this.fecharModal();
-            window.location.reload()
-        }
-
         if (this.state.id === 0) {
             const contato = {
                 nome: this.state.nome,
@@ -431,6 +415,18 @@ class Contato extends React.Component {
             const xmlContato = parse('contato', contato);
             this.atualizarContato(xmlContato);
         }
+        const form = event.currentTarget;
+
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation(); // se algum campo obrigatorio nãao for preenchidos o modal é travado
+        } else {
+            event.preventDefault();
+            this.setState({ validated: true }); // atribui true na validação
+            this.fecharModal(); // se todos os campos estiverem preenchidos o modal é fechado
+            this.buscarContato(); // atualiza a lista de produtos após a exclusão
+        }
+
     }
 
     //Ação para limpar o campos do modal para cadastrar um novo cliente.
@@ -476,9 +472,8 @@ class Contato extends React.Component {
                 modalAberta: false
 
             }
-
         )
-        window.location.reload()
+        this.buscarContato()
     }
 
     //Ação para abrir o modal de cadastro e atualização.
@@ -540,6 +535,7 @@ class Contato extends React.Component {
                                             </tr>
                                         )
                                     }
+
                                     {this.state.contatos.length === 0 && <tr><td colSpan="6">Nenhum contato cadastrado.</td></tr>}
                                 </tbody>
                             </Table>
@@ -556,7 +552,6 @@ class Contato extends React.Component {
 
 
     render() {
-
 
         return (
             <div className="contato">

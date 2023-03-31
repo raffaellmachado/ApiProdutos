@@ -1,7 +1,13 @@
 import React from "react";
 
+import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Table from 'react-bootstrap/Table';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 
 import '../css/Produto.css';
 import { parse } from 'js2xmlparser';
@@ -63,8 +69,8 @@ class Produto extends React.Component {
             producao: '',
             dataValidade: '',
             spedTipoItem: '',
-            carregando: true
-
+            carregando: true,
+            modalAberta: false,
         };
     }
 
@@ -162,6 +168,22 @@ class Produto extends React.Component {
             .catch(error => console.error(error));
     }
 
+    excluirProduto(codigo) {
+        fetch(`http://localhost:8080/api/v1/produto/${codigo}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(resposta => resposta.json())
+            .then(dados => {
+                console.log(dados);
+                this.buscarProduto(); // atualiza a lista de produtos após a exclusão
+            })
+            .catch(erro => console.error(erro));
+    }
+
+
     //POST - MÉTODO PARA INSERIR UM NOVO CONTATO NA API CONTATOS
     cadastraProduto = (xmlProduto) => {
         const parser = new DOMParser();
@@ -205,43 +227,52 @@ class Produto extends React.Component {
             )
         } else {
             return (
-                <div className="tabela">
-                    <Table striped bordered hover className="table-dark" responsive="sm">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th title="Descrição">Descrição</th>
-                                <th title="Código">Código</th>
-                                <th title="Unidade">Unidade</th>
-                                <th title="Preço">Preço</th>
-                                <th title="Estoque">Estoque</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                this.state.produtos.map((produtos) =>
-                                    <tr key={produtos.produto.id}>
-                                        <td>{produtos.produto.descricao}</td>
-                                        <td>{produtos.produto.codigo}</td>
-                                        <td>{produtos.produto.unidade}</td>
-                                        <td>{produtos.produto.preco}</td>
-                                        <td>{produtos.produto.estoqueMaximo}</td>
-                                        <td>
-                                            <Button variant="outline-success" onClick={() => this.carregarProdutos(produtos.produto.codigo)}>Atualizar</Button>
-                                        </td>
-                                    </tr>
-                                )
-                            }
-                            {this.state.produtos.length === 0 && <tr><td colSpan="6">Nenhum produto cadastrado.</td></tr>}
-                        </tbody>
-                    </Table>
-                    <div>
-                        <Button variant="success" className="cadastro-button" onClick={() => this.setState({ showCadastro: true })}>
-                            + Incluir Produto
+                <div>
+                    <div className="container-button mt-3 text-center ">
+                        <Button variant="success" className="cadastro-button" onClick={this.reset}>
+                            + Incluir Cadastro
                         </Button>
-                        {this.state.showCadastro && <CadastroProduto />}
                     </div>
-                </div>
+                    <div>
+                        <div className="tabela">
+                            <Table striped bordered hover className="table-dark" responsive="sm">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th title="Descrição">Descrição</th>
+                                        <th title="Código">Código</th>
+                                        <th title="Unidade">Unidade</th>
+                                        <th title="Preço">Preço</th>
+                                        <th title="Estoque">Estoque</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        this.state.produtos.map((produtos) =>
+                                            <tr key={produtos.produto.id}>
+                                                <td>{produtos.produto.id}</td>
+                                                <td>{produtos.produto.descricao}</td>
+                                                <td>{produtos.produto.codigo}</td>
+                                                <td>{produtos.produto.unidade}</td>
+                                                <td>{produtos.produto.preco}</td>
+                                                <td>{produtos.produto.estoqueMaximo}</td>
+                                                <td>
+                                                    <Button variant="outline-success" onClick={() => this.carregarProdutos(produtos.produto.codigo)}>
+                                                        Atualizar
+                                                    </Button>
+                                                    <Button variant="danger" onClick={() => this.excluirProduto(produtos.produto.codigo)}>
+                                                        Excluir
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    }
+                                    {this.state.produtos.length === 0 && <tr><td colSpan="6">Nenhum produto cadastrado.</td></tr>}
+                                </tbody>
+                            </Table>
+                        </div>
+                    </div>
+                </div >
             )
         }
     }
@@ -251,50 +282,510 @@ class Produto extends React.Component {
     //Ações do botão SUBMIT (Cadastrar).
     submit = (event) => {
         event.preventDefault();
+        console.log("logradouro: ", this.state.logradouro);
+        console.log("endereco: ", this.state.endereco);
+        console.log("-----------------------------------");
+        console.log("localidade: ", this.state.localidade);
+        console.log("cidade: ", this.state.cidade);
+        console.log("-----------------------------------");
+        console.log("tipo: ", this.state.tipo);
+        console.log("tipoPessoa: ", this.state.tipoPessoa);
+        console.log("-----------------------------------");
+        console.log("cnpj: ", this.state.cnpj);
+        console.log("cpf_cnpj: ", this.state.cpf_cnpj);
 
         if (this.state.id === 0) {
             const produto = {
-                descricao: this.state.descricao,
+                // descricao: this.state.descricao,
+                // codigo: this.state.codigo,
+                // unidade: this.state.unidade,
+                // preco: this.state.preco,
+                // estoqueMaximo: this.state.estoqueMaximo
                 codigo: this.state.codigo,
+                descricao: this.state.descricao,
+                tipo: this.state.tipo,
+                situacao: this.state.situacao,
                 unidade: this.state.unidade,
                 preco: this.state.preco,
-                estoqueMaximo: this.state.estoqueMaximo
+                precoCusto: this.state.precoCusto,
+                descricaoCurta: this.state.descricaoCurta,
+                descricaoComplementar: this.state.descricaoComplementar,
+                dataInclusao: this.state.dataInclusao,
+                dataAlteracao: this.state.dataAlteracao,
+                imageThumbnail: this.state.imageThumbnail,
+                urlVideo: this.state.urlVideo,
+                nomeFornecedor: this.state.nomeFornecedor,
+                codigoFabricante: this.state.codigoFabricante,
+                marca: this.state.marca,
+                class_fiscal: this.state.class_fiscal,
+                cest: this.state.cest,
+                origem: this.state.origem,
+                idGrupoProduto: this.state.idGrupoProduto,
+                linkExterno: this.state.linkExterno,
+                observacoes: this.state.observacoes,
+                grupoProduto: this.state.grupoProduto,
+                garantia: this.state.garantia,
+                descricaoFornecedor: this.state.descricaoFornecedor,
+                idFabricante: this.state.idFabricante,
+                categoria: [],
+                pesoLiq: this.state.pesoLiq,
+                pesoBruto: this.state.pesoBruto,
+                estoqueMinimo: this.state.estoqueMinimo,
+                estoqueMaximo: this.state.estoqueMaximo,
+                gtin: this.state.gtin,
+                gtinEmbalagem: this.state.gtinEmbalagem,
+                larguraProduto: this.state.larguraProduto,
+                alturaProduto: this.state.alturaProduto,
+                profundidadeProduto: this.state.profundidadeProduto,
+                unidadeMedida: this.state.unidadeMedida,
+                itensPorCaixa: this.state.itensPorCaixa,
+                volumes: this.state.volumes,
+                localizacao: this.state.localizacao,
+                crossdocking: this.state.crossdocking,
+                condicao: this.state.condicao,
+                freteGratis: this.state.freteGratis,
+                producao: this.state.producao,
+                dataValidade: this.state.dataValidade,
+                spedTipoItem: this.state.spedTipoItem
             }
             const xmlProduto = parse('produto', produto);
             this.cadastraProduto(xmlProduto);
         } else {
             const produto = {
                 id: this.state.id,
-                descricao: this.state.descricao,
                 codigo: this.state.codigo,
+                descricao: this.state.descricao,
+                tipo: this.state.tipo,
+                situacao: this.state.situacao,
                 unidade: this.state.unidade,
                 preco: this.state.preco,
-                estoqueMaximo: this.state.estoqueMaximo
+                precoCusto: this.state.precoCusto,
+                descricaoCurta: this.state.descricaoCurta,
+                descricaoComplementar: this.state.descricaoComplementar,
+                dataInclusao: this.state.dataInclusao,
+                dataAlteracao: this.state.dataAlteracao,
+                imageThumbnail: this.state.imageThumbnail,
+                urlVideo: this.state.urlVideo,
+                nomeFornecedor: this.state.nomeFornecedor,
+                codigoFabricante: this.state.codigoFabricante,
+                marca: this.state.marca,
+                class_fiscal: this.state.class_fiscal,
+                cest: this.state.cest,
+                origem: this.state.origem,
+                idGrupoProduto: this.state.idGrupoProduto,
+                linkExterno: this.state.linkExterno,
+                observacoes: this.state.observacoes,
+                grupoProduto: this.state.grupoProduto,
+                garantia: this.state.garantia,
+                descricaoFornecedor: this.state.descricaoFornecedor,
+                idFabricante: this.state.idFabricante,
+                categoria: [],
+                pesoLiq: this.state.pesoLiq,
+                pesoBruto: this.state.pesoBruto,
+                estoqueMinimo: this.state.estoqueMinimo,
+                estoqueMaximo: this.state.estoqueMaximo,
+                gtin: this.state.gtin,
+                gtinEmbalagem: this.state.gtinEmbalagem,
+                larguraProduto: this.state.larguraProduto,
+                alturaProduto: this.state.alturaProduto,
+                profundidadeProduto: this.state.profundidadeProduto,
+                unidadeMedida: this.state.unidadeMedida,
+                itensPorCaixa: this.state.itensPorCaixa,
+                volumes: this.state.volumes,
+                localizacao: this.state.localizacao,
+                crossdocking: this.state.crossdocking,
+                condicao: this.state.condicao,
+                freteGratis: this.state.freteGratis,
+                producao: this.state.producao,
+                dataValidade: this.state.dataValidade,
+                spedTipoItem: this.state.spedTipoItem
             }
             const xmlProduto = parse('produto', produto);
             this.atualizarProduto(xmlProduto);
         }
-    }
+        const form = event.currentTarget;
 
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation(); // se algum campo obrigatorio nãao for preenchidos o modal é travado
+        } else {
+            event.preventDefault();
+            this.setState({ validated: true }); // atribui true na validação
+            this.fecharModal(); // se todos os campos estiverem preenchidos o modal é fechado
+            this.buscarContato(); // atualiza a lista de produtos após a exclusão
+        }
+    }
 
     //Ação para limpar o campos do modal para cadastrar um novo cliente.
     reset = () => {
         this.setState(
             {
                 id: 0,
-                descricao: '',
                 codigo: '',
+                descricao: '',
+                tipo: '',
+                situacao: '',
                 unidade: '',
                 preco: '',
+                precoCusto: '',
+                descricaoCurta: '',
+                descricaoComplementar: '',
+                dataInclusao: '',
+                dataAlteracao: '',
+                imageThumbnail: '',
+                urlVideo: '',
+                nomeFornecedor: '',
+                codigoFabricante: '',
+                marca: '',
+                class_fiscal: '',
+                cest: '',
+                origem: '',
+                idGrupoProduto: '',
+                linkExterno: '',
+                observacoes: '',
+                grupoProduto: '',
+                garantia: '',
+                descricaoFornecedor: '',
+                idFabricante: '',
+                categoria: [],
+                pesoLiq: '',
+                pesoBruto: '',
+                estoqueMinimo: '',
                 estoqueMaximo: '',
+                gtin: '',
+                gtinEmbalagem: '',
+                larguraProduto: '',
+                alturaProduto: '',
+                profundidadeProduto: '',
+                unidadeMedida: '',
+                itensPorCaixa: '',
+                volumes: '',
+                localizacao: '',
+                crossdocking: '',
+                condicao: '',
+                freteGratis: '',
+                producao: '',
+                dataValidade: '',
+                spedTipoItem: '',
             })
+        this.abrirModal();
+    }
+
+    //Ação para fechar o modal de cadastro e atualização.
+    fecharModal = () => {
+        this.setState(
+            {
+                modalAberta: false
+            }
+        )
+        window.location.reload()
+    }
+
+    //Ação para abrir o modal de cadastro e atualização.
+    abrirModal = () => {
+        this.setState(
+            {
+                modalAberta: true
+            }
+        )
     }
 
     render() {
+
         return (
-            <div>
+            <div className="contato">
+                <Modal show={this.state.modalAberta} onHide={this.fecharModal} size="xl" backdrop="static">
+                    <Modal.Header closeButton>
+                        <Modal.Title>Cadastro de Cliente e Fornecedor</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form noValidate validated={this.state.validated} onSubmit={this.submit}>
+                            <Row>
+                                <Col xs={2} md={2}>
+                                    <Form.Group controlId="id" className="mb-3 form-row" as={Col}>
+                                        <Form.Label type="text">ID</Form.Label>
+                                        <Form.Control type="text" value={this.state.id || ''} readOnly disabled />
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={6} md={8}>
+                                    <Form.Group controlId="nome" className="mb-3">
+                                        <Form.Label>Nome</Form.Label>
+                                        <Form.Control type="text" placeholder="Digite o nome" value={this.state.nome || ''} onChange={this.atualizaNome} required />
+                                        <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col xs={2} md={4}>
+                                    <Form.Group controlId="codigo" className="mb-3">
+                                        <Form.Label>Código (SKU)</Form.Label>
+                                        <Form.Control type="text" placeholder="Digite o código" value={this.state.codigo || ''} onChange={this.atualizaCodigo} />
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={2} md={4}>
+                                    <Form.Group controlId="Formato" className="mb-3">
+                                        <Form.Label>Formato</Form.Label>
+                                        <Form.Select as="select" placeholder="Tipo de formato" value={''} onChange={this.atualizaDescricao} >
+                                            <option value="">Simples</option>
+                                            <option value="">Com variação</option>
+                                            <option value="">Com composição</option>
+                                        </Form.Select>
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={2} md={4}>
+                                    <Form.Group controlId="Formato" className="mb-3">
+                                        <Form.Label>Tipo</Form.Label>
+                                        <Form.Select as="select" placeholder="Selecione o tipo" value={this.state.tipo || ''} onChange={this.atualizaDescricao} >
+                                            <option value="P">Produto</option>
+                                            <option value="S">Serviço</option>
+                                        </Form.Select>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col xs={2} md={4}>
+                                    <Form.Group controlId="nome" className="mb-3">
+                                        <Form.Label>Preço venda</Form.Label>
+                                        <Form.Control type="text" placeholder="Digite o preço de venda" value={this.state.preco || ''} onChange={this.atualizaNome} required />
+                                        <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={2} md={4}>
+                                    <Form.Group controlId="nome" className="mb-3">
+                                        <Form.Label>Unidade</Form.Label>
+                                        <Form.Control type="text" placeholder="Digite a unidade (pc, un, cx)" value={this.state.unidade || ''} onChange={this.atualizaNome} required />
+                                        <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={2} md={4}>
+                                    <Form.Group controlId="Formato" className="mb-3">
+                                        <Form.Label>Condição</Form.Label>
+                                        <Form.Select as="select" placeholder="Selecione a condição" value={this.state.condicao || ''} onChange={this.atualizaDescricao} >
+                                            <option value="Não Especificado">Não Especificado</option>
+                                            <option value="Novo">Novo</option>
+                                            <option value="Usado">Usado</option>
+                                            <option value="Recondicionado">Recondicionado</option>
+                                        </Form.Select>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            <Tabs defaultActiveKey="caracteristica" id="fill-tab-example" className="mb-3" fill>
+                                <Tab eventKey="caracteristica" title="Caracteristica">
+                                    <Row>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="marca" className="mb-3">
+                                                <Form.Label>Marca</Form.Label>
+                                                <Form.Control type="text" placeholder="Digite o nome" value={this.state.marca || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="produção" className="mb-3">
+                                                <Form.Label>Tipo Contato</Form.Label>
+                                                <Form.Select as="select" placeholder="Tipo de contato" value={this.state.producao || ''} onChange={this.atualizaDescricao} >
+                                                    <option value="">Própria</option>
+                                                    <option value="">Terceiros</option>
+                                                </Form.Select>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="datavalidade" className="mb-3">
+                                                <Form.Label>Data de validade</Form.Label>
+                                                <Form.Control type="date" placeholder="Digite o nome" value={this.state.dataValidade || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="frete" className="mb-3">
+                                                <Form.Label>Frete Grátis</Form.Label>
+                                                <Form.Select as="select" placeholder="Selecione o frete" value={this.state.freteGratis || ''} onChange={this.atualizaDescricao} >
+                                                    <option value="">Não</option>
+                                                    <option value="">Sim</option>
+                                                </Form.Select>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="pesoliquido" className="mb-3">
+                                                <Form.Label>Peso Líquido </Form.Label>
+                                                <Form.Control type="text" placeholder="Insira o peso liquido" value={this.state.pesoLiq || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="pesobruto" className="mb-3">
+                                                <Form.Label>Peso Bruto</Form.Label>
+                                                <Form.Control type="text" placeholder="Insira o peso bruto" value={this.state.pesoBruto || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="largura" className="mb-3">
+                                                <Form.Label>Largura</Form.Label>
+                                                <Form.Control type="text" placeholder="Insira a largura" value={this.state.larguraProduto || ''} onChange={this.atualizaNome} required />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="altura" className="mb-3">
+                                                <Form.Label>Altura</Form.Label>
+                                                <Form.Control type="text" placeholder="Insira a altura" value={this.state.alturaProduto || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="profundidade" className="mb-3">
+                                                <Form.Label>Profundidade</Form.Label>
+                                                <Form.Control type="text" placeholder="Insira a profundidade" value={this.state.profundidadeProduto || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="pesobruto" className="mb-3">
+                                                <Form.Label>Volumes</Form.Label>
+                                                <Form.Control type="text" placeholder="Insira o volume" value={this.state.volumes || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="itenscaixa" className="mb-3">
+                                                <Form.Label>Itens p/ caixa</Form.Label>
+                                                <Form.Control type="text" placeholder="Digite o volume" value={this.state.itensPorCaixa || ''} onChange={this.atualizaNome} required />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="unidade" className="mb-3">
+                                                <Form.Label>Unidade de medida</Form.Label>
+                                                <Form.Select as="select" placeholder="Selecione o frete" value={this.state.unidadeMedida || ''} onChange={this.atualizaDescricao} >
+                                                    <option value="">Metros</option>
+                                                    <option value="">Centimetros</option>
+                                                    <option value="">Milímetro</option>
+                                                </Form.Select>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="gtin" className="mb-3">
+                                                <Form.Label>GTIN/EAN </Form.Label>
+                                                <Form.Control type="text" placeholder="SEM GTIN" value={this.state.gtin || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="gtintributario" className="mb-3">
+                                                <Form.Label>Volumes</Form.Label>
+                                                <Form.Control type="text" placeholder="SEM GTIN" value={this.state.volumes || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={2} md={12}>
+
+                                            <Form.Group controlId="descricaocurta" className="mb-3">
+                                                <Form.Label>Descrição Curta (Descrição Principal) </Form.Label>
+                                                <Form.Control as="textarea" rows={3} placeholder="Insira a descrição curta" value={this.state.descricaoCurta || ''} onChange={this.atualizaInformacaoContato} />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={2} md={12}>
+
+                                            <Form.Group controlId="descricaocurta" className="mb-3">
+                                                <Form.Label>Descrição Complementar</Form.Label>
+                                                <Form.Control as="textarea" rows={3} placeholder="Insira a descrição complementar" value={this.state.descricaoComplementar || ''} onChange={this.atualizaInformacaoContato} />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={2} md={12}>
+                                            <Form.Group controlId="linkexterno" className="mb-3">
+                                                <Form.Label>Link Externo</Form.Label>
+                                                <Form.Control type="text" placeholder="insira o link externo" value={this.state.linkExterno || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={2} md={12}>
+                                            <Form.Group controlId="video" className="mb-3">
+                                                <Form.Label>Video</Form.Label>
+                                                <Form.Control type="text" placeholder="insira o link do video" value={this.state.urlVideo || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={2} md={12}>
+                                            <Form.Group controlId="observacoes" className="mb-3">
+                                                <Form.Label>Observações</Form.Label>
+                                                <Form.Control tas="textarea" rows={3} placeholder="insira as observações" value={this.state.observacoes || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                </Tab>
+                                <Tab eventKey="imagens" title="Imagens">
+                                    <Row>
+                                        <Col xs={2} md={12}>
+                                            <Form.Group controlId="observacoes" className="mb-3">
+                                                <Form.Label>Imagens</Form.Label>
+                                                <Form.Control tas="textarea" rows={3} placeholder="insira as observações" value={''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                </Tab>
+                                <Tab eventKey="estoque" title="Estoque">
+                                    <Row>
+                                        <Col xs={1} md={3}>
+                                            <Form.Group controlId="minimo" className="mb-3">
+                                                <Form.Label>Minimo</Form.Label>
+                                                <Form.Control tas="text" placeholder="insira o minimo" value={this.state.estoqueMinimo || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="maximo" className="mb-3">
+                                                <Form.Label>Máximo</Form.Label>
+                                                <Form.Control tas="text" placeholder="insira o maximo" value={this.state.estoqueMaximo || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="crossdocking" className="mb-3">
+                                                <Form.Label>Crossdocking</Form.Label>
+                                                <Form.Control tas="text" placeholder="insira o crossdocking" value={this.state.crossdocking || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={3}>
+                                            <Form.Group controlId="localizacao" className="mb-3">
+                                                <Form.Label>Localização</Form.Label>
+                                                <Form.Control tas="text" placeholder="insira a localização" value={this.state.localizacao || ''} onChange={this.atualizaDescricao} />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                </Tab>
+                                <Tab eventKey="fornecedores" title="Fornecedores">
+
+                                </Tab>
+                            </Tabs>
+
+                            <Row>
+                                <Col xs={2} md={2}>
+                                    <Form.Group controlId="buttonSalvar" className="mb-3">
+                                        <Button variant="primary" type="submit" className="salvar-button">
+                                            Salvar produto
+                                        </Button>
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={4} md={2}>
+                                    <Form.Group controlId="buttonCancelar" className="mb-3">
+                                        <Button variant="warning" className="cancelar-button" onClick={this.fecharModal}>
+                                            Cancelar
+                                        </Button>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                        </Form>
+                    </Modal.Body>
+                </Modal >
                 {this.renderTabela()}
-            </div>
+            </div >
         )
     }
 }
