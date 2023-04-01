@@ -1,5 +1,11 @@
 body {
   padding-top: 40px; /* ajuste o valor de acordo com a altura da sua barra */
+  background-color: #2e2d2d;
+}
+
+.background {
+  padding-top: 40px; /* ajuste o valor de acordo com a altura da sua barra */
+  background-color: #2e2d2d;
 }
 
 .contato {
@@ -7,34 +13,60 @@ body {
 }
 
 .cadastro-button {
-  margin: 20px;
-  font-family: Helvetica;
-  font-size: 100px;
-  line-height: 12px;
+  display: inline-block;
+  padding: 15px;
   text-align: center;
+  font-family: "font awesome 5 free";
+  font-size: 12px;
+  line-height: 12px;
   letter-spacing: normal;
   color: #ffffff;
   background-color: #34ad61;
-  fill: #ffffff;
-  box-shadow: none;
   border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.tabela {
-  padding: auto;
-  height: auto;
-  width: auto;
-  font-family: arial, helvetica, sans-serif;
-  font-size: 12px;
-  line-height: normal;
-  text-align: left;
-  letter-spacing: normal;
-  fill: #000000;
-  background: #18191a;
+.atualizar-button {
+  border-radius: 10px;
+  background-color: #a59400;
+  color: #ffffff;
+  border: none;
+  padding: 8px 15px;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: 0px;
+  word-spacing: 0px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: none;
+}
+
+.tabela table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #000;
+}
+
+.tabela th,
+.tabela td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #000;
+}
+
+.tabela th {
+  background-color: #202020;
+  color: #fff;
+  font-weight: bold;
+}
+
+.tabela tr:nth-child(even) {
+  background-color: #f2f2f2;
 }
 
 .salvar-button {
-  padding: 15;
+  padding: 15px;
   height: 32px;
   width: 285px;
   font-family: Helvetica;
@@ -42,14 +74,16 @@ body {
   line-height: normal;
   text-align: center;
   letter-spacing: normal;
-  background: #34ad61;
+  background: #34ad61 !important;
   fill: #ffffff;
   box-shadow: none;
   border-radius: 8px;
+  display: flex;
+  justify-content: center;
 }
 
 .cancelar-button {
-  padding: 15;
+  padding: 15px;
   height: 32px;
   width: 285px;
   font-family: Helvetica;
@@ -57,9 +91,26 @@ body {
   line-height: normal;
   text-align: center;
   letter-spacing: normal;
-  background: #242526;
+  background: #242526 !important;
   fill: #34ad61;
   box-shadow: none;
   border-radius: 8px;
-  color: #ffffff;
+  color: #ffffff !important;
+  display: flex;
+  justify-content: center !important;
+}
+
+.button-container button {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.button-container button {
+  margin: 0 10px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
 }

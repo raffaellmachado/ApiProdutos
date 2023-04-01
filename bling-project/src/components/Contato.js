@@ -6,6 +6,9 @@ import Button from "react-bootstrap/Button";
 import Table from 'react-bootstrap/Table';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import { Container } from "react-bootstrap";
+import { FaSync, VscNewFile } from 'react-icons/fa';
+
 
 
 import '../css/Contato.css';
@@ -60,6 +63,21 @@ class Contato extends React.Component {
 
     componentDidMount() {
         this.buscarContato();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.logradouro !== this.state.logradouro) {
+            this.atualizaEndereco({ target: { value: this.state.logradouro } });
+        }
+        if (prevState.localidade !== this.state.localidade) {
+            this.atualizaCidade({ target: { value: this.state.localidade } });
+        }
+        if (prevState.cnpj !== this.state.cnpj) {
+            this.atualizaCpfCnpj({ target: { value: this.state.cnpj } });
+        }
+        if (prevState.tipo !== this.state.tipo) {
+            this.atualizaTipoPessoa({ target: { value: this.state.tipo } });
+        }
     }
 
     componentWillUnmount() {
@@ -131,7 +149,6 @@ class Contato extends React.Component {
                 }
                 this.setState({ carregando: false });
                 this.abrirModal();
-                this.buscarContato();
             })
             .catch(error => console.error(error));
     }
@@ -181,21 +198,6 @@ class Contato extends React.Component {
                 console.log(data);
                 this.numeroRef.current.focus();
             })
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.logradouro !== this.state.logradouro) {
-            this.atualizaEndereco({ target: { value: this.state.logradouro } });
-        }
-        if (prevState.localidade !== this.state.localidade) {
-            this.atualizaCidade({ target: { value: this.state.localidade } });
-        }
-        if (prevState.cnpj !== this.state.cnpj) {
-            this.atualizaCpfCnpj({ target: { value: this.state.cnpj } });
-        }
-        if (prevState.tipo !== this.state.tipo) {
-            this.atualizaTipoPessoa({ target: { value: this.state.tipo } });
-        }
     }
 
     /**
@@ -415,18 +417,20 @@ class Contato extends React.Component {
             const xmlContato = parse('contato', contato);
             this.atualizarContato(xmlContato);
         }
-        const form = event.currentTarget;
+
+        //Realiza a validação dos campos obrigatorios.
+        const form = event.currentTarget
 
         if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation(); // se algum campo obrigatorio nãao for preenchidos o modal é travado
+            this.setState({ validated: true }); // atribui true na validação
         } else {
             event.preventDefault();
             this.setState({ validated: true }); // atribui true na validação
             this.fecharModal(); // se todos os campos estiverem preenchidos o modal é fechado
             this.buscarContato(); // atualiza a lista de produtos após a exclusão
         }
-
     }
 
     //Ação para limpar o campos do modal para cadastrar um novo cliente.
@@ -470,10 +474,10 @@ class Contato extends React.Component {
         this.setState(
             {
                 modalAberta: false
-
             }
         )
         this.buscarContato()
+        window.location.reload();
     }
 
     //Ação para abrir o modal de cadastro e atualização.
@@ -488,9 +492,7 @@ class Contato extends React.Component {
     /**
      *  -------------------- TABELA DE CLIENTES. -------------------- 
      */
-
-    renderTabela() {
-
+    render() {
         if (this.state.carregando) {
             return (
                 <div>
@@ -499,47 +501,52 @@ class Contato extends React.Component {
             )
         } else {
             return (
-                <div>
-                    <div className="container-button mt-3 text-center ">
-                        <Button variant="success" className="cadastro-button" onClick={this.reset}>
-                            + Incluir Cadastro
-                        </Button>
-                    </div>
-                    <div>
-                        <div className="tabela">
-                            <Table striped bordered hover className="table-dark" responsive="sm">
-                                <thead>
-                                    <tr>
-                                        <th title="Identificador">ID</th>
-                                        <th title="Código">Código</th>
-                                        <th title="Nome">Nome</th>
-                                        <th title="CPF / CNPJ">CPF/CNPJ</th>
-                                        <th title="Cidade">Cidade</th>
-                                        <th title="Telefone">Telefone</th>
-                                        <th title="Opções">Opções</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        this.state.contatos.map((contatos) =>
-                                            <tr key={contatos.contato.id}>
-                                                <td>{contatos.contato.id}</td>
-                                                <td>{contatos.contato.codigo}</td>
-                                                <td>{contatos.contato.nome}</td>
-                                                <td>{contatos.contato.cnpj}</td>
-                                                <td>{contatos.contato.cidade}</td>
-                                                <td>{contatos.contato.fone}</td>
-                                                <td>
-                                                    <Button variant="danger" onClick={() => this.carregarContato(contatos.contato.cnpj)}>Atualizar</Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    }
-
-                                    {this.state.contatos.length === 0 && <tr><td colSpan="6">Nenhum contato cadastrado.</td></tr>}
-                                </tbody>
-                            </Table>
+                <div className="background">
+                    <div className="container">
+                        <div>
+                            <Button variant="success" className="cadastro-button" onClick={this.reset}>
+                                + Incluir Cadastro
+                            </Button>
                         </div>
+                        <div>
+                            <div className="tabela">
+                                <Table striped bordered hover className="table-dark" responsive="sm">
+                                    <thead>
+                                        <tr>
+                                            <th title="Identificador">ID</th>
+                                            <th title="Código">Código</th>
+                                            <th title="Nome">Nome</th>
+                                            <th title="CPF / CNPJ">CPF/CNPJ</th>
+                                            <th title="Cidade">Cidade</th>
+                                            <th title="Telefone">Telefone</th>
+                                            <th title="Opções">Opções</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            this.state.contatos.map((contatos) =>
+                                                <tr key={contatos.contato.id}>
+                                                    <td>{contatos.contato.id}</td>
+                                                    <td>{contatos.contato.codigo}</td>
+                                                    <td>{contatos.contato.nome}</td>
+                                                    <td>{contatos.contato.cnpj}</td>
+                                                    <td>{contatos.contato.cidade}</td>
+                                                    <td>{contatos.contato.fone}</td>
+                                                    <td>
+                                                        <button variant="danger" className="atualizar-button" onClick={() => this.carregarContato(contatos.contato.cnpj)}>
+                                                            <FaSync />  Atualizar</button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        }
+
+                                        {this.state.contatos.length === 0 && <tr><td colSpan="6">Nenhum contato cadastrado.</td></tr>}
+
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </div>
+                        {this.renderModal()}
                     </div>
                 </div>
             )
@@ -549,18 +556,15 @@ class Contato extends React.Component {
     /**
      *  -------------------- MODAL PARA CADASTRAR E ATUALIZAR CONTATOS. -------------------- 
      */
-
-
-    render() {
-
+    renderModal() {
         return (
-            <div className="contato">
-                <Modal show={this.state.modalAberta} onHide={this.fecharModal} size="xl" backdrop="static">
-                    <Modal.Header closeButton>
-                        <Modal.Title>Cadastro de Cliente e Fornecedor</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form noValidate validated={this.state.validated} onSubmit={this.submit}>
+            <Modal show={this.state.modalAberta} onHide={this.fecharModal} size="xl" backdrop="static">
+                <Modal.Header closeButton>
+                    <Modal.Title>Cadastro de Cliente e Fornecedor</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form noValidate validated={this.state.validated} onSubmit={this.submit}>
+                        <Container>
                             <Row>
                                 <Col xs={2} md={2}>
                                     <Form.Group controlId="id" className="mb-3 form-row" as={Col}>
@@ -756,27 +760,26 @@ class Contato extends React.Component {
                                 <Form.Label>Informação Contato</Form.Label>
                                 <Form.Control as="textarea" rows={3} placeholder="Digite a informação do contato" value={this.state.informacaoContato || ''} onChange={this.atualizaInformacaoContato} />
                             </Form.Group>
-                            <Row>
-                                <Col xs={2} md={2}>
-                                    <Form.Group controlId="buttonSalvar" className="mb-3">
-                                        <Button variant="primary" type="submit" className="salvar-button">
-                                            Salvar
-                                        </Button>
-                                    </Form.Group>
-                                </Col>
-                                <Col xs={4} md={2}>
-                                    <Form.Group controlId="buttonCancelar" className="mb-3">
-                                        <Button variant="warning" className="cancelar-button" onClick={this.fecharModal}>
-                                            Cancelar
-                                        </Button>
-                                    </Form.Group>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </Modal.Body>
-                </Modal>
-                {this.renderTabela()}
-            </div >
+                            <Container>
+                                <Row className="text-center">
+                                    <Col>
+                                        <Form.Group controlId="buttonSalvar" className="mb-3">
+                                            <div className="button-container d-flex justify-content-center">
+                                                <Button variant="primary" type="submit" className="salvar-button">
+                                                    Salvar
+                                                </Button>
+                                                <Button variant="warning" className="cancelar-button" onClick={this.fecharModal}>
+                                                    Cancelar
+                                                </Button>
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </Container>
+                    </Form>
+                </Modal.Body>
+            </Modal>
         )
     }
 }
