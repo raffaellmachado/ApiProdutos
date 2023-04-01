@@ -70,7 +70,7 @@ public class ContatoController {
 //                System.out.println("descricao: " + listaContatos.contato.getTiposContato().get(0).tipoContato.descricao);
 //            }
 
-            System.out.println("Retorno: " + request);
+            System.out.println("Retorno GET: " + request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
 
@@ -130,7 +130,7 @@ public class ContatoController {
 //                }
 //            }
 
-            System.out.println("Retorno: \n" + request);
+            System.out.println("Retorno GET CPF/CNPJ:" + request);
 
             return ResponseEntity.status(HttpStatus.OK).body(request);
         } catch (Exception e) {
@@ -151,7 +151,7 @@ public class ContatoController {
                 throw new ContatoCadastroException("Cadastro não efetuado, revise os campos e tente novamente!", null);
             }
 
-            System.out.println("Retorno: " + request);
+            System.out.println("Retorno POST: " + request);
 
             return ResponseEntity.ok(request);
 
@@ -173,7 +173,7 @@ public class ContatoController {
                 throw new ContatoAtualizarException("Não foi possivel atualizar o contato.", null);
             }
 
-            System.out.println("Retorno: \n " + request);
+            System.out.println("Retorno UPDATE: \n " + request);
 
             return ResponseEntity.ok(request);
 
