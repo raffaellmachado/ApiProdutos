@@ -8,109 +8,117 @@ body {
   background-color: #2e2d2d;
 }
 
-.contato {
-  background-color: #1b1b1b;
-}
-
-.cadastro-button {
-  display: inline-block;
+.btn-cadastro-button {
   padding: 15px;
+  height: 32px;
+  width: 185px;
+  font-family: font awesome 5 free;
+  font-size: 14px;
+  line-height: normal;
   text-align: center;
-  font-family: "font awesome 5 free";
-  font-size: 12px;
-  line-height: 12px;
   letter-spacing: normal;
+  background-color: #34ad61 !important;
   color: #ffffff;
-  background-color: #34ad61;
+  box-shadow: none;
   border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  border: 1px solid #242526;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.atualizar-button {
-  border-radius: 10px;
-  background-color: #a59400;
-  color: #ffffff;
-  border: none;
-  padding: 8px 15px;
-  color: #ffffff;
-  line-height: 1.1;
-  letter-spacing: 0px;
-  word-spacing: 0px;
-  text-align: center;
-  text-decoration: none;
-  text-transform: none;
-}
-
-.tabela table {
+.table-tabela {
   width: 100%;
   border-collapse: collapse;
   border: 2px solid #000;
 }
 
-.tabela th,
-.tabela td {
+.table th,
+.table td {
   padding: 10px;
   text-align: center;
   border: 1px solid #000;
 }
 
-.tabela th {
+.table th {
   background-color: #202020;
   color: #fff;
   font-weight: bold;
 }
 
-.tabela tr:nth-child(even) {
+.table tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-.salvar-button {
+.btn-salvar-button {
   padding: 15px;
   height: 32px;
   width: 285px;
-  font-family: Helvetica;
-  font-size: 12px;
+  font-family: font awesome 5 free;
+  font-size: 14px;
   line-height: normal;
   text-align: center;
   letter-spacing: normal;
-  background: #34ad61 !important;
-  fill: #ffffff;
+  background-color: #34ad61 !important;
+  color: #ffffff;
   box-shadow: none;
   border-radius: 8px;
+  border: 1px solid #242526;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-.cancelar-button {
+.btn-cancelar-button {
   padding: 15px;
   height: 32px;
   width: 285px;
-  font-family: Helvetica;
-  font-size: 12px;
+  font-family: font awesome 5 free;
+  font-size: 14px;
   line-height: normal;
   text-align: center;
   letter-spacing: normal;
-  background: #242526 !important;
-  fill: #34ad61;
+  background-color: #242526;
+  color: #ffffff;
   box-shadow: none;
   border-radius: 8px;
-  color: #ffffff !important;
+  border: 1px solid #242526;
   display: flex;
-  justify-content: center !important;
+  justify-content: center;
+  align-items: center;
 }
 
-.button-container button {
+.button-container {
   margin-top: 20px;
   display: flex;
   justify-content: center;
-}
-
-.button-container button {
-  margin: 0 10px;
+  gap: 20px;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.spinner-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.spinner {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
 }

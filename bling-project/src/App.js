@@ -15,7 +15,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Navbar bg="dark" expand="lg" variant="dark" fixed="top" >
+        <Navbar bg="dark" expand="lg" variant="dark" fixed="top" label="Toggle navigation">
           <Container fluid>
             <Navbar.Brand href="/">Aplicação Bling</Navbar.Brand>
             <Navbar.Toggle aria-controls="navbar-dark-example" />

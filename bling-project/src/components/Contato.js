@@ -8,8 +8,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { Container } from "react-bootstrap";
 import { FaSync, VscNewFile } from 'react-icons/fa';
-
-
+import Spinner from 'react-bootstrap/Spinner';
 
 import '../css/Contato.css';
 import { parse } from 'js2xmlparser';
@@ -495,21 +494,28 @@ class Contato extends React.Component {
     render() {
         if (this.state.carregando) {
             return (
-                <div>
-                    <p>Carregando contatos...</p>
+                <div className="spinner-container">
+                    <div className="d-flex align-items-center justify-content-center">
+                        <Spinner variant="secondary" animation="border" role="status">
+                            <span className="visually-hidden">Carregando contatos...</span>
+                        </Spinner>
+                    </div>
+                    <div>
+                        <p>Carregando contatos...</p>
+                    </div>
                 </div>
             )
         } else {
             return (
                 <div className="background">
                     <div className="container">
-                        <div>
-                            <Button variant="success" className="cadastro-button" onClick={this.reset}>
+                        <div className="">
+                            <Button variant="success" bsPrefix="btn-cadastro-button" onClick={this.reset}>
                                 + Incluir Cadastro
                             </Button>
                         </div>
                         <div>
-                            <div className="tabela">
+                            <div className="table-tabela">
                                 <Table striped bordered hover className="table-dark" responsive="sm">
                                     <thead>
                                         <tr>
@@ -533,15 +539,14 @@ class Contato extends React.Component {
                                                     <td>{contatos.contato.cidade}</td>
                                                     <td>{contatos.contato.fone}</td>
                                                     <td>
-                                                        <button variant="danger" className="atualizar-button" onClick={() => this.carregarContato(contatos.contato.cnpj)}>
-                                                            <FaSync />  Atualizar</button>
+                                                        <Button variant="warning" onClick={() => this.carregarContato(contatos.contato.cnpj)}>
+                                                            <FaSync />
+                                                        </Button>
                                                     </td>
                                                 </tr>
                                             )
                                         }
-
                                         {this.state.contatos.length === 0 && <tr><td colSpan="6">Nenhum contato cadastrado.</td></tr>}
-
                                     </tbody>
                                 </Table>
                             </div>
@@ -560,7 +565,7 @@ class Contato extends React.Component {
         return (
             <Modal show={this.state.modalAberta} onHide={this.fecharModal} size="xl" backdrop="static">
                 <Modal.Header closeButton>
-                    <Modal.Title>Cadastro de Cliente e Fornecedor</Modal.Title>
+                    <Modal.Title>Cadastro/Atualização de Cliente e Fornecedor</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form noValidate validated={this.state.validated} onSubmit={this.submit}>
@@ -575,7 +580,7 @@ class Contato extends React.Component {
                                 <Col xs={2} md={2}>
                                     <Form.Group controlId="codigo" className="mb-3">
                                         <Form.Label>Código</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o código" value={this.state.codigo || ''} onChange={this.atualizaCodigo} />
+                                        <Form.Control type="text" placeholder="Insira o código" value={this.state.codigo || ''} onChange={this.atualizaCodigo} />
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -583,14 +588,14 @@ class Contato extends React.Component {
                                 <Col>
                                     <Form.Group controlId="nome" className="mb-3">
                                         <Form.Label>Nome</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o nome" value={this.state.nome || ''} onChange={this.atualizaNome} required />
+                                        <Form.Control type="text" placeholder="Insira o nome" value={this.state.nome || ''} onChange={this.atualizaNome} required />
                                         <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
                                 <Col>
                                     <Form.Group controlId="fantasia" className="mb-3">
                                         <Form.Label>Fantasia</Form.Label>
-                                        <Form.Control type="text" placeholder="Ditite a fantasia" value={this.state.fantasia || ''} onChange={this.atualizaFantasia} />
+                                        <Form.Control type="text" placeholder="Insira a fantasia" value={this.state.fantasia || ''} onChange={this.atualizaFantasia} />
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -598,7 +603,7 @@ class Contato extends React.Component {
                                 <Col xs={4} md={3}>
                                     <Form.Group controlId="tipo" className="mb-3">
                                         <Form.Label>Tipo Pessoa</Form.Label>
-                                        <Form.Select type="select" placeholder="Tipo de pessoa" value={this.state.tipo || ''} onChange={this.atualizaTipoPessoa} required>
+                                        <Form.Select type="select" placeholder="Selecione o tipo de contato" value={this.state.tipo || ''} onChange={this.atualizaTipoPessoa} required>
                                             <option value="">Selecione o tipo de pessoa</option>
                                             <option value="J">Pessoa Jurídica</option>
                                             <option value="F">Pessoa Física</option>
@@ -610,20 +615,20 @@ class Contato extends React.Component {
                                 <Col xs={4} md={3}>
                                     <Form.Group controlId="cnpj" className="mb-3">
                                         <Form.Label>CPF/CNPJ</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o CPF ou CNPJ" value={this.state.cnpj || ''} onChange={this.atualizaCpfCnpj} required />
+                                        <Form.Control type="text" placeholder="Insira o CPF / CNPJ" value={this.state.cnpj || ''} onChange={this.atualizaCpfCnpj} required />
                                         <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
                                 <Col xs={4} md={3}>
                                     <Form.Group controlId="ie_rg" className="mb-3">
                                         <Form.Label>IE/RG</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite IE/RG" value={this.state.ie_rg || ''} onChange={this.atualizaIe_Rg} />
+                                        <Form.Control type="text" placeholder="Digite IE / RG" value={this.state.ie_rg || ''} onChange={this.atualizaIe_Rg} />
                                     </Form.Group>
                                 </Col>
                                 <Col xs={4} md={3}>
                                     <Form.Group controlId="descricao" className="mb-3">
                                         <Form.Label>Tipo Contato</Form.Label>
-                                        <Form.Select as="select" placeholder="Tipo de contato" value={this.state.descricao || ''} onChange={this.atualizaDescricao} >
+                                        <Form.Select as="select" placeholder="Selecione o tipo de contato" value={this.state.descricao || ''} onChange={this.atualizaDescricao} >
                                             <option value="">Selecione o tipo de contato</option>
                                             <option value="Cliente">Cliente</option>
                                             <option value="Fornecedor">Fornecedor</option>
@@ -637,7 +642,7 @@ class Contato extends React.Component {
                                 <Col xs={4} md={9}>
                                     <Form.Group controlId="contribuinte" className="mb-3">
                                         <Form.Label>Contribuinte</Form.Label>
-                                        <Form.Select as="select" placeholder="Contribuinte" value={this.state.contribuinte || ''} onChange={this.atualizaContribuinte} required>
+                                        <Form.Select as="select" placeholder="Selecione o tipo de pessoa" value={this.state.contribuinte || ''} onChange={this.atualizaContribuinte} required>
                                             <option value="">Selecione o tipo de pessoa</option>
                                             <option value="1">1 - Contribuinte ICMS</option>
                                             <option value="2">2 - Contribuinte isento de Inscrição no Cadastro de Contribuintes</option>
@@ -649,7 +654,7 @@ class Contato extends React.Component {
                                 <Col xs={4} md={3}>
                                     <Form.Group controlId="limiteCredito" className="mb-3">
                                         <Form.Label>Limite Crédito</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o limite de crédito" value={this.state.limiteCredito || ''} onChange={this.atualizaLimiteCredito} />
+                                        <Form.Control type="text" placeholder="Insira o limite de crédito" value={this.state.limiteCredito || ''} onChange={this.atualizaLimiteCredito} />
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -663,19 +668,19 @@ class Contato extends React.Component {
                                 <Col xs={5} md={4}>
                                     <Form.Group controlId="endereco" className="mb-3">
                                         <Form.Label>Endereço</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o endereço" value={this.state.endereco || ''} onChange={this.atualizaEndereco} />
+                                        <Form.Control type="text" placeholder="Insira o endereço" value={this.state.endereco || ''} onChange={this.atualizaEndereco} />
                                     </Form.Group>
                                 </Col>
                                 <Col xs={2} md={2}>
                                     <Form.Group controlId="numero" className="mb-3">
                                         <Form.Label>Número</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o número" value={this.state.numero || ''} onChange={this.atualizaNumero} ref={this.numeroRef} />
+                                        <Form.Control type="text" placeholder="Insira o número" value={this.state.numero || ''} onChange={this.atualizaNumero} ref={this.numeroRef} />
                                     </Form.Group>
                                 </Col>
                                 <Col xs={4} md={3}>
                                     <Form.Group controlId="complemento" className="mb-3">
                                         <Form.Label>Complemento</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o complemento" value={this.state.complemento || ''} onChange={this.atualizaComplemento} />
+                                        <Form.Control type="text" placeholder="Insira o complemento" value={this.state.complemento || ''} onChange={this.atualizaComplemento} />
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -683,13 +688,13 @@ class Contato extends React.Component {
                                 <Col xs={6} md={4}>
                                     <Form.Group controlId="bairro" className="mb-3">
                                         <Form.Label>Bairro</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o bairro" value={this.state.bairro || ''} onChange={this.atualizaBairro} />
+                                        <Form.Control type="text" placeholder="Insira o bairro" value={this.state.bairro || ''} onChange={this.atualizaBairro} />
                                     </Form.Group>
                                 </Col>
                                 <Col xs={6} md={4}>
                                     <Form.Group controlId="cidade" className="mb-3">
                                         <Form.Label>Cidade</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o cidade" value={this.state.cidade || ''} onChange={this.atualizaCidade} />
+                                        <Form.Control type="text" placeholder="Insira a cidade" value={this.state.cidade || ''} onChange={this.atualizaCidade} />
                                     </Form.Group>
                                 </Col>
                                 <Col xs={6} md={4}>
@@ -733,42 +738,42 @@ class Contato extends React.Component {
                                 <Col xs={6} md={2}>
                                     <Form.Group controlId="fone" className="mb-3">
                                         <Form.Label>Fone</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o numero de telefone" value={this.state.fone || ''} onChange={this.atualizaFone} />
+                                        <Form.Control type="text" placeholder="Insira o numero do telefone" value={this.state.fone || ''} onChange={this.atualizaFone} />
                                     </Form.Group>
                                 </Col>
                                 <Col xs={6} md={2}>
                                     <Form.Group controlId="celular" className="mb-3">
                                         <Form.Label>Celular</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o numero de celular" value={this.state.celular || ''} onChange={this.atualizaCelular} />
+                                        <Form.Control type="text" placeholder="Insira o numero do celular" value={this.state.celular || ''} onChange={this.atualizaCelular} />
                                     </Form.Group>
                                 </Col>
                                 <Col xs={6} md={4}>
                                     <Form.Group controlId="email" className="mb-3">
                                         <Form.Label>Email</Form.Label>
-                                        <Form.Control type="email" placeholder="Digite o e-mail NFE" value={this.state.email || ''} onChange={this.atualizaEmail} />
+                                        <Form.Control type="email" placeholder="Insira o e-mail" value={this.state.email || ''} onChange={this.atualizaEmail} />
                                     </Form.Group>
                                 </Col>
                                 <Col xs={6} md={4}>
                                     <Form.Group controlId="emailNfe" className="mb-3">
                                         <Form.Label>Email NFE</Form.Label>
-                                        <Form.Control type="email" placeholder="Digite o e-mail NFE" value={this.state.emailNfe || ''} onChange={this.atualizaEmailNfe} required />
+                                        <Form.Control type="email" placeholder="Insira o e-mail NFE" value={this.state.emailNfe || ''} onChange={this.atualizaEmailNfe} required />
                                         <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
                             </Row>
                             <Form.Group controlId="informacaoContato" className="mb-3">
                                 <Form.Label>Informação Contato</Form.Label>
-                                <Form.Control as="textarea" rows={3} placeholder="Digite a informação do contato" value={this.state.informacaoContato || ''} onChange={this.atualizaInformacaoContato} />
+                                <Form.Control as="textarea" rows={3} placeholder="Insira a informação do contato" value={this.state.informacaoContato || ''} onChange={this.atualizaInformacaoContato} />
                             </Form.Group>
                             <Container>
                                 <Row className="text-center">
                                     <Col>
                                         <Form.Group controlId="buttonSalvar" className="mb-3">
                                             <div className="button-container d-flex justify-content-center">
-                                                <Button variant="primary" type="submit" className="salvar-button">
+                                                <Button bsPrefix="btn-salvar-button" variant="primary" type="submit">
                                                     Salvar
                                                 </Button>
-                                                <Button variant="warning" className="cancelar-button" onClick={this.fecharModal}>
+                                                <Button bsPrefix="btn-cancelar-button" variant="warning" onClick={this.fecharModal}>
                                                     Cancelar
                                                 </Button>
                                             </div>

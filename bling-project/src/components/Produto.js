@@ -8,6 +8,9 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import { Container } from "react-bootstrap";
+import Spinner from 'react-bootstrap/Spinner';
+import { FaSync, FaTrash } from 'react-icons/fa';
 
 import '../css/Produto.css';
 import { parse } from 'js2xmlparser';
@@ -84,7 +87,7 @@ class Produto extends React.Component {
 
     //GET - MÉTODO PARA CONSUMO DA API CONTATOS
     buscarProduto = () => {
-        fetch("http://localhost:8080/api/v1/produtos")
+        fetch("http://localhost:8081/api/v1/produtos")
             .then(resposta => resposta.json())
             .then(dados => {
                 console.log(dados); // Adicionando o console.log
@@ -100,7 +103,7 @@ class Produto extends React.Component {
 
     //GET - MÉTODO PARA CONSUMO DA API CONTATOS
     carregarProdutos = (codigo) => {
-        fetch("http://localhost:8080/api/v1/produto/" + codigo, { method: 'GET' })
+        fetch("http://localhost:8081/api/v1/produto/" + codigo, { method: 'GET' })
             .then(resposta => resposta.json())
             .then(dados => {
                 if (dados.retorno.produtos) {
@@ -169,7 +172,7 @@ class Produto extends React.Component {
     }
 
     excluirProduto(codigo) {
-        fetch(`http://localhost:8080/api/v1/produto/${codigo}`, {
+        fetch(`http://localhost:8081/api/v1/produto/${codigo}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -215,66 +218,64 @@ class Produto extends React.Component {
         })
     }
 
+    atualizaNome = (e) => {
+        this.setState({
+            nome: e.target.value
+        })
+    }
 
+    atualizaCodigo = (e) => {
+        this.setState({
+            codigo: e.target.value
+        })
+    }
 
-    renderTabela() {
+    atualizaDescricao = (e) => {
+        this.setState({
+            descricao: e.target.value
+        })
+    }
 
-        if (this.state.carregando) {
-            return (
-                <div>
-                    <p>Carregando produtos...</p>
-                </div>
-            )
-        } else {
-            return (
-                <div>
-                    <div className="container-button mt-3 text-center ">
-                        <Button variant="success" className="cadastro-button" onClick={this.reset}>
-                            + Incluir Cadastro
-                        </Button>
-                    </div>
-                    <div>
-                        <div className="tabela">
-                            <Table striped bordered hover className="table-dark" responsive="sm">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th title="Descrição">Descrição</th>
-                                        <th title="Código">Código</th>
-                                        <th title="Unidade">Unidade</th>
-                                        <th title="Preço">Preço</th>
-                                        <th title="Estoque">Estoque</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        this.state.produtos.map((produtos) =>
-                                            <tr key={produtos.produto.id}>
-                                                <td>{produtos.produto.id}</td>
-                                                <td>{produtos.produto.descricao}</td>
-                                                <td>{produtos.produto.codigo}</td>
-                                                <td>{produtos.produto.unidade}</td>
-                                                <td>{produtos.produto.preco}</td>
-                                                <td>{produtos.produto.estoqueMaximo}</td>
-                                                <td>
-                                                    <Button variant="outline-success" onClick={() => this.carregarProdutos(produtos.produto.codigo)}>
-                                                        Atualizar
-                                                    </Button>
-                                                    <Button variant="danger" onClick={() => this.excluirProduto(produtos.produto.codigo)}>
-                                                        Excluir
-                                                    </Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    }
-                                    {this.state.produtos.length === 0 && <tr><td colSpan="6">Nenhum produto cadastrado.</td></tr>}
-                                </tbody>
-                            </Table>
-                        </div>
-                    </div>
-                </div >
-            )
-        }
+    atualizaTipo = (e) => {
+        this.setState({
+            tipo: e.target.value
+        })
+    }
+
+    atualizaPreco = (e) => {
+        this.setState({
+            preco: e.target.value
+        })
+    }
+
+    atualizaUnidade = (e) => {
+        this.setState({
+            unidade: e.target.value
+        })
+    }
+
+    atualizaCondicao = (e) => {
+        this.setState({
+            condicao: e.target.value
+        })
+    }
+
+    atualizaMarca = (e) => {
+        this.setState({
+            marca: e.target.value
+        })
+    }
+
+    atualizaProducao = (e) => {
+        this.setState({
+            producao: e.target.value
+        })
+    }
+
+    atualizaDataValidade = (e) => {
+        this.setState({
+            dataValidade: e.target.value
+        })
     }
 
 
@@ -408,6 +409,7 @@ class Produto extends React.Component {
         if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation(); // se algum campo obrigatorio nãao for preenchidos o modal é travado
+            this.setState({ validated: true }); // atribui true na validação
         } else {
             event.preventDefault();
             this.setState({ validated: true }); // atribui true na validação
@@ -478,7 +480,8 @@ class Produto extends React.Component {
                 modalAberta: false
             }
         )
-        window.location.reload()
+        this.buscarProduto();
+        window.location.reload();
     }
 
     //Ação para abrir o modal de cadastro e atualização.
@@ -491,15 +494,86 @@ class Produto extends React.Component {
     }
 
     render() {
+        if (this.state.carregando) {
+            return (
+                <div className="spinner-container" >
+                    <div className="d-flex align-items-center justify-content-center">
+                        <Spinner variant="secondary" animation="border" role="status">
+                            <span className="visually-hidden">Carregando produtos...</span>
+                        </Spinner>
+                    </div>
+                    <div>
+                        <p>Carregando produtos...</p>
+                    </div>
+                </div>
+            )
+        } else {
+            return (
+                <div className="background">
+                    <div className="container">
+                        <div>
+                            <Button variant="success" bsPrefix="btn-cadastro-button" onClick={this.reset}>
+                                + Incluir Cadastro
+                            </Button>
+                        </div>
+                        <div>
+                            <div className="table-tabela">
+                                <Table striped bordered hover className="table-dark" responsive="sm">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th title="Descrição">Descrição</th>
+                                            <th title="Código">Código</th>
+                                            <th title="Unidade">Unidade</th>
+                                            <th title="Preço">Preço</th>
+                                            <th title="Estoque">Estoque</th>
+                                            <th title="Opções">Opções</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            this.state.produtos.map((produtos) =>
+                                                <tr key={produtos.produto.id}>
+                                                    <td>{produtos.produto.id}</td>
+                                                    <td>{produtos.produto.descricao}</td>
+                                                    <td>{produtos.produto.codigo}</td>
+                                                    <td>{produtos.produto.unidade}</td>
+                                                    <td>{produtos.produto.preco}</td>
+                                                    <td>{produtos.produto.estoqueMaximo}</td>
+                                                    <td>
+                                                        <div className="button-container-table">
+                                                            <Button variant="warning" onClick={() => this.carregarProdutos(produtos.produto.codigo)}>
+                                                                <FaSync />
+                                                            </Button>
+                                                            <Button variant="danger" onClick={() => this.excluirProduto(produtos.produto.codigo)}>
+                                                                <FaTrash />
+                                                            </Button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        }
+                                        {this.state.produtos.length === 0 && <tr><td colSpan="6">Nenhum produto cadastrado.</td></tr>}
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </div>
+                        {this.renderModal()}
+                    </div>
+                </div>
+            )
+        }
+    }
 
+    renderModal() {
         return (
-            <div className="contato">
-                <Modal show={this.state.modalAberta} onHide={this.fecharModal} size="xl" backdrop="static">
-                    <Modal.Header closeButton>
-                        <Modal.Title>Cadastro de Cliente e Fornecedor</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form noValidate validated={this.state.validated} onSubmit={this.submit}>
+            <Modal show={this.state.modalAberta} onHide={this.fecharModal} size="xl" backdrop="static">
+                <Modal.Header closeButton>
+                    <Modal.Title>Cadastro/Atualização de Produto</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form noValidate validated={this.state.validated} onSubmit={this.submit}>
+                        <Container>
                             <Row>
                                 <Col xs={2} md={2}>
                                     <Form.Group controlId="id" className="mb-3 form-row" as={Col}>
@@ -535,7 +609,7 @@ class Produto extends React.Component {
                                 <Col xs={2} md={4}>
                                     <Form.Group controlId="Formato" className="mb-3">
                                         <Form.Label>Tipo</Form.Label>
-                                        <Form.Select as="select" placeholder="Selecione o tipo" value={this.state.tipo || ''} onChange={this.atualizaDescricao} >
+                                        <Form.Select as="select" placeholder="Selecione o tipo" value={this.state.tipo || ''} onChange={this.atualizaTipo} >
                                             <option value="P">Produto</option>
                                             <option value="S">Serviço</option>
                                         </Form.Select>
@@ -546,21 +620,21 @@ class Produto extends React.Component {
                                 <Col xs={2} md={4}>
                                     <Form.Group controlId="nome" className="mb-3">
                                         <Form.Label>Preço venda</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o preço de venda" value={this.state.preco || ''} onChange={this.atualizaNome} required />
+                                        <Form.Control type="text" placeholder="Digite o preço de venda" value={this.state.preco || ''} onChange={this.atualizaPreco} required />
                                         <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
                                 <Col xs={2} md={4}>
                                     <Form.Group controlId="nome" className="mb-3">
                                         <Form.Label>Unidade</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite a unidade (pc, un, cx)" value={this.state.unidade || ''} onChange={this.atualizaNome} required />
+                                        <Form.Control type="text" placeholder="Digite a unidade (pc, un, cx)" value={this.state.unidade || ''} onChange={this.atualizaUnidade} required />
                                         <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
                                 <Col xs={2} md={4}>
                                     <Form.Group controlId="Formato" className="mb-3">
                                         <Form.Label>Condição</Form.Label>
-                                        <Form.Select as="select" placeholder="Selecione a condição" value={this.state.condicao || ''} onChange={this.atualizaDescricao} >
+                                        <Form.Select as="select" placeholder="Selecione a condição" value={this.state.condicao || ''} onChange={this.atualizaCondicao} >
                                             <option value="Não Especificado">Não Especificado</option>
                                             <option value="Novo">Novo</option>
                                             <option value="Usado">Usado</option>
@@ -576,14 +650,14 @@ class Produto extends React.Component {
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="marca" className="mb-3">
                                                 <Form.Label>Marca</Form.Label>
-                                                <Form.Control type="text" placeholder="Digite o nome" value={this.state.marca || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control type="text" placeholder="Digite o nome" value={this.state.marca || ''} onChange={this.atualizaMarca} required />
                                                 <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="produção" className="mb-3">
                                                 <Form.Label>Tipo Contato</Form.Label>
-                                                <Form.Select as="select" placeholder="Tipo de contato" value={this.state.producao || ''} onChange={this.atualizaDescricao} >
+                                                <Form.Select as="select" placeholder="Tipo de contato" value={this.state.producao || ''} onChange={this.atualizaProducao} >
                                                     <option value="">Própria</option>
                                                     <option value="">Terceiros</option>
                                                 </Form.Select>
@@ -592,7 +666,7 @@ class Produto extends React.Component {
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="datavalidade" className="mb-3">
                                                 <Form.Label>Data de validade</Form.Label>
-                                                <Form.Control type="date" placeholder="Digite o nome" value={this.state.dataValidade || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control type="date" placeholder="Digite o nome" value={this.state.dataValidade || ''} onChange={this.atualizaDataValidade} required />
                                                 <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                             </Form.Group>
                                         </Col>
@@ -761,31 +835,28 @@ class Produto extends React.Component {
                                     </Row>
                                 </Tab>
                                 <Tab eventKey="fornecedores" title="Fornecedores">
-
                                 </Tab>
                             </Tabs>
-
-                            <Row>
-                                <Col xs={2} md={2}>
-                                    <Form.Group controlId="buttonSalvar" className="mb-3">
-                                        <Button variant="primary" type="submit" className="salvar-button">
-                                            Salvar produto
-                                        </Button>
-                                    </Form.Group>
-                                </Col>
-                                <Col xs={4} md={2}>
-                                    <Form.Group controlId="buttonCancelar" className="mb-3">
-                                        <Button variant="warning" className="cancelar-button" onClick={this.fecharModal}>
-                                            Cancelar
-                                        </Button>
-                                    </Form.Group>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </Modal.Body>
-                </Modal >
-                {this.renderTabela()}
-            </div >
+                            <Container>
+                                <Row className="text-center">
+                                    <Col>
+                                        <Form.Group controlId="buttonSalvar" className="mb-3">
+                                            <div className="button-container d-flex justify-content-center">
+                                                <Button bsPrefix="btn-salvar-button" variant="primary" type="submit">
+                                                    Salvar
+                                                </Button>
+                                                <Button bsPrefix="btn-cancelar-button" variant="warning" onClick={this.fecharModal}>
+                                                    Cancelar
+                                                </Button>
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </Container>
+                    </Form>
+                </Modal.Body>
+            </Modal >
         )
     }
 }
