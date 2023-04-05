@@ -1,6 +1,7 @@
 import Home from './components/Home'
 import Contato from './components/Contato';
 import Produto from "./components/Produto";
+import Categoria from "./components/Categoria";
 
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -9,7 +10,6 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 
 import { BrowserRouter, Routes, Link, Route } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import CadastroProduto from './components/CadastroProduto';
 
 function App() {
   return (
@@ -26,7 +26,7 @@ function App() {
                 <NavDropdown title="Cadastros" id="nav-dropdown-dark-example" menuVariant="dark">
                   <NavDropdown.Item as={Link} to="/Contato">Clientes e Fornecedores</NavDropdown.Item>
                   <NavDropdown.Item as={Link} to="/Produto">Produtos</NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to="/CadastroProduto">Cadastro Prroduto</NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/Categoria">Categorias</NavDropdown.Item>
                 </NavDropdown>
 
                 <NavDropdown title="Suprimentos" id="nav-dropdown-dark-example" menuVariant="dark">
@@ -56,7 +56,7 @@ function App() {
           <Route path="/" element={<Home />}></Route>
           <Route path="/Contato" element={<Contato />}></Route>
           <Route path="/Produto" element={<Produto />}></Route>
-          <Route path="/CadastroProduto" element={<CadastroProduto />}></Route>
+          <Route path="/Categoria" element={<Categoria />}></Route>
         </Routes>
 
       </BrowserRouter>

@@ -2,7 +2,6 @@ package br.com.bling.ApiProdutos.controllers;
 
 import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
-import br.com.bling.ApiProdutos.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutos.exceptions.*;
 import br.com.bling.ApiProdutos.service.ProdutoService;
 import io.swagger.annotations.Api;
@@ -41,7 +40,7 @@ public class ProdutoController {
                 throw new ProdutoListaException("Não foi possível localizar a lista de produtos");
             }
 
-            if (request.retorno.produtos != null) {
+        /*    if (request.retorno.produtos != null) {
                 for (RetornoResponse.Produtos listaProdutos : request.getRetorno().getProdutos()) {
                     System.out.println("-----------------------------------------------------------------------------------");
                     System.out.println("Id Produto: " + listaProdutos.produto.id);
@@ -97,9 +96,9 @@ public class ProdutoController {
                     System.out.println("spedTipoItem: " + listaProdutos.produto.spedTipoItem);
                     System.out.println("-----------------------------------------------------------------------------------");
                 }
-            }
+            } */
 
-            System.out.println(request);
+            System.out.println("GET: " + request);
 
             return ResponseEntity.ok(request);
 
@@ -121,7 +120,7 @@ public class ProdutoController {
                 throw new ProdutoCodigoException("Produto com código " + codigo + " não localizado.");
             }
 
-            if (request.retorno.produtos != null) {
+         /*   if (request.retorno.produtos != null) {
                 for (RetornoResponse.Produtos listaProdutos : request.getRetorno().getProdutos()) {
                     System.out.println("-----------------------------------------------------------------------------------");
                     System.out.println("Id Produto: " + listaProdutos.produto.id);
@@ -177,10 +176,10 @@ public class ProdutoController {
                     System.out.println("spedTipoItem: " + listaProdutos.produto.spedTipoItem);
                     System.out.println("-----------------------------------------------------------------------------------");
                 }
-            }
+            } */
 
 
-            System.out.println(request);
+            System.out.println("GET ID: " + request);
 
             return ResponseEntity.ok(request);
 
@@ -202,7 +201,7 @@ public class ProdutoController {
                 throw new ProdutoCodigoFornecedorException("Produto com código: " + codigoFabricante + " e idFabricante: " + idFabricante + " não localizado.");
             }
 
-            if (request.retorno.produtos != null) {
+        /*    if (request.retorno.produtos != null) {
                 for (RetornoResponse.Produtos listaProdutos : request.getRetorno().getProdutos()) {
                     System.out.println("-----------------------------------------------------------------------------------");
                     System.out.println("Id Produto: " + listaProdutos.produto.id);
@@ -258,9 +257,9 @@ public class ProdutoController {
                     System.out.println("spedTipoItem: " + listaProdutos.produto.spedTipoItem);
                     System.out.println("-----------------------------------------------------------------------------------");
                 }
-            }
+            } */
 
-            System.out.println(request);
+            System.out.println("GET ID+FAB: " + request);
 
             return ResponseEntity.ok(request);
 
@@ -305,7 +304,7 @@ public class ProdutoController {
                 throw new ProdutoCadastroException("Cadastro não efetuado, revise os campos e tente novamente!");
             }
 
-            System.out.println(request);
+            System.out.println("POST: " + request);
 
             return ResponseEntity.ok(request);
 
@@ -327,7 +326,7 @@ public class ProdutoController {
                 throw new ProdutoAtualizarException("Não foi possível atualizar a categoria pelo código: " + codigo);
             }
 
-            System.out.println(request);
+            System.out.println("UPDATE: " + request);
 
             return ResponseEntity.ok(request);
 

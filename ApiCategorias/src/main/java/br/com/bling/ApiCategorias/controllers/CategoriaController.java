@@ -40,17 +40,17 @@ public class CategoriaController {
                 throw new CategoriaListaException("Não foi possível localizar a lista de categorias");
             }
 
-            if (request.retorno.categorias != null) {
-                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
-                    System.out.println("-------------------------------------------------------------------");
-                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-                    System.out.println("-------------------------------------------------------------------");
-                }
-            }
+//            if (request.retorno.categorias != null) {
+//                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+//                    System.out.println("-------------------------------------------------------------------");
+//                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+//                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+//                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+//                    System.out.println("-------------------------------------------------------------------");
+//                }
+//            }
 
-            System.out.println(request);
+            System.out.println("GET: " + request);
 
             return ResponseEntity.ok(request);
 
@@ -71,17 +71,17 @@ public class CategoriaController {
             if (request.retorno.categorias == null && request.retorno.erros == null) {
                 throw new CategoriaIdCategoriaException("Contato com o número de CPF/CNPJ: " + idCategoria + " não encontrado.");
             }
-            if (request.retorno.categorias != null) {
-                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
-                    System.out.println("-------------------------------------------------------------------");
-                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-                    System.out.println("-------------------------------------------------------------------");
-                }
-            }
+//            if (request.retorno.categorias != null) {
+//                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+//                    System.out.println("-------------------------------------------------------------------");
+//                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+//                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+//                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+//                    System.out.println("-------------------------------------------------------------------");
+//                }
+//            }
 
-            System.out.println(request);
+            System.out.println("GET ID: " + request);
 
             return ResponseEntity.ok(request);
 
@@ -103,7 +103,7 @@ public class CategoriaController {
                 throw new CategoriaCadastroException("Cadastro não efetuado, revise os campos e tente novamente!");
             }
 
-            System.out.println(request);
+            System.out.println("POST: " + request);
 
             return ResponseEntity.ok(request);
 
@@ -124,7 +124,7 @@ public class CategoriaController {
             if (request.retorno.categorias == null && request.retorno.erros == null) {
                 throw new CategoriaAtualizarException("Não foi possível atualizar a categoria pelo Id: " + idCategoria);
             }
-            System.out.println(request);
+            System.out.println("UPDATE: " + request);
 
             return ResponseEntity.ok(request);
 

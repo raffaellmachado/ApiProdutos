@@ -12,10 +12,9 @@ import { Container } from "react-bootstrap";
 import Spinner from 'react-bootstrap/Spinner';
 import { FaSync, FaTrash } from 'react-icons/fa';
 
+
 import '../css/Produto.css';
 import { parse } from 'js2xmlparser';
-import CadastroProduto from "./CadastroProduto";
-
 
 
 class Produto extends React.Component {
@@ -25,12 +24,17 @@ class Produto extends React.Component {
 
         this.state = {
             produtos: [],
+            categorias: [],
+            descricaoCategoria: '',
+            categoriaId: 0,
+            idCategoria: 0,
             id: 0,
             codigo: '',
             descricao: '',
             tipo: '',
             situacao: '',
             unidade: '',
+            un: '',
             preco: '',
             precoCusto: '',
             descricaoCurta: '',
@@ -52,7 +56,6 @@ class Produto extends React.Component {
             garantia: '',
             descricaoFornecedor: '',
             idFabricante: '',
-            categoria: [],
             pesoLiq: '',
             pesoBruto: '',
             estoqueMinimo: '',
@@ -78,27 +81,43 @@ class Produto extends React.Component {
     }
 
     componentDidMount() {
-        this.buscarProduto();
+        this.buscarDados();
     }
 
     componentWillUnmount() {
 
     }
 
-    //GET - MÉTODO PARA CONSUMO DA API CONTATOS
-    buscarProduto = () => {
-        fetch("http://localhost:8081/api/v1/produtos")
-            .then(resposta => resposta.json())
-            .then(dados => {
-                console.log(dados); // Adicionando o console.log
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.descricao !== this.state.descricao) {
+            this.atualizaDescricao({ target: { value: this.state.descricao } });
+        }
+    }
 
-                if (dados.retorno.produtos) {
-                    this.setState({ produtos: dados.retorno.produtos })
-                } else {
-                    this.setState({ produtos: [] })
-                }
-                this.setState({ carregando: false })
+    //GET - MÉTODO PARA CONSUMO DA API CONTATOS
+    buscarDados = () => {
+        this.setState({ carregando: true });
+
+        Promise.all([
+            fetch("http://localhost:8081/api/v1/produtos").then(resposta => resposta.json()),
+            fetch("http://localhost:8082/api/v1/categorias").then(resposta => resposta.json())
+        ])
+            .then(dados => {
+                console.log(dados[0], dados[1]);
+
+                const produtos = dados[0].retorno.produtos || [];
+                const categorias = dados[1].retorno.categorias || [];
+
+                this.setState({
+                    produtos: produtos,
+                    categorias: categorias,
+                    carregando: false
+                });
             })
+            .catch(erro => {
+                console.log(erro);
+                this.setState({ carregando: false });
+            });
     }
 
     //GET - MÉTODO PARA CONSUMO DA API CONTATOS
@@ -108,7 +127,6 @@ class Produto extends React.Component {
             .then(dados => {
                 if (dados.retorno.produtos) {
                     this.setState({
-
                         id: dados.retorno.produtos[0].produto.id,
                         codigo: dados.retorno.produtos[0].produto.codigo,
                         descricao: dados.retorno.produtos[0].produto.descricao,
@@ -136,9 +154,6 @@ class Produto extends React.Component {
                         garantia: dados.retorno.produtos[0].produto.garantia,
                         descricaoFornecedor: dados.retorno.produtos[0].produto.descricaoFornecedor,
                         idFabricante: dados.retorno.produtos[0].produto.idFabricante,
-                        categoria: [],
-                        id: dados.retorno.produtos[0].produto.categoria.id,
-                        descricao: dados.retorno.produtos[0].produto.categoria.descricao,
                         pesoLiq: dados.retorno.produtos[0].produto.pesoLiq,
                         pesoBruto: dados.retorno.produtos[0].produto.pesoBruto,
                         estoqueMinimo: dados.retorno.produtos[0].produto.estoqueMinimo,
@@ -157,8 +172,9 @@ class Produto extends React.Component {
                         freteGratis: dados.retorno.produtos[0].produto.freteGratis,
                         producao: dados.retorno.produtos[0].produto.producao,
                         dataValidade: dados.retorno.produtos[0].produto.dataValidade,
-                        spedTipoItem: dados.retorno.produtos[0].produto.spedTipoItem
-
+                        spedTipoItem: dados.retorno.produtos[0].produto.spedTipoItem,
+                        descricaoCategoria: dados.retorno.produtos[0].produto.categoria.descricao,
+                        categoriaId: dados.retorno.produtos[0].produto.categoria.id
                     })
 
                 } else {
@@ -181,7 +197,7 @@ class Produto extends React.Component {
             .then(resposta => resposta.json())
             .then(dados => {
                 console.log(dados);
-                this.buscarProduto(); // atualiza a lista de produtos após a exclusão
+                this.buscarDados(); // atualiza a lista de produtos após a exclusão
             })
             .catch(erro => console.error(erro));
     }
@@ -193,7 +209,7 @@ class Produto extends React.Component {
         const xml = parser.parseFromString(xmlProduto, 'text/xml');
         const stringXml = new XMLSerializer().serializeToString(xml);
 
-        fetch('http://localhost:8080/api/v1/cadastrarproduto', {
+        fetch('http://localhost:8081/api/v1/cadastrarproduto', {
             method: 'POST',
             body: stringXml,
             headers: {
@@ -209,7 +225,7 @@ class Produto extends React.Component {
         const stringXml = new XMLSerializer().serializeToString(xml);
         const codigo = xml.querySelector('codigo').textContent;
 
-        fetch('http://localhost:8080/api/v1/atualizarproduto/' + codigo, {
+        fetch('http://localhost:8081/api/v1/atualizarproduto/' + codigo, {
             method: 'POST',
             body: stringXml,
             headers: {
@@ -218,11 +234,6 @@ class Produto extends React.Component {
         })
     }
 
-    atualizaNome = (e) => {
-        this.setState({
-            nome: e.target.value
-        })
-    }
 
     atualizaCodigo = (e) => {
         this.setState({
@@ -233,6 +244,12 @@ class Produto extends React.Component {
     atualizaDescricao = (e) => {
         this.setState({
             descricao: e.target.value
+        })
+    }
+
+    atualizaSituacao = (e) => {
+        this.setState({
+            situacao: e.target.value
         })
     }
 
@@ -250,6 +267,7 @@ class Produto extends React.Component {
 
     atualizaUnidade = (e) => {
         this.setState({
+            un: e.target.value,
             unidade: e.target.value
         })
     }
@@ -278,35 +296,145 @@ class Produto extends React.Component {
         })
     }
 
+    atualizaFreteGratis = (e) => {
+        this.setState({
+            freteGratis: e.target.value
+        })
+    }
+
+    atualizaPesoLiq = (e) => {
+        this.setState({
+            pesoLiq: e.target.value
+        })
+    }
+
+    atualizaPesoBruto = (e) => {
+        this.setState({
+            pesoBruto: e.target.value
+        })
+    }
+
+    atualizaLarguraProduto = (e) => {
+        this.setState({
+            larguraProduto: e.target.value
+        })
+    }
+
+    atualizaAlturaProduto = (e) => {
+        this.setState({
+            alturaProduto: e.target.value
+        })
+    }
+
+    atualizaProfundidadeProduto = (e) => {
+        this.setState({
+            profundidadeProduto: e.target.value
+        })
+    }
+
+    atualizaVolumes = (e) => {
+        this.setState({
+            volumes: e.target.value
+        })
+    }
+
+    atualizaItensPorCaixa = (e) => {
+        this.setState({
+            itensPorCaixa: e.target.value
+        })
+    }
+
+    atualizaUnidadeMedida = (e) => {
+        this.setState({
+            unidadeMedida: e.target.value
+        })
+    }
+
+    atualizaGtin = (e) => {
+        this.setState({
+            gtin: e.target.value
+        })
+    }
+
+    atualizaGtinEmbalagem = (e) => {
+        this.setState({
+            gtinEmbalagem: e.target.value
+        })
+    }
+
+    atualizaDescricaoCurta = (e) => {
+        this.setState({
+            descricaoCurta: e.target.value
+        })
+    }
+
+    atualizaDescricaoComplementar = (e) => {
+        this.setState({
+            descricaoComplementar: e.target.value
+        })
+    }
+
+    atualizaLinkExterno = (e) => {
+        this.setState({
+            linkExterno: e.target.value
+        })
+    }
+
+    atualizaUrlVideo = (e) => {
+        this.setState({
+            urlVideo: e.target.value
+        })
+    }
+
+    atualizaObservacoes = (e) => {
+        this.setState({
+            observacoes: e.target.value
+        })
+    }
+
+    atualizaEstoqueMinimo = (e) => {
+        this.setState({
+            estoqueMinimo: e.target.value
+        })
+    }
+
+    atualizaEstoqueMaximo = (e) => {
+        this.setState({
+            estoqueMaximo: e.target.value
+        })
+    }
+
+    atualizaCrossdocking = (e) => {
+        this.setState({
+            crossdocking: e.target.value
+        })
+    }
+
+    atualizaLocalizacao = (e) => {
+        this.setState({
+            localizacao: e.target.value
+        })
+    }
+
+    atualizaCategoriaDescricao = (e) => {
+        this.setState({
+            categoriaId: e.target.value, //Valor que capturo do Json servidor Bling
+            idCategoria: e.target.value  // Valor que envio para o servidor do Bling.
+        });
+    }
 
 
     //Ações do botão SUBMIT (Cadastrar).
     submit = (event) => {
         event.preventDefault();
-        console.log("logradouro: ", this.state.logradouro);
-        console.log("endereco: ", this.state.endereco);
-        console.log("-----------------------------------");
-        console.log("localidade: ", this.state.localidade);
-        console.log("cidade: ", this.state.cidade);
-        console.log("-----------------------------------");
-        console.log("tipo: ", this.state.tipo);
-        console.log("tipoPessoa: ", this.state.tipoPessoa);
-        console.log("-----------------------------------");
-        console.log("cnpj: ", this.state.cnpj);
-        console.log("cpf_cnpj: ", this.state.cpf_cnpj);
 
         if (this.state.id === 0) {
             const produto = {
-                // descricao: this.state.descricao,
-                // codigo: this.state.codigo,
-                // unidade: this.state.unidade,
-                // preco: this.state.preco,
-                // estoqueMaximo: this.state.estoqueMaximo
                 codigo: this.state.codigo,
                 descricao: this.state.descricao,
                 tipo: this.state.tipo,
                 situacao: this.state.situacao,
-                unidade: this.state.unidade,
+                un: this.state.un,
                 preco: this.state.preco,
                 precoCusto: this.state.precoCusto,
                 descricaoCurta: this.state.descricaoCurta,
@@ -328,7 +456,11 @@ class Produto extends React.Component {
                 garantia: this.state.garantia,
                 descricaoFornecedor: this.state.descricaoFornecedor,
                 idFabricante: this.state.idFabricante,
+
                 categoria: [],
+                idCategoria: this.state.idCategoria,
+                descricaoCategoria: this.state.descricaoCategoria,
+
                 pesoLiq: this.state.pesoLiq,
                 pesoBruto: this.state.pesoBruto,
                 estoqueMinimo: this.state.estoqueMinimo,
@@ -358,7 +490,7 @@ class Produto extends React.Component {
                 descricao: this.state.descricao,
                 tipo: this.state.tipo,
                 situacao: this.state.situacao,
-                unidade: this.state.unidade,
+                un: this.state.un,
                 preco: this.state.preco,
                 precoCusto: this.state.precoCusto,
                 descricaoCurta: this.state.descricaoCurta,
@@ -380,7 +512,11 @@ class Produto extends React.Component {
                 garantia: this.state.garantia,
                 descricaoFornecedor: this.state.descricaoFornecedor,
                 idFabricante: this.state.idFabricante,
+
                 categoria: [],
+                idCategoria: this.state.idCategoria,
+                descricaoCategoria: this.state.descricaoCategoria,
+
                 pesoLiq: this.state.pesoLiq,
                 pesoBruto: this.state.pesoBruto,
                 estoqueMinimo: this.state.estoqueMinimo,
@@ -414,7 +550,7 @@ class Produto extends React.Component {
             event.preventDefault();
             this.setState({ validated: true }); // atribui true na validação
             this.fecharModal(); // se todos os campos estiverem preenchidos o modal é fechado
-            this.buscarContato(); // atualiza a lista de produtos após a exclusão
+            this.buscarDados(); // atualiza a lista de produtos após a exclusão
         }
     }
 
@@ -449,7 +585,10 @@ class Produto extends React.Component {
                 garantia: '',
                 descricaoFornecedor: '',
                 idFabricante: '',
+
                 categoria: [],
+                descricaoCategoria: '',
+
                 pesoLiq: '',
                 pesoBruto: '',
                 estoqueMinimo: '',
@@ -475,14 +614,14 @@ class Produto extends React.Component {
 
     //Ação para fechar o modal de cadastro e atualização.
     fecharModal = () => {
-        this.setState(
-            {
-                modalAberta: false
-            }
-        )
-        this.buscarProduto();
-        window.location.reload();
+        this.setState({
+            modalAberta: false,
+            validated: false
+        });
+
+        this.buscarDados();
     }
+
 
     //Ação para abrir o modal de cadastro e atualização.
     abrirModal = () => {
@@ -567,7 +706,7 @@ class Produto extends React.Component {
 
     renderModal() {
         return (
-            <Modal show={this.state.modalAberta} onHide={this.fecharModal} size="xl" backdrop="static">
+            <Modal show={this.state.modalAberta} onHide={this.fecharModal} size="xl" backdrop="static" >
                 <Modal.Header closeButton>
                     <Modal.Title>Cadastro/Atualização de Produto</Modal.Title>
                 </Modal.Header>
@@ -584,8 +723,17 @@ class Produto extends React.Component {
                                 <Col xs={6} md={8}>
                                     <Form.Group controlId="nome" className="mb-3">
                                         <Form.Label>Nome</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o nome" value={this.state.nome || ''} onChange={this.atualizaNome} required />
+                                        <Form.Control type="text" placeholder="Digite o nome" value={this.state.descricao || ''} onChange={this.atualizaDescricao} required />
                                         <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={6} md={2}>
+                                    <Form.Group controlId="Situacao" className="mb-3">
+                                        <Form.Label>Situação</Form.Label>
+                                        <Form.Select as="select" placeholder="Situacao" value={this.state.situacao || ''} onChange={this.atualizaSituacao} >
+                                            <option value="Ativo">Ativo</option>
+                                            <option value="Inativo">Inativo</option>
+                                        </Form.Select>
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -593,10 +741,11 @@ class Produto extends React.Component {
                                 <Col xs={2} md={4}>
                                     <Form.Group controlId="codigo" className="mb-3">
                                         <Form.Label>Código (SKU)</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o código" value={this.state.codigo || ''} onChange={this.atualizaCodigo} />
+                                        <Form.Control type="text" placeholder="Digite o código" value={this.state.codigo || ''} onChange={this.atualizaCodigo} required />
+                                        <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
-                                <Col xs={2} md={4}>
+                                {/* <Col xs={2} md={4}>
                                     <Form.Group controlId="Formato" className="mb-3">
                                         <Form.Label>Formato</Form.Label>
                                         <Form.Select as="select" placeholder="Tipo de formato" value={''} onChange={this.atualizaDescricao} >
@@ -605,7 +754,7 @@ class Produto extends React.Component {
                                             <option value="">Com composição</option>
                                         </Form.Select>
                                     </Form.Group>
-                                </Col>
+                                </Col> */}
                                 <Col xs={2} md={4}>
                                     <Form.Group controlId="Formato" className="mb-3">
                                         <Form.Label>Tipo</Form.Label>
@@ -620,15 +769,13 @@ class Produto extends React.Component {
                                 <Col xs={2} md={4}>
                                     <Form.Group controlId="nome" className="mb-3">
                                         <Form.Label>Preço venda</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite o preço de venda" value={this.state.preco || ''} onChange={this.atualizaPreco} required />
-                                        <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                        <Form.Control type="text" placeholder="Digite o preço de venda" value={this.state.preco || ''} onChange={this.atualizaPreco} />
                                     </Form.Group>
                                 </Col>
                                 <Col xs={2} md={4}>
                                     <Form.Group controlId="nome" className="mb-3">
                                         <Form.Label>Unidade</Form.Label>
-                                        <Form.Control type="text" placeholder="Digite a unidade (pc, un, cx)" value={this.state.unidade || ''} onChange={this.atualizaUnidade} required />
-                                        <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                        <Form.Control type="text" placeholder="Digite a unidade (pc, un, cx)" value={this.state.unidade || ''} onChange={this.atualizaUnidade} />
                                     </Form.Group>
                                 </Col>
                                 <Col xs={2} md={4}>
@@ -650,7 +797,7 @@ class Produto extends React.Component {
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="marca" className="mb-3">
                                                 <Form.Label>Marca</Form.Label>
-                                                <Form.Control type="text" placeholder="Digite o nome" value={this.state.marca || ''} onChange={this.atualizaMarca} required />
+                                                <Form.Control type="text" placeholder="Digite o nome" value={this.state.marca || ''} onChange={this.atualizaMarca} />
                                                 <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                             </Form.Group>
                                         </Col>
@@ -658,24 +805,24 @@ class Produto extends React.Component {
                                             <Form.Group controlId="produção" className="mb-3">
                                                 <Form.Label>Tipo Contato</Form.Label>
                                                 <Form.Select as="select" placeholder="Tipo de contato" value={this.state.producao || ''} onChange={this.atualizaProducao} >
-                                                    <option value="">Própria</option>
-                                                    <option value="">Terceiros</option>
+                                                    <option value="P">Própria</option>
+                                                    <option value="T">Terceiros</option>
                                                 </Form.Select>
                                             </Form.Group>
                                         </Col>
-                                        <Col xs={2} md={3}>
+                                        {/* <Col xs={2} md={3}>
                                             <Form.Group controlId="datavalidade" className="mb-3">
                                                 <Form.Label>Data de validade</Form.Label>
-                                                <Form.Control type="date" placeholder="Digite o nome" value={this.state.dataValidade || ''} onChange={this.atualizaDataValidade} required />
+                                                <Form.Control type="date" placeholder="Digite o nome" value={this.state.dataValidade || ''} onChange={this.atualizaDataValidade} />
                                                 <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                             </Form.Group>
-                                        </Col>
+                                        </Col> */}
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="frete" className="mb-3">
                                                 <Form.Label>Frete Grátis</Form.Label>
-                                                <Form.Select as="select" placeholder="Selecione o frete" value={this.state.freteGratis || ''} onChange={this.atualizaDescricao} >
-                                                    <option value="">Não</option>
-                                                    <option value="">Sim</option>
+                                                <Form.Select as="select" placeholder="Selecione o frete" value={this.state.freteGratis || ''} onChange={this.atualizaFreteGratis} >
+                                                    <option value="N">Não</option>
+                                                    <option value="S">Sim</option>
                                                 </Form.Select>
                                             </Form.Group>
                                         </Col>
@@ -684,26 +831,26 @@ class Produto extends React.Component {
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="pesoliquido" className="mb-3">
                                                 <Form.Label>Peso Líquido </Form.Label>
-                                                <Form.Control type="text" placeholder="Insira o peso liquido" value={this.state.pesoLiq || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control type="text" placeholder="Insira o peso liquido" value={this.state.pesoLiq || ''} onChange={this.atualizaPesoLiq} />
                                                 <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="pesobruto" className="mb-3">
                                                 <Form.Label>Peso Bruto</Form.Label>
-                                                <Form.Control type="text" placeholder="Insira o peso bruto" value={this.state.pesoBruto || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Control type="text" placeholder="Insira o peso bruto" value={this.state.pesoBruto || ''} onChange={this.atualizaPesoBruto} />
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="largura" className="mb-3">
                                                 <Form.Label>Largura</Form.Label>
-                                                <Form.Control type="text" placeholder="Insira a largura" value={this.state.larguraProduto || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control type="text" placeholder="Insira a largura" value={this.state.larguraProduto || ''} onChange={this.atualizaLarguraProduto} />
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="altura" className="mb-3">
                                                 <Form.Label>Altura</Form.Label>
-                                                <Form.Control type="text" placeholder="Insira a altura" value={this.state.alturaProduto || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Control type="text" placeholder="Insira a altura" value={this.state.alturaProduto || ''} onChange={this.atualizaAlturaProduto} />
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -711,29 +858,29 @@ class Produto extends React.Component {
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="profundidade" className="mb-3">
                                                 <Form.Label>Profundidade</Form.Label>
-                                                <Form.Control type="text" placeholder="Insira a profundidade" value={this.state.profundidadeProduto || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control type="text" placeholder="Insira a profundidade" value={this.state.profundidadeProduto || ''} onChange={this.atualizaProfundidadeProduto} />
                                                 <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="pesobruto" className="mb-3">
                                                 <Form.Label>Volumes</Form.Label>
-                                                <Form.Control type="text" placeholder="Insira o volume" value={this.state.volumes || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Control type="text" placeholder="Insira o volume" value={this.state.volumes || ''} onChange={this.atualizaVolumes} />
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="itenscaixa" className="mb-3">
                                                 <Form.Label>Itens p/ caixa</Form.Label>
-                                                <Form.Control type="text" placeholder="Digite o volume" value={this.state.itensPorCaixa || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control type="text" placeholder="Digite o volume" value={this.state.itensPorCaixa || ''} onChange={this.atualizaItensPorCaixa} />
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="unidade" className="mb-3">
                                                 <Form.Label>Unidade de medida</Form.Label>
-                                                <Form.Select as="select" placeholder="Selecione o frete" value={this.state.unidadeMedida || ''} onChange={this.atualizaDescricao} >
-                                                    <option value="">Metros</option>
-                                                    <option value="">Centimetros</option>
-                                                    <option value="">Milímetro</option>
+                                                <Form.Select as="select" placeholder="Selecione o frete" value={this.state.unidadeMedida || ''} onChange={this.atualizaUnidadeMedida} >
+                                                    <option value="Metros">Metros</option>
+                                                    <option value="Centímetros">Centimetros</option>
+                                                    <option value="Milímetro">Milímetro</option>
                                                 </Form.Select>
                                             </Form.Group>
                                         </Col>
@@ -742,14 +889,14 @@ class Produto extends React.Component {
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="gtin" className="mb-3">
                                                 <Form.Label>GTIN/EAN </Form.Label>
-                                                <Form.Control type="text" placeholder="SEM GTIN" value={this.state.gtin || ''} onChange={this.atualizaNome} required />
+                                                <Form.Control type="text" placeholder="GTIN/EAN" value={this.state.gtin || ''} onChange={this.atualizaGtin} />
                                                 <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="gtintributario" className="mb-3">
-                                                <Form.Label>Volumes</Form.Label>
-                                                <Form.Control type="text" placeholder="SEM GTIN" value={this.state.volumes || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Label>GTIN/EAN tributário</Form.Label>
+                                                <Form.Control type="text" placeholder="GTIN/EAN tributário" value={this.state.gtinEmbalagem || ''} onChange={this.atualizaGtinEmbalagem} />
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -758,16 +905,15 @@ class Produto extends React.Component {
 
                                             <Form.Group controlId="descricaocurta" className="mb-3">
                                                 <Form.Label>Descrição Curta (Descrição Principal) </Form.Label>
-                                                <Form.Control as="textarea" rows={3} placeholder="Insira a descrição curta" value={this.state.descricaoCurta || ''} onChange={this.atualizaInformacaoContato} />
+                                                <Form.Control as="textarea" rows={3} placeholder="Insira a descrição curta" value={this.state.descricaoCurta || ''} onChange={this.atualizaDescricaoCurta} />
                                             </Form.Group>
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col xs={2} md={12}>
-
                                             <Form.Group controlId="descricaocurta" className="mb-3">
                                                 <Form.Label>Descrição Complementar</Form.Label>
-                                                <Form.Control as="textarea" rows={3} placeholder="Insira a descrição complementar" value={this.state.descricaoComplementar || ''} onChange={this.atualizaInformacaoContato} />
+                                                <Form.Control as="textarea" rows={3} placeholder="Insira a descrição complementar" value={this.state.descricaoComplementar || ''} onChange={this.atualizaDescricaoComplementar} />
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -775,7 +921,7 @@ class Produto extends React.Component {
                                         <Col xs={2} md={12}>
                                             <Form.Group controlId="linkexterno" className="mb-3">
                                                 <Form.Label>Link Externo</Form.Label>
-                                                <Form.Control type="text" placeholder="insira o link externo" value={this.state.linkExterno || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Control type="text" placeholder="insira o link externo" value={this.state.linkExterno || ''} onChange={this.atualizaLinkExterno} />
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -783,7 +929,7 @@ class Produto extends React.Component {
                                         <Col xs={2} md={12}>
                                             <Form.Group controlId="video" className="mb-3">
                                                 <Form.Label>Video</Form.Label>
-                                                <Form.Control type="text" placeholder="insira o link do video" value={this.state.urlVideo || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Control type="text" placeholder="insira o link do video" value={this.state.urlVideo || ''} onChange={this.atualizaUrlVideo} />
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -791,7 +937,19 @@ class Produto extends React.Component {
                                         <Col xs={2} md={12}>
                                             <Form.Group controlId="observacoes" className="mb-3">
                                                 <Form.Label>Observações</Form.Label>
-                                                <Form.Control tas="textarea" rows={3} placeholder="insira as observações" value={this.state.observacoes || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Control tas="textarea" rows={3} placeholder="insira as observações" value={this.state.observacoes || ''} onChange={this.atualizaObservacoes} />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} md={12}>
+                                            <Form.Group controlId="categoria" className="mb-3">
+                                                <Form.Label>Categoria</Form.Label>
+                                                <Form.Control as="select" placeholder="insira as observações" value={this.state.categoriaId || ''} onChange={this.atualizaCategoriaDescricao}>
+                                                    {this.state.categorias.map((categoria) => (
+                                                        <option key={categoria.categoria.id} value={categoria.categoria.id}>
+                                                            {categoria.categoria.descricao}
+                                                        </option>
+                                                    ))}
+                                                </Form.Control>
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -811,25 +969,25 @@ class Produto extends React.Component {
                                         <Col xs={1} md={3}>
                                             <Form.Group controlId="minimo" className="mb-3">
                                                 <Form.Label>Minimo</Form.Label>
-                                                <Form.Control tas="text" placeholder="insira o minimo" value={this.state.estoqueMinimo || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Control tas="text" placeholder="insira o minimo" value={this.state.estoqueMinimo || ''} onChange={this.atualizaEstoqueMinimo} />
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="maximo" className="mb-3">
                                                 <Form.Label>Máximo</Form.Label>
-                                                <Form.Control tas="text" placeholder="insira o maximo" value={this.state.estoqueMaximo || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Control tas="text" placeholder="insira o maximo" value={this.state.estoqueMaximo || ''} onChange={this.atualizaEstoqueMaximo} />
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="crossdocking" className="mb-3">
                                                 <Form.Label>Crossdocking</Form.Label>
-                                                <Form.Control tas="text" placeholder="insira o crossdocking" value={this.state.crossdocking || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Control tas="text" placeholder="insira o crossdocking" value={this.state.crossdocking || ''} onChange={this.atualizaCrossdocking} />
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} md={3}>
                                             <Form.Group controlId="localizacao" className="mb-3">
                                                 <Form.Label>Localização</Form.Label>
-                                                <Form.Control tas="text" placeholder="insira a localização" value={this.state.localizacao || ''} onChange={this.atualizaDescricao} />
+                                                <Form.Control tas="text" placeholder="insira a localização" value={this.state.localizacao || ''} onChange={this.atualizaLocalizacao} />
                                             </Form.Group>
                                         </Col>
                                     </Row>

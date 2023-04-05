@@ -1,18 +1,15 @@
-import React from "react";
-
-import '../css/Home.css';
-
 function Home() {
-    return (
-        <body>
 
-            <div>
-                <p>
-                    Esta é a Home, pagina inicial.
-                </p>
-            </div>
-        </body>
-    )
+    const styles = {
+        backgroundImage: 'url("http://okeaatecnologia.com/assets/img/carousel/carousel4.jpg")',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        height: '100vh'
+    };
+
+    return <div style={styles}></div>;
 }
 
 export default Home;
+
+
