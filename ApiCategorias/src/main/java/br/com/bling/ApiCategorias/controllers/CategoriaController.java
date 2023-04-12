@@ -1,6 +1,7 @@
 package br.com.bling.ApiCategorias.controllers;
 
 import br.com.bling.ApiCategorias.controllers.request.JsonRequest;
+import br.com.bling.ApiCategorias.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategorias.controllers.response.JsonResponse;
 import br.com.bling.ApiCategorias.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategorias.exceptions.*;
@@ -14,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -30,30 +32,48 @@ public class CategoriaController {
     /**
      * GET "BUSCA A LISTA DE CATEGORIAS".
      */
+//    @GetMapping("/categorias")
+//    @ApiOperation(value = "Retorna uma lista de categorias")
+//    public ResponseEntity<JsonResponse> getAllCategory() {
+//        try {
+//            JsonResponse request = categoriaService.getAllCategory();
+//
+//            if (request.retorno.categorias == null && request.retorno.erros == null) {
+//                throw new CategoriaListaException("Não foi possível localizar a lista de categorias");
+//            }
+//
+////            if (request.retorno.categorias != null) {
+////                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+////                    System.out.println("-------------------------------------------------------------------");
+////                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+////                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+////                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+////                    System.out.println("-------------------------------------------------------------------");
+////                }
+////            }
+//
+//            System.out.println("GET: " + request);
+//
+//            return ResponseEntity.ok(request);
+//
+//        } catch (Exception e) {
+//            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
+//        }
+//    }
+
     @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
-    public ResponseEntity<JsonResponse> getAllCategory() {
+    public ResponseEntity<List<CategoriaResponse>> getAllCategory() {
         try {
-            JsonResponse request = categoriaService.getAllCategory();
+            List<CategoriaResponse> categorias = categoriaService.getAllCategory();
 
-            if (request.retorno.categorias == null && request.retorno.erros == null) {
-                throw new CategoriaListaException("Não foi possível localizar a lista de categorias");
+            if (categorias.isEmpty()) {
+                throw new CategoriaListaException("Não foi possível localizar a lista de produtos");
             }
 
-//            if (request.retorno.categorias != null) {
-//                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
-//                    System.out.println("-------------------------------------------------------------------");
-//                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-//                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-//                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-//                    System.out.println("-------------------------------------------------------------------");
-//                }
-//            }
+            System.out.println("GET: " + categorias);
 
-            System.out.println("GET: " + request);
-
-            return ResponseEntity.ok(request);
-
+            return ResponseEntity.ok(categorias);
         } catch (Exception e) {
             throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
         }

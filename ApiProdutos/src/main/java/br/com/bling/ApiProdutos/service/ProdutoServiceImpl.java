@@ -2,7 +2,10 @@ package br.com.bling.ApiProdutos.service;
 
 import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
+import br.com.bling.ApiProdutos.controllers.response.ProdutoResponse;
+import br.com.bling.ApiProdutos.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutos.exceptions.ApiProdutoException;
+import br.com.bling.ApiProdutos.repository.ProdutoRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -33,11 +40,36 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Autowired
     public RestTemplate restTemplate;
 
+    @Autowired
+    private ProdutoRepository produtoRepository;
+
     /**
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
+//    @Override
+//    public JsonResponse getAllProducts() throws ApiProdutoException {
+//        try {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> request = new HttpEntity<>(headers);
+//
+//            String url = apiBaseUrl + "/produtos/json/" + apikeyparam + apiKey;
+//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+//
+//            return produtoRepository.save(result);
+//
+//        } catch (JsonProcessingException e) {
+//            throw new ApiProdutoException("Erro ao processar JSON", e);
+//        } catch (RestClientException e) {
+//            throw new ApiProdutoException("Erro ao chamar API", e);
+//        }
+//    }
+
     @Override
-    public JsonResponse getAllProducts() throws ApiProdutoException {
+    public List<ProdutoResponse> getAllProducts() throws ApiProdutoException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -47,16 +79,41 @@ public class ProdutoServiceImpl implements ProdutoService {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+            JsonResponse jsonResponse = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
-            return result;
+            List<ProdutoResponse> produtos = new ArrayList<>();
+            for (RetornoResponse.Produtos produto : jsonResponse.getRetorno().getProdutos()) {
+                produtos.add(produto.getProduto());
+            }
+
+            for (ProdutoResponse produto : produtos) {
+                Optional<ProdutoResponse> produtoExistente = produtoRepository.findById(produto.getId());
+                if (produtoExistente.isPresent()) {
+                    ProdutoResponse produtoAtualizado = produtoExistente.get();
+                    produtoAtualizado.setId(produto.getId());
+                    produtoRepository.save(produtoAtualizado);
+                } else {
+                    produtoRepository.save(produto);
+                }
+            }
+
+            return produtos;
 
         } catch (JsonProcessingException e) {
             throw new ApiProdutoException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
-            throw new ApiProdutoException("Erro ao chamar API", e);
+            // Em caso de erro na chamada da API, recupera os dados do banco de dados
+            List<ProdutoResponse> produtos = produtoRepository.findAll();
+            if (produtos.isEmpty()) {
+                throw new ApiProdutoException("Erro ao chamar API e nenhum dado encontrado no banco de dados", e);
+            }
+            return produtos;
         }
     }
+
+
+
+
 
     /**
      * GET "BUSCAR UM PRODUTO PELO CODIGO (SKU)".

@@ -48,22 +48,27 @@ public class ProdutoRequest {
     @Size(message = "Descrição complementar do produto")
     @JsonProperty("descricaoComplementar")
     public String descricaoComplementar;
+
     @Max(value = 6, message = "Tipo de unidade do produto")
     @JsonProperty("un")
     public String un;
+
     @DecimalMin("0")
     @Digits(integer = 17, fraction = 10)
     @Size(message = "Valor unitário do produto")
     @JsonProperty("vlr_unit")
     public BigDecimal vlr_unit;
+
     @Digits(integer = 17, fraction = 10)
     @Size(message = "Preço de custo do produto")
     @JsonProperty("preco_custo")
     public BigDecimal preco_custo;
+
     @Digits(integer = 11, fraction = 3)
     @Size(message = "Peso bruto do produto")
     @JsonProperty("peso_bruto")
     public BigDecimal peso_bruto;
+
     @Digits(integer = 11, fraction = 3)
     @Size(message = "Peso líquido do produto")
     @JsonProperty("peso_liq")

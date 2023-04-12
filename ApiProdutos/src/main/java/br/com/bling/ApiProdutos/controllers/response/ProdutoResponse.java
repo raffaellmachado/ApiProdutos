@@ -6,14 +6,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
 @Data
 @NoArgsConstructor
+@Entity
+@Table(name = "TB_PRODUTO")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProdutoResponse {
 
+    @Id
     @JsonProperty("id")
-    public String id;
+    private Long id;
 
     @JsonProperty("codigo")
     public String codigo;
@@ -93,8 +98,8 @@ public class ProdutoResponse {
     @JsonProperty("idFabricante")
     public String idFabricante;
 
-    @JsonProperty("categoria")
-    public CategoriaResponse categoria;
+//    @JsonProperty("categoria")
+//    public CategoriaResponse categoria;
 
     @JsonProperty("pesoLiq")
     public String pesoLiq;
