@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface ProdutoService {
 
+//    public JsonResponse getAllProducts();
+
     public List<ProdutoResponse> getAllProducts();
 
     public JsonResponse getProductByCode(@PathVariable("codigo") String codigo);
