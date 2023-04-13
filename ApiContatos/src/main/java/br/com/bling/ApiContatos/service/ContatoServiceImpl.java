@@ -1,8 +1,12 @@
 package br.com.bling.ApiContatos.service;
 
 import br.com.bling.ApiContatos.controllers.request.JsonRequest;
+import br.com.bling.ApiContatos.controllers.response.ContatoResponse;
 import br.com.bling.ApiContatos.controllers.response.JsonResponse;
+import br.com.bling.ApiContatos.controllers.response.RetornoResponse;
 import br.com.bling.ApiContatos.exceptions.ApiContatoException;
+import br.com.bling.ApiContatos.repositories.ContatoRequestRepository;
+import br.com.bling.ApiContatos.repositories.ContatoResponseRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ContatoServiceImpl implements ContatoService {
@@ -36,9 +44,37 @@ public class ContatoServiceImpl implements ContatoService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private ContatoResponseRepository contatoResponseRepository;
+
+    @Autowired
+    private ContatoRequestRepository contatoRequestRepository;
+
     /**
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
+//    @Override
+//    public JsonResponse getAllContacts() throws ApiContatoException {
+//        try {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> request = new HttpEntity<>(headers);
+//
+//            String url = apiBaseUrl + "/contatos/json/" + apikeyparam + apiKey;
+//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+//
+//            return result;
+//
+//        } catch (JsonProcessingException e) {
+//            throw new ApiContatoException("Erro ao processar JSON", e);
+//        } catch (RestClientException e) {
+//            throw new ApiContatoException("Erro ao chamar API", e);
+//        }
+//    }
+
     @Override
     public JsonResponse getAllContacts() throws ApiContatoException {
         try {
@@ -50,14 +86,55 @@ public class ContatoServiceImpl implements ContatoService {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+            JsonResponse jsonResponse = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
-            return result;
+            List<ContatoResponse> contatos = new ArrayList<>();
+            for (RetornoResponse.Contatos contato : jsonResponse.getRetorno().getContatos()) {
+                contatos.add(contato.getContato());
+            }
+
+            ArrayList<RetornoResponse.Contatos> contatosResponse = new ArrayList<>();
+            for (ContatoResponse contato : contatos) {
+                Optional<ContatoResponse> categoriaExistente = contatoResponseRepository.findById(contato.getId());
+                if (categoriaExistente.isPresent()) {
+                    ContatoResponse categoriaAtualizada = categoriaExistente.get();
+                    categoriaAtualizada.setId(contato.getId());
+                    contatoResponseRepository.save(categoriaAtualizada);
+                } else {
+                    contatoResponseRepository.save(contato);
+                }
+                RetornoResponse.Contatos contatoResponse = new RetornoResponse.Contatos();
+                contatoResponse.setContato(contato);
+                contatosResponse.add(contatoResponse);
+            }
+
+            RetornoResponse retornoResponse = new RetornoResponse();
+            retornoResponse.setContatos(contatosResponse);
+
+            JsonResponse jsonRetornoResponse = new JsonResponse();
+            jsonRetornoResponse.setRetorno(retornoResponse);
+
+            return jsonRetornoResponse;
 
         } catch (JsonProcessingException e) {
             throw new ApiContatoException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
-            throw new ApiContatoException("Erro ao chamar API", e);
+            List<ContatoResponse> contatos = contatoResponseRepository.findAll();
+            if (contatos.isEmpty()) {
+                throw new ApiContatoException("Erro ao chamar API: ", e);
+            } else {
+                RetornoResponse retornoResponse = new RetornoResponse();
+                ArrayList<RetornoResponse.Contatos> contatosResponse = new ArrayList<>();
+                for (ContatoResponse contato : contatos) {
+                    RetornoResponse.Contatos contatoResponse = new RetornoResponse.Contatos();
+                    contatoResponse.setContato(contato);
+                    contatosResponse.add(contatoResponse);
+                }
+                retornoResponse.setContatos(contatosResponse);
+                JsonResponse jsonResponse = new JsonResponse();
+                jsonResponse.setRetorno(retornoResponse);
+                return jsonResponse;
+            }
         }
     }
 

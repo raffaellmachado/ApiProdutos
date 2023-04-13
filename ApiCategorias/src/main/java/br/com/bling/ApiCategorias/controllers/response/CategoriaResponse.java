@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "TB_CATEGORIA")
+@Table(name = "TB_CATEGORIA_RESPONSE")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CategoriaResponse {

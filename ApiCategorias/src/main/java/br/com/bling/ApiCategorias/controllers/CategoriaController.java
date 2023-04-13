@@ -1,5 +1,6 @@
 package br.com.bling.ApiCategorias.controllers;
 
+import br.com.bling.ApiCategorias.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategorias.controllers.request.JsonRequest;
 import br.com.bling.ApiCategorias.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategorias.controllers.response.JsonResponse;
@@ -82,50 +83,70 @@ public class CategoriaController {
     /**
      * GET "BUSCA CATEGORIA PELO IDCATEGORIA".
      */
+//    @GetMapping("/categoria/{idCategoria}")
+//    @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
+//    public ResponseEntity<JsonResponse> getCategoryByIdCategory(@PathVariable("idCategoria") String idCategoria) {
+//        try {
+//            CategoriaResponse request = categoriaService.getCategoryByIdCategoria(idCategoria);
+//
+//            if (request.retorno.categorias == null && request.retorno.erros == null) {
+//                throw new CategoriaIdCategoriaException("Contato com o número de CPF/CNPJ: " + idCategoria + " não encontrado.");
+//            }
+////            if (request.retorno.categorias != null) {
+////                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+////                    System.out.println("-------------------------------------------------------------------");
+////                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+////                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+////                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+////                    System.out.println("-------------------------------------------------------------------");
+////                }
+////            }
+//
+//            System.out.println("GET ID: " + request);
+//
+//            return ResponseEntity.ok(request);
+//
+//        } catch (Exception e) {
+//            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
+//        }
+//    }
+
     @GetMapping("/categoria/{idCategoria}")
     @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
-    public ResponseEntity<JsonResponse> getCategoryByIdCategory(@PathVariable("idCategoria") String idCategoria) {
+    public ResponseEntity<CategoriaResponse> getCategoryByIdCategory(@PathVariable("idCategoria") String idCategoria) {
         try {
-            JsonResponse request = categoriaService.getCategoryByIdCategoria(idCategoria);
+            CategoriaResponse categoria = categoriaService.getCategoryByIdCategoria(idCategoria);
 
-            if (request.retorno.categorias == null && request.retorno.erros == null) {
-                throw new CategoriaIdCategoriaException("Contato com o número de CPF/CNPJ: " + idCategoria + " não encontrado.");
+            if (categoria == null) {
+                throw new CategoriaIdCategoriaException("Categoria com idCategoria " + idCategoria + " não encontrada.");
             }
-//            if (request.retorno.categorias != null) {
-//                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
-//                    System.out.println("-------------------------------------------------------------------");
-//                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-//                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-//                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-//                    System.out.println("-------------------------------------------------------------------");
-//                }
-//            }
 
-            System.out.println("GET ID: " + request);
+            return ResponseEntity.ok(categoria);
 
-            return ResponseEntity.ok(request);
-
+        } catch (CategoriaIdCategoriaException e) {
+            throw e;
         } catch (Exception e) {
             throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
         }
     }
+
 
     /**
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public ResponseEntity<JsonRequest> createCategory(@RequestBody @Valid String xmlCategoria) {
+    public ResponseEntity<CategoriaRequest> createCategory(@RequestBody @Valid String xmlCategoria) {
         try {
-            JsonRequest request = categoriaService.createCategory(xmlCategoria);
+            CategoriaRequest categoria = categoriaService.createCategory(xmlCategoria);
 
-            if (request.retorno.categorias == null && request.retorno.erros == null) {
-                throw new CategoriaCadastroException("Cadastro não efetuado, revise os campos e tente novamente!");
-            }
+//            if (request.retorno.categorias == null && request.retorno.erros == null) {
+//                throw new CategoriaCadastroException("Cadastro não efetuado, revise os campos e tente novamente!");
+//            }
 
-            System.out.println("POST: " + request);
+            System.out.println("POST: " + categoria);
 
-            return ResponseEntity.ok(request);
+            return ResponseEntity.ok(categoria);
 
         } catch (Exception e) {
             throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);

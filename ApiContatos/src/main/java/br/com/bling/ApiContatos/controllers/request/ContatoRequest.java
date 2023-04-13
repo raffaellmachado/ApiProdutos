@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
@@ -16,10 +19,13 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@Entity
+@Table(name = "TB_CONTATO_REQUEST")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ContatoRequest {
 
+    @Id
     @JsonProperty("id")
     public String id;
 
@@ -127,6 +133,7 @@ public class ContatoRequest {
 
     @JsonProperty("obs")
     public String obs;
-    @JsonProperty("tiposContato")
-    public List<TiposContatosRequest> tiposContato;
+
+//    @JsonProperty("tiposContato")
+//    public List<TiposContatosRequest> tiposContato;
 }

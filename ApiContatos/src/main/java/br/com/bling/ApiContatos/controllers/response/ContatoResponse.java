@@ -6,15 +6,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
+@Entity
+@Table(name = "TB_CONTATO_RESPONSE")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ContatoResponse implements Serializable {
 
+	@Id
 	@JsonProperty("id")
 	public String id;
 
@@ -99,6 +103,7 @@ public class ContatoResponse implements Serializable {
 	@JsonProperty("informacoesContato")
 	public String informacoesContato;
 
+	@OneToMany(mappedBy = "contatoResponse", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonProperty("tiposContato")
 	public List<TiposContatoResponse> tiposContato;
 }
