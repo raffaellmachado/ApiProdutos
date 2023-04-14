@@ -43,12 +43,12 @@ class DepositoServiceImplTest {
 
         // Verifica se a lista de categorias foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals(2, result.getRetorno().getDepositos().size());
-        Assertions.assertEquals("01", result.getRetorno().getDepositos().get(0).getDeposito().getId());
+        Assertions.assertEquals(01, result.getRetorno().getDepositos().get(0).getDeposito().getId());
         Assertions.assertEquals("Deposito 1", result.getRetorno().getDepositos().get(0).getDeposito().getSituacao());
         Assertions.assertEquals(true, result.getRetorno().getDepositos().get(0).getDeposito().depositoPadrao);
         Assertions.assertEquals(false, result.getRetorno().getDepositos().get(0).getDeposito().desconsiderarSaldo);
 
-        Assertions.assertEquals("02", result.getRetorno().getDepositos().get(1).getDeposito().getId());
+        Assertions.assertEquals(02, result.getRetorno().getDepositos().get(1).getDeposito().getId());
         Assertions.assertEquals("Deposito 2", result.getRetorno().getDepositos().get(1).getDeposito().getSituacao());
         Assertions.assertEquals(true, result.getRetorno().getDepositos().get(1).getDeposito().depositoPadrao);
         Assertions.assertEquals(false, result.getRetorno().getDepositos().get(1).getDeposito().desconsiderarSaldo);
@@ -70,7 +70,7 @@ class DepositoServiceImplTest {
         JsonResponse result = depositoServiceImpl.getDepositById("idDeposito");
 
         // Verifica se a categoria foi corretamente convertida a partir da resposta da API
-        Assertions.assertEquals("007", result.getRetorno().getDepositos().get(0).getDeposito().getId());
+        Assertions.assertEquals( 007, result.getRetorno().getDepositos().get(0).getDeposito().getId());
         Assertions.assertEquals("Desfazimento", result.getRetorno().getDepositos().get(0).getDeposito().getDescricao());
         Assertions.assertEquals("Inativo", result.getRetorno().getDepositos().get(0).getDeposito().getSituacao());
         Assertions.assertEquals(true, result.getRetorno().getDepositos().get(0).getDeposito().depositoPadrao);
@@ -87,7 +87,7 @@ class DepositoServiceImplTest {
     @Test
     void testCreateDeposit() throws Exception {
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"14886963547\",\"descricao\":\"Geral\",\"situacao\":\"Ativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
+        String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"1488\",\"descricao\":\"Geral\",\"situacao\":\"Ativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
         ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
         Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
@@ -95,7 +95,7 @@ class DepositoServiceImplTest {
         JsonRequest result = (JsonRequest) depositoServiceImpl.createDeposit("xml");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
-        Assertions.assertEquals("14886963547", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getId());
+        Assertions.assertEquals(1488, result.getRetorno().getDepositos().get(0).get(0).getDeposito().getId());
         Assertions.assertEquals("Geral", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getDescricao());
         Assertions.assertEquals("Ativo", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getSituacao());
         Assertions.assertEquals(true, result.getRetorno().getDepositos().get(0).get(0).getDeposito().depositoPadrao);
@@ -109,7 +109,7 @@ class DepositoServiceImplTest {
      */
     @Test
     void testUpdateDeposit() {
-        String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"14886963547\",\"descricao\":\"Geral\",\"situacao\":\"Ativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
+        String jsonResponse = "{\"retorno\":{\"depositos\":[{\"deposito\":{\"id\":\"1488\",\"descricao\":\"Geral\",\"situacao\":\"Ativo\",\"depositoPadrao\":\"true\",\"desconsiderarSaldo\":\"false\"}}]}}";
         ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
         Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
@@ -117,7 +117,7 @@ class DepositoServiceImplTest {
         JsonRequest result = (JsonRequest) depositoServiceImpl.updateDeposit("xml", "idDeposito");
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
-        Assertions.assertEquals("14886963547", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getId());
+        Assertions.assertEquals(1488, result.getRetorno().getDepositos().get(0).get(0).getDeposito().getId());
         Assertions.assertEquals("Geral", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getDescricao());
         Assertions.assertEquals("Ativo", result.getRetorno().getDepositos().get(0).get(0).getDeposito().getSituacao());
         Assertions.assertEquals(true, result.getRetorno().getDepositos().get(0).get(0).getDeposito().depositoPadrao);

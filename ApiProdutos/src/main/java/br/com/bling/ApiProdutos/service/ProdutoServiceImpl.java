@@ -5,7 +5,8 @@ import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutos.controllers.response.ProdutoResponse;
 import br.com.bling.ApiProdutos.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutos.exceptions.ApiProdutoException;
-import br.com.bling.ApiProdutos.repository.ProdutoRepository;
+import br.com.bling.ApiProdutos.repositories.ProdutoRequestRepository;
+import br.com.bling.ApiProdutos.repositories.ProdutoResponseRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,36 +42,21 @@ public class ProdutoServiceImpl implements ProdutoService {
     public RestTemplate restTemplate;
 
     @Autowired
-    private ProdutoRepository produtoRepository;
+    private ProdutoResponseRepository produtoResponseRepository;
+
+    @Autowired
+    private ProdutoRequestRepository produtoRequestRepository;
+
 
     /**
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
-//    @Override
-//    public JsonResponse getAllProducts() throws ApiProdutoException {
-//        try {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_JSON);
-//            HttpEntity<String> request = new HttpEntity<>(headers);
-//
-//            String url = apiBaseUrl + "/produtos/json/" + apikeyparam + apiKey;
-//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
-//
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
-//
-//            return produtoRepository.save(result);
-//
-//        } catch (JsonProcessingException e) {
-//            throw new ApiProdutoException("Erro ao processar JSON", e);
-//        } catch (RestClientException e) {
-//            throw new ApiProdutoException("Erro ao chamar API", e);
-//        }
-//    }
-
     @Override
-    public List<ProdutoResponse> getAllProducts() throws ApiProdutoException {
+    public JsonResponse getAllProducts() throws ApiProdutoException {
         try {
+            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
+//            String url = "http://www.teste.com/";
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(headers);
@@ -86,28 +72,48 @@ public class ProdutoServiceImpl implements ProdutoService {
                 produtos.add(produto.getProduto());
             }
 
+            ArrayList<RetornoResponse.Produtos> produtosResponse = new ArrayList<>();
             for (ProdutoResponse produto : produtos) {
-                Optional<ProdutoResponse> produtoExistente = produtoRepository.findById(produto.getId());
+                Optional<ProdutoResponse> produtoExistente = produtoResponseRepository.findById(produto.getId());
                 if (produtoExistente.isPresent()) {
                     ProdutoResponse produtoAtualizado = produtoExistente.get();
                     produtoAtualizado.setId(produto.getId());
-                    produtoRepository.save(produtoAtualizado);
+                    produtoResponseRepository.save(produtoAtualizado);
                 } else {
-                    produtoRepository.save(produto);
+                    produtoResponseRepository.save(produto);
                 }
+                RetornoResponse.Produtos produtoResponse = new RetornoResponse.Produtos();
+                produtoResponse.setProduto(produto);
+                produtosResponse.add(produtoResponse);
             }
 
-            return produtos;
+            RetornoResponse retornoResponse = new RetornoResponse();
+            retornoResponse.setProdutos(produtosResponse);
+
+            JsonResponse jsonRetornoResponse = new JsonResponse();
+            jsonRetornoResponse.setRetorno(retornoResponse);
+
+            return jsonRetornoResponse;
 
         } catch (JsonProcessingException e) {
-            throw new ApiProdutoException("Erro ao processar JSON", e);
+            throw new ApiProdutoException("Erro ao processar JSON: ", e);
         } catch (RestClientException e) {
-            // Em caso de erro na chamada da API, recupera os dados do banco de dados
-            List<ProdutoResponse> produtos = produtoRepository.findAll();
+            List<ProdutoResponse> produtos = produtoResponseRepository.findAll();
             if (produtos.isEmpty()) {
-                throw new ApiProdutoException("Erro ao chamar API e nenhum dado encontrado no banco de dados", e);
+                throw new ApiProdutoException("Erro ao chamar API: ", e);
+            } else {
+                RetornoResponse retornoResponse = new RetornoResponse();
+                ArrayList<RetornoResponse.Produtos> produtosResponse = new ArrayList<>();
+                for (ProdutoResponse produto : produtos) {
+                    RetornoResponse.Produtos produtoResponse = new RetornoResponse.Produtos();
+                    produtoResponse.setProduto(produto);
+                    produtosResponse.add(produtoResponse);
+                }
+                retornoResponse.setProdutos(produtosResponse);
+                JsonResponse jsonResponse = new JsonResponse();
+                jsonResponse.setRetorno(retornoResponse);
+                return jsonResponse;
             }
-            return produtos;
         }
     }
 
@@ -117,6 +123,9 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public JsonResponse getProductByCode(String codigo) throws ApiProdutoException {
         try {
+            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
+//            String url = "http://www.teste.com/";
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(headers);
@@ -125,13 +134,25 @@ public class ProdutoServiceImpl implements ProdutoService {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+            JsonResponse jsonResponse = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
-            return result;
+            return jsonResponse;
+
         } catch (JsonProcessingException e) {
-            throw new ApiProdutoException("Erro ao processar JSON", e);
+            throw new ApiProdutoException("Erro ao processar JSON: ", e);
         } catch (RestClientException e) {
-            throw new ApiProdutoException("Erro ao chamar API", e);
+            Optional<ProdutoResponse> produtoExistente = produtoResponseRepository.findById(Long.valueOf(codigo));
+            if (produtoExistente.isPresent()) {
+                RetornoResponse.Produtos produto = new RetornoResponse.Produtos();
+                produto.setProduto(produtoExistente.get());
+                JsonResponse jsonResponse = new JsonResponse();
+                jsonResponse.setRetorno(new RetornoResponse());
+                jsonResponse.getRetorno().setProdutos(new ArrayList<>());
+                jsonResponse.getRetorno().getProdutos().add(produto);
+                return jsonResponse;
+            } else {
+                throw new ApiProdutoException("A API está indisponível e a categoria não foi encontrada no banco de dados.", e);
+            }
         }
     }
 
@@ -241,4 +262,58 @@ public class ProdutoServiceImpl implements ProdutoService {
             throw new ApiProdutoException("Erro ao chamar API", e);
         }
     }
+
+    /**
+     * ---------------------------------------------------- VERSÃO 1 - SEM CONEXÃO AO BANCO DE DADOS. ----------------------------------------------------------
+     */
+
+    /**
+     * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
+     */
+//    @Override
+//    public JsonResponse getAllProducts() throws ApiProdutoException {
+//        try {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> request = new HttpEntity<>(headers);
+//
+//            String url = apiBaseUrl + "/produtos/json/" + apikeyparam + apiKey;
+//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+//
+//            return produtoRepository.save(result);
+//
+//        } catch (JsonProcessingException e) {
+//            throw new ApiProdutoException("Erro ao processar JSON", e);
+//        } catch (RestClientException e) {
+//            throw new ApiProdutoException("Erro ao chamar API", e);
+//        }
+//    }
+
+    /**
+     * GET "BUSCAR UM PRODUTO PELO CODIGO (SKU) E IDFORNECEDOR".
+     */
+//    @Override
+//    public JsonResponse getProductByCodeSupplier(String codigoFabricante, String idFabricante) throws ApiProdutoException {
+//        try {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> request = new HttpEntity<>(headers);
+//
+//            String url = apiBaseUrl + "/produto/" + codigoFabricante + "/" + idFabricante + "/json/" + apikeyparam + apiKey;
+//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+//
+//            return result;
+//
+//        } catch (JsonProcessingException e) {
+//            throw new ApiProdutoException("Erro ao processar JSON", e);
+//        } catch (RestClientException e) {
+//            throw new ApiProdutoException("Erro ao chamar API", e);
+//        }
+//    }
 }

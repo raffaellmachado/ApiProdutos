@@ -23,7 +23,7 @@ public class CategoriaRequest {
 
     @Id
     @JsonProperty("id")
-    private String id;
+    private Long id;
 
     @NotBlank(message = "Descrição da categoria não pode estar em branco")
     @Size(max = 50, message = "Descrição da categoria deve ter no máximo 50 caracteres")

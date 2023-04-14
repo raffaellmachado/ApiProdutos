@@ -1,8 +1,12 @@
 package br.com.bling.ApiDepositos.services;
 
 import br.com.bling.ApiDepositos.controllers.request.JsonRequest;
+import br.com.bling.ApiDepositos.controllers.response.DepositoResponse;
 import br.com.bling.ApiDepositos.controllers.response.JsonResponse;
+import br.com.bling.ApiDepositos.controllers.response.RetornoResponse;
 import br.com.bling.ApiDepositos.exceptions.ApiDepositoException;
+import br.com.bling.ApiDepositos.repositories.DepositoRequestRepository;
+import br.com.bling.ApiDepositos.repositories.DepositoResponseRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DepositoServiceImpl implements DepositoService {
@@ -31,6 +39,12 @@ public class DepositoServiceImpl implements DepositoService {
 
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    public DepositoResponseRepository depositoResponseRepository;
+
+    @Autowired
+    public DepositoRequestRepository depositoRequestRepository;
+
 
     /**
      * GET "BUSCAR A LISTA DE DEPOSITOS CADASTRADOS NO BLING".
@@ -38,6 +52,9 @@ public class DepositoServiceImpl implements DepositoService {
     @Override
     public JsonResponse getAllDeposit() throws ApiDepositoException {
         try {
+            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
+//            String url = "http://www.teste.com/";
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(headers);
@@ -46,14 +63,55 @@ public class DepositoServiceImpl implements DepositoService {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+            JsonResponse jsonResponse = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
-            return result;
+            List<DepositoResponse> depositos = new ArrayList<>();
+            for (RetornoResponse.Depositos deposito : jsonResponse.getRetorno().getDepositos()) {
+                depositos.add(deposito.getDeposito());
+            }
+
+            ArrayList<RetornoResponse.Depositos> depositosResponse = new ArrayList<>();
+            for (DepositoResponse deposito : depositos) {
+                Optional<DepositoResponse> depositoExistente = depositoResponseRepository.findById(deposito.getId());
+                if (depositoExistente.isPresent()) {
+                    DepositoResponse depositoAtualizado = depositoExistente.get();
+                    depositoAtualizado.setId(deposito.getId());
+                    depositoResponseRepository.save(depositoAtualizado);
+                } else {
+                    depositoResponseRepository.save(deposito);
+                }
+                RetornoResponse.Depositos depositoResponse = new RetornoResponse.Depositos();
+                depositoResponse.setDeposito(deposito);
+                depositosResponse.add(depositoResponse);
+            }
+
+            RetornoResponse retornoResponse = new RetornoResponse();
+            retornoResponse.setDepositos(depositosResponse);
+
+            JsonResponse jsonRetornoResponse = new JsonResponse();
+            jsonRetornoResponse.setRetorno(retornoResponse);
+
+            return jsonRetornoResponse;
 
         } catch (JsonProcessingException e) {
-            throw new ApiDepositoException("Erro ao processar JSON: ", e);
+            throw new ApiDepositoException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
-            throw new ApiDepositoException("Erro ao chamar API: ", e);
+            List<DepositoResponse> depositos = depositoResponseRepository.findAll();
+            if (depositos.isEmpty()) {
+                throw new ApiDepositoException("Erro ao chamar API: ", e);
+            } else {
+                RetornoResponse retornoResponse = new RetornoResponse();
+                ArrayList<RetornoResponse.Depositos> depositosResponse = new ArrayList<>();
+                for (DepositoResponse deposito : depositos) {
+                    RetornoResponse.Depositos depositoResponse = new RetornoResponse.Depositos();
+                    depositoResponse.setDeposito(deposito);
+                    depositosResponse.add(depositoResponse);
+                }
+                retornoResponse.setDepositos(depositosResponse);
+                JsonResponse jsonResponse = new JsonResponse();
+                jsonResponse.setRetorno(retornoResponse);
+                return jsonResponse;
+            }
         }
     }
 
@@ -63,6 +121,9 @@ public class DepositoServiceImpl implements DepositoService {
     @Override
     public JsonResponse getDepositById(String idDeposito) throws ApiDepositoException {
         try {
+            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
+//            String url = "http://www.teste.com/";
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(idDeposito, headers);
@@ -71,14 +132,28 @@ public class DepositoServiceImpl implements DepositoService {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+            JsonResponse jsonResponse = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
-            return result;
+            return jsonResponse;
 
         } catch (JsonProcessingException e) {
             throw new ApiDepositoException("Erro ao processar JSON: ", e);
         } catch (RestClientException e) {
-            throw new ApiDepositoException("Erro ao chamar API: ", e);
+            Optional<DepositoResponse> depositoExistente = depositoResponseRepository.findById(Long.valueOf(idDeposito));
+            if (depositoExistente.isPresent()) {
+                RetornoResponse.Depositos deposito = new RetornoResponse.Depositos();
+                deposito.setDeposito(depositoExistente.get());
+
+                JsonResponse jsonResponse = new JsonResponse();
+                jsonResponse.setRetorno(new RetornoResponse());
+                jsonResponse.getRetorno().setDepositos(new ArrayList<>());
+                jsonResponse.getRetorno().getDepositos().add(deposito);
+
+                return jsonResponse;
+
+            } else {
+                throw new ApiDepositoException("A API está indisponível e o contato não foi encontrado no banco de dados.", e);
+            }
         }
     }
 
@@ -140,4 +215,57 @@ public class DepositoServiceImpl implements DepositoService {
             throw new ApiDepositoException("Erro ao chamar API", e);
         }
     }
+
+    /**
+     * ---------------------------------------------------- VERSÃO 1 - SEM CONEXÃO AO BANCO DE DADOS. ----------------------------------------------------------
+     */
+
+    /**
+     * GET "BUSCAR A LISTA DE DEPOSITOS CADASTRADOS NO BLING".
+     */
+//    @Override
+//    public JsonResponse getAllDeposit() throws ApiDepositoException {
+//        try {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> request = new HttpEntity<>(headers);
+//
+//            String url = apiBaseUrl + "/depositos/json/" + apikeyparam + apiKey;
+//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+//
+//            return result;
+//
+//        } catch (JsonProcessingException e) {
+//            throw new ApiDepositoException("Erro ao processar JSON: ", e);
+//        } catch (RestClientException e) {
+//            throw new ApiDepositoException("Erro ao chamar API: ", e);
+//        }
+//    }
+
+    /**
+     * GET "BUSCAR UM DEPOSITO PELO CÒDIGO IDDEPOSITO".
+     */
+//    @Override
+//    public JsonResponse getDepositById(String idDeposito) throws ApiDepositoException {
+//        try {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> request = new HttpEntity<>(idDeposito, headers);
+//
+//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+//
+//            return result;
+//
+//        } catch (JsonProcessingException e) {
+//            throw new ApiDepositoException("Erro ao processar JSON: ", e);
+//        } catch (RestClientException e) {
+//            throw new ApiDepositoException("Erro ao chamar API: ", e);
+//        }
+//    }
 }

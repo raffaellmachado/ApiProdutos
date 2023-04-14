@@ -45,11 +45,11 @@ class ProdutoFornecedorControllerTest {
     void testGetAllProducts() {
         // Cria uma resposta simulada do serviço
         RetornoResponse.Produtosfornecedores produtosfornecedores1 = new RetornoResponse.Produtosfornecedores();
-        produtosfornecedores1.produtofornecedores = new ProdutofornecedoreResponse();
+        produtosfornecedores1.produtofornecedores = new ProdutoFornecedoresResponse();
         produtosfornecedores1.produtofornecedores.setIdProduto("16023092137");
 
         produtosfornecedores1.produtofornecedores.fornecedores = new ArrayList<>();
-        produtosfornecedores1.produtofornecedores.fornecedores.add(new FornecedoreResponse());
+        produtosfornecedores1.produtofornecedores.fornecedores.add(new FornecedoresResponse());
         produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor = new ProdutoFornecedorResponse();
 
         produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setIdProdutoFornecedor("478963346");
@@ -62,11 +62,11 @@ class ProdutoFornecedorControllerTest {
         produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setPadrao("1");
 
         RetornoResponse.Produtosfornecedores produtosfornecedores2 = new RetornoResponse.Produtosfornecedores();
-        produtosfornecedores2.produtofornecedores = new ProdutofornecedoreResponse();
+        produtosfornecedores2.produtofornecedores = new ProdutoFornecedoresResponse();
         produtosfornecedores2.produtofornecedores.idProduto = "16023092137";
 
         produtosfornecedores2.produtofornecedores.fornecedores = new ArrayList<>();
-        produtosfornecedores2.produtofornecedores.fornecedores.add(new FornecedoreResponse());
+        produtosfornecedores2.produtofornecedores.fornecedores.add(new FornecedoresResponse());
         produtosfornecedores2.produtofornecedores.fornecedores.get(0).produtoFornecedor = new ProdutoFornecedorResponse();
 
         produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setIdProdutoFornecedor("478963346");
@@ -124,11 +124,11 @@ class ProdutoFornecedorControllerTest {
         String idProdutoFornecedor = "159357";
 
         RetornoResponse.Produtosfornecedores produtosfornecedores1 = new RetornoResponse.Produtosfornecedores();
-        produtosfornecedores1.produtofornecedores = new ProdutofornecedoreResponse();
+        produtosfornecedores1.produtofornecedores = new ProdutoFornecedoresResponse();
         produtosfornecedores1.produtofornecedores.idProduto = "16023092137";
 
         produtosfornecedores1.produtofornecedores.fornecedores = new ArrayList<>();
-        produtosfornecedores1.produtofornecedores.fornecedores.add(new FornecedoreResponse());
+        produtosfornecedores1.produtofornecedores.fornecedores.add(new FornecedoresResponse());
         produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor = new ProdutoFornecedorResponse();
 
         produtosfornecedores1.produtofornecedores.fornecedores.get(0).produtoFornecedor.setIdProdutoFornecedor(idProdutoFornecedor);

@@ -11,13 +11,9 @@ import java.util.List;
 
 public interface CategoriaService {
 
-//    public JsonResponse getAllCategory();
+    public JsonResponse getAllCategory();
 
-//    public JsonRequest getCategoryByIdCategoria(@PathVariable("idCategoria") String idCategoria);
-
-    public List<CategoriaResponse> getAllCategory();
-
-    public CategoriaResponse getCategoryByIdCategoria(@PathVariable("idCategoria") String idCategoria);
+    public JsonResponse getCategoryByIdCategoria(@PathVariable("idCategoria") String idCategoria);
 
     public CategoriaRequest createCategory(@RequestBody String xmlCategoria);
 

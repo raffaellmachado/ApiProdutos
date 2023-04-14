@@ -3,6 +3,8 @@ package br.com.bling.ApiProdutosFornecedores.service;
 import br.com.bling.ApiProdutosFornecedores.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutosFornecedores.exceptions.ApiProdutoFornecedorException;
+import br.com.bling.ApiProdutosFornecedores.repositories.ProdutoFornecedorRequestRepository;
+import br.com.bling.ApiProdutosFornecedores.repositories.ProdutoFornecedorResponseRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,13 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private ProdutoFornecedorResponseRepository produtoFornecedorResponseRepository;
+
+    @Autowired
+    private ProdutoFornecedorRequestRepository produtoFornecedorRequestRepository;
+
 
     /**
      * GET "BUSCAR LISTA DE PRODUTOS FORNECEDORES".

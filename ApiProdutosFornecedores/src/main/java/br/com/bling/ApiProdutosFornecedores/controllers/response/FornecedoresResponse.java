@@ -6,20 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProdutofornecedoreResponse {
+public class FornecedoresResponse {
 
-	@JsonProperty("idProduto")
-	public String idProduto;
-
-	@JsonProperty("fornecedores")
-	public ArrayList<FornecedoreResponse> fornecedores;
-
+    @JsonProperty("produtoFornecedor")
+    public ProdutoFornecedorResponse produtoFornecedor;
 }
-
-

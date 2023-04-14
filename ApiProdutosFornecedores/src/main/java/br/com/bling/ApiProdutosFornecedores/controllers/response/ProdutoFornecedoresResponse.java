@@ -6,12 +6,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.util.ArrayList;
+
 @Data
 @NoArgsConstructor
+@Entity
+@Table(name = "TB_PRODUTO_FORNECEDOR_I_RESPONSE")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FornecedoreResponse {
+public class ProdutoFornecedoresResponse {
 
-    @JsonProperty("produtoFornecedor")
-    public ProdutoFornecedorResponse produtoFornecedor;
+	@Id
+	@JsonProperty("idProduto")
+	public Integer idProduto;
+
+	@JsonProperty("fornecedores")
+	public ArrayList<FornecedoresResponse> fornecedores;
+
 }
+
+

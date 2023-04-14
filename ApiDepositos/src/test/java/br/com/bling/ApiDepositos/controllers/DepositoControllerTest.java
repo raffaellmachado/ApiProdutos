@@ -47,7 +47,7 @@ class DepositoControllerTest {
         // Deposito teste 01
         RetornoResponse.Depositos deposito1 = new RetornoResponse.Depositos();
         deposito1.deposito = new DepositoResponse();
-        deposito1.deposito.setId("1");
+        deposito1.deposito.setId(Long.valueOf("1"));
         deposito1.deposito.setDescricao("Deposito 1");
         deposito1.deposito.setSituacao("A");
         deposito1.deposito.setDepositoPadrao(false);
@@ -56,7 +56,7 @@ class DepositoControllerTest {
         // Deposito teste 02
         RetornoResponse.Depositos deposito2 = new RetornoResponse.Depositos();
         deposito2.deposito = new DepositoResponse();
-        deposito2.deposito.setId("2");
+        deposito2.deposito.setId(Long.valueOf("2"));
         deposito2.deposito.setDescricao("Deposito 2");
         deposito2.deposito.setSituacao("A");
         deposito2.deposito.setDepositoPadrao(true);
@@ -112,7 +112,7 @@ class DepositoControllerTest {
         RetornoResponse.Depositos deposito = new RetornoResponse.Depositos();
 
         deposito.deposito = new DepositoResponse();
-        deposito.deposito.setId(idDeposito);
+        deposito.deposito.setId(Long.valueOf(idDeposito));
         deposito.deposito.setDescricao("Deposito 1");
         deposito.deposito.setSituacao("A");
         deposito.deposito.setDepositoPadrao(false);
@@ -170,7 +170,7 @@ class DepositoControllerTest {
         RetornoRequest.Deposito deposito = new RetornoRequest.Deposito();
 
         deposito.deposito = new DepositoRequest();
-        deposito.deposito.setId("01");
+        deposito.deposito.setId(Long.valueOf("01"));
         deposito.deposito.setDescricao("Deposito Padrão");
         deposito.deposito.setSituacao("A");
         deposito.deposito.setDepositoPadrao(true);
@@ -233,7 +233,7 @@ class DepositoControllerTest {
         RetornoRequest.Deposito deposito = new RetornoRequest.Deposito();
 
         deposito.deposito = new DepositoRequest();
-        deposito.deposito.setId(idDeposito);
+        deposito.deposito.setId(Long.valueOf(idDeposito));
         deposito.deposito.setDescricao("Deposito Padrão");
         deposito.deposito.setSituacao("A");
         deposito.deposito.setDepositoPadrao(true);

@@ -1,7 +1,7 @@
 package br.com.bling.ApiProdutosFornecedores.controllers;
 
 import br.com.bling.ApiProdutosFornecedores.controllers.request.JsonRequest;
-import br.com.bling.ApiProdutosFornecedores.controllers.response.FornecedoreResponse;
+import br.com.bling.ApiProdutosFornecedores.controllers.response.FornecedoresResponse;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutosFornecedores.exceptions.*;
@@ -43,7 +43,7 @@ public class ProdutoFornecedorController {
                     System.out.println("Id Produto: " + listaProdutoFornecedor.produtofornecedores.idProduto);
                     System.out.println("-----------------------------------------------------------------------------------");
 
-                    for (FornecedoreResponse fornecedor : listaProdutoFornecedor.produtofornecedores.fornecedores) {
+                    for (FornecedoresResponse fornecedor : listaProdutoFornecedor.produtofornecedores.fornecedores) {
                         System.out.println("idProdutoFornecedor: " + fornecedor.produtoFornecedor.idProdutoFornecedor);
                         System.out.println("idFornecedor " + fornecedor.produtoFornecedor.idFornecedor);
                         System.out.println("produtoDescricao: " + fornecedor.produtoFornecedor.produtoDescricao);
@@ -84,7 +84,7 @@ public class ProdutoFornecedorController {
                     System.out.println("Id Produto: " + listaProdutoFornecedor.produtofornecedores.idProduto);
                     System.out.println("-----------------------------------------------------------------------------------");
 
-                    for (FornecedoreResponse fornecedor : listaProdutoFornecedor.produtofornecedores.fornecedores) {
+                    for (FornecedoresResponse fornecedor : listaProdutoFornecedor.produtofornecedores.fornecedores) {
                         System.out.println("idProdutoFornecedor: " + fornecedor.produtoFornecedor.idProdutoFornecedor);
                         System.out.println("idFornecedor " + fornecedor.produtoFornecedor.idFornecedor);
                         System.out.println("produtoDescricao: " + fornecedor.produtoFornecedor.produtoDescricao);

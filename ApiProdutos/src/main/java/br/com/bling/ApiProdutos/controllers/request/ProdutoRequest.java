@@ -7,16 +7,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 @Data
 @NoArgsConstructor
+@Entity
+@Table(name = "TB_PRODUTO_REQUEST")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProdutoRequest {
 
+    @Id
     @JsonProperty("id")
     public String id;
 
@@ -201,18 +206,18 @@ public class ProdutoRequest {
     @JsonProperty("idCategoria")
     public BigDecimal idCategoria;
 
-    @JsonProperty("deposito")
-    public DepositoRequest deposito;
-
-    @JsonProperty("variacoes")
-    public VariacoesRequest variacoes;
-
-    @JsonProperty("imagens")
-    public ArrayList<ImagemRequest> imagens;
-
-    @JsonProperty("camposCustomizados")
-    public CamposCustomizadosRequest camposCustomizados;
-
-    @JsonProperty("estrutura")
-    public EstruturaRequest estrutura;
+//    @JsonProperty("deposito")
+//    public DepositoRequest deposito;
+//
+//    @JsonProperty("variacoes")
+//    public VariacoesRequest variacoes;
+//
+//    @JsonProperty("imagens")
+//    public ArrayList<ImagemRequest> imagens;
+//
+//    @JsonProperty("camposCustomizados")
+//    public CamposCustomizadosRequest camposCustomizados;
+//
+//    @JsonProperty("estrutura")
+//    public EstruturaRequest estrutura;
 }

@@ -20,7 +20,7 @@ public class ContatoResponse implements Serializable {
 
 	@Id
 	@JsonProperty("id")
-	public String id;
+	public Long id;
 
 	@JsonProperty("codigo")
 	public String codigo;

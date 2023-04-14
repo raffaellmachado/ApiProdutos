@@ -33,48 +33,30 @@ public class CategoriaController {
     /**
      * GET "BUSCA A LISTA DE CATEGORIAS".
      */
-//    @GetMapping("/categorias")
-//    @ApiOperation(value = "Retorna uma lista de categorias")
-//    public ResponseEntity<JsonResponse> getAllCategory() {
-//        try {
-//            JsonResponse request = categoriaService.getAllCategory();
-//
-//            if (request.retorno.categorias == null && request.retorno.erros == null) {
-//                throw new CategoriaListaException("Não foi possível localizar a lista de categorias");
-//            }
-//
-////            if (request.retorno.categorias != null) {
-////                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
-////                    System.out.println("-------------------------------------------------------------------");
-////                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-////                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-////                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-////                    System.out.println("-------------------------------------------------------------------");
-////                }
-////            }
-//
-//            System.out.println("GET: " + request);
-//
-//            return ResponseEntity.ok(request);
-//
-//        } catch (Exception e) {
-//            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
-//        }
-//    }
-
     @GetMapping("/categorias")
     @ApiOperation(value = "Retorna uma lista de categorias")
-    public ResponseEntity<List<CategoriaResponse>> getAllCategory() {
+    public ResponseEntity<JsonResponse> getAllCategory() {
         try {
-            List<CategoriaResponse> categorias = categoriaService.getAllCategory();
+            JsonResponse request = categoriaService.getAllCategory();
 
-            if (categorias.isEmpty()) {
-                throw new CategoriaListaException("Não foi possível localizar a lista de produtos");
+            if (request.retorno.categorias == null && request.retorno.erros == null) {
+                throw new CategoriaListaException("Não foi possível localizar a lista de categorias");
             }
 
-            System.out.println("GET: " + categorias);
+            if (request.retorno.categorias != null) {
+                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+                    System.out.println("-------------------------------------------------------------------");
+                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+                    System.out.println("-------------------------------------------------------------------");
+                }
+            }
 
-            return ResponseEntity.ok(categorias);
+            System.out.println("GET: " + request);
+
+            return ResponseEntity.ok(request);
+
         } catch (Exception e) {
             throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
         }
@@ -83,53 +65,33 @@ public class CategoriaController {
     /**
      * GET "BUSCA CATEGORIA PELO IDCATEGORIA".
      */
-//    @GetMapping("/categoria/{idCategoria}")
-//    @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
-//    public ResponseEntity<JsonResponse> getCategoryByIdCategory(@PathVariable("idCategoria") String idCategoria) {
-//        try {
-//            CategoriaResponse request = categoriaService.getCategoryByIdCategoria(idCategoria);
-//
-//            if (request.retorno.categorias == null && request.retorno.erros == null) {
-//                throw new CategoriaIdCategoriaException("Contato com o número de CPF/CNPJ: " + idCategoria + " não encontrado.");
-//            }
-////            if (request.retorno.categorias != null) {
-////                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
-////                    System.out.println("-------------------------------------------------------------------");
-////                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
-////                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
-////                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
-////                    System.out.println("-------------------------------------------------------------------");
-////                }
-////            }
-//
-//            System.out.println("GET ID: " + request);
-//
-//            return ResponseEntity.ok(request);
-//
-//        } catch (Exception e) {
-//            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
-//        }
-//    }
-
     @GetMapping("/categoria/{idCategoria}")
     @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
-    public ResponseEntity<CategoriaResponse> getCategoryByIdCategory(@PathVariable("idCategoria") String idCategoria) {
+    public ResponseEntity<JsonResponse> getCategoryByIdCategory(@PathVariable("idCategoria") String idCategoria) {
         try {
-            CategoriaResponse categoria = categoriaService.getCategoryByIdCategoria(idCategoria);
+            JsonResponse request = categoriaService.getCategoryByIdCategoria(idCategoria);
 
-            if (categoria == null) {
-                throw new CategoriaIdCategoriaException("Categoria com idCategoria " + idCategoria + " não encontrada.");
+            if (request.retorno.categorias == null && request.retorno.erros == null) {
+                throw new CategoriaIdCategoriaException("Contato com o número de CPF/CNPJ: " + idCategoria + " não encontrado.");
+            }
+            if (request.retorno.categorias != null) {
+                for (RetornoResponse.Categorias listaCategoria : request.getRetorno().getCategorias()) {
+                    System.out.println("-------------------------------------------------------------------");
+                    System.out.println("Id Categoria: " + listaCategoria.categoria.id);
+                    System.out.println("Descrição: " + listaCategoria.categoria.descricao);
+                    System.out.println("Id Categoria Pai: " + listaCategoria.categoria.idCategoriaPai);
+                    System.out.println("-------------------------------------------------------------------");
+                }
             }
 
-            return ResponseEntity.ok(categoria);
+            System.out.println("GET ID: " + request);
 
-        } catch (CategoriaIdCategoriaException e) {
-            throw e;
+            return ResponseEntity.ok(request);
+
         } catch (Exception e) {
             throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
         }
     }
-
 
     /**
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".

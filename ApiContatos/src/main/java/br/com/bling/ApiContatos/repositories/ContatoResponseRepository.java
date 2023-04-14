@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ContatoResponseRepository extends JpaRepository<ContatoResponse, String> {
+public interface ContatoResponseRepository extends JpaRepository<ContatoResponse, Long> {
 
-    Optional<ContatoResponse> findById(String id);
+    Optional<ContatoResponse> findById(Long id);
 
 }
 

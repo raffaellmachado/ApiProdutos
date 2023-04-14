@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
@@ -20,11 +18,14 @@ public class CategoriaResponse {
 
     @Id
     @JsonProperty("id")
-    public String id;
+    @Column(name = "ID")
+    public Long id;
 
     @JsonProperty("descricao")
+    @Column(name = "DESCRICAO")
     public String descricao;
 
     @JsonProperty("idCategoriaPai")
+    @Column(name = "ID_CATEGORIA_PAI")
     public String idCategoriaPai;
 }

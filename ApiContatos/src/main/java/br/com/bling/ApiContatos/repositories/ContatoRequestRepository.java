@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ContatoRequestRepository extends JpaRepository<ContatoRequest, String> {
+public interface ContatoRequestRepository extends JpaRepository<ContatoRequest, Long> {
 
 }
 

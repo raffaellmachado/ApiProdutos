@@ -27,7 +27,7 @@ public class ContatoRequest {
 
     @Id
     @JsonProperty("id")
-    public String id;
+    public Long id;
 
     @NotEmpty
     @Max(value = 120, message = "Nome do contato")

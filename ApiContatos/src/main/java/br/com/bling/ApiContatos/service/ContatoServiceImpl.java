@@ -22,7 +22,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,54 +29,35 @@ import java.util.Optional;
 public class ContatoServiceImpl implements ContatoService {
 
     @Value("${external.api.url}")
-    private String apiBaseUrl;
+    public String apiBaseUrl;
 
     @Value("${external.api.apikey}")
-    private String apiKey;
+    public String apiKey;
 
     @Value("${external.api.apikeyparam}")
-    private String apikeyparam;
+    public String apikeyparam;
 
     @Value("${external.api.xmlparam}")
-    private String apiXmlParam;
+    public String apiXmlParam;
 
     @Autowired
-    private RestTemplate restTemplate;
+    public RestTemplate restTemplate;
 
     @Autowired
-    private ContatoResponseRepository contatoResponseRepository;
+    public ContatoResponseRepository contatoResponseRepository;
 
     @Autowired
-    private ContatoRequestRepository contatoRequestRepository;
+    public ContatoRequestRepository contatoRequestRepository;
 
     /**
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
-//    @Override
-//    public JsonResponse getAllContacts() throws ApiContatoException {
-//        try {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_JSON);
-//            HttpEntity<String> request = new HttpEntity<>(headers);
-//
-//            String url = apiBaseUrl + "/contatos/json/" + apikeyparam + apiKey;
-//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
-//
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
-//
-//            return result;
-//
-//        } catch (JsonProcessingException e) {
-//            throw new ApiContatoException("Erro ao processar JSON", e);
-//        } catch (RestClientException e) {
-//            throw new ApiContatoException("Erro ao chamar API", e);
-//        }
-//    }
-
     @Override
     public JsonResponse getAllContacts() throws ApiContatoException {
         try {
+            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
+//            String url = "http://www.teste.com/";
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(headers);
@@ -139,27 +119,43 @@ public class ContatoServiceImpl implements ContatoService {
     }
 
     /**
-     * GET "BUSCAR UM PRODUTO PELO CÒDIGO (SKU)".
+     * GET "BUSCAR UM PRODUTO PELO CÒDIGO (ID)".
      */
     @Override
-    public JsonResponse getContactsById(String cpf_cnpj) throws ApiContatoException {
+    public JsonResponse getContactsById(String id) throws ApiContatoException {
         try {
+            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
+//            String url = "http://www.teste.com/";
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> request = new HttpEntity<>(cpf_cnpj, headers);
+            HttpEntity<String> request = new HttpEntity<>(id, headers);
 
-            String url = apiBaseUrl + "/contato/" + cpf_cnpj + "/json/" + apikeyparam + apiKey;
+            String url = apiBaseUrl + "/contato/" + id + "/json/" +apikeyparam + apiKey + "&identificador=2";
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+            JsonResponse jsonResponse = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
-            return result;
+            return jsonResponse;
 
         } catch (JsonProcessingException e) {
-            throw new ApiContatoException("Erro ao processar JSON", e);
+            throw new ApiContatoException("Erro ao processar JSON: ", e);
         } catch (RestClientException e) {
-            throw new ApiContatoException("Erro ao chamar API", e);
+            Optional<ContatoResponse> contatoExistente = contatoResponseRepository.findById(Long.valueOf(id));
+            if (contatoExistente.isPresent()) {
+                RetornoResponse.Contatos contato = new RetornoResponse.Contatos();
+                contato.setContato(contatoExistente.get());
+                JsonResponse jsonResponse = new JsonResponse();
+                jsonResponse.setRetorno(new RetornoResponse());
+                jsonResponse.getRetorno().setContatos(new ArrayList<>());
+                jsonResponse.getRetorno().getContatos().add(contato);
+
+                return jsonResponse;
+
+            } else {
+                throw new ApiContatoException("A API está indisponível e o contato não foi encontrado no banco de dados.", e);
+            }
         }
     }
 
@@ -222,4 +218,30 @@ public class ContatoServiceImpl implements ContatoService {
             throw new ApiContatoException("Erro ao chamar API", e);
         }
     }
+
+    /**
+     * ---------------------------------------------------- VERSÃO 1 - SEM CONEXÃO AO BANCO DE DADOS. ----------------------------------------------------------
+     */
+
+//    @Override
+//    public JsonResponse getAllContacts() throws ApiContatoException {
+//        try {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> request = new HttpEntity<>(headers);
+//
+//            String url = apiBaseUrl + "/contatos/json/" + apikeyparam + apiKey;
+//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+//
+//            return result;
+//
+//        } catch (JsonProcessingException e) {
+//            throw new ApiContatoException("Erro ao processar JSON", e);
+//        } catch (RestClientException e) {
+//            throw new ApiContatoException("Erro ao chamar API", e);
+//        }
+//    }
 }

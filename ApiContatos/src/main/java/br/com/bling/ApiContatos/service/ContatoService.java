@@ -16,7 +16,7 @@ public interface ContatoService {
 
     public JsonResponse getAllContacts();
 
-    public JsonResponse getContactsById(@PathVariable("cpf_cnpj") String cpf_cnpj);
+    public JsonResponse getContactsById(@PathVariable("id") String id);
 
     public JsonRequest createContact(@RequestBody String xmlContato);
 
