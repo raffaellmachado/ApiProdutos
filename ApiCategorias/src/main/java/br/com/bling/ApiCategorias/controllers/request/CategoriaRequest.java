@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -22,15 +20,16 @@ import javax.validation.constraints.Size;
 public class CategoriaRequest {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("id")
-    private Long id;
+    public Long id;
 
     @NotBlank(message = "Descrição da categoria não pode estar em branco")
     @Size(max = 50, message = "Descrição da categoria deve ter no máximo 50 caracteres")
     @JsonProperty("descricao")
-    private String descricao;
+    public String descricao;
 
     @Max(value =  99999999999L, message = "ID da categoria pai deve ser no máximo 11 dígitos")
     @JsonProperty("idCategoriaPai")
-    private Long idCategoriaPai;
+    public Long idCategoriaPai;
 }
