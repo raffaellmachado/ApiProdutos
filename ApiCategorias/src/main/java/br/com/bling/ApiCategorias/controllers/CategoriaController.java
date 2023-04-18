@@ -98,17 +98,17 @@ public class CategoriaController {
      */
     @PostMapping(path = "/cadastrarcategoria", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Cadastrar uma categoria")
-    public ResponseEntity<CategoriaRequest> createCategory(@RequestBody @Valid String xmlCategoria) {
+    public ResponseEntity<JsonRequest> createCategory(@RequestBody @Valid String xmlCategoria) {
         try {
-            CategoriaRequest categoria = categoriaService.createCategory(xmlCategoria);
+            JsonRequest request = categoriaService.createCategory(xmlCategoria);
 
-//            if (request.retorno.categorias == null && request.retorno.erros == null) {
-//                throw new CategoriaCadastroException("Cadastro não efetuado, revise os campos e tente novamente!");
-//            }
+            if (request.retorno.categorias == null && request.retorno.erros == null) {
+                throw new CategoriaCadastroException("Cadastro não efetuado, revise os campos e tente novamente!");
+            }
 
-            System.out.println("POST: " + categoria);
+            System.out.println("POST: " + request);
 
-            return ResponseEntity.ok(categoria);
+            return ResponseEntity.ok(request);
 
         } catch (Exception e) {
             throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);

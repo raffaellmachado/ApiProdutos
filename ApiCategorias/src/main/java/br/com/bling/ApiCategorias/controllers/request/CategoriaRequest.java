@@ -1,5 +1,6 @@
 package br.com.bling.ApiCategorias.controllers.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,6 +22,8 @@ public class CategoriaRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long idBd;
+
     @JsonProperty("id")
     public Long id;
 
@@ -32,4 +35,7 @@ public class CategoriaRequest {
     @Max(value =  99999999999L, message = "ID da categoria pai deve ser no máximo 11 dígitos")
     @JsonProperty("idCategoriaPai")
     public Long idCategoriaPai;
+
+    @JsonIgnore
+    public String flag;
 }

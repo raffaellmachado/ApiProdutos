@@ -10,10 +10,10 @@ import br.com.bling.ApiCategorias.exceptions.ApiCategoriaException;
 import br.com.bling.ApiCategorias.repositories.CategoriaRequestRepository;
 import br.com.bling.ApiCategorias.repositories.CategoriaResponseRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,10 +24,10 @@ import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.transaction.Transactional;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,8 +35,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 
 @Service
@@ -208,28 +208,24 @@ public class CategoriaServiceImpl implements CategoriaService {
      * @throws ApiCategoriaException Caso ocorra algum erro na comunicação com a API externa o banco de dados fica disponivel para a consulta.
      */
     @Override
-    public CategoriaRequest createCategory(String xmlCategoria) throws ApiCategoriaException {
+    public JsonRequest createCategory(String xmlCategoria) throws ApiCategoriaException {
         try {
             MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-//            map.add("apikey", apiKey);
+            map.add("apikey", apiKey);
             map.add("xml", xmlCategoria);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-            String url =  apiBaseUrl + "/categoria/json/";
+            String url = apiBaseUrl + "/categoria/json/";
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
             JsonRequest jsonRequest = objectMapper.readValue(response.getBody(), JsonRequest.class);
 
-            ArrayList<ArrayList<RetornoRequest.Categorias>> categorias = jsonRequest.getRetorno().getCategorias();
-            CategoriaRequest categoriaRequest = categorias.get(0).get(0).getCategoria();
+            return jsonRequest;
 
-//            categoriaRequestRepository.save(categoriaRequest);
-
-            return categoriaRequest;
         } catch (RestClientException e) {
             // Em caso de erro ao chamar a API, salva os dados no banco de dados
             CategoriaRequest categoriaRequest = new CategoriaRequest();
@@ -241,69 +237,28 @@ public class CategoriaServiceImpl implements CategoriaService {
                 Document doc = builder.parse(is);
 
                 // Preenchimento dos campos da categoria
-                Node nodeCategoria = doc.getElementsByTagName("categoria").item(0);
+                Node nodeCategoria = doc.getElementsByTagName("categorias").item(0);
                 Element elementoCategoria = (Element) nodeCategoria;
-                categoriaRequest.setDescricao(elementoCategoria.getElementsByTagName("descricao").item(0).getTextContent());
 
+                categoriaRequest.setDescricao(elementoCategoria.getElementsByTagName("descricao").item(0).getTextContent());
                 String idCategoriaPai = elementoCategoria.getElementsByTagName("idCategoriaPai").item(0).getTextContent();
-                if (!idCategoriaPai.isEmpty()) {
-                    categoriaRequest.setIdCategoriaPai(Long.parseLong(idCategoriaPai));
+                categoriaRequest.setIdCategoriaPai(Long.parseLong(idCategoriaPai));
+                categoriaRequest.setFlag("POST");
+
+                String nomeCategoria = elementoCategoria.getElementsByTagName("descricao").item(0).getTextContent();
+                List<CategoriaRequest> categoriaExistente = categoriaRequestRepository.findByDescricao(nomeCategoria);
+
+                boolean categoriaJaExiste = !categoriaExistente.isEmpty();
+
+                if (!categoriaJaExiste) {
+                    categoriaRequestRepository.save(categoriaRequest);
                 }
             } catch (ParserConfigurationException | SAXException | IOException ex) {
                 throw new ApiCategoriaException("Erro ao processar XML: ", ex);
             }
-            if (categoriaRequest.getId() == null) {
-                categoriaRequest.setId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
-            }
-            categoriaRequestRepository.save(categoriaRequest);
             throw new ApiCategoriaException("Erro ao chamar API", e);
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON: ", e);
-        }
-    }
-
-    @Scheduled(fixedDelayString = "${api.check.delay}")
-    public void checkApiStatus() {
-        try {
-            System.out.println("Chamei o Scheduled");
-
-            ResponseEntity<String> response = restTemplate.getForEntity(apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey, String.class);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                List<CategoriaRequest> categorias = categoriaRequestRepository.findAll();
-                for (CategoriaRequest categoria : categorias) {
-                    try {
-                        if (findCategoryByDescricao(categoria.getDescricao()) != null) {
-                            System.out.println("Categoria não encontrada na API, adicionando...");
-                            String xmlCategoria = "<categorias>";
-                            xmlCategoria += "<categoria>";
-                            xmlCategoria += "<descricao>" + categoria.getDescricao() + "</descricao>";
-                            xmlCategoria += "<idCategoriaPai>" + categoria.getIdCategoriaPai() + "</idCategoriaPai>";
-                            xmlCategoria += "</categoria>";
-                            xmlCategoria += "</categorias>";
-
-                            createCategory(xmlCategoria);
-                            categoriaRequestRepository.delete(categoria);
-                        } else {
-                            System.out.println("Categoria já existe na API");
-                        }
-
-                    } catch (ApiCategoriaException e) {
-                        // Erro ao adicionar categoria na API, não faz nada
-                        System.out.println("Ta off");
-                    }
-                }
-            }
-        } catch (RestClientException e) {
-            // API está offline, nada a fazer
-        }
-    }
-
-    private CategoriaRequest findCategoryByDescricao(String descricao) throws ApiCategoriaException {
-        List<CategoriaRequest> categorias = categoriaRequestRepository.findByDescricao(descricao);
-        if (!categorias.isEmpty()) {
-            return categorias.get(0);
-        } else {
-            return null;
         }
     }
 
@@ -332,7 +287,129 @@ public class CategoriaServiceImpl implements CategoriaService {
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON", e);
         } catch (RestClientException e) {
-            throw new ApiCategoriaException("Erro ao chamar API", e);
+            // Caso haja algum erro de conexão ou a API esteja indisponível, tenta atualizar os dados no banco local
+            System.out.println("API externa indisponível. Tentando atualizar os dados no banco local...");
+
+            Optional<CategoriaResponse> optionalCategoria = categoriaResponseRepository.findById(Long.valueOf(idCategoria));
+            if (optionalCategoria.isPresent()) {
+                CategoriaResponse categoria = optionalCategoria.get();
+
+                try {
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    InputSource is = new InputSource(new StringReader(xmlCategoria));
+                    Document doc = builder.parse(is);
+
+                    NodeList descricaoNodes = doc.getElementsByTagName("descricao");
+                    String descricao = descricaoNodes.item(0).getTextContent();
+
+                    NodeList idCategoriaPaiNodes = doc.getElementsByTagName("idcategoriapai");
+                    String idCategoriaPai = idCategoriaPaiNodes.item(0).getTextContent();
+
+                    CategoriaRequest categoriaRequest = new CategoriaRequest();
+                    categoriaRequest.setId(Long.valueOf(idCategoria));
+                    categoriaRequest.setDescricao(descricao);
+                    categoriaRequest.setIdCategoriaPai(Long.valueOf(idCategoriaPai));
+                    categoriaRequest.setFlag("PUT");
+
+                    categoriaRequestRepository.save(categoriaRequest);
+
+                    System.out.println("Dados atualizados no banco local.");
+
+                    // Retorna um objeto vazio como indicação de que a operação foi concluída com sucesso
+                    return new JsonRequest();
+                } catch (NumberFormatException | ParserConfigurationException | IOException | SAXException ex) {
+                    throw new ApiCategoriaException("Erro ao processar XML", ex);
+                }
+            } else {
+                throw new ApiCategoriaException("Categoria não encontrada no banco de dados", e);
+            }
+        }
+    }
+
+    /**
+     * Verifica o status da API externa e atualiza o banco de dados local com as categorias cadastradas na API.
+     * Este método é executado periodicamente, com o intervalo de tempo definido na propriedade "api.check.delay".
+     * Se uma categoria existe apenas no banco de dados local, ela será adicionada na API.
+     * Se uma categoria existe tanto no banco de dados local quanto na API, ela será deletada do banco de dados local.
+     *
+     * @throws ApiCategoriaException Caso ocorra algum erro na comunicação com a API externa o banco de dados fica disponível para a consulta.
+     */
+    @Scheduled(fixedDelayString = "${api.check.delay}")
+    public void checkApiStatus() {
+        try {
+            System.out.println("Chamei o Scheduled POST");
+//            String url = "http://www.teste.com/";
+            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                List<CategoriaRequest> categorias = categoriaRequestRepository.findAll();
+                List<String> descricaoCategorias = categoriaResponseRepository.findAllDescricao();
+
+                for (CategoriaRequest categoria : categorias) {
+                    if (categoria.getFlag() != null && categoria.getFlag().equals("POST")) {
+                        if (!descricaoCategorias.contains(categoria.getDescricao())) {
+                            System.out.println("Categoria não encontrada na API, adicionando...");
+                            String xmlCategoria = "<categorias>";
+                            xmlCategoria += "<categoria>";
+                            xmlCategoria += "<descricao>" + categoria.getDescricao() + "</descricao>";
+                            xmlCategoria += "<idCategoriaPai>" + categoria.getIdCategoriaPai() + "</idCategoriaPai>";
+                            xmlCategoria += "</categoria>";
+                            xmlCategoria += "</categorias>";
+
+                            createCategory(xmlCategoria);
+                            categoriaRequestRepository.delete(categoria);
+                        } else {
+                            System.out.println("Categoria já existe na API, deletando...");
+                            categoriaRequestRepository.delete(categoria);
+                        }
+                    }
+                }
+            }
+        } catch (RestClientException e) {
+            System.out.println("API está offline, nada a fazer");
+        }
+    }
+
+    /**
+     * Verifica o status da API externa e atualiza o banco de dados local com as categorias cadastradas na API.
+     * Este método é executado periodicamente, com o intervalo de tempo definido na propriedade "api.check.delay".
+     * Se uma categoria existe apenas no banco de dados local, ela será adicionada na API.
+     * Se uma categoria existe tanto no banco de dados local quanto na API, ela será deletada do banco de dados local.
+     *
+     * @throws ApiCategoriaException Caso ocorra algum erro na comunicação com a API externa o banco de dados fica disponível para a consulta.
+     */
+    @Scheduled(fixedDelay = 10000)
+    public void scheduledUpdateCategory() {
+        try {
+            System.out.println("Chamei o Scheduled PUT");
+//            String url = "http://www.teste.com/";
+            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                List<CategoriaRequest> categoriaRequests = categoriaRequestRepository.findAll();
+
+                for (CategoriaRequest categoriaRequest : categoriaRequests) {
+                    if ("PUT".equals(categoriaRequest.getFlag())) { // verifica se a flag é "PUT"
+                        String xmlCategoria = "<categorias>";
+                        xmlCategoria += "<categoria>";
+                        xmlCategoria += "<descricao>" + categoriaRequest.getDescricao() + "</descricao>";
+                        xmlCategoria += "<idCategoriaPai>" + categoriaRequest.getIdCategoriaPai() + "</idCategoriaPai>";
+                        xmlCategoria += "</categoria>";
+                        xmlCategoria += "</categorias>";
+
+                        String idCategoria = String.valueOf(categoriaRequest.getId());
+
+                        updateCategory(xmlCategoria, idCategoria);
+
+                        categoriaRequestRepository.delete(categoriaRequest);
+                    }
+                }
+            }
+        } catch (RestClientException e) {
+            System.out.println("API está offline, nada a fazer");
         }
     }
 
@@ -415,6 +492,35 @@ public class CategoriaServiceImpl implements CategoriaService {
 //
 //        } catch (JsonProcessingException e) {
 //            throw new ApiCategoriaException("Erro ao processar JSON: ", e);
+//        } catch (RestClientException e) {
+//            throw new ApiCategoriaException("Erro ao chamar API", e);
+//        }
+//    }
+
+    /**
+     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
+     */
+//    @Override
+//    public JsonRequest updateCategory(String xmlCategoria, String idCategoria) throws ApiCategoriaException {
+//        try {
+//            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+//            map.add("apikey", apiKey);
+//            map.add("xml", xmlCategoria);
+//
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+//            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+//            String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/";
+//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonRequest result = objectMapper.readValue(response.getBody(), JsonRequest.class);
+//
+//            return result;
+//
+//        } catch (JsonProcessingException e) {
+//            throw new ApiCategoriaException("Erro ao processar JSON", e);
 //        } catch (RestClientException e) {
 //            throw new ApiCategoriaException("Erro ao chamar API", e);
 //        }
