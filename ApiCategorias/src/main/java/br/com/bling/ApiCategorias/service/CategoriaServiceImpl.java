@@ -2,7 +2,6 @@ package br.com.bling.ApiCategorias.service;
 
 import br.com.bling.ApiCategorias.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategorias.controllers.request.JsonRequest;
-import br.com.bling.ApiCategorias.controllers.request.RetornoRequest;
 import br.com.bling.ApiCategorias.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategorias.controllers.response.JsonResponse;
 import br.com.bling.ApiCategorias.controllers.response.RetornoResponse;
@@ -10,7 +9,6 @@ import br.com.bling.ApiCategorias.exceptions.ApiCategoriaException;
 import br.com.bling.ApiCategorias.repositories.CategoriaRequestRepository;
 import br.com.bling.ApiCategorias.repositories.CategoriaResponseRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +33,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 
@@ -43,28 +40,25 @@ import java.util.Optional;
 public class CategoriaServiceImpl implements CategoriaService {
 
     @Value("${external.api.url}")
-    private String apiBaseUrl;
+    public String apiBaseUrl;
 
     @Value("${external.api.apikey}")
-    private String apiKey;
+    public String apiKey;
 
     @Value("${external.api.apikeyparam}")
-    private String apikeyparam;
-
-    @Value("${external.api.xmlparam}")
-    private String apiXmlParam;
+    public String apikeyparam;
 
     @Autowired
-    private RestTemplate restTemplate;
+    public RestTemplate restTemplate;
 
     @Autowired
-    private CategoriaService categoriaService;
+    public CategoriaService categoriaService;
 
     @Autowired
-    private CategoriaResponseRepository categoriaResponseRepository;
+    public CategoriaResponseRepository categoriaResponseRepository;
 
     @Autowired
-    private CategoriaRequestRepository categoriaRequestRepository;
+    public CategoriaRequestRepository categoriaRequestRepository;
 
     /**
      * GET "BUSCAR A LISTA DE CATEGORIA CADASTRADOS NO BLING".
@@ -75,13 +69,12 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public JsonResponse getAllCategory() throws ApiCategoriaException {
         try {
-            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
-//            String url = "http://www.teste.com/";
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(headers);
 
+            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
+//            String url = "http://www.teste.com/";
             String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
@@ -164,13 +157,11 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public JsonResponse getCategoryByIdCategoria(String idCategoria) throws ApiCategoriaException {
         try {
-            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
-//            String url = "http://www.teste.com/";
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(headers);
-
+            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
+//            String url = "http://www.teste.com/";
             String url = apiBaseUrl + "/categoria/" + idCategoria + "/json/" + apikeyparam + apiKey;
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
@@ -188,8 +179,10 @@ public class CategoriaServiceImpl implements CategoriaService {
             if (categoriaExistente.isPresent()) {
                 RetornoResponse.Categorias categoria = new RetornoResponse.Categorias();
                 categoria.setCategoria(categoriaExistente.get());
+
                 JsonResponse jsonResponse = new JsonResponse();
                 jsonResponse.setRetorno(new RetornoResponse());
+
                 jsonResponse.getRetorno().setCategorias(new ArrayList<>());
                 jsonResponse.getRetorno().getCategorias().add(categoria);
                 return jsonResponse;
@@ -263,7 +256,12 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     /**
-     * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
+     * PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".
+     * Método responsável por atualizar uma categoria, tanto na API externa quanto no banco de dados local.
+     *
+     * @param xmlCategoria xml com os dados do cadastro da nova categoria.
+     * @param idCategoria  Id para acesso direto a categoria cadastrada.
+     * @throws ApiCategoriaException Caso ocorra algum erro na comunicação com a API externa o banco de dados fica disponivel para a consulta.
      */
     @Override
     public JsonRequest updateCategory(String xmlCategoria, String idCategoria) throws ApiCategoriaException {
@@ -302,17 +300,23 @@ public class CategoriaServiceImpl implements CategoriaService {
 
                     NodeList descricaoNodes = doc.getElementsByTagName("descricao");
                     String descricao = descricaoNodes.item(0).getTextContent();
-
                     NodeList idCategoriaPaiNodes = doc.getElementsByTagName("idcategoriapai");
                     String idCategoriaPai = idCategoriaPaiNodes.item(0).getTextContent();
 
+                    //Adiciona na tabela tb_categoria_request a categoria atualizada e adiciona uma flaf PUT para posterior ser atualizado.
                     CategoriaRequest categoriaRequest = new CategoriaRequest();
                     categoriaRequest.setId(Long.valueOf(idCategoria));
                     categoriaRequest.setDescricao(descricao);
                     categoriaRequest.setIdCategoriaPai(Long.valueOf(idCategoriaPai));
                     categoriaRequest.setFlag("PUT");
-
                     categoriaRequestRepository.save(categoriaRequest);
+
+                    //Atualiza na tabela tb_categoria_response a categoria atualizada para acesso imediato.
+                    CategoriaResponse categoriaResponse = new CategoriaResponse();
+                    categoriaResponse.setId(Long.valueOf(idCategoria));
+                    categoriaResponse.setDescricao(descricao);
+                    categoriaResponse.setIdCategoriaPai(idCategoriaPai);
+                    categoriaResponseRepository.save(categoriaResponse);
 
                     System.out.println("Dados atualizados no banco local.");
 
@@ -336,7 +340,7 @@ public class CategoriaServiceImpl implements CategoriaService {
      * @throws ApiCategoriaException Caso ocorra algum erro na comunicação com a API externa o banco de dados fica disponível para a consulta.
      */
     @Scheduled(fixedDelayString = "${api.check.delay}")
-    public void checkApiStatus() {
+    public void scheduledPostCategory() {
         try {
             System.out.println("Chamei o Scheduled POST");
 //            String url = "http://www.teste.com/";
@@ -380,7 +384,7 @@ public class CategoriaServiceImpl implements CategoriaService {
      *
      * @throws ApiCategoriaException Caso ocorra algum erro na comunicação com a API externa o banco de dados fica disponível para a consulta.
      */
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelayString = "${api.check.delay}")
     public void scheduledUpdateCategory() {
         try {
             System.out.println("Chamei o Scheduled PUT");
@@ -413,11 +417,11 @@ public class CategoriaServiceImpl implements CategoriaService {
         }
     }
 
-    /**
-     * ---------------------------------------------------- VERSÃO 1 - SEM CONEXÃO AO BANCO DE DADOS. ----------------------------------------------------------
+    /*
+      --------------------------------------------- VERSÃO 1 - SEM CONEXÃO E ACESSO AO BANCO DE DADOS. ----------------------------------------------------------
      */
 
-    /**
+    /*
      * GET "BUSCAR A LISTA DE CATEGORIA CADASTRADOS NO BLING".
      */
 //    @Override
@@ -442,7 +446,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 //        }
 //    }
 
-    /**
+    /*
      * GET "BUSCA CATEGORIA PELO IDCATEGORIA".
      */
 //    @Override
@@ -467,7 +471,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 //        }
 //    }
 
-    /**
+    /*
      * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
 
@@ -497,7 +501,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 //        }
 //    }
 
-    /**
+    /*
      * PUT "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
      */
 //    @Override

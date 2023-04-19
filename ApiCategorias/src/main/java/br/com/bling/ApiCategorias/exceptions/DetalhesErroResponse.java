@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 public class DetalhesErroResponse {
 
     @JsonProperty("cod")
-    private int codigo;
+    public int codigo;
 
     @JsonProperty("msg")
-    private String mensagem;
+    public String mensagem;
 
     public DetalhesErroResponse(int codigo, String mensagem) {
         this.codigo = codigo;

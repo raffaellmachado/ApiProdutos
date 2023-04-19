@@ -1,10 +1,8 @@
 package br.com.bling.ApiCategorias.repositories;
 
-import br.com.bling.ApiCategorias.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategorias.controllers.response.CategoriaResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,8 +15,5 @@ public interface CategoriaResponseRepository extends JpaRepository<CategoriaResp
 
     @Query("SELECT c.descricao FROM CategoriaResponse c")
     List<String> findAllDescricao();
-
-    @Query("SELECT c FROM CategoriaResponse c WHERE c.descricao = :descricao")
-    List<CategoriaResponse> findByDescricao2(@Param("descricao") String descricao);
 
 }

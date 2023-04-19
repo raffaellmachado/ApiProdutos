@@ -11,11 +11,11 @@ import java.io.IOException;
 
 public interface CategoriaService {
 
-    public JsonResponse getAllCategory();
+    JsonResponse getAllCategory();
 
-    public JsonResponse getCategoryByIdCategoria(@PathVariable("idCategoria") String idCategoria);
+    JsonResponse getCategoryByIdCategoria(@PathVariable("idCategoria") String idCategoria);
 
-    public JsonRequest createCategory(@RequestBody String xmlCategoria);
+    JsonRequest createCategory(@RequestBody String xmlCategoria);
 
-    public JsonRequest updateCategory(@RequestBody String xmlCategoria, @PathVariable("idCategoria") String idCategoria) throws ParserConfigurationException, IOException, SAXException;
+    JsonRequest updateCategory(@RequestBody String xmlCategoria, @PathVariable("idCategoria") String idCategoria) throws ParserConfigurationException, IOException, SAXException;
 }

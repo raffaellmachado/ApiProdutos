@@ -2,6 +2,7 @@ package br.com.bling.ApiDepositos.services;
 
 import br.com.bling.ApiDepositos.controllers.request.JsonRequest;
 import br.com.bling.ApiDepositos.controllers.response.JsonResponse;
+import br.com.bling.ApiDepositos.repositories.DepositoResponseRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,9 @@ class DepositoServiceImplTest {
 
     @InjectMocks
     DepositoServiceImpl depositoServiceImpl;
+
+    @Mock
+    DepositoResponseRepository depositoResponseRepository;
 
     @BeforeEach
     void setUp() {

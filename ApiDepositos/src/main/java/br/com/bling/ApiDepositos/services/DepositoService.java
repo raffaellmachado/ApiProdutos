@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface DepositoService {
 
-    public JsonResponse getAllDeposit();
+    JsonResponse getAllDeposit();
 
-    public JsonResponse getDepositById(@PathVariable("idDeposito") String idDeposito);
+    JsonResponse getDepositById(@PathVariable("idDeposito") String idDeposito);
 
-    public JsonRequest createDeposit(@RequestBody String xmlDeposito);
+    JsonRequest createDeposit(@RequestBody String xmlDeposito);
 
-    public JsonRequest updateDeposit(@RequestBody String xmlDeposito, @PathVariable("idDeposito") String idDeposito);
+    JsonRequest updateDeposit(@RequestBody String xmlDeposito, @PathVariable("idDeposito") String idDeposito);
 
 }

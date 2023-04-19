@@ -1,8 +1,6 @@
 package br.com.bling.ApiCategorias.controllers;
 
-import br.com.bling.ApiCategorias.controllers.request.CategoriaRequest;
 import br.com.bling.ApiCategorias.controllers.request.JsonRequest;
-import br.com.bling.ApiCategorias.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategorias.controllers.response.JsonResponse;
 import br.com.bling.ApiCategorias.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategorias.exceptions.*;
@@ -16,7 +14,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -26,9 +23,8 @@ import java.util.List;
 public class CategoriaController {
 
     @Autowired
-    private CategoriaService categoriaService;
-    private String idCategoria;
-    private String id;
+    public  CategoriaService categoriaService;
+
 
     /**
      * GET "BUSCA A LISTA DE CATEGORIAS".

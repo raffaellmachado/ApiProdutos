@@ -1,7 +1,6 @@
 package br.com.bling.ApiCategorias.repositories;
 
 import br.com.bling.ApiCategorias.controllers.request.CategoriaRequest;
-import br.com.bling.ApiCategorias.controllers.response.CategoriaResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

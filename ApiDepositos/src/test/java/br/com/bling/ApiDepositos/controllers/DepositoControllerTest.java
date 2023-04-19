@@ -42,7 +42,7 @@ class DepositoControllerTest {
      * TESTE CONTROLLER - GET "BUSCAR A LISTA DE DEPOSITOS CADASTRADOS NO BLING".
      */
     @Test
-    void testGetDeposit() throws Exception {
+    void testGetDeposit() {
 
         // Deposito teste 01
         RetornoResponse.Depositos deposito1 = new RetornoResponse.Depositos();
@@ -183,7 +183,7 @@ class DepositoControllerTest {
 
         when(depositoService.createDeposit(xml)).thenReturn(resposta);
 
-        JsonRequest result = (JsonRequest) depositoController.createDeposit(xml).getBody();
+        JsonRequest result = depositoController.createDeposit(xml).getBody();
         assertEquals(resposta, result);
     }
 
@@ -246,7 +246,7 @@ class DepositoControllerTest {
 
         when(depositoService.updateDeposit(xml, idDeposito)).thenReturn(resposta);
 
-        JsonRequest result = (JsonRequest) depositoController.updateDeposit(xml, idDeposito).getBody();
+        JsonRequest result = depositoController.updateDeposit(xml, idDeposito).getBody();
         assertEquals(resposta, result);
     }
 

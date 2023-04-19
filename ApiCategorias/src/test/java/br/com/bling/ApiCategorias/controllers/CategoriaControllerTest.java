@@ -17,7 +17,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,13 +47,13 @@ class CategoriaControllerTest {
         // Cria uma resposta simulada do serviço
         RetornoResponse.Categorias categoria1 = new RetornoResponse.Categorias();
         categoria1.categoria = new CategoriaResponse();
-        categoria1.categoria.setId("1");
+        categoria1.categoria.setId(Long.valueOf("1"));
         categoria1.categoria.setDescricao("Categoria 1");
         categoria1.categoria.setIdCategoriaPai("0");
 
         RetornoResponse.Categorias categoria2 = new RetornoResponse.Categorias();
         categoria2.categoria = new CategoriaResponse();
-        categoria2.categoria.setId("2");
+        categoria2.categoria.setId(Long.valueOf("2"));
         categoria2.categoria.setDescricao("Categoria 2");
         categoria2.categoria.setIdCategoriaPai("1");
 
@@ -104,7 +107,7 @@ class CategoriaControllerTest {
         RetornoResponse.Categorias categoria = new RetornoResponse.Categorias();
 
         categoria.categoria = new CategoriaResponse();
-        categoria.categoria.setId(idCategoria);
+        categoria.categoria.setId(Long.valueOf(idCategoria));
         categoria.categoria.setDescricao("Categoria 1");
         categoria.categoria.setIdCategoriaPai("456");
 
@@ -158,9 +161,9 @@ class CategoriaControllerTest {
         RetornoRequest.Categorias categoria = new RetornoRequest.Categorias();
 
         categoria.categoria = new CategoriaRequest();
-        categoria.categoria.setId("01");
+        categoria.categoria.setId(Long.valueOf("01"));
         categoria.categoria.setDescricao("Calçado");
-        categoria.categoria.setIdCategoriaPai(0);
+        categoria.categoria.setIdCategoriaPai(0L);
 
         categoriasList.add(categoria);
         categorias.add(categoriasList);
@@ -202,7 +205,7 @@ class CategoriaControllerTest {
      * TESTE CONTROLLER - PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".
      */
     @Test
-    void testUpdateCategory() {
+    void testUpdateCategory() throws ParserConfigurationException, IOException, SAXException {
         // Cria o XML de deposito a ser enviado na requisição
         String idCategoria = "158365";
         String xml = "<categorias>\n" +
@@ -221,9 +224,9 @@ class CategoriaControllerTest {
         RetornoRequest.Categorias categoria = new RetornoRequest.Categorias();
 
         categoria.categoria = new CategoriaRequest();
-        categoria.categoria.setId(idCategoria);
+        categoria.categoria.setId(Long.valueOf(idCategoria));
         categoria.categoria.setDescricao("Calçado");
-        categoria.categoria.setIdCategoriaPai(0);
+        categoria.categoria.setIdCategoriaPai(0L);
 
         categoriasList.add(categoria);
         categorias.add(categoriasList);
@@ -240,7 +243,7 @@ class CategoriaControllerTest {
      * TESTE CONTROLLER - PUT "FORÇA O METODO DE CADASTRO DE CATEGORIA A ENTRAR NO EXCEPTION".
      */
     @Test
-    void testUpdateCategoryException() {
+    void testUpdateCategoryException() throws ParserConfigurationException, IOException, SAXException {
         // Cria o XML de categoria a ser enviado na requisição
         String idCategoria = "157862";
         String xml = "<categorias>\n" +

@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class ErroResponse {
 
     @JsonProperty("erro")
-    private DetalhesErroResponse erro;
+    public DetalhesErroResponse erro;
 }

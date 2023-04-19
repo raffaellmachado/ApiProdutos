@@ -27,7 +27,7 @@ public class SwaggerConfig {
 				.build().apiInfo(metaInfo());
 	}
 
-	private ApiInfo metaInfo() {
+	public ApiInfo metaInfo() {
 
         ApiInfo apiInfo = new ApiInfo(
                 "API REST DEPOSITOS",

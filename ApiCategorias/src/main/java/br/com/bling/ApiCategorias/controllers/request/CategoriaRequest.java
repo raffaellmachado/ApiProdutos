@@ -22,6 +22,7 @@ public class CategoriaRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     public Long idBd;
 
     @JsonProperty("id")

@@ -2,6 +2,7 @@ package br.com.bling.ApiCategorias.service;
 
 import br.com.bling.ApiCategorias.controllers.request.JsonRequest;
 import br.com.bling.ApiCategorias.controllers.response.JsonResponse;
+import br.com.bling.ApiCategorias.repositories.CategoriaResponseRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,15 +16,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
 
 class CategoriaServiceImplTest {
     @Mock
     RestTemplate restTemplate;
-    @Mock
-    CategoriaService categoriaService;
+
     @InjectMocks
     CategoriaServiceImpl categoriaServiceImpl;
+
+    @Mock
+    CategoriaResponseRepository categoriaResponseRepository;
 
     @BeforeEach
     void setUp() {
@@ -46,10 +50,10 @@ class CategoriaServiceImplTest {
         // Verifica se a lista de categorias foi corretamente convertida a partir da resposta da API
         Assertions.assertEquals(2, result.getRetorno().getCategorias().size());
 
-        Assertions.assertEquals("123", result.getRetorno().getCategorias().get(0).getCategoria().getId());
+        Assertions.assertEquals(123, result.getRetorno().getCategorias().get(0).getCategoria().getId());
         Assertions.assertEquals("Categoria 1", result.getRetorno().getCategorias().get(0).getCategoria().getDescricao());
 
-        Assertions.assertEquals("456", result.getRetorno().getCategorias().get(1).getCategoria().getId());
+        Assertions.assertEquals(456, result.getRetorno().getCategorias().get(1).getCategoria().getId());
         Assertions.assertEquals("Categoria 2", result.getRetorno().getCategorias().get(1).getCategoria().getDescricao());
 
         System.out.println("GET LIST: " + result);
@@ -59,7 +63,7 @@ class CategoriaServiceImplTest {
      * TESTE SERVICE - GET "BUSCA CATEGORIA PELO IDCATEGORIA".
      */
     @Test
-    void testGetCategoryByIdCategoria() throws Exception {
+    void testGetCategoryByIdCategoria() {
         // Simula a resposta da chamada para a API externa
         String idCategoria = "159753";
         String jsonResponse = "{\"retorno\": {\"categorias\": [{\"categoria\": {\"id\": \"123\", \"descricao\": \"Categoria 1\"}}]}}";
@@ -70,7 +74,7 @@ class CategoriaServiceImplTest {
         JsonResponse result = categoriaServiceImpl.getCategoryByIdCategoria(idCategoria);
 
         // Verifica se a categoria foi corretamente convertida a partir da resposta da API
-        Assertions.assertEquals("123", result.getRetorno().getCategorias().get(0).getCategoria().getId());
+        Assertions.assertEquals(123, result.getRetorno().getCategorias().get(0).getCategoria().getId());
         Assertions.assertEquals("Categoria 1", result.getRetorno().getCategorias().get(0).getCategoria().getDescricao());
 
         System.out.println("GET ID: " + result);
@@ -80,17 +84,17 @@ class CategoriaServiceImplTest {
      * TESTE SERVICE - POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML/JSON".
      */
     @Test
-    void testCreateCategory() throws Exception {
+    void testCreateCategory() {
         // Simula a resposta da chamada para a API externa
-        String jsonResponse = "{\"retorno\": {\"categorias\": {\"categoria\": {\"id\": \"007\", \"descricao\": \"Moveis usados\"}}}}";
+        String jsonResponse = "{\"retorno\": {\"categorias\": {\"categoria\": {\"id\": \"7\", \"descricao\": \"Moveis usados\"}}}}";
         ResponseEntity<String> responseEntity = ResponseEntity.ok(jsonResponse);
         Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = (JsonRequest) categoriaServiceImpl.createCategory(jsonResponse);
+        JsonRequest result = categoriaServiceImpl.createCategory(jsonResponse);
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
-        Assertions.assertEquals("007", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getId());
+        Assertions.assertEquals(7, result.getRetorno().getCategorias().get(0).get(0).getCategoria().getId());
         Assertions.assertEquals("Moveis usados", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getDescricao());
 
         System.out.println("POST: " + result);
@@ -107,10 +111,10 @@ class CategoriaServiceImplTest {
         Mockito.when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
 
         // Chama o método que deve converter a resposta em um objeto RespostaRequest
-        JsonRequest result = (JsonRequest) categoriaServiceImpl.updateCategory(jsonResponse, idCategoria);
+        JsonRequest result = categoriaServiceImpl.updateCategory(jsonResponse, idCategoria);
 
         // Verifica se o objeto RespostaRequest foi corretamente criado a partir da resposta da API
-        Assertions.assertEquals("159", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getId());
+        Assertions.assertEquals(159, result.getRetorno().getCategorias().get(0).get(0).getCategoria().getId());
         Assertions.assertEquals("Canecas", result.getRetorno().getCategorias().get(0).get(0).getCategoria().getDescricao());
 
         System.out.println("POST: " + result);

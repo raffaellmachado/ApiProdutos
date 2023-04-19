@@ -1,13 +1,12 @@
 package br.com.bling.ApiDepositos.controllers.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.*;
 
 @Data
@@ -19,11 +18,15 @@ import javax.validation.constraints.*;
 public class DepositoRequest {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
+    public Long idBd;
+
     @JsonProperty("id")
     public Long id;
 
-    @NotEmpty(message = "Campo Obrigatorio")
-    @Max(value = 120, message = "Descrição do depósito")
+    @NotBlank(message = "Campo Obrigatorio")
+    @Size(max = 120, message = "Descrição do depósito")
     @JsonProperty("descricao")
     public String descricao;
 
@@ -38,6 +41,9 @@ public class DepositoRequest {
     @NotNull(message = "Desconsidera saldo deste depósito")
     @JsonProperty("desconsiderarSaldo")
     public boolean desconsiderarSaldo = false;
+
+    @JsonIgnore
+    public String flag;
 }
 
 

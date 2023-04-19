@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ApplicationCategoriaExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ApiCategoriaException.class)
-    public ResponseEntity<String> handleApiCategoriaException404(ApiCategoriaException ex) {
+    public ResponseEntity<String> handleApiCategoriaException(ApiCategoriaException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
