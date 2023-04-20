@@ -1,12 +1,11 @@
 package br.com.bling.ApiContatos.service;
 
 import br.com.bling.ApiContatos.controllers.request.JsonRequest;
-import br.com.bling.ApiContatos.controllers.response.ContatoResponse;
-import br.com.bling.ApiContatos.controllers.response.JsonResponse;
-import br.com.bling.ApiContatos.controllers.response.RetornoResponse;
+import br.com.bling.ApiContatos.controllers.response.*;
 import br.com.bling.ApiContatos.exceptions.ApiContatoException;
 import br.com.bling.ApiContatos.repositories.ContatoRequestRepository;
 import br.com.bling.ApiContatos.repositories.ContatoResponseRepository;
+import br.com.bling.ApiContatos.repositories.TipoContatoResponseRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +36,6 @@ public class ContatoServiceImpl implements ContatoService {
     @Value("${external.api.apikeyparam}")
     public String apikeyparam;
 
-    @Value("${external.api.xmlparam}")
-    public String apiXmlParam;
-
     @Autowired
     public RestTemplate restTemplate;
 
@@ -49,6 +45,9 @@ public class ContatoServiceImpl implements ContatoService {
     @Autowired
     public ContatoRequestRepository contatoRequestRepository;
 
+    @Autowired
+    public TipoContatoResponseRepository tipoContatoResponseRepository;
+
     /**
      * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
      */
@@ -56,7 +55,7 @@ public class ContatoServiceImpl implements ContatoService {
     public JsonResponse getAllContacts() throws ApiContatoException {
         try {
             /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
-//            String url = "http://www.teste.com/";
+            // String url = "http://www.teste.com/";
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -79,6 +78,7 @@ public class ContatoServiceImpl implements ContatoService {
                 if (categoriaExistente.isPresent()) {
                     ContatoResponse categoriaAtualizada = categoriaExistente.get();
                     categoriaAtualizada.setId(contato.getId());
+                    categoriaAtualizada.setTiposContato(contato.getTiposContato());
                     contatoResponseRepository.save(categoriaAtualizada);
                 } else {
                     contatoResponseRepository.save(contato);
@@ -118,6 +118,7 @@ public class ContatoServiceImpl implements ContatoService {
         }
     }
 
+
     /**
      * GET "BUSCAR UM PRODUTO PELO CÒDIGO (ID)".
      */
@@ -146,6 +147,7 @@ public class ContatoServiceImpl implements ContatoService {
             if (contatoExistente.isPresent()) {
                 RetornoResponse.Contatos contato = new RetornoResponse.Contatos();
                 contato.setContato(contatoExistente.get());
+
                 JsonResponse jsonResponse = new JsonResponse();
                 jsonResponse.setRetorno(new RetornoResponse());
                 jsonResponse.getRetorno().setContatos(new ArrayList<>());
@@ -223,7 +225,9 @@ public class ContatoServiceImpl implements ContatoService {
      * ---------------------------------------------------- VERSÃO 1 - SEM CONEXÃO AO BANCO DE DADOS. ----------------------------------------------------------
      */
 
-//    @Override
+    /**
+     * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
+     *///    @Override
 //    public JsonResponse getAllContacts() throws ApiContatoException {
 //        try {
 //            HttpHeaders headers = new HttpHeaders();
@@ -242,6 +246,48 @@ public class ContatoServiceImpl implements ContatoService {
 //            throw new ApiContatoException("Erro ao processar JSON", e);
 //        } catch (RestClientException e) {
 //            throw new ApiContatoException("Erro ao chamar API", e);
+//        }
+//    }
+
+    /**
+     * GET "BUSCAR UM PRODUTO PELO CÒDIGO (ID)".
+     */
+//    @Override
+//    public JsonResponse getContactsById(String id) throws ApiContatoException {
+//        try {
+//            /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
+////            String url = "http://www.teste.com/";
+//
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> request = new HttpEntity<>(id, headers);
+//
+//            String url = apiBaseUrl + "/contato/" + id + "/json/" +apikeyparam + apiKey + "&identificador=2";
+//            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonResponse jsonResponse = objectMapper.readValue(response.getBody(), JsonResponse.class);
+//
+//            return jsonResponse;
+//
+//        } catch (JsonProcessingException e) {
+//            throw new ApiContatoException("Erro ao processar JSON: ", e);
+//        } catch (RestClientException e) {
+//            Optional<ContatoResponse> contatoExistente = contatoResponseRepository.findById(Long.valueOf(id));
+//            if (contatoExistente.isPresent()) {
+//                RetornoResponse.Contatos contato = new RetornoResponse.Contatos();
+//                contato.setContato(contatoExistente.get());
+//
+//                JsonResponse jsonResponse = new JsonResponse();
+//                jsonResponse.setRetorno(new RetornoResponse());
+//                jsonResponse.getRetorno().setContatos(new ArrayList<>());
+//                jsonResponse.getRetorno().getContatos().add(contato);
+//
+//                return jsonResponse;
+//
+//            } else {
+//                throw new ApiContatoException("A API está indisponível e o contato não foi encontrado no banco de dados.", e);
+//            }
 //        }
 //    }
 }

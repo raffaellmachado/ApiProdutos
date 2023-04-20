@@ -6,14 +6,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Max;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TipoContatoRequest {
-    @Max(value = 50, message = "Nome do tipo do contato")
+
+    @Size(max = 50, message = "Nome do tipo do contato")
     @JsonProperty("descricao")
     public String descricao;
 }

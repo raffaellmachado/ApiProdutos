@@ -3,8 +3,10 @@ package br.com.bling.ApiProdutosFornecedores.service;
 import br.com.bling.ApiProdutosFornecedores.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutosFornecedores.controllers.response.JsonResponse;
 import br.com.bling.ApiProdutosFornecedores.exceptions.ApiProdutoFornecedorException;
-import br.com.bling.ApiProdutosFornecedores.repositories.ProdutoFornecedorRequestRepository;
 import br.com.bling.ApiProdutosFornecedores.repositories.ProdutoFornecedorResponseRepository;
+import br.com.bling.ApiProdutosFornecedores.repositories.ProdutoFornecedoresResponseRepository;
+
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,26 +22,22 @@ import org.springframework.web.client.RestTemplate;
 public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
 
     @Value("${external.api.url}")
-    private String apiBaseUrl;
+    public String apiBaseUrl;
 
     @Value("${external.api.apikey}")
-    private String apiKey;
+    public String apiKey;
 
     @Value("${external.api.apikeyparam}")
-    private String apikeyparam;
-
-    @Value("${external.api.xmlparam}")
-    private String apiXmlParam;
+    public String apikeyparam;
 
     @Autowired
-    private RestTemplate restTemplate;
+    public RestTemplate restTemplate;
 
     @Autowired
-    private ProdutoFornecedorResponseRepository produtoFornecedorResponseRepository;
+    public ProdutoFornecedoresResponseRepository produtoFornecedoresResponseRepository;
 
     @Autowired
-    private ProdutoFornecedorRequestRepository produtoFornecedorRequestRepository;
-
+    public ProdutoFornecedorResponseRepository produtoFornecedorResponseRepository;
 
     /**
      * GET "BUSCAR LISTA DE PRODUTOS FORNECEDORES".
@@ -65,6 +63,7 @@ public class ProdutoFornecedorServiceImpl implements ProdutoFornecedorService {
             throw new ApiProdutoFornecedorException("Erro ao chamar API", e);
         }
     }
+
 
     /**
      * GET "BUSCAR UM PRODUTO FORNECEDOR PELO IDPRODUTOFORNECEDOR".

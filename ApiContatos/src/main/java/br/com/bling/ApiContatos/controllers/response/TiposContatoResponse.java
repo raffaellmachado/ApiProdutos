@@ -18,19 +18,22 @@ import javax.persistence.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TiposContatoResponse {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long idbd;
+
+    @JsonProperty("id")
     public Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contato_response_id", referencedColumnName = "id")
-    public ContatoResponse contatoResponse;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "contato_id")
+    public ContatoResponse contato;
 
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "tipo_contato_id")
     @JsonProperty("tipoContato")
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "tipo_contato_response_id", referencedColumnName = "id")
     public TipoContatoResponse tipoContato;
-
 }
 
 

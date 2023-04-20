@@ -16,6 +16,7 @@ public interface CategoriaRequestRepository extends JpaRepository<CategoriaReque
     @Query("SELECT c FROM CategoriaRequest c WHERE c.descricao = :descricao")
     List<CategoriaRequest> findByDescricao(@Param("descricao") String descricao);
 
+
 }
 
 

@@ -18,15 +18,15 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TipoContatoResponse {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    public Long idbd;
+
+    @JsonProperty("id")
+    private Long id;
 
     @JsonProperty("descricao")
-    public String descricao;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "tipoContato", cascade = CascadeType.ALL)
-    public List<TiposContatoResponse> tiposContato;
+    private String descricao;
 }
 

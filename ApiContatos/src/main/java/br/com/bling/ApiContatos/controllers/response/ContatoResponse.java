@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -16,7 +15,7 @@ import java.util.List;
 @Table(name = "TB_CONTATO_RESPONSE")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ContatoResponse implements Serializable {
+public class ContatoResponse {
 
 	@Id
 	@JsonProperty("id")
@@ -103,7 +102,6 @@ public class ContatoResponse implements Serializable {
 	@JsonProperty("informacoesContato")
 	public String informacoesContato;
 
-	@OneToMany(mappedBy = "contatoResponse", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonProperty("tiposContato")
+	@OneToMany(mappedBy = "contato", cascade = CascadeType.ALL)
 	public List<TiposContatoResponse> tiposContato;
 }

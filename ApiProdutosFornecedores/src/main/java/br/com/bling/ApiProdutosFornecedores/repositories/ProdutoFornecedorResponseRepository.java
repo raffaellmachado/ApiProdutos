@@ -1,15 +1,15 @@
 package br.com.bling.ApiProdutosFornecedores.repositories;
 
-import br.com.bling.ApiProdutosFornecedores.controllers.response.ProdutoFornecedoresResponse;
+import br.com.bling.ApiProdutosFornecedores.controllers.response.ProdutoFornecedorResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface ProdutoFornecedorResponseRepository extends JpaRepository<ProdutoFornecedoresResponse, Long> {
+public interface ProdutoFornecedorResponseRepository extends JpaRepository<ProdutoFornecedorResponse, Long> {
 
-    Optional<ProdutoFornecedoresResponse> findById(Long id);
+    Optional<ProdutoFornecedorResponse> findById(Long id);
 
 }
 

@@ -74,8 +74,8 @@ public class CategoriaServiceImpl implements CategoriaService {
             HttpEntity<String> request = new HttpEntity<>(headers);
 
             /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
-//            String url = "http://www.teste.com/";
-            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
+            String url = "http://www.teste.com/";
+//            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -96,8 +96,8 @@ public class CategoriaServiceImpl implements CategoriaService {
                     // Se a categoria já existir, atualiza seus campos.
                     CategoriaResponse categoriaAtualizada = categoriaExistente.get();
                     categoriaAtualizada.setId(categoria.getId());
-                    categoriaAtualizada.setDescricao(categoria.getDescricao());
-                    categoriaAtualizada.setIdCategoriaPai(categoria.getIdCategoriaPai());
+//                    categoriaAtualizada.setDescricao(categoria.getDescricao());
+//                    categoriaAtualizada.setIdCategoriaPai(categoria.getIdCategoriaPai());
                     categoriaResponseRepository.save(categoriaAtualizada);
                 } else {
                     // Sea categoria não existir, insere uma nova cattegoria no banco de dados
