@@ -1,11 +1,9 @@
 package br.com.bling.ApiContatos.controllers.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -15,24 +13,20 @@ import javax.persistence.*;
 @Entity
 @Table(name = "TB_TIPOS_CONTATO_RESPONSE")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class TiposContatoResponse {
 
-    @JsonIgnore
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long idbd;
-
-    @JsonProperty("id")
     public Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "contato_id")
-    public ContatoResponse contato;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contato_response_id", referencedColumnName = "id")
+    @JsonBackReference // Anotação para indicar que esta é a ponta "de volta" da relação
+    public ContatoResponse contatoResponse;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_contato_id")
-    @JsonProperty("tipoContato")
     public TipoContatoResponse tipoContato;
 }
 

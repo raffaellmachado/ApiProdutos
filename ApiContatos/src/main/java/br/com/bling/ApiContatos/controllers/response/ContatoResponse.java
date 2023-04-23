@@ -2,14 +2,18 @@ package br.com.bling.ApiContatos.controllers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@ToString
 @NoArgsConstructor
 @Entity
 @Table(name = "TB_CONTATO_RESPONSE")
@@ -102,6 +106,10 @@ public class ContatoResponse {
 	@JsonProperty("informacoesContato")
 	public String informacoesContato;
 
-	@OneToMany(mappedBy = "contato", cascade = CascadeType.ALL)
-	public List<TiposContatoResponse> tiposContato;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contatoResponse")
+	@JsonProperty("tiposContato")
+	@ToString.Exclude
+	@JsonManagedReference // Anotação para indicar que esta é a ponta "gerenciada" da relação
+	public List<TiposContatoResponse> tiposContato = new ArrayList<>();
+
 }

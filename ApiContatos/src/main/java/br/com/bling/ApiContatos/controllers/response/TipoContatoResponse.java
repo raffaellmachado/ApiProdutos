@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,18 +16,16 @@ import java.util.List;
 @Table(name = "TB_TIPO_CONTATO_RESPONSE")
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
 public class TipoContatoResponse {
 
-    @JsonIgnore
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long idbd;
-
-    @JsonProperty("id")
-    private Long id;
+    public Long id;
 
     @JsonProperty("descricao")
-    private String descricao;
+    public String descricao;
+
 }
 

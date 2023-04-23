@@ -55,7 +55,7 @@ public class ContatoServiceImpl implements ContatoService {
     public JsonResponse getAllContacts() throws ApiContatoException {
         try {
             /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
-            // String url = "http://www.teste.com/";
+//             String url = "http://www.teste.com/";
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -74,13 +74,40 @@ public class ContatoServiceImpl implements ContatoService {
 
             ArrayList<RetornoResponse.Contatos> contatosResponse = new ArrayList<>();
             for (ContatoResponse contato : contatos) {
-                Optional<ContatoResponse> categoriaExistente = contatoResponseRepository.findById(contato.getId());
-                if (categoriaExistente.isPresent()) {
-                    ContatoResponse categoriaAtualizada = categoriaExistente.get();
-                    categoriaAtualizada.setId(contato.getId());
-                    categoriaAtualizada.setTiposContato(contato.getTiposContato());
-                    contatoResponseRepository.save(categoriaAtualizada);
+                Optional<ContatoResponse> contatoExistente = contatoResponseRepository.findById(contato.getId());
+                if (contatoExistente.isPresent()) {
+                    ContatoResponse contatoExiste = contatoExistente.get();
+                    contatoExiste.setTiposContato(contato.getTiposContato());
+                    for (TiposContatoResponse tiposContato : contato.getTiposContato()) {
+                        Optional<TipoContatoResponse> tipoContatoExistente = tipoContatoResponseRepository.findByDescricao(tiposContato.getTipoContato().getDescricao());
+                        if (tipoContatoExistente.isPresent()) {
+                            tiposContato.setTipoContato(tipoContatoExistente.get());
+                        } else {
+                            TipoContatoResponse novoTipoContato = new TipoContatoResponse();
+                            novoTipoContato.setDescricao(tiposContato.getTipoContato().getDescricao());
+                            tipoContatoResponseRepository.save(novoTipoContato);
+                            tiposContato.setTipoContato(novoTipoContato);
+                        }
+                        if (contatoExiste.getId() != null) {
+                            tiposContato.setContatoResponse(contatoExiste);
+                        }
+                    }
+                    contatoResponseRepository.save(contatoExiste);
                 } else {
+                    for (TiposContatoResponse tiposContato : contato.getTiposContato()) {
+                        Optional<TipoContatoResponse> tipoContatoExistente = tipoContatoResponseRepository.findByDescricao(tiposContato.getTipoContato().getDescricao());
+                        if (tipoContatoExistente.isPresent()) {
+                            tiposContato.setTipoContato(tipoContatoExistente.get());
+                        } else {
+                            TipoContatoResponse novoTipoContato = new TipoContatoResponse();
+                            novoTipoContato.setDescricao(tiposContato.getTipoContato().getDescricao());
+                            tipoContatoResponseRepository.save(novoTipoContato);
+                            tiposContato.setTipoContato(novoTipoContato);
+                        }
+                        if (contato.getId() != null) {
+                            tiposContato.setContatoResponse(contato);
+                        }
+                    }
                     contatoResponseRepository.save(contato);
                 }
                 RetornoResponse.Contatos contatoResponse = new RetornoResponse.Contatos();

@@ -12,5 +12,7 @@ public interface TipoContatoResponseRepository extends JpaRepository<TipoContato
 
     Optional<TipoContatoResponse> findById(Long id);
 
+    Optional<TipoContatoResponse> findByDescricao(String descricao);
+
 
 }
