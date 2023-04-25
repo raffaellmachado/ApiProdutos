@@ -14,8 +14,8 @@ public interface ContatoRequestRepository extends JpaRepository<ContatoRequest, 
 
 
     Optional<ContatoRequest> findById(Long id);
-//    @Query("SELECT c FROM CategoriaRequest c WHERE c.descricao = :descricao")
-//    List<ContatoRequest> findByDescricao(@Param("descricao") String descricao);
 
+    @Query("SELECT c FROM ContatoRequest c WHERE c.cpf_cnpj = :cpf_cnpj")
+    List<ContatoRequest> findByCpfCnpj(@Param("cpf_cnpj") String cpf_cnpj);
 }
 

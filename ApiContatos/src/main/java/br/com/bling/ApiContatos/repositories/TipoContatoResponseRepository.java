@@ -1,6 +1,5 @@
 package br.com.bling.ApiContatos.repositories;
 
-import br.com.bling.ApiContatos.controllers.request.ContatoRequest;
 import br.com.bling.ApiContatos.controllers.response.TipoContatoResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

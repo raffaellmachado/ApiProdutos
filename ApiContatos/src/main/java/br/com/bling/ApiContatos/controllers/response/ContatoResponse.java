@@ -40,8 +40,8 @@ public class ContatoResponse {
 	@JsonProperty("cnpj")
 	public String cnpj;
 
-	@JsonProperty("cpf_cnpj")
-	public String cpf_cnpj;
+//	@JsonProperty("cpf_cnpj")
+//	public String cpf_cnpj;
 
 	@JsonProperty("ie_rg")
 	public String ie_rg;
@@ -106,9 +106,9 @@ public class ContatoResponse {
 	@JsonProperty("informacoesContato")
 	public String informacoesContato;
 
+	@ToString.Exclude
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contatoResponse")
 	@JsonProperty("tiposContato")
-	@ToString.Exclude
 	@JsonManagedReference // Anotação para indicar que esta é a ponta "gerenciada" da relação
 	public List<TiposContatoResponse> tiposContato = new ArrayList<>();
 

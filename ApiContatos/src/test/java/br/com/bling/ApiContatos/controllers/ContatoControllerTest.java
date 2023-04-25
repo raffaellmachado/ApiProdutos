@@ -299,7 +299,7 @@ class ContatoControllerTest {
         contato.contato.setObs("Observação teste");
 
         contato.contato.setTiposContato(new ArrayList<>()); // Criar lista vazia para evitar NullPointerException
-        TiposContatosRequest tiposContatoRequest = new TiposContatosRequest();
+        TiposContatoRequest tiposContatoRequest = new TiposContatoRequest();
         tiposContatoRequest.setTipoContato(new TipoContatoRequest());
         tiposContatoRequest.tipoContato.setDescricao("Vendedor");
         contato.contato.tiposContato.add(tiposContatoRequest);
@@ -423,7 +423,7 @@ class ContatoControllerTest {
         contato.contato.setObs("Observação teste");
 
         contato.contato.setTiposContato(new ArrayList<>()); // Criar lista vazia para evitar NullPointerException
-        TiposContatosRequest tiposContatoRequest = new TiposContatosRequest();
+        TiposContatoRequest tiposContatoRequest = new TiposContatoRequest();
         tiposContatoRequest.setTipoContato(new TipoContatoRequest());
         tiposContatoRequest.tipoContato.setDescricao("Vendedor");
         contato.contato.tiposContato.add(tiposContatoRequest);

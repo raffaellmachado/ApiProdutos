@@ -1,20 +1,19 @@
-package br.com.bling.ApiContatos.controllers.response;
+package br.com.bling.ApiContatos.controllers.request;
 
+import br.com.bling.ApiContatos.controllers.response.ContatoResponse;
 import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
-
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "TB_TIPOS_CONTATO_RESPONSE")
+@Table(name = "TB_TIPOS_CONTATO_REQUEST")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TiposContatoResponse implements Serializable {
+public class TiposContatoRequest  implements Serializable {
 
     @Id
     @JsonIgnore
@@ -22,16 +21,11 @@ public class TiposContatoResponse implements Serializable {
     public Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contato_response_id", referencedColumnName = "id")
+    @JoinColumn(name = "contato_request_id", referencedColumnName = "id")
     @JsonBackReference // Anotação para indicar que esta é a ponta "de volta" da relação
-    public ContatoResponse contatoResponse;
+    public ContatoRequest contatoRequest;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_contato_id")
-    public TipoContatoResponse tipoContato;
+    public TipoContatoRequest tipoContato;
 }
-
-
-
-
-

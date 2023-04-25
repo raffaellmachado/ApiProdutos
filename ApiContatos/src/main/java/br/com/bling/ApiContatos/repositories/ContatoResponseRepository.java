@@ -12,5 +12,9 @@ import java.util.Optional;
 public interface ContatoResponseRepository extends JpaRepository<ContatoResponse, Long> {
 
     Optional<ContatoResponse> findById(Long id);
+
+    @Query("SELECT c.cnpj FROM ContatoResponse c")
+    List<String> findAllDescricao();
+
 }
 

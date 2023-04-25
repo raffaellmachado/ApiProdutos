@@ -1,8 +1,6 @@
 package br.com.bling.ApiContatos.repositories;
 
 
-import br.com.bling.ApiContatos.controllers.response.ContatoResponse;
-import br.com.bling.ApiContatos.controllers.response.TipoContatoResponse;
 import br.com.bling.ApiContatos.controllers.response.TiposContatoResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,6 +12,6 @@ public interface TiposContatoResponseRepository extends JpaRepository<TiposConta
 
     Optional<TiposContatoResponse> findById(Long id);
 
-    Optional<TiposContatoResponse> findByContatoResponseAndTipoContato(ContatoResponse contatoResponse, TipoContatoResponse tipoContatoResponse);
+    Optional<TiposContatoResponse> findByContatoResponseIdAndTipoContatoId(Long contatoResponseId, Long tipoContatoId);
 
 }
