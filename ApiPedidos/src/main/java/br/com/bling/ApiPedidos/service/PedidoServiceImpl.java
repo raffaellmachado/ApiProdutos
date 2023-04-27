@@ -30,9 +30,6 @@ public class PedidoServiceImpl implements PedidoService {
     @Autowired
     public RestTemplate restTemplate;
 
-    @Autowired
-    public PedidoService pedidoService;
-
 
     /**
      * GET "BUSCAR A LISTA DE CATEGORIA CADASTRADOS NO BLING".
@@ -48,12 +45,12 @@ public class PedidoServiceImpl implements PedidoService {
             HttpEntity<String> request = new HttpEntity<>(headers);
 
             String url = apiBaseUrl + "/pedidos/json/" + apikeyparam + apiKey;
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+            JsonResponse response = objectMapper.readValue(responseEntity.getBody(), JsonResponse.class);
 
-            return result;
+            return response;
 
         } catch (JsonProcessingException e) {
             throw new ApiPedidoException("Erro ao processar JSON", e);
@@ -77,12 +74,12 @@ public class PedidoServiceImpl implements PedidoService {
             HttpEntity<String> request = new HttpEntity<>(numero, headers);
 
             String url = apiBaseUrl + "/pedido/" + numero + "/json/" + apikeyparam + apiKey;
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonResponse result = objectMapper.readValue(response.getBody(), JsonResponse.class);
+            JsonResponse response = objectMapper.readValue(responseEntity.getBody(), JsonResponse.class);
 
-            return result;
+            return response;
 
         } catch (JsonProcessingException e) {
             throw new ApiPedidoException("Erro ao processar JSON", e);
@@ -145,12 +142,12 @@ public class PedidoServiceImpl implements PedidoService {
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
             String url = apiBaseUrl + "/pedido/" + numero + "/json/";
 
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonRequest result = objectMapper.readValue(response.getBody(), JsonRequest.class);
+            JsonRequest response = objectMapper.readValue(responseEntity.getBody(), JsonRequest.class);
 
-            return result;
+            return response;
 
         } catch (JsonProcessingException e) {
             throw new ApiPedidoException("Erro ao processar JSON", e);
