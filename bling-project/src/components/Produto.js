@@ -183,9 +183,15 @@ class Produto extends React.Component {
 
     //GET - MÉTODO PARA CONSUMO DE UM PRODUTO PELO ID
     carregarProdutos = (codigo) => {
-        fetch("http://localhost:8081/api/v1/produto/" + codigo, { method: 'GET' })
+        fetch(`http://localhost:8081/api/v1/produto/${codigo}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
             .then(resposta => resposta.json())
             .then(dados => {
+                console.log(dados);
                 if (dados.retorno.produtos) {
                     this.setState({
                         id: dados.retorno.produtos[0].produto.id,
@@ -234,8 +240,8 @@ class Produto extends React.Component {
                         producao: dados.retorno.produtos[0].produto.producao,
                         dataValidade: dados.retorno.produtos[0].produto.dataValidade,
                         spedTipoItem: dados.retorno.produtos[0].produto.spedTipoItem,
-                        descricaoCategoria: dados.retorno.produtos[0].produto.categoria.descricao,
-                        categoriaId: dados.retorno.produtos[0].produto.categoria.id
+                        /*                     descricaoCategoria: dados.retorno.produtos[0].produto.categoria.descricao, */
+                        /*  categoriaId: dados.retorno.produtos[0].produto.categoria.id */
                     })
 
                 } else {
@@ -805,9 +811,14 @@ class Produto extends React.Component {
                                                     <td>{produtos.produto.estoqueMaximo}</td>
                                                     <td>
                                                         <div className="button-container-table">
-                                                            <Button variant="warning" onClick={() => this.carregarProdutos(produtos.produto.codigo)}>
+
+                                                            <Button variant="warning" onClick={() => {
+                                                                console.log(produtos.produto.codigo);
+                                                                this.carregarProdutos(produtos.produto.codigo);
+                                                            }}>
                                                                 <FaSync />
                                                             </Button>
+
                                                             <Button variant="danger" onClick={() => this.excluirProduto(produtos.produto.codigo)}>
                                                                 <FaTrash />
                                                             </Button>

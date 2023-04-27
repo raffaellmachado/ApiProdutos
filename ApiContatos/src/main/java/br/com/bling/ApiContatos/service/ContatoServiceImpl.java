@@ -217,7 +217,7 @@ public class ContatoServiceImpl implements ContatoService {
     public JsonRequest createContact(String xmlContato) throws ApiContatoException {
         try {
             MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-            map.add("apikey", apiKey);
+//            map.add("apikey", apiKey);
             map.add("xml", xmlContato);
 
             HttpHeaders headers = new HttpHeaders();

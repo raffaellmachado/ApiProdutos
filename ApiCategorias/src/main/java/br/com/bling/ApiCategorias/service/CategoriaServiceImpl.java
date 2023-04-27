@@ -74,8 +74,8 @@ public class CategoriaServiceImpl implements CategoriaService {
             HttpEntity<String> request = new HttpEntity<>(headers);
 
             /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
-            String url = "http://www.teste.com/";
-//            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
+//            String url = "http://www.teste.com/";
+            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
