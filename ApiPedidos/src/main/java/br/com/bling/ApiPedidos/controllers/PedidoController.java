@@ -1,15 +1,19 @@
 package br.com.bling.ApiPedidos.controllers;
 
 
+import br.com.bling.ApiPedidos.controllers.request.JsonRequest;
 import br.com.bling.ApiPedidos.controllers.response.JsonResponse;
 import br.com.bling.ApiPedidos.service.PedidoService;
 import br.com.bling.ApiPedidos.exceptions.ApiPedidoException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/api/v1")        //Padrão para os métodos /api/...
@@ -54,15 +58,15 @@ public class PedidoController {
         }
     }
 
-//    /**
-//     * GET "BUSCA CATEGORIA PELO IDCATEGORIA".
-//     */
-//    @GetMapping("/pedido/{idPedido}")
-//    @ApiOperation(value = "Retorna uma categoria pelo idCategoria")
-//    public ResponseEntity<JsonResponse> getCategoryByIdCategory(@PathVariable("idPedido") String idPedido) {
-//        try {
-//            JsonResponse request = categoriaService.getCategoryByIdCategoria(idPedido);
-//
+    /**
+     * GET "BUSCA CATEGORIA PELO IDCATEGORIA".
+     */
+    @GetMapping("/pedido/{numero}")
+    @ApiOperation(value = "Retorna uma categoria pelo numero")
+    public ResponseEntity<JsonResponse> getCategoryByIdCategory(@PathVariable("numero") String numero) {
+        try {
+            JsonResponse request = pedidoService.getPedidoByIdPedido(numero);
+
 //            if (request.retorno.categorias == null && request.retorno.erros == null) {
 //                throw new CategoriaIdCategoriaException("Contato com o número de CPF/CNPJ: " + idPedido + " não encontrado.");
 //            }
@@ -75,56 +79,56 @@ public class PedidoController {
 //                    System.out.println("-------------------------------------------------------------------");
 //                }
 //            }
-//
-//            System.out.println("GET ID: " + request);
-//
-//            return ResponseEntity.ok(request);
-//
-//        } catch (Exception e) {
-//            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
-//        }
-//    }
-//
-//    /**
-//     * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
-//     */
-//    @PostMapping(path = "/cadastrarpedido", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ApiOperation(value = "Cadastrar um pedido")
-//    public ResponseEntity<JsonRequest> createCategory(@RequestBody @Valid String xmlCategoria) {
-//        try {
-//            JsonRequest request = categoriaService.createCategory(xmlCategoria);
-//
+
+            System.out.println("GET ID: " + request);
+
+            return ResponseEntity.ok(request);
+
+        } catch (Exception e) {
+            throw new ApiPedidoException("Houve algum erro sistemico, tente novamente", e);
+        }
+    }
+
+    /**
+     * POST "CADASTRA UMA NOVA CATEGORIA UTILIZANDO XML".
+     */
+    @PostMapping(path = "/cadastrarpedido", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Cadastrar um pedido")
+    public ResponseEntity<JsonRequest> createCategory(@RequestBody @Valid String xmlPedido) {
+        try {
+            JsonRequest request = pedidoService.createPedido(xmlPedido);
+
 //            if (request.retorno.categorias == null && request.retorno.erros == null) {
 //                throw new CategoriaCadastroException("Cadastro não efetuado, revise os campos e tente novamente!");
 //            }
-//
-//            System.out.println("POST: " + request);
-//
-//            return ResponseEntity.ok(request);
-//
-//        } catch (Exception e) {
-//            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
-//        }
-//    }
-//
-//    /**
-//     * PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".
-//     */
-//    @PutMapping(path = "/atualizarpedido/{idPedido}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ApiOperation(value = "Atualiza um pedido")
-//    public ResponseEntity<JsonRequest> updateCategory(@RequestBody String xmlPedido, @PathVariable("idPedido") String idPedido) {
-//        try {
-//            JsonRequest request = categoriaService.updateCategory(xmlPedido, idPedido);
-//
+
+            System.out.println("POST: " + request);
+
+            return ResponseEntity.ok(request);
+
+        } catch (Exception e) {
+            throw new ApiPedidoException("Houve algum erro sistemico, tente novamente", e);
+        }
+    }
+
+    /**
+     * PUT "ATUALIZA UMA CATEGORIA EXISTENTE UTILIZANDO XML".
+     */
+    @PutMapping(path = "/atualizarpedido/{numero}", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Atualiza um pedido")
+    public ResponseEntity<JsonRequest> updatePedido(@RequestBody String xmlPedido, @PathVariable("numero") String numero) {
+        try {
+            JsonRequest request = pedidoService.updatePedido(xmlPedido, numero);
+
 //            if (request.retorno.categorias == null && request.retorno.erros == null) {
-//                throw new CategoriaAtualizarException("Não foi possível atualizar a categoria pelo Id: " + idPedido);
+//                throw new CategoriaAtualizarException("Não foi possível atualizar a categoria pelo Id: " + numero);
 //            }
 //            System.out.println("UPDATE: " + request);
-//
-//            return ResponseEntity.ok(request);
-//
-//        } catch (Exception e) {
-//            throw new ApiCategoriaException("Houve algum erro sistemico, tente novamente", e);
-//        }
-//    }
+
+            return ResponseEntity.ok(request);
+
+        } catch (Exception e) {
+            throw new ApiPedidoException("Houve algum erro sistemico, tente novamente", e);
+        }
+    }
 }
