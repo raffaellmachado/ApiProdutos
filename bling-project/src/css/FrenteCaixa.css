@@ -165,6 +165,21 @@ div {
   border-radius: 3px;
 }
 
+.botao-inserir button {
+  width: 131px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: #495769;
+  background-color: #ffffff;
+  border: 1px solid #495769;
+
+  /* Adicionar estas propriedades para posicionar o botão */
+  display: block;
+  margin-top: 10px;
+  float: right;
+  clear: both;
+}
+
 h3 {
   display: block;
   margin-bottom: 10px;
@@ -199,6 +214,90 @@ tbody tr:nth-child(even) {
 
 tbody tr:hover {
   background-color: #ddd;
+}
+
+.transparent-button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.red-icon {
+  color: red;
+}
+
+.rodape {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid black;
+}
+
+.botao-excluirvenda {
+  float: left;
+  margin-right: 10px;
+}
+
+.botao-finalizarvenda {
+  float: right;
+}
+
+.botao-excluirvenda button {
+  font-family: Arial;
+  font-size: 12px;
+  line-height: normal;
+  text-align: center;
+  letter-spacing: normal;
+  color: #34ad61;
+  background-color: #ffffff;
+  box-shadow: none;
+  border-radius: 8px;
+  width: 189px;
+  height: 32px;
+}
+
+.botao-finalizarvenda button {
+  font-family: Arial;
+  font-size: 12px;
+  line-height: normal;
+  text-align: center;
+  letter-spacing: normal;
+  color: #ffffff;
+  background-color: #3faf6c;
+  box-shadow: none;
+  border-radius: 8px;
+  width: 315px;
+  height: 32px;
+}
+
+.span-total {
+  font-family: Arial;
+  font-size: 18.6667px;
+  line-height: 28px;
+  text-align: right;
+  letter-spacing: normal;
+  color: #495769;
+  background-color: #ffffff;
+  display: inline-block;
+  padding: 0 8px;
+}
+
+.span-valor {
+  font-family: Arial;
+  font-size: 34.6667px;
+  line-height: 28px;
+  text-align: right;
+  letter-spacing: normal;
+  color: #495769;
+  background-color: #ffffff;
+  width: auto;
+  height: auto;
 }
 
 /* .pagamento-subtotal,

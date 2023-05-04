@@ -3,6 +3,10 @@ import React from "react";
 import Spinner from 'react-bootstrap/Spinner';
 import '../css/FrenteCaixa.css';
 import Button from 'react-bootstrap/Button';
+import { IonIcon } from '@ionic/react';
+import { trashOutline } from 'ionicons/icons';
+import { IonModal } from '@ionic/react';
+
 
 class FrenteCaixa extends React.Component {
 
@@ -30,7 +34,21 @@ class FrenteCaixa extends React.Component {
             valorTotal: '',
             nome: '',
             cnpj: '',
+            valorDesconto: '',
+            totalComDesconto: '',
+            total: 0,
+            modalAberto: false,
+            subTotal: 0
         };
+        this.atualizaDesconto = this.atualizaDesconto.bind(this);
+    }
+
+    abrirModal = () => {
+        this.setState({ modalAberto: true });
+    }
+
+    componentDidMount() {
+        this.calcularTotal();
     }
 
     buscarProdutos = (value) => {
@@ -69,6 +87,7 @@ class FrenteCaixa extends React.Component {
                 this.setState({ produtos: [], carregando: false });
             });
     };
+
 
     buscarContato = (value) => {
 
@@ -158,16 +177,26 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+
     selecionarProduto = (produto) => {
-        const precoEmReais = parseFloat(produto.produto.preco).toFixed(2).replace('.', ',');;
+        const precoEmReais = parseFloat(produto.produto.preco).toFixed(2).replace('.', ',');
+        const valorTotal = (parseFloat(produto.produto.preco.replace(',', '.')) * 1).toFixed(2);
         this.setState({
             produtoSelecionado: produto,
             preco: precoEmReais,
             produtos: [],
+            quantidade: 1,
+            valorTotal: valorTotal,
         });
         this.atualizarBuscaProduto({ target: { value: '' } });
     };
 
+    calcularValorTotalInicial = () => {
+        const { preco } = this.state;
+        const quantidade = 1;
+        const valorTotal = quantidade * parseFloat(preco.replace(',', '.'));
+        this.setState({ quantidade, valorTotal });
+    };
 
 
     selecionarContato = (contato) => {
@@ -193,6 +222,11 @@ class FrenteCaixa extends React.Component {
     };
 
     adicionarProdutoSelecionado = (produtoSelecionado) => {
+        if (!produtoSelecionado) {
+            alert('Nenhum produto selecionado!');
+            return;
+        }
+
         const { produtosSelecionados, quantidade } = this.state;
         const produtoExistenteIndex = produtosSelecionados.findIndex((produto) => produto.produto.id === produtoSelecionado.produto.id);
 
@@ -210,10 +244,12 @@ class FrenteCaixa extends React.Component {
             produtoSelecionado: null,
             buscaProduto: '',
             produtos: [],
-            preco: 0,
             quantidade: 1,
             valorTotal: '',
             desconto: '',
+            preco: '',
+        }, () => {
+            this.calcularTotal();
         });
     }
 
@@ -263,18 +299,49 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    excluirProdutoSelecionado = (index) => {
+        const { produtosSelecionados } = this.state;
+        produtosSelecionados.splice(index, 1);
+        this.setState({ produtosSelecionados });
+    }
+
+
     calcularTotal() {
         let total = 0;
         this.state.produtosSelecionados.forEach((produto) => {
             total += this.calcularSubTotal(produto.produto, produto.quantidade);
         });
-        return total.toFixed(2).replace('.', ',');
+        const subTotal = total.toFixed(2);
+        if (this.state.subTotal !== subTotal) {
+            this.setState({ subTotal });
+        }
     }
 
 
     calcularSubTotal = (produto, quantidade) => {
         const preco = produto.preco;
         return preco * quantidade;
+    }
+
+    calcularTotalComDesconto(desconto) {
+        const total = this.calcularTotal();
+        const valorDesconto = desconto || 0; // se desconto não for definido, assume 0
+        const totalComDesconto = total - valorDesconto;
+
+        const formattedValorDesconto = valorDesconto.toFixed(2).replace('.', ',');
+        const formattedTotalComDesconto = totalComDesconto.toFixed(2).replace('.', ',');
+
+        console.log("valorDesconto: ", formattedValorDesconto);
+        console.log("totalComDesconto: ", formattedTotalComDesconto);
+
+        if (isNaN(totalComDesconto)) {
+            console.log("Total com desconto é NaN!");
+        }
+
+        return {
+            valorDesconto: formattedValorDesconto,
+            totalComDesconto: formattedTotalComDesconto
+        };
     }
 
     atualizarBuscaProduto = (e) => {
@@ -305,12 +372,28 @@ class FrenteCaixa extends React.Component {
         this.setState({ quantidade }, this.atualizarValorTotal);
     };
 
+    atualizaDesconto(event) {
+        console.log("Evento de digitação capturado!");
 
-    atualizarDesconto = (e) => {
+        const descontoString = event.target.value.replace(',', '.'); // Substitui a vírgula decimal por ponto
+        const descontoNumber = parseFloat(descontoString.replace(/[^\d.-]/g, '')); // remove caracteres não-numéricos
+
+        if (isNaN(descontoNumber)) {
+            // Se não for um número válido, limpa o valor do campo e retorna
+            this.setState({
+                valorDesconto: '',
+                totalComDesconto: ''
+            });
+            return;
+        }
+
+        const resultado = this.calcularTotalComDesconto(descontoNumber);
+        console.log(resultado)
         this.setState({
-            desconto: e.target.value
+            valorDesconto: descontoString,
+            totalComDesconto: resultado.totalComDesconto
         });
-    };
+    }
 
     atualizarValorTotal = () => {
         const { quantidade, preco } = this.state;
@@ -362,12 +445,15 @@ class FrenteCaixa extends React.Component {
 
     render() {
 
+
         const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto } = this.state;
-        const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, buscaVendedor } = this.state;
+        const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, buscaVendedor, valorDesconto, totalComDesconto, total, index } = this.state;
 
         return (
 
+
             <div className="container-fluid">
+
                 <div className="card">
                     <div className="produto-header">Cliente</div>
                     <div>
@@ -421,7 +507,7 @@ class FrenteCaixa extends React.Component {
                         <div>
                             <div className="d-grid gap-2">
                                 <label htmlFor="produto" >Produto</label>
-                                <input type="text" id="produto" class="form-control" placeholder="Digite a descrição do produto" value={buscaProduto} onChange={this.atualizarBuscaProduto} />
+                                <input type="text" id="produto" className="form-control" placeholder="Digite a descrição do produto" value={buscaProduto} onChange={this.atualizarBuscaProduto} />
                                 <Button variant="secondary" onClick={() => this.buscarProdutos(buscaProduto)}>Buscar</Button>
                             </div>
                             <ul className="lista-produtos">
@@ -441,33 +527,38 @@ class FrenteCaixa extends React.Component {
                             <div style={{ width: '25%' }}>
                                 <label htmlFor="quantidade">Quantidade</label>
                                 <div>
-                                    {/* <Button className="decrementar" onClick={this.decrementarQuantidade}>-</Button> */}
                                     <input type="text" id="quantidade" className="form-control" name="quantidade" value={quantidade || ''} onChange={this.atualizaQuantidade} />
-                                    {/* <Button className="incrementar" onClick={this.incrementarQuantidade}>+</Button> */}
                                 </div>
                             </div>
                             <div style={{ width: '25%' }}>
                                 <label htmlFor="desconto">Desconto (%)</label>
                                 <div>
-                                    <input type="text" id="desconto" className="form-control" name="desconto" min="0" max="100" value={desconto || ''} onChange={this.atualizarDesconto} />
-                                    {/* <Button onClick={this.calcularDesconto}>%</Button> */}
+                                    <input type="text" id="desconto" className="form-control" name="desconto" placeholder="00,00" value={desconto || ''} onChange={this.atualizarDesconto} disabled />
                                 </div>
                             </div>
                             <div style={{ width: '25%' }}>
                                 <label htmlFor="preco">Valor unitário</label>
-                                <input type="text" id="preco" className="form-control" name="preco" value={preco || ''} onChange={this.atualizaPreco} />
+                                <input type="text" id="preco" className="form-control" name="preco" placeholder="00,00" value={preco || ''} onChange={this.atualizaPreco} />
                             </div>
                             <div style={{ width: '25%' }}>
                                 <label htmlFor="valorTotal">Sub total</label>
                                 <div>
-                                    <input type="number" id="valorTotal" className="form-control" name="valorTotal" value={this.state.valorTotal || ''} onChange={this.atualizarValorTotal} readOnly />
-                                    {produtoSelecionado && (
-                                        <Button onClick={() => this.adicionarProdutoSelecionado(produtoSelecionado)}>Inserir</Button>
-                                    )}
+                                    <input type="number" id="valorTotal" className="form-control" name="valorTotal" placeholder="00,00" value={this.state.valorTotal || ''} onChange={this.atualizarValorTotal} readOnly />
                                 </div>
                             </div>
-                            {carregandoProduto && <div>Carregando...</div>}
                         </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+                            <div style={{ width: '75%' }}>
+                                <label htmlFor="observacao">Comentário</label>
+                                <textarea className="form-control" id="observacao" rows="3"></textarea>
+                            </div>
+                            <div style={{ clear: 'both' }} className="botao-inserir">
+                                <Button onClick={() => this.adicionarProdutoSelecionado(produtoSelecionado)}>Inserir</Button>
+                            </div>
+                        </div>
+                        {carregandoProduto && <div>Carregando...</div>}
+
                         <div className="divisa"></div>
                         <div className="pagamento-header">Pagamento</div>
 
@@ -489,25 +580,26 @@ class FrenteCaixa extends React.Component {
                                 <div className="linha-1">
                                     <div className="pagamento-subtotal">
                                         <label htmlFor="subtotal">Sub total</label>
-                                        <input type="text" id="subtotal" className="form-control" name="subtotal" value={cnpj || ''} onChange={this.atualizaCpfCnpj} disabled />
+                                        <input type="text" id="subtotal" className="form-control" name="subtotal" placeholder="00,00" value={this.state.subTotal || ''} disabled />
                                     </div>
                                     <div className="pagamento-desconto">
                                         <label htmlFor="desconto">Desconto</label>
-                                        <input type="text" id="desconto" className="form-control" name="desconto" value={codigo || ''} onChange={this.atualizaCodigo} />
+                                        <input type="text" id="desconto" className="form-control" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizaDesconto} />
                                     </div>
                                     <div className="pagamento-totaldavenda">
                                         <label htmlFor="totaldavenda">Total da venda</label>
-                                        <input type="text" id="totaldavenda" className="form-control" name="totaldavenda" value={fantasia || ''} onChange={this.atualizaFantasia} disabled />
+                                        <input type="text" id="totaldavenda" className="form-control" name="totaldavenda" placeholder="00,00" value={totalComDesconto || ''} disabled />
                                     </div>
+
                                 </div>
                                 <div className="linha-2">
                                     <div className="pagamento-totaldinheiro">
                                         <label htmlFor="totaldinheiro">Total recebido em dinheiro</label>
-                                        <input type="text" id="totaldinheiro" className="form-control" name="totaldinheiro" value={codigo || ''} onChange={this.atualizaCodigo} />
+                                        <input type="text" id="totaldinheiro" className="form-control" name="totaldinheiro" placeholder="00,00" value={codigo || ''} onChange={this.atualizaCodigo} />
                                     </div>
                                     <div className="pagamento-trocodinheiro">
                                         <label htmlFor="trocodinheiro">Troco em dinheiro</label>
-                                        <input type="text" id="trocodinheiro" className="form-control" name="trocodinheiro" value={fantasia || ''} onChange={this.atualizaFantasia} disabled />
+                                        <input type="text" id="trocodinheiro" className="form-control" name="trocodinheiro" placeholder="00,00" value={fantasia || ''} onChange={this.atualizaFantasia} disabled />
                                     </div>
                                 </div>
                                 <h3>Forma de Pagamento</h3>
@@ -526,36 +618,54 @@ class FrenteCaixa extends React.Component {
                                     <th>Quantidade</th>
                                     <th>Preço</th>
                                     <th>Subtotal</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {this.state.produtosSelecionados.map((produto) => (
+                                {this.state.produtosSelecionados.map((produto, index) => (
                                     <tr key={produto.produto.id}>
-                                        <td>{produto.produto.descricao}</td>
+                                        <td>{produto.produto.codigo} - {produto.produto.descricao}</td>
                                         <td>{produto.quantidade}</td>
-                                        <td>
-                                            R$ {typeof produto.produto.preco === "number"
-                                                ? produto.produto.preco.toFixed(2).replace(".", ",")
-                                                : parseFloat(produto.produto.preco.replace(",", ".")).toFixed(2).replace(".", ",")}
-                                        </td>
-                                        <td>
-                                            R$ {this.calcularSubTotal(produto.produto, produto.quantidade)
-                                                .toFixed(2)
-                                                .replace(".", ",")}
+                                        <td>R$ {typeof produto.produto.preco === "number"
+                                            ? produto.produto.preco.toFixed(2).replace(".", ",")
+                                            : parseFloat(produto.produto.preco.replace(",", ".")).toFixed(2).replace(".", ",")}</td>
+                                        <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade).toFixed(2).replace(".", ",")}</td>
+                                        <td><button className="transparent-button" onClick={() => {
+                                            if (window.confirm('Deseja excluir o item?\nEssa ação não poderá ser desfeita.')) {
+                                                this.excluirProdutoSelecionado(index);
+                                            }
+                                        }}>
+                                            <IonIcon icon={trashOutline} className="red-icon" size="medium" />
+                                        </button>
                                         </td>
                                     </tr>
                                 ))}
-                                <tr>
-                                    <td colSpan="3">Total:</td>
-                                    <td>R$ {this.calcularTotal().replace(".", ",")}</td>
-                                </tr>
+
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div >
+
+                <div className="rodape">
+                    <div className="botoes">
+                        <div className="botao-excluirvenda">
+                            <button>Excluir venda</button>
+                        </div>
+                        <div className="botao-finalizarvenda">
+                            <button>Finalizar Venda</button>
+                        </div>
+                    </div>
+                    <div className="div_total_venda">
+                        <div>
+                            <span className="span-total">Total:</span>
+                            <span className="span-valor">R$ {this.state.subTotal}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         );
     }
 }
+
 export default FrenteCaixa;
 
