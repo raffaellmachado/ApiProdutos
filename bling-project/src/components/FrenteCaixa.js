@@ -5,7 +5,6 @@ import '../css/FrenteCaixa.css';
 import Button from 'react-bootstrap/Button';
 import { IonIcon } from '@ionic/react';
 import { trashOutline } from 'ionicons/icons';
-import { IonModal } from '@ionic/react';
 
 
 class FrenteCaixa extends React.Component {
@@ -37,14 +36,13 @@ class FrenteCaixa extends React.Component {
             valorDesconto: '',
             totalComDesconto: '',
             total: 0,
-            modalAberto: false,
-            subTotal: 0
+            subTotal: 0,
+            dinheiroRecebido: 0,
+            troco: 0,
+            dinheiro: 0
         };
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
-    }
 
-    abrirModal = () => {
-        this.setState({ modalAberto: true });
     }
 
     componentDidMount() {
@@ -191,13 +189,6 @@ class FrenteCaixa extends React.Component {
         this.atualizarBuscaProduto({ target: { value: '' } });
     };
 
-    calcularValorTotalInicial = () => {
-        const { preco } = this.state;
-        const quantidade = 1;
-        const valorTotal = quantidade * parseFloat(preco.replace(',', '.'));
-        this.setState({ quantidade, valorTotal });
-    };
-
 
     selecionarContato = (contato) => {
         this.setState({
@@ -305,6 +296,13 @@ class FrenteCaixa extends React.Component {
         this.setState({ produtosSelecionados });
     }
 
+    calcularValorTotalInicial = () => {
+        const { preco } = this.state;
+        const quantidade = 1;
+        const valorTotal = quantidade * parseFloat(preco.replace(',', '.'));
+        this.setState({ quantidade, valorTotal });
+    };
+
 
     calcularTotal() {
         let total = 0;
@@ -315,21 +313,21 @@ class FrenteCaixa extends React.Component {
         if (this.state.subTotal !== subTotal) {
             this.setState({ subTotal });
         }
+        return parseFloat(subTotal); // retorna o valor do subtotal como número
     }
-
 
     calcularSubTotal = (produto, quantidade) => {
         const preco = produto.preco;
         return preco * quantidade;
     }
 
-    calcularTotalComDesconto(desconto) {
-        const total = this.calcularTotal();
-        const valorDesconto = desconto || 0; // se desconto não for definido, assume 0
-        const totalComDesconto = total - valorDesconto;
+    calcularTotalComDesconto = (desconto, subTotal) => {
+        const subtotal = subTotal || this.calcularTotal();
+        const valorDesconto = desconto || 0;
+        const totalComDesconto = subtotal - valorDesconto;
 
-        const formattedValorDesconto = valorDesconto.toFixed(2).replace('.', ',');
-        const formattedTotalComDesconto = totalComDesconto.toFixed(2).replace('.', ',');
+        const formattedValorDesconto = valorDesconto.toFixed(2);
+        const formattedTotalComDesconto = totalComDesconto.toFixed(2);
 
         console.log("valorDesconto: ", formattedValorDesconto);
         console.log("totalComDesconto: ", formattedTotalComDesconto);
@@ -343,6 +341,42 @@ class FrenteCaixa extends React.Component {
             totalComDesconto: formattedTotalComDesconto
         };
     }
+
+
+    calcularTotalComDinheiro = (dinheiro, totalComDesconto) => {
+        const totalRecebidoEmDinheiro = parseFloat(dinheiro) || 0;
+
+        if (isNaN(totalRecebidoEmDinheiro)) {
+            console.log("O valor total recebido em dinheiro não é um número!");
+            return {
+                dinheiroRecebido: 0,
+                troco: 0,
+            };
+        }
+
+        const troco = totalRecebidoEmDinheiro - totalComDesconto;
+
+        console.log("totalRecebidoEmDinheiro:", totalRecebidoEmDinheiro);
+        console.log("troco:", troco);
+
+        return {
+            dinheiroRecebido: totalRecebidoEmDinheiro.toFixed(2),
+            troco: troco.toFixed(2),
+        };
+    };
+
+    atualizaTroco = (event) => {
+        const valorRecebido = event.target.value;
+
+        // Verifica se o valor recebido é um número válido antes de chamar a função
+        if (!isNaN(parseFloat(valorRecebido))) {
+            const { totalComDesconto } = this.state;
+            const { dinheiroRecebido, troco } = this.calcularTotalComDinheiro(totalComDesconto, valorRecebido);
+
+            this.setState({ dinheiroRecebido, troco });
+        }
+    };
+
 
     atualizarBuscaProduto = (e) => {
         this.setState({
@@ -372,6 +406,12 @@ class FrenteCaixa extends React.Component {
         this.setState({ quantidade }, this.atualizarValorTotal);
     };
 
+    atualizarValorTotal = () => {
+        const { quantidade, preco } = this.state;
+        const valorTotal = (quantidade * parseFloat(preco.replace(',', '.')));
+        this.setState({ valorTotal });
+    };
+
     atualizaDesconto(event) {
         console.log("Evento de digitação capturado!");
 
@@ -394,12 +434,6 @@ class FrenteCaixa extends React.Component {
             totalComDesconto: resultado.totalComDesconto
         });
     }
-
-    atualizarValorTotal = () => {
-        const { quantidade, preco } = this.state;
-        const valorTotal = (quantidade * parseFloat(preco.replace(',', '.')));
-        this.setState({ valorTotal });
-    };
 
 
     incrementarQuantidade = () => {
@@ -447,7 +481,7 @@ class FrenteCaixa extends React.Component {
 
 
         const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto } = this.state;
-        const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, buscaVendedor, valorDesconto, totalComDesconto, total, index } = this.state;
+        const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, buscaVendedor, valorDesconto, totalComDesconto, total, index, troco, dinheiro } = this.state;
 
         return (
 
@@ -459,7 +493,7 @@ class FrenteCaixa extends React.Component {
                     <div>
                         <div className="busca-cliente d-grid gap-2">
                             <label htmlFor="produto">Nome</label>
-                            <input type="text" id="cliente" className="form-control" placeholder="Digite a descrição do produto" value={buscaContato} onChange={this.atualizarBuscaContato} />
+                            <input type="text" id="cliente" className="form-control" placeholder="Digite a nome do cliente" value={buscaContato} onChange={this.atualizarBuscaContato} />
                             <Button variant="secondary" onClick={() => this.buscarContato(buscaContato)}>Buscar</Button>
                         </div>
                         <ul className="lista-contatos">
@@ -595,11 +629,11 @@ class FrenteCaixa extends React.Component {
                                 <div className="linha-2">
                                     <div className="pagamento-totaldinheiro">
                                         <label htmlFor="totaldinheiro">Total recebido em dinheiro</label>
-                                        <input type="text" id="totaldinheiro" className="form-control" name="totaldinheiro" placeholder="00,00" value={codigo || ''} onChange={this.atualizaCodigo} />
+                                        <input type="text" id="totaldinheiro" className="form-control" name="totaldinheiro" placeholder="00,00" value={dinheiro || ''} onInput={this.atualizaTroco} />
                                     </div>
                                     <div className="pagamento-trocodinheiro">
                                         <label htmlFor="trocodinheiro">Troco em dinheiro</label>
-                                        <input type="text" id="trocodinheiro" className="form-control" name="trocodinheiro" placeholder="00,00" value={fantasia || ''} onChange={this.atualizaFantasia} disabled />
+                                        <input type="text" id="trocodinheiro" className="form-control" name="trocodinheiro" placeholder="00,00" value={troco || ''} disabled />
                                     </div>
                                 </div>
                                 <h3>Forma de Pagamento</h3>
