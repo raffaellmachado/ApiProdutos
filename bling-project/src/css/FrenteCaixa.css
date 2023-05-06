@@ -1,5 +1,5 @@
 body {
-  padding-top: 60px; /* ajuste o valor de acordo com a altura da sua barra */
+  padding-top: 60px;
   background-color: #2e2d2d;
   font-family: Arial, sans-serif;
 }
@@ -51,12 +51,6 @@ body {
   display: flex;
 }
 
-.campo-nome,
-.campo-tipo,
-div {
-  margin-right: 1rem;
-}
-
 .form-control {
   width: 100%;
   padding: 0.5rem;
@@ -88,19 +82,27 @@ div {
   background-color: #ddd;
 }
 
-.card {
+.card-1 {
   flex: 1;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 0.25rem;
   padding: 1rem;
-  margin-left: auto;
+  margin-left: 20px;
   margin-right: auto;
   max-width: 1000px;
 }
 
-.container-fluid {
-  display: flex;
+.card-2 {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-left: 20px;
+  margin-right: auto;
+  max-width: 1000px;
 }
 
 .container-carrinho {
@@ -173,7 +175,6 @@ div {
   background-color: #ffffff;
   border: 1px solid #495769;
 
-  /* Adicionar estas propriedades para posicionar o botão */
   display: block;
   margin-top: 10px;
   float: right;
@@ -300,20 +301,8 @@ tbody tr:hover {
   height: auto;
 }
 
-/* .pagamento-subtotal,
-.pagamento-desconto,
-.pagamento-totaldavenda,
-.pagamento-totaldinheiro,
-.pagamento-trocodinheiro {
-  font-family: arial, helvetica, sans-serif;
-  font-size: 12px;
-  line-height: normal;
-  text-align: start;
-  letter-spacing: normal;
-  fill: #111829;
-  color: #111829;
-  background: #f0f3f7;
-
-  box-shadow: none;
-  border-radius: 8px;
-} */
+.campos-totais {
+  padding: 1px;
+  display: flex;
+  margin-top: 10px;
+}
