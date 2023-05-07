@@ -67,6 +67,7 @@ class FrenteCaixa extends React.Component {
             observacaointerna: '',
             itensSelecionados: [],
             modalAberto: false, // fecha o modal após a exclusão
+            comentario: '',
 
         };
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
@@ -243,6 +244,7 @@ class FrenteCaixa extends React.Component {
             produtos: [],
             quantidade: 1,
             valorTotal: valorTotal,
+            comentario: '',
         });
         this.atualizarBuscaProduto({ target: { value: '' } });
     };
@@ -297,6 +299,7 @@ class FrenteCaixa extends React.Component {
             valorTotal: '',
             desconto: '',
             preco: '',
+            comentario: '',
         }, () => {
             this.calcularTotal();
         });
@@ -564,6 +567,12 @@ class FrenteCaixa extends React.Component {
         this.setState({ observacaointerna });
     }
 
+    atualizarComentario = (event) => {
+        const comentario = event.target.value;
+        console.log("Comentario", event.target.value);
+        this.setState({ comentario });
+    }
+
     //Ação para limpar o campos do modal para cadastrar um novo cliente.
     excluirVenda = () => {
         this.setState({
@@ -588,6 +597,7 @@ class FrenteCaixa extends React.Component {
             observacaointerna: '',
             produtosSelecionados: [], // adiciona a limpeza da lista aqui
             modalAberto: false, // fecha o modal após a exclusão
+            comentario: ''
         });
     };
 
@@ -596,7 +606,7 @@ class FrenteCaixa extends React.Component {
     render() {
 
 
-        const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto } = this.state;
+        const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, comentario } = this.state;
         const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, buscaVendedor, valorDesconto, totalComDesconto, total, index, troco, dinheiro, dataPrevista, vendedorSelecionado, observacoes, observacaointerna } = this.state;
 
         return (
@@ -712,7 +722,7 @@ class FrenteCaixa extends React.Component {
                                         <div className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="quantidade" className="texto-campos">Quantidade</Form.Label>
-                                                <Form.Control type="text" id="quantidade" className="form-control" name="quantidade" value={quantidade || ''} onChange={this.atualizaQuantidade} />
+                                                <Form.Control type="text" id="quantidade" className="form-control" name="quantidade" value={quantidade || ''} onChange={this.atualizaQuantidade} disabled={!produtoSelecionado} />
                                             </Form.Group>
                                         </div>
                                         <div className="col">
@@ -724,7 +734,7 @@ class FrenteCaixa extends React.Component {
                                         <div className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="preco" className="texto-campos">Valor unitário</Form.Label>
-                                                <Form.Control type="text" id="preco" className="form-control" name="preco" placeholder="00,00" value={preco || ''} onChange={this.atualizaPreco} />
+                                                <Form.Control type="text" id="preco" className="form-control" name="preco" placeholder="00,00" value={preco || ''} onChange={this.atualizaPreco} disabled={!produtoSelecionado} />
                                             </Form.Group>
                                         </div>
                                         <div className="col">
@@ -735,11 +745,11 @@ class FrenteCaixa extends React.Component {
                                         </div>
                                     </div>
                                     <div>
-                                        <Form.Label htmlFor="valorTotal" className="texto-campos" >Comentário</Form.Label>
+                                        <Form.Label htmlFor="valorTotal" className="texto-campos">Comentário</Form.Label>
                                     </div>
 
                                     <div className="container">
-                                        <Form.Control as="textarea" id="observacao" rows="3" style={{ height: '75px', width: '600px' }} />
+                                        <Form.Control as="textarea" id="observacao" value={this.state.comentario || ''} onChange={this.atualizarComentario} disabled={!produtoSelecionado} style={{ height: '75px', width: '600px' }} />
                                         <Button variant="success" onClick={() => this.adicionarProdutoSelecionado(produtoSelecionado)}>Inserir produto </Button>
                                     </div>
                                     {carregandoProduto &&
