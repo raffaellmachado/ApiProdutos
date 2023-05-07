@@ -11,13 +11,19 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 
 import { BrowserRouter, Routes, Link, Route } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import '../src/css/App.css'
+
+
 
 function App() {
+
+
   return (
+
     <div className="App">
-      <BrowserRouter>
-        <Navbar bg="dark" expand="lg" variant="dark" fixed="top" label="Toggle navigation">
-          <Container fluid>
+      <Container fluid>
+        <BrowserRouter>
+          <Navbar bg="dark" expand="lg" variant="dark" fixed="top" label="Toggle navigation" >
             <Navbar.Brand href="/">Aplicação Bling</Navbar.Brand>
             <Navbar.Toggle aria-controls="navbar-dark-example" />
             <Navbar.Collapse id="navbar-dark-example">
@@ -47,20 +53,22 @@ function App() {
                 </NavDropdown>
               </Nav>
             </Navbar.Collapse>
-          </Container>
-        </Navbar>
+          </Navbar>
 
 
-        <Routes>
-          <Route path="/" element={<Home />}></Route>
-          <Route path="/Contato" element={<Contato />}></Route>
-          <Route path="/Produto" element={<Produto />}></Route>
-          <Route path="/Categoria" element={<Categoria />}></Route>
-          <Route path="/FrenteCaixa" element={<FrenteCaixa />}></Route>
-        </Routes>
 
-      </BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />}></Route>
+            <Route path="/Contato" element={<Contato />}></Route>
+            <Route path="/Produto" element={<Produto />}></Route>
+            <Route path="/Categoria" element={<Categoria />}></Route>
+            <Route path="/FrenteCaixa" element={<FrenteCaixa />}></Route>
+          </Routes>
+
+        </BrowserRouter >
+      </Container>
     </div >
+
   );
 }
 
