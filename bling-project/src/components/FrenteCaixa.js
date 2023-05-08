@@ -4,6 +4,8 @@ import '../css/FrenteCaixa.css';
 
 import { IonIcon } from '@ionic/react';
 import { trashOutline } from 'ionicons/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -12,7 +14,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import Spinner from 'react-bootstrap/Spinner';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
@@ -21,6 +23,8 @@ import Form from 'react-bootstrap/Form'
 import Table from "react-bootstrap/Table";
 
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import { parse } from 'js2xmlparser';
+
 
 
 
@@ -36,6 +40,7 @@ class FrenteCaixa extends React.Component {
             produtos: [],
             contatos: [],
             depositos: [],
+            vendedores: [],
             produtoSelecionado: null,
             contatoSelecionado: null,
             vendedorSelecionado: null,
@@ -61,34 +66,43 @@ class FrenteCaixa extends React.Component {
             dataPrevista: null,
             depositoSelecionado: null,
             vendedoresFiltrados: [],
-            vendedor: [],
             carregando: false,
             observacoes: '',
             observacaointerna: '',
             itensSelecionados: [],
-            modalAberto: false, // fecha o modal após a exclusão
             comentario: '',
-
+            ModalFinalizarVendaSemItem: false,
+            ModalExcluirPedido: false,
+            modalInserirProduto: false
         };
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
     }
 
-    abrirModal = () => {
-        console.log('Abrindo modal');
-        this.setState({ modalAberto: true });
-    };
+    ModalFinalizarVendaSemItem = () => {
+        this.setState({ ModalFinalizarVendaSemItem: !this.state.ModalFinalizarVendaSemItem });
+    }
 
-    fecharModal = () => {
-        console.log('Fechando modal');
-        this.setState({ modalAberto: false });
-    };
+    ModalExcluirPedido = () => {
+        this.setState({ ModalExcluirPedido: !this.state.ModalExcluirPedido });
+    }
 
-
+    modalInserirProduto = () => {
+        this.setState({ modalInserirProduto: !this.state.modalInserirProduto });
+    }
 
     componentDidMount() {
         this.calcularTotal();
         this.buscarDeposito();
         this.buscarVendedor();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.nome !== this.state.nome) {
+            this.atualizaNome({ target: { value: this.state.nome } });
+        }
+        if (prevState.cnpj !== this.state.cnpj) {
+            this.atualizaCpfCnpj({ target: { value: this.state.cnpj } });
+        }
     }
 
     buscarProdutos = (value) => {
@@ -130,7 +144,6 @@ class FrenteCaixa extends React.Component {
 
 
     buscarContato = (value) => {
-
         console.log("Buscando contato por:", value);
         this.setState({ buscaContato: value, carregando: true });
         fetch(`http://localhost:8080/api/v1/contatos`)
@@ -182,18 +195,18 @@ class FrenteCaixa extends React.Component {
                         (contato) => contato?.contato?.tiposContato?.some((tipoContato) => tipoContato?.tipoContato?.descricao?.toLowerCase().includes('vendedor'))
                     );
                     this.setState({
-                        vendedor: vendedoresFiltrados,
+                        vendedores: vendedoresFiltrados,
                         vendedorSelecionado: null,
                         carregando: false,
                         vendedoresFiltrados: vendedoresFiltrados // adiciona essa linha
                     });
                 } else {
-                    this.setState({ vendedor: [], carregando: false });
+                    this.setState({ vendedores: [], carregando: false });
                 }
             })
             .catch((error) => {
                 console.log("Erro ao buscar vendedor:", error);
-                this.setState({ vendedor: [], carregando: false });
+                this.setState({ vendedores: [], carregando: false });
             });
     };
 
@@ -215,7 +228,7 @@ class FrenteCaixa extends React.Component {
             })
             .catch((error) => {
                 console.log("Erro ao buscar deposito:", error);
-                this.setState({ vendedor: [], carregando: false });
+                this.setState({ depositos: [], carregando: false });
             });
     }
 
@@ -274,7 +287,7 @@ class FrenteCaixa extends React.Component {
 
     adicionarProdutoSelecionado = (produtoSelecionado) => {
         if (!produtoSelecionado) {
-            alert('Nenhum produto selecionado!');
+            this.modalInserirProduto()
             return;
         }
 
@@ -352,10 +365,19 @@ class FrenteCaixa extends React.Component {
     };
 
     excluirProdutoSelecionado = (index) => {
-        const { produtosSelecionados } = this.state;
-        produtosSelecionados.splice(index, 1);
-        this.setState({ produtosSelecionados });
-    }
+        const produtosSelecionados = [...this.state.produtosSelecionados];
+        const produtoExcluido = produtosSelecionados.splice(index, 1)[0];
+        const quantidadeExcluida = produtoExcluido.quantidade;
+        const produto = produtoExcluido.produto;
+        const subTotalAnterior = this.state.subTotal;
+        const subTotal = (parseFloat(subTotalAnterior) - this.calcularSubTotal(produto, quantidadeExcluida)).toFixed(2);
+        console.log("Novo Subtotal:", subTotal);
+        this.setState({
+            produtosSelecionados,
+            subTotal,
+        });
+    };
+
 
     calcularValorTotalInicial = () => {
         const { preco } = this.state;
@@ -371,6 +393,8 @@ class FrenteCaixa extends React.Component {
             total += this.calcularSubTotal(produto.produto, produto.quantidade);
         });
         const subTotal = total.toFixed(2);
+        console.log("Subtotal:", subTotal);
+
         if (this.state.subTotal !== subTotal) {
             this.setState({ subTotal });
         }
@@ -508,41 +532,49 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizaNome = (e) => {
+        console.log("Nome:", e.target.value);
         this.setState({
             nome: e.target.value
         });
     };
 
     atualizaTipo = (e) => {
+        console.log("Tipo:", e.target.value);
         this.setState({
             tipo: e.target.value
         });
     };
 
     atualizaCpfCnpj = (e) => {
+        console.log("CPF/CNPJ:", e.target.value);
         this.setState({
             cnpj: e.target.value
         });
     };
 
     atualizaCodigo = (e) => {
+        console.log("Codigo:", e.target.value);
         this.setState({
             codigo: e.target.value
         });
     };
 
     atualizaFantasia = (e) => {
+        console.log("Fantasia:", e.target.value);
         this.setState({
             fantasia: e.target.value
         });
     };
 
     atualizaDataPrevista = (dataPrevista) => {
-        console.log(dataPrevista); //Esta retornando Wed May 17 2023 00:00:00 GMT-0300 (Horário Padrão de Brasília)
+        console.log(dataPrevista);
         this.setState({
-            dataPrevista: new Date(dataPrevista)
+            dataPrevista
         });
     }
+
+
+
     atualizaDepositoSelecionado = (event) => {
         const depositoSelecionado = event.target.value;
         console.log(depositoSelecionado); //Esta retornando ID
@@ -551,8 +583,13 @@ class FrenteCaixa extends React.Component {
 
     atualizaVendedorSelecionado = (event) => {
         const vendedorSelecionado = event.target.value;
-        console.log(vendedorSelecionado); //Esta retornando ID
-        this.setState({ vendedorSelecionado });
+        console.log("vendedor selecionado:", vendedorSelecionado);
+        this.setState({
+            vendedorSelecionado: vendedorSelecionado,
+            vendedor: vendedorSelecionado
+        }, () => {
+            console.log("vendedor:", this.state.vendedor);
+        });
     };
 
     atualizaObservacoes = (event) => {
@@ -574,7 +611,7 @@ class FrenteCaixa extends React.Component {
     }
 
     //Ação para limpar o campos do modal para cadastrar um novo cliente.
-    excluirVenda = () => {
+    excluirPedido = () => {
         this.setState({
             nome: '',
             tipo: '',
@@ -599,7 +636,74 @@ class FrenteCaixa extends React.Component {
             modalAberto: false, // fecha o modal após a exclusão
             comentario: ''
         });
+        this.ModalExcluirPedido()
     };
+
+    finalizaVenda = () => {
+        const nome = this.state.nome;
+        const cnpj = this.state.cnpj;
+        const vendedor = this.state.nome;
+        const dataPrevista = this.state.dataPrevista;
+        const observacoes = this.state.observacoes;
+        const observacaointerna = this.state.observacaointerna;
+        const itens = [];
+
+        this.state.produtosSelecionados.forEach((produto) => {
+            const item = {
+                codigo: produto.produto.codigo,
+                descricao: produto.produto.descricao,
+                qtde: produto.quantidade,
+                vlr_unit: produto.produto.preco,
+            };
+            itens.push(item);
+        });
+        console.log(itens);
+
+        return { nome, cnpj, itens, vendedor, dataPrevista, observacoes, observacaointerna };
+    };
+
+    gerarXmlItensParaEnvio = () => {
+        const { nome, cnpj, itens, vendedor, dataPrevista, observacoes, observacaointerna } = this.finalizaVenda();
+
+        if (itens.length === 0) {
+            this.ModalFinalizarVendaSemItem();
+            return;
+        }
+
+        const xml = `<?xml version="1.0"?>
+          <pedido>
+            <data_prevista>${dataPrevista}</data_prevista>
+            <obs>${observacoes}</obs>
+            <obs_internas>${observacaointerna}</obs_internas>
+            <vendedor>${vendedor}</vendedor>
+            <cliente>
+              <nome>${nome}</nome>
+              <cnpj>${cnpj}</cnpj>
+            </cliente>
+            <itens>
+              ${itens.map((item) => `
+                <item>
+                  <codigo>${item.codigo}</codigo>
+                  <descricao>${item.descricao}</descricao>
+                  <qtde>${item.qtde}</qtde>
+                  <vlr_unit>${item.vlr_unit}</vlr_unit>
+                </item>
+              `).join('')}
+            </itens>
+          </pedido>`;
+
+        console.log(xml);
+
+        const xmlContato = ('xml', xml);
+        this.cadastrarPedido(xmlContato);
+        this.excluirProdutoSelecionado();
+
+        return xml;
+    };
+
+
+
+
 
 
 
@@ -616,12 +720,26 @@ class FrenteCaixa extends React.Component {
                     <Col md={6} className="bg-light">
                         <Form>
                             <div className="grid-1">
+                                <div className="produto-header">Vendedor</div>
+                                <div className="col">
+                                    <Form.Group className="mb-3">
+                                        <Form.Label htmlFor="vendedor" className="texto-campos">Vendedor</Form.Label>
+                                        <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado} onChange={this.atualizaVendedorSelecionado} >
+                                            <option value="">Selecione um vendedor</option>
+                                            {this.state.vendedores.map((contato) => (
+                                                <option key={contato.contato.id} value={contato.contato.nome}>
+                                                    {contato.contato.nome}
+                                                </option>
+                                            ))}
+                                        </Form.Select>
+                                    </Form.Group>
+                                </div>
                                 <div className="produto-header">Cliente</div>
                                 <div>
                                     <div className="busca-cliente d-grid gap-2">
                                         <Form.Label htmlFor="produto" className="texto-campos">Nome</Form.Label>
                                         <Form.Control type="text" id="cliente" className="form-control" placeholder="Digite a nome do cliente" value={buscaContato} onChange={this.atualizarBuscaContato} />
-                                        <Button variant="secondary" onClick={() => this.buscarContato(buscaContato)}>Buscar</Button>
+                                        <Button variant="secondary" onClick={() => this.buscarContato(buscaContato, nome, cnpj)}>Buscar</Button>
                                     </div>
                                     <ul className="lista-contatos">
                                         {contatos.map((contato) => (
@@ -812,7 +930,7 @@ class FrenteCaixa extends React.Component {
                                                     </Form.Group>
                                                 </div>
                                                 <div className="col">
-                                                    <Form.Group className="mb-3">
+                                                    {/* <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="vendedor" className="texto-campos">Categoria</Form.Label>
                                                         <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado} onChange={this.atualizaVendedorSelecionado} >
                                                             <option value="">Selecione um vendedor</option>
@@ -822,17 +940,17 @@ class FrenteCaixa extends React.Component {
                                                                 </option>
                                                             ))}
                                                         </Form.Select>
-                                                    </Form.Group>
+                                                    </Form.Group> */}
                                                 </div>
                                             </div>
                                             <div>
                                                 <h5>Outras informações</h5>
                                             </div>
                                             <div className="row">
-                                                <div className="col">
+                                                {/* <div className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="vendedor" className="texto-campos">Vendedor</Form.Label>
-                                                        <Form.Select className="campo-vendedor" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado} onChange={this.atualizaVendedorSelecionado} >
+                                                        <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado} onChange={this.atualizaVendedorSelecionado} >
                                                             <option value="">Selecione um vendedor</option>
                                                             {this.state.vendedor.map((contato) => (
                                                                 <option key={contato.contato.id} value={contato.contato.id}>
@@ -841,7 +959,7 @@ class FrenteCaixa extends React.Component {
                                                             ))}
                                                         </Form.Select>
                                                     </Form.Group>
-                                                </div>
+                                                </div> */}
                                                 <div className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="dataprevista" className="texto-campos">Data prevista</Form.Label>
@@ -853,8 +971,9 @@ class FrenteCaixa extends React.Component {
                                                             onChange={this.atualizaDataPrevista}
                                                             placeholderText="Selecione uma data"
                                                             className="form-select"
-                                                            dateFormat="dd/MM/yyyy"
+                                                            dateFormat="dd/MM/yyyy" // adicionado aqui
                                                         />
+
                                                     </Form.Group>
                                                 </div>
                                             </div>
@@ -940,20 +1059,11 @@ class FrenteCaixa extends React.Component {
                             <div>
                                 <div className="botao-excluirvenda">
                                     <div>
-                                        <Button variant="success" onClick={this.abrirModal}>Excluir pedido</Button>
-                                        {this.state.modalAberto && (
-                                            <div>
-                                                <div>
-                                                    <p>Deseja excluir o pedido 12? Essa ação não poderá ser desfeita.</p>
-                                                    <Button variant="success" onClick={this.excluirVenda}>Confirmar</Button>
-                                                    <Button variant="success" onClick={this.fecharModal}>Cancelar</Button>
-                                                </div>
-                                            </div>
-                                        )}
+                                        <Button variant="success" onClick={this.ModalExcluirPedido}>Excluir pedido</Button>
                                     </div>
                                 </div>
                                 <div className="botao-finalizarvenda">
-                                    <Button variant="success">Finalizar Venda</Button>
+                                    <Button variant="success" onClick={this.gerarXmlItensParaEnvio}>Finalizar Venda</Button>
                                 </div>
                             </div>
                             <div className="div_total_venda">
@@ -965,6 +1075,45 @@ class FrenteCaixa extends React.Component {
                         </div>
                     </Col>
                 </Row>
+                <Modal show={this.state.ModalFinalizarVendaSemItem} onHide={this.ModalFinalizarVendaSemItem} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Atenção </Modal.Title>
+                        <FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-warning mr-2mr-3" />
+                    </Modal.Header>
+                    <Modal.Body>
+                        Este pedido não possui itens ou cliente, insira-os para realizar essa operação.
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="success" onClick={this.ModalFinalizarVendaSemItem}>Fechar</Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={this.state.ModalExcluirPedido} onHide={this.ModalExcluirPedido} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Atenção </Modal.Title>
+                        <FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-warning mr-2mr-3" />
+                    </Modal.Header>
+                    <Modal.Body>
+                        Deseja excluir o pedido? Essa ação não poderá ser desfeita.
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="outline-success" onClick={this.ModalExcluirPedido}>Não</Button>
+                        <Button variant="success" onClick={this.excluirPedido}>Sim</Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={this.state.modalInserirProduto} onHide={this.modalInserirProduto} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Atenção </Modal.Title>
+                        <FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-warning mr-2mr-3" />
+                    </Modal.Header>
+                    <Modal.Body>
+                        Nenhum produto selecionado!
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.modalInserirProduto}>Fechar</Button>
+                    </Modal.Footer>
+                </Modal>
             </Container >
         );
     }

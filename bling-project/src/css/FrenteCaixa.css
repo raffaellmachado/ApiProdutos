@@ -91,14 +91,14 @@ body {
   text-align: center;
   letter-spacing: 0.5px;
   color: #fff;
-  background-color: #34ad61;
-  height: 50px;
+  background-color: #34ad6065;
+  height: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #3f3f3f; /* alterado para 2px */
-  border-radius: 8px;
+  border-radius: 4px;
   box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+  padding: 10px; /* adicionar padding */
 }
 
 .cliente-header {
@@ -109,14 +109,14 @@ body {
   text-align: center;
   letter-spacing: 0.5px;
   color: #fff;
-  background-color: #34ad61;
-  height: 50px;
+  background-color: #34ad6065;
+  height: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #3f3f3f; /* alterado para 2px */
-  border-radius: 8px;
+  border-radius: 4px;
   box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+  padding: 10px; /* adicionar padding */
 }
 
 .pagamento-header {
@@ -127,14 +127,14 @@ body {
   text-align: center;
   letter-spacing: 0.5px;
   color: #fff;
-  background-color: #34ad61;
-  height: 50px;
+  background-color: #34ad6065;
+  height: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #3f3f3f; /* alterado para 2px */
-  border-radius: 8px;
+  border-radius: 4px;
   box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+  padding: 10px;
 }
 
 .botao-inserir button {
@@ -158,10 +158,10 @@ h5 {
   letter-spacing: 0.5px;
   color: #495769;
   background-color: #ffffff;
-  width: 662px;
   height: 20px;
-  padding-top: 4px;
+  padding-top: 8px;
   padding-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .texto-campos {
@@ -225,9 +225,10 @@ h5 {
 }
 
 .table thead th {
-  background-color: #34ad61;
-  color: #fff;
+  background-color: #34ad6065;
+  color: #0000006e;
   border-radius: 2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .table tbody tr:nth-child(even) {
