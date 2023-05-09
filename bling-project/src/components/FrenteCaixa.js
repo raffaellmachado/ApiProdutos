@@ -757,6 +757,15 @@ class FrenteCaixa extends React.Component {
         const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, comentario } = this.state;
         const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, buscaVendedor, valorDesconto, totalComDesconto, total, index, troco, dinheiro, dataPrevista, vendedorSelecionado, observacoes, observacaointerna } = this.state;
 
+        let quantidadeTotal = 0;
+        let nomeContato = '';
+        for (const produto of this.state.produtosSelecionados) {
+            quantidadeTotal += produto.quantidade;
+        }
+        for (const contato of this.state.contatosSelecionados) {
+            nomeContato += contato.contato.nome;
+        }
+
         return (
 
             <Container fluid className="pb-5" >
@@ -1113,7 +1122,7 @@ class FrenteCaixa extends React.Component {
                             <div className="div_total_venda">
                                 <div>
                                     <span className="span-total">Total:</span>
-                                    <span className="span-valor">R$ {this.state.totalComDesconto}</span>
+                                    <span className="span-valor">R$ {this.state.subTotal}</span>
                                 </div>
                             </div>
                         </div>
@@ -1159,14 +1168,15 @@ class FrenteCaixa extends React.Component {
                     </Modal.Footer>
                 </Modal>
 
-                <Modal show={this.state.modalFinalizarPedido} onHide={this.modalFinalizarPedido} centered>
+                <Modal show={this.state.modalFinalizarPedido} onHide={this.modalFinalizarPedido} size="lg" centered>
                     <Modal.Header closeButton>
                         <Modal.Title>Atenção </Modal.Title>
                         <FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-warning mr-2mr-3" />
                     </Modal.Header>
                     <Modal.Body>
                         <div>Resumo de pedido:</div>
-                        <div>Nome do Cliente: {this.state.nome}</div>
+                        <div>Data: {new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                        <div>Nome do Cliente: {nomeContato}</div>
                         <div>
                             <Table responsive="lg" striped>
                                 <thead>
@@ -1189,13 +1199,14 @@ class FrenteCaixa extends React.Component {
                                         </tr>
                                     ))}
                                 </tbody>
-                                <div>Quantidade total: {quantidade}</div>
+                                <div>Quantidade total: {quantidadeTotal}</div>
                                 <div>Total R$ {this.state.totalComDesconto}</div>
                             </Table>
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={this.gerarXmlItensParaEnvio}>Fechar</Button>
+                        <Button variant="outline-success" onClick={this.modalFinalizarPedido}>Cancelar</Button>
+                        <Button variant="success" onClick={this.gerarXmlItensParaEnvio}>Fechar pedido</Button>
                     </Modal.Footer>
                 </Modal>
             </Container >
