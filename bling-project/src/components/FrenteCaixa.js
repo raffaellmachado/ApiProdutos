@@ -73,7 +73,8 @@ class FrenteCaixa extends React.Component {
             comentario: '',
             ModalFinalizarVendaSemItem: false,
             ModalExcluirPedido: false,
-            modalInserirProduto: false
+            modalInserirProduto: false,
+            modalFinalizarPedido: false
         };
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
     }
@@ -88,6 +89,10 @@ class FrenteCaixa extends React.Component {
 
     modalInserirProduto = () => {
         this.setState({ modalInserirProduto: !this.state.modalInserirProduto });
+    }
+
+    modalFinalizarPedido = () => {
+        this.setState({ modalFinalizarPedido: !this.state.modalFinalizarPedido });
     }
 
     componentDidMount() {
@@ -264,6 +269,8 @@ class FrenteCaixa extends React.Component {
 
 
     selecionarContato = (contato) => {
+        const contatoSelecionado = contato;
+        console.log("selecionarContato (contatoSelecionado)", contatoSelecionado)
         this.setState({
             contatoSelecionado: contato,
             nome: contato.contato.nome,
@@ -319,27 +326,27 @@ class FrenteCaixa extends React.Component {
     }
 
 
-    adicionarContatoSelecionado = (contatoSelecionado) => {
-        const { contatosSelecionados, cnpj } = this.state;
-        const contatoExistente = contatosSelecionados.find((contato) => contato.contato.id === contatoSelecionado.contato.id);
+    // adicionarContatoSelecionado = (contatoSelecionado) => {
+    //     const { contatosSelecionados, cnpj } = this.state;
+    //     const contatoExistente = contatosSelecionados.find((contato) => contato.contato.id === contatoSelecionado.contato.id);
 
-        if (contatoExistente) {
-            contatoExistente.cnpj += cnpj; // Adiciona a quantidade selecionada
-        } else {
-            contatosSelecionados.push({
-                nome: contatoSelecionado.nome,
-                cnpj: cnpj, // Salva a quantidade selecionada
-            });
-        }
-
-        this.setState({
-            contatosSelecionados: contatosSelecionados,
-            contatoSelecionado: null,
-            cnpj: '',
-            contatos: [],
-            buscaContato: '',
-        });
-    };
+    //     if (contatoExistente) {
+    //         contatoExistente.cnpj += cnpj; // Adiciona a quantidade selecionada
+    //     } else {
+    //         contatosSelecionados.push({
+    //             nome: contatoSelecionado.nome,
+    //             cnpj: cnpj, // Salva a quantidade selecionada
+    //         });
+    //     }
+    //     console.log("contatoscontatosSelecionados: ", contatosSelecionados, "contatoExistente: ", contatoExistente)
+    //     this.setState({
+    //         contatosSelecionados: contatosSelecionados,
+    //         contatoSelecionado: null,
+    //         cnpj: '',
+    //         contatos: [],
+    //         buscaContato: '',
+    //     });
+    // };
 
     adicionarVendedorSelecionado = (vendedorSelecionado) => {
         const { contatosSelecionados, cnpj } = this.state;
@@ -469,9 +476,11 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-    atualizarBuscaContato = (e) => {
+    atualizarBuscaContato = (event) => {
+        const buscaContato = event.target.value
+        console.log("atualizarBuscaContato (buscaContato): ", buscaContato)
         this.setState({
-            buscaContato: e.target.value
+            buscaContato
         });
     };
 
@@ -633,19 +642,50 @@ class FrenteCaixa extends React.Component {
             observacoes: '',
             observacaointerna: '',
             produtosSelecionados: [], // adiciona a limpeza da lista aqui
-            modalAberto: false, // fecha o modal após a exclusão
-            comentario: ''
+            comentario: '',
+            contatoSelecionado: '',
+            vendedorSelecionado: ''
         });
         this.ModalExcluirPedido()
+    };
+
+    limparPedido = () => {
+        this.setState({
+            nome: '',
+            tipo: '',
+            cnpj: '',
+            codigo: '',
+            fantasia: '',
+            quantidade: 1,
+            desconto: '',
+            preco: 0,
+            valorTotal: 0,
+            subTotal: 0,
+            valorDesconto: 0,
+            totalComDesconto: 0,
+            dinheiro: 0,
+            troco: 0,
+            dataPrevista: '',
+            depositoSelecionado: '',
+            frete: 0,
+            observacoes: '',
+            observacaointerna: '',
+            produtosSelecionados: [], // adiciona a limpeza da lista aqui
+            comentario: '',
+            vendedor: '',
+            contatoSelecionado: '',
+            vendedorSelecionado: ''
+        });
     };
 
     finalizaVenda = () => {
         const nome = this.state.nome;
         const cnpj = this.state.cnpj;
-        const vendedor = this.state.nome;
+        const vendedorSelecionado = this.state.nome;
         const dataPrevista = this.state.dataPrevista;
         const observacoes = this.state.observacoes;
         const observacaointerna = this.state.observacaointerna;
+        const valorDesconto = this.state.desconto;
         const itens = [];
 
         this.state.produtosSelecionados.forEach((produto) => {
@@ -659,11 +699,11 @@ class FrenteCaixa extends React.Component {
         });
         console.log(itens);
 
-        return { nome, cnpj, itens, vendedor, dataPrevista, observacoes, observacaointerna };
+        return { nome, cnpj, itens, vendedorSelecionado, dataPrevista, observacoes, observacaointerna, valorDesconto };
     };
 
     gerarXmlItensParaEnvio = () => {
-        const { nome, cnpj, itens, vendedor, dataPrevista, observacoes, observacaointerna } = this.finalizaVenda();
+        const { nome, cnpj, itens, vendedorSelecionado, dataPrevista, observacoes, observacaointerna, valorDesconto } = this.finalizaVenda();
 
         if (itens.length === 0) {
             this.ModalFinalizarVendaSemItem();
@@ -672,10 +712,11 @@ class FrenteCaixa extends React.Component {
 
         const xml = `<?xml version="1.0"?>
           <pedido>
+          <vlr_desconto>${this.state.valorDesconto}</vlr_desconto>
             <data_prevista>${dataPrevista}</data_prevista>
             <obs>${observacoes}</obs>
             <obs_internas>${observacaointerna}</obs_internas>
-            <vendedor>${vendedor}</vendedor>
+            <vendedor>${this.state.vendedorSelecionado}</vendedor>
             <cliente>
               <nome>${nome}</nome>
               <cnpj>${cnpj}</cnpj>
@@ -695,10 +736,13 @@ class FrenteCaixa extends React.Component {
         console.log(xml);
 
         const xmlContato = ('xml', xml);
+
         this.cadastrarPedido(xmlContato);
-        this.excluirProdutoSelecionado();
+        this.limparPedido();
+        this.modalFinalizarPedido();
 
         return xml;
+
     };
 
 
@@ -1063,13 +1107,13 @@ class FrenteCaixa extends React.Component {
                                     </div>
                                 </div>
                                 <div className="botao-finalizarvenda">
-                                    <Button variant="success" onClick={this.gerarXmlItensParaEnvio}>Finalizar Venda</Button>
+                                    <Button variant="success" onClick={this.modalFinalizarPedido}>Finalizar Venda</Button>
                                 </div>
                             </div>
                             <div className="div_total_venda">
                                 <div>
                                     <span className="span-total">Total:</span>
-                                    <span className="span-valor">R$ {this.state.subTotal}</span>
+                                    <span className="span-valor">R$ {this.state.totalComDesconto}</span>
                                 </div>
                             </div>
                         </div>
@@ -1112,6 +1156,46 @@ class FrenteCaixa extends React.Component {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={this.modalInserirProduto}>Fechar</Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={this.state.modalFinalizarPedido} onHide={this.modalFinalizarPedido} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Atenção </Modal.Title>
+                        <FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-warning mr-2mr-3" />
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div>Resumo de pedido:</div>
+                        <div>Nome do Cliente: {this.state.nome}</div>
+                        <div>
+                            <Table responsive="lg" striped>
+                                <thead>
+                                    <tr>
+                                        <th>Nome do produto</th>
+                                        <th>Qtde.</th>
+                                        <th>Preço un.</th>
+                                        <th>Sub Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.produtosSelecionados.map((produto, index) => (
+                                        <tr key={produto.produto.id}>
+                                            <td>{produto.produto.codigo} - {produto.produto.descricao}</td>
+                                            <td>{produto.quantidade}</td>
+                                            <td>R$ {typeof produto.produto.preco === "number"
+                                                ? produto.produto.preco.toFixed(2).replace(".", ",")
+                                                : parseFloat(produto.produto.preco.replace(",", ".")).toFixed(2).replace(".", ",")}</td>
+                                            <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade).toFixed(2).replace(".", ",")}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <div>Quantidade total: {quantidade}</div>
+                                <div>Total R$ {this.state.totalComDesconto}</div>
+                            </Table>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.gerarXmlItensParaEnvio}>Fechar</Button>
                     </Modal.Footer>
                 </Modal>
             </Container >

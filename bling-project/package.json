@@ -17,6 +17,8 @@
     "install": "^0.13.0",
     "jquery": "^3.6.4",
     "js2xmlparser": "^5.0.0",
+    "momen": "^0.0.1-security",
+    "moment": "^2.29.4",
     "npm": "^9.6.2",
     "react": "^18.2.0",
     "react-autosuggest": "^10.1.0",
