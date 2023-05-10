@@ -37,27 +37,34 @@ class FrenteCaixa extends React.Component {
             buscaProduto: '',
             buscaContato: '',
             buscaVendedor: '',
+            nome: '',
+            cnpj: '',
+            observacoes: '',
+            observacaointerna: '',
+            comentario: '',
             produtos: [],
             contatos: [],
             depositos: [],
             vendedores: [],
+            produtosSelecionados: [],
+            contatosSelecionados: [],
+            vendedoresSelecionados: [],
+            vendedoresFiltrados: [],
+            itensSelecionados: [],
             produtoSelecionado: null,
             contatoSelecionado: null,
             vendedorSelecionado: null,
             carregandoProduto: false,
             carregandoContato: false,
             carregandoVendedor: false,
-            preco: null, // mover o preco para fora do produtoSelecionado
-            produtosSelecionados: [],
-            contatosSelecionados: [],
-            vendedoresSelecionados: [],
-            precoProdutoSelecionado: '',
+            preco: 0, // mover o preco para fora do produtoSelecionado
+            precoProdutoSelecionado: 0,
             quantidade: 1,
-            valorTotal: '',
-            nome: '',
-            cnpj: '',
-            valorDesconto: '',
-            totalComDesconto: '',
+            valorTotal: 0,
+            valorDesconto: 0,
+            totalComDesconto: 0,
+            subTotalComDesconto: 0, // nova variável para armazenar o subtotal com desconto
+            desconto: 0,
             total: 0,
             subTotal: 0,
             dinheiroRecebido: 0,
@@ -65,18 +72,19 @@ class FrenteCaixa extends React.Component {
             dinheiro: 0,
             dataPrevista: null,
             depositoSelecionado: null,
-            vendedoresFiltrados: [],
             carregando: false,
-            observacoes: '',
-            observacaointerna: '',
-            itensSelecionados: [],
-            comentario: '',
             ModalFinalizarVendaSemItem: false,
             ModalExcluirPedido: false,
             modalInserirProduto: false,
-            modalFinalizarPedido: false
+            modalFinalizarPedido: false,
+            subtotalComFrete: 0,
+            frete: 0,
+            freteInserido: false
+
         };
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
+        this.atualizaTotalComFrete = this.atualizaTotalComFrete.bind(this);
+
     }
 
     ModalFinalizarVendaSemItem = () => {
@@ -424,6 +432,7 @@ class FrenteCaixa extends React.Component {
         console.log("valorDesconto: ", formattedValorDesconto);
         console.log("totalComDesconto: ", formattedTotalComDesconto);
 
+
         if (isNaN(totalComDesconto)) {
             console.log("Total com desconto é NaN!");
         }
@@ -446,7 +455,11 @@ class FrenteCaixa extends React.Component {
             };
         }
 
-        const troco = totalRecebidoEmDinheiro - totalComDesconto;
+        let troco = totalRecebidoEmDinheiro - totalComDesconto;
+
+        if (troco < 0 || troco > totalComDesconto) {
+            troco = 0;
+        }
 
         console.log("totalRecebidoEmDinheiro:", totalRecebidoEmDinheiro);
         console.log("troco:", troco);
@@ -460,15 +473,20 @@ class FrenteCaixa extends React.Component {
     atualizaTroco = (event) => {
         const valorRecebido = event.target.value;
 
-        // Verifica se o valor recebido é um número válido antes de chamar a função
-        if (!isNaN(parseFloat(valorRecebido))) {
-            const { totalComDesconto } = this.state;
-            const { dinheiroRecebido, troco } = this.calcularTotalComDinheiro(totalComDesconto, valorRecebido);
+        // Verifica se o valor recebido é vazio ou nulo
+        if (!valorRecebido) {
+            this.setState({ dinheiroRecebido: 0, troco: 0 });
+            return;
+        }
 
-            this.setState({ dinheiroRecebido, troco });
+        // Verifica se o valor recebido é um número válido antes de chamar a função
+        if (!isNaN(parseFloat(valorRecebido)) && parseFloat(valorRecebido) > 0) {
+            const { totalComDesconto } = this.state;
+            const { dinheiroRecebido, troco } = this.calcularTotalComDinheiro(valorRecebido, totalComDesconto);
+
+            this.setState({ dinheiroRecebido, troco: Math.abs(troco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) });
         }
     };
-
 
     atualizarBuscaProduto = (e) => {
         this.setState({
@@ -506,6 +524,7 @@ class FrenteCaixa extends React.Component {
         this.setState({ valorTotal });
     };
 
+
     atualizaDesconto(event) {
         console.log("Evento de digitação capturado!");
 
@@ -516,7 +535,8 @@ class FrenteCaixa extends React.Component {
             // Se não for um número válido, limpa o valor do campo e retorna
             this.setState({
                 valorDesconto: 0,
-                totalComDesconto: ''
+                desconto: false,
+                totalComDesconto: '',
             });
             return;
         }
@@ -525,10 +545,36 @@ class FrenteCaixa extends React.Component {
         console.log(resultado)
         this.setState({
             valorDesconto: descontoString,
-            totalComDesconto: resultado.totalComDesconto
+            desconto: descontoNumber !== 0,
+            totalComDesconto: resultado.totalComDesconto,
         });
     }
 
+    atualizaTotalComFrete(event) {
+        const valor = event.target.value;
+        console.log('valor:', valor);
+        let frete = 0;
+        if (typeof valor === 'string') {
+            frete = parseFloat(valor);
+        }
+        console.log('frete:', frete);
+        const subTotal = this.state.subTotal;
+        const totalComDesconto = this.state.totalComDesconto;
+        console.log('subTotal:', subTotal);
+        console.log('totalComDesconto:', totalComDesconto);
+        let subTotalComFrete;
+        if (totalComDesconto && totalComDesconto.length > 0) {
+            subTotalComFrete = parseFloat(totalComDesconto) + frete;
+        } else {
+            subTotalComFrete = parseFloat(subTotal) + frete;
+        }
+        console.log('subTotalComFrete:', subTotalComFrete);
+        this.setState({
+            subTotalComFrete: subTotalComFrete,
+            frete: frete,
+            freteInserido: true
+        });
+    }
 
     incrementarQuantidade = () => {
         this.setState((prevState) => ({ quantidade: prevState.quantidade + 1 }), this.atualizarValorTotal);
@@ -581,8 +627,6 @@ class FrenteCaixa extends React.Component {
             dataPrevista
         });
     }
-
-
 
     atualizaDepositoSelecionado = (event) => {
         const depositoSelecionado = event.target.value;
@@ -688,6 +732,7 @@ class FrenteCaixa extends React.Component {
         const valorDesconto = this.state.desconto;
         const itens = [];
 
+
         this.state.produtosSelecionados.forEach((produto) => {
             const item = {
                 codigo: produto.produto.codigo,
@@ -697,29 +742,33 @@ class FrenteCaixa extends React.Component {
             };
             itens.push(item);
         });
+
         console.log(itens);
+
+        if (itens.length === 0) {
+            this.ModalFinalizarVendaSemItem();
+            return;
+        } else {
+            this.modalFinalizarPedido()
+        }
 
         return { nome, cnpj, itens, vendedorSelecionado, dataPrevista, observacoes, observacaointerna, valorDesconto };
     };
 
     gerarXmlItensParaEnvio = () => {
-        const { nome, cnpj, itens, vendedorSelecionado, dataPrevista, observacoes, observacaointerna, valorDesconto } = this.finalizaVenda();
-
-        if (itens.length === 0) {
-            this.ModalFinalizarVendaSemItem();
-            return;
-        }
+        const { itens } = this.finalizaVenda();
 
         const xml = `<?xml version="1.0"?>
           <pedido>
           <vlr_desconto>${this.state.valorDesconto}</vlr_desconto>
-            <data_prevista>${dataPrevista}</data_prevista>
-            <obs>${observacoes}</obs>
-            <obs_internas>${observacaointerna}</obs_internas>
+            <data_prevista>${this.state.dataPrevista}</data_prevista>
+            <obs>${this.state.observacoes}</obs>
+            <obs_internas>${this.state.observacaointerna}</obs_internas>
             <vendedor>${this.state.vendedorSelecionado}</vendedor>
+            <vlr_frete>${this.state.frete}</vlr_frete>
             <cliente>
-              <nome>${nome}</nome>
-              <cnpj>${cnpj}</cnpj>
+              <nome>${this.state.nome}</nome>
+              <cnpj>${this.state.cnpj}</cnpj>
             </cliente>
             <itens>
               ${itens.map((item) => `
@@ -731,7 +780,14 @@ class FrenteCaixa extends React.Component {
                 </item>
               `).join('')}
             </itens>
-          </pedido>`;
+            <parcelas>
+                <parcela>
+                    <data>22/22/2222</data>
+                    <vlr>99999</vlr>
+                    <obs>TESTE</obs>
+                </parcela>
+            </parcelas>
+          </pedido > `;
 
         console.log(xml);
 
@@ -745,7 +801,20 @@ class FrenteCaixa extends React.Component {
 
     };
 
+    handleChangeDesconto = (event) => {
+        const { value } = event.target;
+        const desconto = parseFloat(value);
 
+        if (isNaN(desconto)) {
+            this.setState({ desconto: "" });
+            return;
+        }
+
+        const { subTotal } = this.state;
+        const totalComDesconto = subTotal - desconto;
+
+        this.setState({ desconto, totalComDesconto });
+    }
 
 
 
@@ -754,8 +823,8 @@ class FrenteCaixa extends React.Component {
     render() {
 
 
-        const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, comentario } = this.state;
-        const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, buscaVendedor, valorDesconto, totalComDesconto, total, index, troco, dinheiro, dataPrevista, vendedorSelecionado, observacoes, observacaointerna } = this.state;
+        const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, comentario, subTotal, subTotalComDesconto } = this.state;
+        const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, buscaVendedor, total, index, dinheiro, dataPrevista, vendedorSelecionado, observacoes, observacaointerna, valorDesconto, totalComDesconto, dinheiroRecebido, troco, subTotalComFrete, frete } = this.state;
 
         let quantidadeTotal = 0;
         let nomeContato = '';
@@ -765,7 +834,6 @@ class FrenteCaixa extends React.Component {
         for (const contato of this.state.contatosSelecionados) {
             nomeContato += contato.contato.nome;
         }
-
         return (
 
             <Container fluid className="pb-5" >
@@ -899,7 +967,7 @@ class FrenteCaixa extends React.Component {
                                         <div className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="desconto" className="texto-campos">Desconto (%)</Form.Label>
-                                                <Form.Control type="text" id="desconto" className="form-control" name="desconto" placeholder="00,00" value={desconto || ''} onChange={this.atualizarDesconto} disabled />
+                                                <Form.Control type="text" id="desconto" className="form-control" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizarDesconto} disabled />
                                             </Form.Group>
                                         </div>
                                         <div className="col">
@@ -956,7 +1024,15 @@ class FrenteCaixa extends React.Component {
                                                 <div className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="totaldinheiro" className="texto-campos">Total recebido em dinheiro</Form.Label>
-                                                        <Form.Control type="text" id="totaldinheiro" className="campos-pagamento" name="totaldinheiro" placeholder="00,00" value={dinheiro || ''} onChange={this.atualizaTroco} />
+                                                        <Form.Control
+                                                            type="text"
+                                                            id="totaldinheiro"
+                                                            className="campos-pagamento"
+                                                            name="totaldinheiro"
+                                                            placeholder="00,00"
+                                                            defaultValue={dinheiroRecebido || ''}
+                                                            onChange={this.atualizaTroco}
+                                                        />
                                                     </Form.Group>
                                                 </div>
                                                 <div className="col">
@@ -1016,17 +1092,17 @@ class FrenteCaixa extends React.Component {
                                                 <div className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="dataprevista" className="texto-campos">Data prevista</Form.Label>
+                                                        <label htmlFor="dataprevista">Data prevista</label>
                                                         <DatePicker
                                                             locale={ptBR}
                                                             id="dataprevista"
                                                             name="dataprevista"
-                                                            selected={this.state.dataPrevista ? new Date(this.state.dataPrevista) : null}
+                                                            selected={dataPrevista}
                                                             onChange={this.atualizaDataPrevista}
                                                             placeholderText="Selecione uma data"
                                                             className="form-select"
-                                                            dateFormat="dd/MM/yyyy" // adicionado aqui
+                                                            dateFormat="dd/MM/yyyy"
                                                         />
-
                                                     </Form.Group>
                                                 </div>
                                             </div>
@@ -1046,7 +1122,7 @@ class FrenteCaixa extends React.Component {
                                                 <div className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
-                                                        <Form.Control type="text" className="campos-informacoes" id="frete" name="frete" placeholder="00,00" value={dinheiro || ''} onChange={this.atualizaTroco} />
+                                                        <Form.Control type="text" className="campos-informacoes" id="frete" name="frete" placeholder="00,00" value={this.state.frete || ''} onChange={this.atualizaTotalComFrete} />
                                                     </Form.Group>
                                                 </div>
                                             </div>
@@ -1116,13 +1192,21 @@ class FrenteCaixa extends React.Component {
                                     </div>
                                 </div>
                                 <div className="botao-finalizarvenda">
-                                    <Button variant="success" onClick={this.modalFinalizarPedido}>Finalizar Venda</Button>
+                                    <Button variant="success" onClick={this.finalizaVenda} >Finalizar Venda</Button>
                                 </div>
                             </div>
                             <div className="div_total_venda">
                                 <div>
                                     <span className="span-total">Total:</span>
-                                    <span className="span-valor">R$ {this.state.subTotal}</span>
+                                    {desconto ? (
+                                        <span className="span-valor">R$ {totalComDesconto}</span>
+                                    ) : (
+                                        this.state.freteInserido ? (
+                                            <span className="span-valor">R$ {subTotalComFrete}</span>
+                                        ) : (
+                                            <span className="span-valor">R$ {subTotal}</span>
+                                        )
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -1174,6 +1258,7 @@ class FrenteCaixa extends React.Component {
                         <FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-warning mr-2mr-3" />
                     </Modal.Header>
                     <Modal.Body>
+
                         <div>Resumo de pedido:</div>
                         <div>Data: {new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
                         <div>Nome do Cliente: {nomeContato}</div>
@@ -1199,8 +1284,8 @@ class FrenteCaixa extends React.Component {
                                         </tr>
                                     ))}
                                 </tbody>
-                                <div>Quantidade total: {quantidadeTotal}</div>
-                                <div>Total R$ {this.state.totalComDesconto}</div>
+                                <tr>Quantidade total: {quantidadeTotal}</tr>
+                                <tr>Total R$ {totalComDesconto}</tr>
                             </Table>
                         </div>
                     </Modal.Body>
