@@ -834,6 +834,7 @@ class FrenteCaixa extends React.Component {
         for (const contato of this.state.contatosSelecionados) {
             nomeContato += contato.contato.nome;
         }
+
         return (
 
             <Container fluid className="pb-5" >
@@ -884,7 +885,6 @@ class FrenteCaixa extends React.Component {
                                         </div>
                                     )}
                                 </div>
-
                                 <div className="row">
                                     <div className="col">
                                         <Form.Group className="mb-3">
@@ -923,9 +923,7 @@ class FrenteCaixa extends React.Component {
                                         </Form.Group>
                                     </div>
                                 </div>
-
                                 <div className="divisa"></div>
-
                                 <div>
                                     <div className="cliente-header">Produto</div>
                                     <div>
@@ -986,7 +984,6 @@ class FrenteCaixa extends React.Component {
                                     <div>
                                         <Form.Label htmlFor="valorTotal" className="texto-campos">Comentário</Form.Label>
                                     </div>
-
                                     <div className="container">
                                         <Form.Control as="textarea" id="observacao" value={this.state.comentario || ''} onChange={this.atualizarComentario} disabled={!produtoSelecionado} style={{ height: '75px', width: '600px' }} />
                                         <Button variant="success" onClick={() => this.adicionarProdutoSelecionado(produtoSelecionado)}>Inserir produto </Button>
@@ -994,7 +991,6 @@ class FrenteCaixa extends React.Component {
                                     {carregandoProduto &&
                                         <div>Carregando produto na lista...</div>
                                     }
-
                                     <div className="divisa"></div>
                                     <div className="pagamento-header">Pagamento</div>
                                     <div>
@@ -1224,7 +1220,6 @@ class FrenteCaixa extends React.Component {
                         <Button variant="success" onClick={this.ModalFinalizarVendaSemItem}>Fechar</Button>
                     </Modal.Footer>
                 </Modal>
-
                 <Modal show={this.state.ModalExcluirPedido} onHide={this.ModalExcluirPedido} centered>
                     <Modal.Header closeButton>
                         <Modal.Title>Atenção </Modal.Title>
@@ -1238,7 +1233,6 @@ class FrenteCaixa extends React.Component {
                         <Button variant="success" onClick={this.excluirPedido}>Sim</Button>
                     </Modal.Footer>
                 </Modal>
-
                 <Modal show={this.state.modalInserirProduto} onHide={this.modalInserirProduto} centered>
                     <Modal.Header closeButton>
                         <Modal.Title>Atenção </Modal.Title>
@@ -1251,14 +1245,12 @@ class FrenteCaixa extends React.Component {
                         <Button variant="secondary" onClick={this.modalInserirProduto}>Fechar</Button>
                     </Modal.Footer>
                 </Modal>
-
                 <Modal show={this.state.modalFinalizarPedido} onHide={this.modalFinalizarPedido} size="lg" centered>
                     <Modal.Header closeButton>
                         <Modal.Title>Atenção </Modal.Title>
                         <FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-warning mr-2mr-3" />
                     </Modal.Header>
                     <Modal.Body>
-
                         <div>Resumo de pedido:</div>
                         <div>Data: {new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
                         <div>Nome do Cliente: {nomeContato}</div>
