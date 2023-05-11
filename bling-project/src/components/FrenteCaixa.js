@@ -755,7 +755,8 @@ class FrenteCaixa extends React.Component {
             comentario: '',
             contatoSelecionado: '',
             vendedorSelecionado: '',
-            dinheiroRecebido: ''
+            dinheiroRecebido: '',
+            condicao: '',
         });
         this.ModalExcluirPedido()
     };
@@ -786,7 +787,8 @@ class FrenteCaixa extends React.Component {
             vendedor: '',
             contatoSelecionado: '',
             vendedorSelecionado: '',
-            dinheiroRecebido: ''
+            dinheiroRecebido: '',
+            condicao: '',
         });
     };
 
@@ -898,7 +900,6 @@ class FrenteCaixa extends React.Component {
         this.setState({ desconto, totalComDesconto });
     }
 
-
     handleChangeParcela(index, campo, valor) {
         const parcelas = [...this.state.parcelas];
         parcelas[index][campo] = valor;
@@ -933,7 +934,6 @@ class FrenteCaixa extends React.Component {
         this.setState({ parcelas });
     }
 
-
     handleFormaChange = (index, event) => {
         const parcelas = [...this.state.parcelas];
         parcelas[index].forma = event.target.value;
@@ -965,7 +965,7 @@ class FrenteCaixa extends React.Component {
 
         const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, comentario, subTotal, subTotalComDesconto } = this.state;
         const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, buscaVendedor, total, index, dinheiro, dataPrevista, vendedorSelecionado, observacoes, observacaointerna, valorDesconto, totalComDesconto, dinheiroRecebido, troco, subTotalComFrete, frete } = this.state;
-        const { subTotalGeral } = this.state;
+        const { subTotalGeral, condicao } = this.state;
 
 
         let quantidadeTotal = 0;
@@ -985,7 +985,7 @@ class FrenteCaixa extends React.Component {
                         <Form>
                             <div className="grid-1">
                                 <div className="produto-header">Vendedor</div>
-                                <div className="col">
+                                <Col className="col">
                                     <Form.Group className="mb-3">
                                         <Form.Label htmlFor="vendedor" className="texto-campos">Vendedor</Form.Label>
                                         <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado || ''} onChange={this.atualizaVendedorSelecionado} >
@@ -997,7 +997,7 @@ class FrenteCaixa extends React.Component {
                                             ))}
                                         </Form.Select>
                                     </Form.Group>
-                                </div>
+                                </Col>
                                 <div className="produto-header">Cliente</div>
                                 <div>
                                     <div className="busca-cliente d-grid gap-2">
@@ -1027,14 +1027,14 @@ class FrenteCaixa extends React.Component {
                                         </div>
                                     )}
                                 </div>
-                                <div className="row">
-                                    <div className="col">
+                                <Row className="row">
+                                    <Col className="col">
                                         <Form.Group className="mb-3">
                                             <Form.Label htmlFor="nome" className="texto-campos">Nome</Form.Label>
                                             <Form.Control type="text" id="nome" className="form-control" name="nome" value={nome || ''} onChange={this.atualizaNome} />
                                         </Form.Group>
-                                    </div>
-                                    <div className="col">
+                                    </Col>
+                                    <Col className="col">
                                         <Form.Group className="mb-3">
                                             <Form.Label htmlFor="tipo" className="texto-campos">Tipo</Form.Label>
                                             <Form.Select as="select" id="tipo" className="form-control" name="tipo" value={tipo || ''} onChange={this.atualizaTipo}>
@@ -1043,28 +1043,28 @@ class FrenteCaixa extends React.Component {
                                                 <option value="E">Estrangeiro</option>
                                             </Form.Select>
                                         </Form.Group>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col">
+                                    </Col>
+                                </Row>
+                                <Row className="row">
+                                    <Col className="col">
                                         <Form.Group className="mb-3">
                                             <Form.Label htmlFor="cpf" className="texto-campos">CPF</Form.Label>
                                             <Form.Control type="text" id="cpf" className="form-control" name="cpf" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
                                         </Form.Group>
-                                    </div>
-                                    <div className="col">
+                                    </Col>
+                                    <Col className="col">
                                         <Form.Group className="mb-3">
                                             <Form.Label htmlFor="codigo" className="texto-campos">Código</Form.Label>
                                             <Form.Control type="text" id="codigo" className="form-control" name="codigo" value={codigo || ''} onChange={this.atualizaCodigo} />
                                         </Form.Group>
-                                    </div>
-                                    <div className="col">
+                                    </Col>
+                                    <Col className="col">
                                         <Form.Group className="mb-3">
                                             <Form.Label htmlFor="fantasia" className="texto-campos">Fantasia</Form.Label>
                                             <Form.Control type="text" id="fantasia" className="form-control" name="fantasia" value={fantasia || ''} onChange={this.atualizaFantasia} />
                                         </Form.Group>
-                                    </div>
-                                </div>
+                                    </Col>
+                                </Row>
                                 <div className="divisa"></div>
                                 <div>
                                     <div className="cliente-header">Produto</div>
@@ -1097,32 +1097,32 @@ class FrenteCaixa extends React.Component {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="row">
-                                        <div className="col">
+                                    <Row className="row">
+                                        <Col className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="quantidade" className="texto-campos">Quantidade</Form.Label>
                                                 <Form.Control type="text" id="quantidade" className="form-control" name="quantidade" value={quantidade || ''} onChange={this.atualizaQuantidade} disabled={!produtoSelecionado} />
                                             </Form.Group>
-                                        </div>
-                                        <div className="col">
+                                        </Col>
+                                        <Col className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="desconto" className="texto-campos">Desconto (%)</Form.Label>
                                                 <Form.Control type="text" id="desconto" className="form-control" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizarDesconto} disabled />
                                             </Form.Group>
-                                        </div>
-                                        <div className="col">
+                                        </Col>
+                                        <Col className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="preco" className="texto-campos">Valor unitário</Form.Label>
                                                 <Form.Control type="text" id="preco" className="form-control" name="preco" placeholder="00,00" value={preco || ''} onChange={this.atualizaPreco} disabled={!produtoSelecionado} />
                                             </Form.Group>
-                                        </div>
-                                        <div className="col">
+                                        </Col>
+                                        <Col className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="valorTotal" className="texto-campos">Sub total</Form.Label>
                                                 <Form.Control type="number" id="valorTotal" className="form-control" name="valorTotal" placeholder="00,00" value={this.state.valorTotal || ''} onChange={this.atualizarValorTotal} readOnly />
                                             </Form.Group>
-                                        </div>
-                                    </div>
+                                        </Col>
+                                    </Row>
                                     <div>
                                         <Form.Label htmlFor="valorTotal" className="texto-campos">Comentário</Form.Label>
                                     </div>
@@ -1138,28 +1138,28 @@ class FrenteCaixa extends React.Component {
                                     <div>
                                         <h5>Totais</h5>
                                         <div>
-                                            <div className="row">
-                                                <div className="col">
+                                            <Row className="row">
+                                                <Col className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="subtotal" className="texto-campos">Sub total</Form.Label>
                                                         <Form.Control type="text" id="subtotal" className="campos-pagamento" name="subtotal" placeholder="00,00" defaultValue={this.state.subTotal || ''} disabled />
                                                     </Form.Group>
-                                                </div>
-                                                <div className="col">
+                                                </Col>
+                                                <dColiv className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="desconto" className="texto-campos">Desconto</Form.Label>
                                                         <Form.Control type="text" id="desconto" className="campos-pagamento" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizaDesconto} />
                                                     </Form.Group>
-                                                </div>
-                                                <div className="col">
+                                                </dColiv>
+                                                <Col className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="totaldavenda" className="texto-campos">Total da venda</Form.Label>
                                                         <Form.Control type="text" id="totaldavenda" className="campos-pagamento" name="totaldavenda" placeholder="00,00" defaultValue={subTotalGeral || ''} disabled />
                                                     </Form.Group>
-                                                </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col">
+                                                </Col>
+                                            </Row>
+                                            <Row className="row">
+                                                <Col className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="totaldinheiro" className="texto-campos">Total recebido em dinheiro</Form.Label>
                                                         <Form.Control
@@ -1172,32 +1172,35 @@ class FrenteCaixa extends React.Component {
                                                             onChange={this.atualizaTroco}
                                                         />
                                                     </Form.Group>
-                                                </div>
-                                                <div className="col">
+                                                </Col>
+                                                <Col className="col mb-3">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="trocodinheiro" className="texto-campos">Troco em dinheiro</Form.Label>
                                                         <Form.Control type="text" id="trocodinheiro" className="campos-pagamento" name="trocodinheiro" placeholder="00,00" defaultValue={troco || ''} disabled />
                                                     </Form.Group>
-                                                </div>
-                                            </div>
-                                            <div>
+                                                </Col>
+                                            </Row>
+                                            <div className="mb-3">
                                                 <h5>Forma de pagamento</h5>
                                             </div>
-                                            <div className="row">
-                                                <div className="col">
-                                                    <Form.Group className="mb-3" controlId="condicao">
-                                                        <Form.Label>Condição</Form.Label>
-                                                        <Form.Control type="number" placeholder="Digite a condição" onChange={this.handleChange} defaultValue="0" />
-                                                    </Form.Group>
+                                            <Row className="mb-3">
+                                                <div className="d-flex align-items-end">
+                                                    <Col className="col">
+                                                        <Form.Group className="mb-3" controlId="condicao">
+                                                            <Form.Label>Condição</Form.Label>
+                                                            <Form.Control type="text" placeholder="Digite a condição" value={condicao || ''} onChange={this.handleChange} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col">
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="gerarparcelas" className="texto-campos">.</Form.Label>
+                                                            <Button variant="success" className="" onClick={this.adicionarParcela} style={{ width: "200px" }}>Gerar parcelas</Button>
+                                                        </Form.Group>
+                                                    </Col>
                                                 </div>
-                                                <div className="col">
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="gerarparcelas" className="texto-campos">.</Form.Label>
-                                                        <Button variant="success" className="campos-pagamento" onClick={this.adicionarParcela}>Gerar parcelas</Button>
-                                                    </Form.Group>
-                                                </div>
+
                                                 <div>
-                                                    <Table striped hover>
+                                                    <Table striped hover >
                                                         <thead>
                                                             <tr>
                                                                 <th>Dias</th>
@@ -1259,7 +1262,7 @@ class FrenteCaixa extends React.Component {
                                                     </div>
 
                                                 </div>
-                                                <div className="col">
+                                                <Col className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="vendedor" className="texto-campos">Categoria</Form.Label>
                                                         <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado || ''} onChange={this.atualizaVendedorSelecionado} >
@@ -1271,8 +1274,8 @@ class FrenteCaixa extends React.Component {
                                                             ))}
                                                         </Form.Select>
                                                     </Form.Group>
-                                                </div>
-                                            </div>
+                                                </Col>
+                                            </Row>
                                             <div>
                                                 <h5>Outras informações</h5>
                                             </div>
