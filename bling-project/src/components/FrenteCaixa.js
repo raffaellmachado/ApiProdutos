@@ -22,6 +22,7 @@ import { Stack } from "react-bootstrap"
 import Form from 'react-bootstrap/Form'
 import Table from "react-bootstrap/Table";
 
+
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { parse } from 'js2xmlparser';
 
@@ -49,6 +50,7 @@ class FrenteCaixa extends React.Component {
             contatos: [],
             depositos: [],
             vendedores: [],
+            pedidos: [],
             produtosSelecionados: [],
             contatosSelecionados: [],
             vendedoresSelecionados: [],
@@ -60,41 +62,46 @@ class FrenteCaixa extends React.Component {
             carregandoProduto: false,
             carregandoContato: false,
             carregandoVendedor: false,
-            preco: 0, // mover o preco para fora do produtoSelecionado
+            preco: 0,
             precoProdutoSelecionado: 0,
             quantidade: 1,
             valorTotal: 0,
             valorDesconto: 0,
             totalComDesconto: 0,
-            subTotalComDesconto: 0, // nova variável para armazenar o subtotal com desconto
+            subTotalComDesconto: 0,
             desconto: 0,
             total: 0,
             subTotal: 0,
             dinheiroRecebido: 0,
             troco: 0,
             dinheiro: 0,
-            dataPrevista: null,
+            dataPrevista: '',
+            dataPrevistaFormatted: '',
             depositoSelecionado: null,
-            carregando: false,
             ModalFinalizarVendaSemItem: false,
             ModalExcluirPedido: false,
             modalInserirProduto: false,
             modalFinalizarPedido: false,
+            modalSalvarPedido: false,
+            modalInserirParcela: false,
             subtotalComFrete: 0,
             frete: 0,
             freteInserido: false,
             parcelas: [{ dias: 0 }],
-            condicao: '',
+            condicao: 0,
             forma: [],
             subtotalGeral: 0,
-
+            carregando: false,
+            numLinhas: 0,
+            newParcelas: 0,
+            numeroPedido: 0,
+            ultimoPedido: 0
         };
+
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
         this.atualizaTotalComFrete = this.atualizaTotalComFrete.bind(this);
-
         this.adicionarParcela = this.adicionarParcela.bind(this);
         this.handleChange = this.handleChange.bind(this);
-
     }
 
     ModalFinalizarVendaSemItem = () => {
@@ -113,9 +120,23 @@ class FrenteCaixa extends React.Component {
         this.setState({ modalFinalizarPedido: !this.state.modalFinalizarPedido });
     }
 
+    modalInserirParcela = () => {
+        this.setState({ modalInserirParcela: !this.state.modalInserirParcela });
+    }
+
+    modalSalvarPedido = () => {
+        this.setState({ modalSalvarPedido: !this.state.modalSalvarPedido }, () => {
+            setTimeout(() => {
+                this.setState({ modalSalvarPedido: false });
+            }, 2000);
+        });
+    }
+
+
     componentDidMount() {
         this.buscarDeposito();
         this.buscarVendedor();
+        this.buscarPedido()
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -174,7 +195,6 @@ class FrenteCaixa extends React.Component {
                 this.setState({ produtos: [], carregando: false });
             });
     };
-
 
     buscarContato = (value) => {
         // console.log("Buscando contato por:", value);
@@ -265,6 +285,33 @@ class FrenteCaixa extends React.Component {
             });
     }
 
+    buscarPedido = () => {
+        fetch("http://localhost:8085/api/v1/pedidos")
+            .then(resposta => resposta.json())
+            .then(dados => {
+                if (dados.retorno.pedidos) {
+                    console.log("pedidos retornados:", dados);
+                    const ultimoPedido = dados.retorno.pedidos[dados.retorno.pedidos.length - 1];
+                    console.log("posicao NUMERO:", ultimoPedido.pedido.numero);
+                    this.setState({
+                        numeroPedido: ultimoPedido.pedido.numero,
+                        ultimoPedido: ultimoPedido.pedido.numero // Adiciona o valor de ultimoPedido ao estado
+                    });
+                    console.log("Numero do ultimo pedido:", ultimoPedido);
+
+                } else {
+                    this.setState({ depositos: [] })
+                }
+                this.setState({ carregando: false })
+            })
+            .catch((error) => {
+                console.log("Erro ao buscar deposito:", error);
+                this.setState({ depositos: [], carregando: false });
+            });
+    }
+
+
+
 
     cadastrarPedido = (xmlPedido) => {
         const parser = new DOMParser();
@@ -280,7 +327,6 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-
     selecionarProduto = (produto) => {
         const precoEmReais = parseFloat(produto.produto.preco).toFixed(2).replace('.', ',');
         const valorTotal = (parseFloat(produto.produto.preco.replace(',', '.')) * 1).toFixed(2);
@@ -294,7 +340,6 @@ class FrenteCaixa extends React.Component {
         });
         this.atualizarBuscaProduto({ target: { value: '' } });
     };
-
 
     selecionarContato = (contato) => {
         const contatoSelecionado = contato;
@@ -353,7 +398,6 @@ class FrenteCaixa extends React.Component {
         });
     }
 
-
     // adicionarContatoSelecionado = (contatoSelecionado) => {
     //     const { contatosSelecionados, cnpj } = this.state;
     //     const contatoExistente = contatosSelecionados.find((contato) => contato.contato.id === contatoSelecionado.contato.id);
@@ -376,28 +420,28 @@ class FrenteCaixa extends React.Component {
     //     });
     // };
 
-    adicionarVendedorSelecionado = (vendedorSelecionado) => {
-        const { contatosSelecionados, cnpj } = this.state;
-        const contatoExistente = contatosSelecionados.find((contato) => contato.contato.id === vendedorSelecionado.contato.id);
+    // adicionarVendedorSelecionado = (vendedorSelecionado) => {
+    //     const { contatosSelecionados, cnpj } = this.state;
+    //     const contatoExistente = contatosSelecionados.find((contato) => contato.contato.id === vendedorSelecionado.contato.id);
 
-        if (contatoExistente) {
-            contatoExistente.cnpj += cnpj; // Adiciona a quantidade selecionada
-        } else {
-            contatosSelecionados.push({
-                nome: vendedorSelecionado.nome,
-                descricao: vendedorSelecionado[0].contato.tiposContato[0].tipoContato.descricao
-            });
-        }
+    //     if (contatoExistente) {
+    //         contatoExistente.cnpj += cnpj; // Adiciona a quantidade selecionada
+    //     } else {
+    //         contatosSelecionados.push({
+    //             nome: vendedorSelecionado.nome,
+    //             descricao: vendedorSelecionado[0].contato.tiposContato[0].tipoContato.descricao
+    //         });
+    //     }
 
-        this.setState({
-            contatosSelecionados: contatosSelecionados,
-            contatoSelecionado: null,
-            nome: '',
-            descricao: '',
-            contatos: [],
-            buscaContato: '',
-        });
-    };
+    //     this.setState({
+    //         contatosSelecionados: contatosSelecionados,
+    //         contatoSelecionado: null,
+    //         nome: '',
+    //         descricao: '',
+    //         contatos: [],
+    //         buscaContato: '',
+    //     });
+    // };
 
     excluirProdutoSelecionado = (index) => {
         const produtosSelecionados = [...this.state.produtosSelecionados];
@@ -413,14 +457,12 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-
     calcularValorTotalInicial = () => {
         const { preco } = this.state;
         const quantidade = 1;
         const valorTotal = quantidade * parseFloat(preco.replace(',', '.'));
         this.setState({ quantidade, valorTotal });
     };
-
 
     calcularTotal() {
         let total = 0;
@@ -492,7 +534,6 @@ class FrenteCaixa extends React.Component {
         };
     }
 
-
     atualizaPreco = (e) => {
         const preco = parseFloat(e.target.value.replace(',', '.'));
         this.setState({ preco }, this.atualizarValorTotal);
@@ -532,6 +573,21 @@ class FrenteCaixa extends React.Component {
             desconto: descontoNumber,
             totalComDesconto: resultado.totalComDesconto,
         });
+    }
+
+    handleChangeDesconto = (event) => {
+        const { value } = event.target;
+        const desconto = parseFloat(value);
+
+        if (isNaN(desconto)) {
+            this.setState({ desconto: "" });
+            return;
+        }
+
+        const { subTotal } = this.state;
+        const totalComDesconto = subTotal - desconto;
+
+        this.setState({ desconto, totalComDesconto });
     }
 
     atualizaTotalComFrete(event) {
@@ -637,7 +693,6 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-
     incrementarQuantidade = () => {
         this.setState((prevState) => ({ quantidade: prevState.quantidade + 1 }), this.atualizarValorTotal);
     };
@@ -693,7 +748,6 @@ class FrenteCaixa extends React.Component {
         console.log(dataPrevista);
     }
 
-
     atualizaDepositoSelecionado = (event) => {
         const depositoSelecionado = event.target.value;
         console.log(depositoSelecionado); //Esta retornando ID
@@ -729,7 +783,7 @@ class FrenteCaixa extends React.Component {
         this.setState({ comentario });
     }
 
-    //Ação para limpar o campos do modal para cadastrar um novo cliente.
+    //Ação para limpar o campos do PDV caso decida a exclusão do pedido.
     excluirPedido = () => {
         this.setState({
             nome: '',
@@ -757,10 +811,13 @@ class FrenteCaixa extends React.Component {
             vendedorSelecionado: '',
             dinheiroRecebido: '',
             condicao: '',
+            parcelas: []
         });
         this.ModalExcluirPedido()
+        this.modalSalvarPedido()
     };
 
+    //Ação para limpar o campos após a finalização da venda no PDV.
     limparPedido = () => {
         this.setState({
             nome: '',
@@ -789,6 +846,7 @@ class FrenteCaixa extends React.Component {
             vendedorSelecionado: '',
             dinheiroRecebido: '',
             condicao: '',
+            parcelas: []
         });
     };
 
@@ -796,7 +854,9 @@ class FrenteCaixa extends React.Component {
         const nome = this.state.nome;
         const cnpj = this.state.cnpj;
         const vendedor = this.state.vendedor;
-        const dataPrevista = this.state.dataPrevista;
+        const dataPrevista = new Date(this.state.dataPrevista); // converte para objeto Date
+        const dataPrevistaFormatted = `${dataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${dataPrevista.toLocaleTimeString('pt-BR')}`; // formata data        console.log(this.state.dataPrevista)
+        console.log(dataPrevistaFormatted)
         const observacoes = this.state.observacoes;
         const observacaointerna = this.state.observacaointerna;
         const valorDesconto = this.state.desconto;
@@ -834,16 +894,16 @@ class FrenteCaixa extends React.Component {
             this.modalFinalizarPedido()
         }
 
-        return { nome, cnpj, itens, vendedor, dataPrevista, observacoes, observacaointerna, valorDesconto, prazo };
+        return { nome, cnpj, itens, vendedor, dataPrevista, dataPrevistaFormatted, observacoes, observacaointerna, valorDesconto, prazo };
     };
 
     gerarXmlItensParaEnvio = () => {
-        const { itens, prazo } = this.finalizaVenda();
+        const { itens, prazo, dataPrevistaFormatted } = this.finalizaVenda();
 
         const xml = `<?xml version="1.0"?>
           <pedido>
           <vlr_desconto>${this.state.valorDesconto}</vlr_desconto>
-            <data_prevista>${this.state.dataPrevista}</data_prevista>
+            <data_prevista>${dataPrevistaFormatted}</data_prevista>
             <obs>${this.state.observacoes}</obs>
             <obs_internas>${this.state.observacaointerna}</obs_internas>
             <vendedor>${this.state.vendedor}</vendedor>
@@ -879,26 +939,48 @@ class FrenteCaixa extends React.Component {
 
         this.cadastrarPedido(xmlContato);
         this.limparPedido();
+        this.modalSalvarPedido();
         this.modalFinalizarPedido();
 
         return xml;
 
     };
 
-    handleChangeDesconto = (event) => {
-        const { value } = event.target;
-        const desconto = parseFloat(value);
 
-        if (isNaN(desconto)) {
-            this.setState({ desconto: "" });
-            return;
-        }
 
-        const { subTotal } = this.state;
-        const totalComDesconto = subTotal - desconto;
+    // handleChangeParcela(index, campo, valor) {
+    //     const parcelas = [...this.state.parcelas];
+    //     parcelas[index][campo] = valor;
+    //     this.setState({ parcelas });
+    // }
 
-        this.setState({ desconto, totalComDesconto });
-    }
+    // adicionarParcela() {
+    //     const { condicao } = this.state;
+    //     const dias = parseInt(condicao);
+    //     const hoje = new Date();
+    //     const data = new Date(hoje.getTime() + dias * 24 * 60 * 60 * 1000);
+    //     const dataFormatada = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    //     const novaParcela = {
+    //         dias,
+    //         data: dataFormatada,
+    //         valor: '',
+    //         forma: '',
+    //         observacao: '',
+    //         acao: '',
+    //     };
+
+    //     console.log(dataFormatada)
+
+    //     let parcelas = [...this.state.parcelas];
+    //     const index = parcelas.findIndex(parcela => parcela.dias === 0);
+    //     if (index !== -1) {
+    //         parcelas.splice(index, 1);
+    //     }
+    //     parcelas = [...parcelas, novaParcela];
+
+    //     this.setState({ parcelas });
+    // }
 
     handleChangeParcela(index, campo, valor) {
         const parcelas = [...this.state.parcelas];
@@ -912,7 +994,6 @@ class FrenteCaixa extends React.Component {
         const hoje = new Date();
         const data = new Date(hoje.getTime() + dias * 24 * 60 * 60 * 1000);
         const dataFormatada = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
         const novaParcela = {
             dias,
             data: dataFormatada,
@@ -922,8 +1003,6 @@ class FrenteCaixa extends React.Component {
             acao: '',
         };
 
-        console.log(dataFormatada)
-
         let parcelas = [...this.state.parcelas];
         const index = parcelas.findIndex(parcela => parcela.dias === 0);
         if (index !== -1) {
@@ -931,7 +1010,46 @@ class FrenteCaixa extends React.Component {
         }
         parcelas = [...parcelas, novaParcela];
 
-        this.setState({ parcelas });
+        // Divide o valor total entre as parcelas
+        const numParcelas = parcelas.length;
+        const valorParcela = (this.state.subTotalGeral / numParcelas).toFixed(2);
+
+        // Atualiza o valor de cada parcela
+        const newParcelas = parcelas.map((parcela, i) => ({
+            ...parcela,
+            valor: valorParcela,
+        }));
+
+        this.setState({ parcelas, numLinhas: this.state.numLinhas + 1, parcelas: newParcelas });
+    }
+
+    handleValorChangeParcela(index, campo, valor) {
+        const parcelas = [...this.state.parcelas];
+        const numParcelas = parcelas.length;
+
+        // Atualiza o valor da parcela selecionada
+        parcelas[index][campo] = valor;
+
+        // Calcula a soma total dos valores das parcelas
+        const valorTotalParcelas = parcelas.reduce((acc, curr) => acc + parseFloat(curr.valor || 0), 0);
+
+        // Calcula o valor médio das parcelas após a atualização
+        const valorMedioParcelas = valorTotalParcelas / numParcelas;
+
+        // Calcula a diferença entre o valor médio das parcelas e o valor de cada parcela
+        const diferenca = valorMedioParcelas - valor;
+
+        // Atualiza os valores das outras parcelas com a diferença calculada
+        const newParcelas = parcelas.map((parcela, i) => {
+            if (i === index) {
+                return { ...parcela, [campo]: valor };
+            } else {
+                const novoValor = (parseFloat(parcela.valor) || 0) + diferenca;
+                return { ...parcela, valor: novoValor.toFixed(2) };
+            }
+        });
+
+        this.setState({ parcelas: newParcelas });
     }
 
     handleFormaChange = (index, event) => {
@@ -940,10 +1058,47 @@ class FrenteCaixa extends React.Component {
         this.setState({ parcelas });
     };
 
+
+    handleObservacaoChange = (index, event) => {
+        const parcelas = [...this.state.parcelas];
+        parcelas[index].observacao = event.target.value;
+        this.setState({ parcelas });
+    };
+
     handleDeleteParcela(index) {
         const parcelas = [...this.state.parcelas];
+        const valorExcluido = parseFloat(parcelas[index].valor || 0);
         parcelas.splice(index, 1);
-        this.setState({ parcelas });
+
+        const numParcelas = parcelas.length;
+        const valorParcela = this.state.subTotalGeral / numParcelas;
+        const valorRestante = this.state.subTotalGeral - valorExcluido;
+
+        const diferenca = valorRestante - parcelas.reduce((acc, cur) => acc + parseFloat(cur.valor || 0), 0);
+        const valorRestanteParcela = diferenca / numParcelas;
+
+        const newParcelas = parcelas.map((parcela, i) => {
+            return {
+                ...parcela,
+                valor: (valorParcela + valorRestanteParcela).toFixed(2)
+            };
+        });
+
+        let parcelasRestantes = [];
+        if (numParcelas < this.state.numParcelas) {
+            const numParcelasRestantes = this.state.numParcelas - numParcelas;
+            parcelasRestantes = new Array(numParcelasRestantes).fill().map((_, i) => {
+                return {
+                    numeroParcela: numParcelas + i + 1,
+                    valor: valorRestanteParcela.toFixed(2)
+                };
+            });
+        }
+
+        this.setState({
+            parcelas: [...newParcelas, ...parcelasRestantes],
+            valorTotalParcela: valorRestanteParcela.toFixed(2),
+        });
     }
 
     calcularData = (dias) => {
@@ -969,12 +1124,8 @@ class FrenteCaixa extends React.Component {
 
 
         let quantidadeTotal = 0;
-        let nomeContato = '';
         for (const produto of this.state.produtosSelecionados) {
             quantidadeTotal += produto.quantidade;
-        }
-        for (const contato of this.state.contatosSelecionados) {
-            nomeContato += contato.contato.nome;
         }
 
         return (
@@ -1119,7 +1270,7 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="valorTotal" className="texto-campos">Sub total</Form.Label>
-                                                <Form.Control type="number" id="valorTotal" className="form-control" name="valorTotal" placeholder="00,00" value={this.state.valorTotal || ''} onChange={this.atualizarValorTotal} readOnly />
+                                                <Form.Control type="number" id="valorTotal" className="form-control" name="valorTotal" placeholder="00,00" value={valorTotal || ''} onChange={this.atualizarValorTotal} readOnly />
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -1142,7 +1293,7 @@ class FrenteCaixa extends React.Component {
                                                 <Col className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="subtotal" className="texto-campos">Sub total</Form.Label>
-                                                        <Form.Control type="text" id="subtotal" className="campos-pagamento" name="subtotal" placeholder="00,00" defaultValue={this.state.subTotal || ''} disabled />
+                                                        <Form.Control type="text" id="subtotal" className="campos-pagamento" name="subtotal" placeholder="00,00" defaultValue={subTotal || ''} disabled />
                                                     </Form.Group>
                                                 </Col>
                                                 <dColiv className="col">
@@ -1188,17 +1339,29 @@ class FrenteCaixa extends React.Component {
                                                     <Col className="col">
                                                         <Form.Group className="mb-3" controlId="condicao">
                                                             <Form.Label>Condição</Form.Label>
-                                                            <Form.Control type="text" placeholder="Digite a condição" value={condicao || ''} onChange={this.handleChange} />
+                                                            <Form.Control type="number" placeholder="Digite a condição" value={condicao || ''} onChange={this.handleChange} />
                                                         </Form.Group>
                                                     </Col>
                                                     <Col className="col">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="gerarparcelas" className="texto-campos">.</Form.Label>
-                                                            <Button variant="success" className="" onClick={this.adicionarParcela} style={{ width: "200px" }}>Gerar parcelas</Button>
+                                                            <Button
+                                                                variant="success"
+                                                                className=""
+                                                                onClick={() => {
+                                                                    if (this.state.subTotalGeral === 0) {
+                                                                        this.modalInserirParcela();
+                                                                    } else {
+                                                                        this.adicionarParcela();
+                                                                    }
+                                                                }}
+                                                                style={{ width: "200px" }}
+                                                            >
+                                                                Gerar parcelas
+                                                            </Button>
                                                         </Form.Group>
                                                     </Col>
                                                 </div>
-
                                                 <div>
                                                     <Table striped hover >
                                                         <thead>
@@ -1229,24 +1392,26 @@ class FrenteCaixa extends React.Component {
                                                                     </td>
                                                                     <td>
                                                                         <Form.Control
-                                                                            type="text"
-                                                                            value={this.calcularData(parcela.dias) || ''}
+                                                                            type="number"
+                                                                            value={parcela.valor}
+                                                                            onChange={(event) => this.handleValorChangeParcela(index, 'valor', event.target.value)}
                                                                             disabled
                                                                         />
                                                                     </td>
                                                                     <td>
                                                                         <Form.Select
                                                                             value={parcela.forma || ''}
-                                                                            onChange={(e) => this.handleChangeParcela(index, 'forma', e.target.value) || ''}>
-                                                                            <option value="1">Conta a receber/pagar</option>
+                                                                            onChange={(e) => this.handleFormaChange(index, e)}>
+                                                                            <option value="2">Conta a receber/pagar</option>
                                                                             <option value="1">Dinheiro</option>
                                                                         </Form.Select>
+
                                                                     </td>
                                                                     <td>
                                                                         <Form.Control
                                                                             type="text"
-                                                                            value={parcela.observacao}
-                                                                            onChange={(e) => this.handleChangeParcela(index, 'observacao', e.target.value) || ''} />
+                                                                            value={parcela.observacao || ''}
+                                                                            onChange={(e) => this.handleObservacaoChange(index, e) || ''} />
                                                                     </td>
                                                                     <td>
                                                                         <Button variant="light" onClick={() => this.handleDeleteParcela(index)}>
@@ -1262,7 +1427,7 @@ class FrenteCaixa extends React.Component {
                                                     </div>
 
                                                 </div>
-                                                <Col className="col">
+                                                {/* <Col className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="vendedor" className="texto-campos">Categoria</Form.Label>
                                                         <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado || ''} onChange={this.atualizaVendedorSelecionado} >
@@ -1274,7 +1439,7 @@ class FrenteCaixa extends React.Component {
                                                             ))}
                                                         </Form.Select>
                                                     </Form.Group>
-                                                </Col>
+                                                </Col> */}
                                             </Row>
                                             <div>
                                                 <h5>Outras informações</h5>
@@ -1425,7 +1590,8 @@ class FrenteCaixa extends React.Component {
                         <FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-warning mr-2mr-3" />
                     </Modal.Header>
                     <Modal.Body>
-                        Deseja excluir o pedido? Essa ação não poderá ser desfeita.
+                        <div>Deseja excluir o pedido {this.state.numeroPedido}?</div>
+                        <div>Essa ação não poderá ser desfeita.</div>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="outline-success" onClick={this.ModalExcluirPedido}>Não</Button>
@@ -1441,7 +1607,7 @@ class FrenteCaixa extends React.Component {
                         Nenhum produto selecionado!
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={this.modalInserirProduto}>Fechar</Button>
+                        <Button variant="success" onClick={this.modalInserirProduto}>Fechar</Button>
                     </Modal.Footer>
                 </Modal>
                 <Modal show={this.state.modalFinalizarPedido} onHide={this.modalFinalizarPedido} size="lg" centered>
@@ -1450,9 +1616,10 @@ class FrenteCaixa extends React.Component {
                         <FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-warning mr-2mr-3" />
                     </Modal.Header>
                     <Modal.Body>
-                        <div>Resumo de pedido:</div>
-                        <div>Data: {new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
-                        <div>Nome do Cliente: {nomeContato}</div>
+                        <span style={{ display: 'block' }} ><strong>Resumo de pedido:</strong></span>
+                        <span style={{ display: 'block' }} ><strong>Data: {new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</strong></span>
+                        <span style={{ display: 'block' }} >Nome do Cliente: {nome}</span>
+
                         <div>
                             <Table responsive="lg" striped>
                                 <thead>
@@ -1463,7 +1630,7 @@ class FrenteCaixa extends React.Component {
                                         <th>Sub Total</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="mb-3">
                                     {this.state.produtosSelecionados.map((produto, index) => (
                                         <tr key={produto.produto.id}>
                                             <td>{produto.produto.codigo} - {produto.produto.descricao}</td>
@@ -1475,8 +1642,8 @@ class FrenteCaixa extends React.Component {
                                         </tr>
                                     ))}
                                 </tbody>
-                                <tr>Quantidade total: {quantidadeTotal}</tr>
-                                <tr>Total R$ {this.calcularSubTotalGeral()}</tr>
+                                <span style={{ display: 'block' }} >Quantidade total: {quantidadeTotal}</span>
+                                <span style={{ display: 'block' }} >Total R$ {this.calcularSubTotalGeral()}</span>
                             </Table>
                         </div>
                     </Modal.Body>
@@ -1485,10 +1652,28 @@ class FrenteCaixa extends React.Component {
                         <Button variant="success" onClick={this.gerarXmlItensParaEnvio}>Fechar pedido</Button>
                     </Modal.Footer>
                 </Modal>
+                <Modal show={this.state.modalInserirParcela} onHide={this.modalInserirParcela} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Atenção </Modal.Title>
+                        <FontAwesomeIcon icon={faExclamationTriangle} size="2x" className="text-warning mr-2mr-3" />
+                    </Modal.Header>
+                    <Modal.Body>
+                        Não foi possível gerar as parcelas, pois o valor faturado está zerado.
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="success" onClick={this.modalInserirParcela}>Fechar</Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={this.state.modalSalvarPedido} onHide={this.modalSalvarPedido} centered>
+                    <Modal.Body>
+                        Salvando configurações, aguarde...
+                    </Modal.Body>
+                </Modal>
             </Container >
         );
     }
 }
+
 
 export default FrenteCaixa;
 
