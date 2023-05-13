@@ -1,5 +1,17 @@
 body {
   padding-top: 60px;
+  zoom: 0.8;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0000006e;
+  z-index: 1040;
+  transform: scale(1.5);
 }
 
 .busca-contatos {
@@ -55,19 +67,24 @@ body {
 }
 
 .grid-1 {
-  flex: 1;
+  position: sticky;
+  top: 60px; /* valor ajustável */
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 0.25rem;
   padding: 1rem;
-  margin-left: 20px;
-  margin-right: auto;
+  margin-left: 50px;
+  margin-right: 50px;
   max-width: 1000px;
+  opacity: 0;
+  transform: translateY(50%);
+  animation: bolha 0.5s ease forwards;
+  z-index: 1;
 }
 
 .grid-2 {
   position: sticky;
-  top: 0;
+  top: 60px; /* valor ajustável */
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 0.25rem;
@@ -75,6 +92,21 @@ body {
   margin-left: 20px;
   margin-right: auto;
   max-width: 1000px;
+  opacity: 0;
+  transform: translateY(50%);
+  animation: bolha 0.5s ease forwards;
+  z-index: 1;
+}
+
+@keyframes bolha {
+  0% {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
 }
 
 .divisa {
@@ -139,7 +171,7 @@ body {
 
 .botao-inserir button {
   width: 131px;
-  font-family: Arial, sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 12px;
   color: #495769;
   background-color: #ffffff;
@@ -178,7 +210,7 @@ h5 {
 }
 
 .campos-pagamento {
-  font-family: arial, helvetica, sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 22.6667px;
   line-height: normal;
   text-align: start;
@@ -194,7 +226,7 @@ h5 {
 }
 
 .campos-informacoes {
-  font-family: arial, helvetica, sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 12px;
   line-height: normal;
   text-align: start;
@@ -209,7 +241,7 @@ h5 {
 }
 
 .campo-vendedor {
-  font-family: arial, helvetica, sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 12px;
   line-height: normal;
   text-align: start;
@@ -225,13 +257,15 @@ h5 {
 }
 
 .table thead th {
-  background-color: #34ad6065;
-  color: #0000006e;
+  font-family: "Roboto", sans-serif;
+  background-color: #000000a1;
+  color: #ffffffce;
   border-radius: 2px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .table tbody tr:nth-child(even) {
+  font-family: "Roboto", sans-serif;
   background-color: #f2f2f2;
 }
 
@@ -250,6 +284,7 @@ h5 {
   position: fixed;
   bottom: 0;
   width: 100%;
+  height: 70px; /* altura ajustável */
   background-color: #fff;
   display: flex;
   justify-content: space-between;
@@ -266,9 +301,8 @@ h5 {
 .botao-finalizarvenda {
   float: right;
 }
-
 .botao-excluirvenda button {
-  font-family: Arial;
+  font-family: "Roboto", sans-serif;
   font-size: 12px;
   line-height: normal;
   text-align: center;
@@ -277,12 +311,13 @@ h5 {
   background-color: #ffffff;
   box-shadow: none;
   border-radius: 8px;
-  width: 189px;
-  height: 32px;
+  width: 240px;
+  height: 40px;
+  padding: 8px 20px;
 }
 
 .botao-finalizarvenda button {
-  font-family: Arial;
+  font-family: "Roboto", sans-serif;
   font-size: 12px;
   line-height: normal;
   text-align: center;
@@ -291,12 +326,13 @@ h5 {
   background-color: #3faf6c;
   box-shadow: none;
   border-radius: 8px;
-  width: 315px;
-  height: 32px;
+  width: 360px;
+  height: 40px;
+  padding: 8px 20px;
 }
 
 .span-total {
-  font-family: Arial;
+  font-family: "Roboto", sans-serif;
   font-size: 18.6667px;
   line-height: 28px;
   text-align: right;
@@ -308,7 +344,7 @@ h5 {
 }
 
 .span-valor {
-  font-family: Arial;
+  font-family: "Roboto", sans-serif;
   font-size: 34.6667px;
   line-height: 28px;
   text-align: right;
