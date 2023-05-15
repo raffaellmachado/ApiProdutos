@@ -145,7 +145,6 @@ class FrenteCaixa extends React.Component {
         if (prevState.cnpj !== this.state.cnpj) {
             this.atualizaCpfCnpj({ target: { value: this.state.cnpj } });
         }
-
         if (prevState.produtosSelecionados !== this.state.produtosSelecionados ||
             prevState.subTotal.toFixed(2) !== this.state.subTotal.toFixed(2) ||
             prevState.valorDesconto !== this.state.valorDesconto ||
@@ -1651,6 +1650,7 @@ class FrenteCaixa extends React.Component {
                             </div>
                         </Col>
                     </Row>
+
                     <Modal show={this.state.ModalFinalizarVendaSemItem} onHide={this.ModalFinalizarVendaSemItem} centered>
                         <Modal.Header closeButton className="bg-success text-white">
                             <Modal.Title>
@@ -1715,7 +1715,6 @@ class FrenteCaixa extends React.Component {
                                 <span>Nome do Cliente: {nome}</span>
                                 <span>Endereço: {endereco}, {numero}, {bairro}, {cidade} - {uf}</span>
                             </div>
-
                             <Table responsive="lg" className="table-responsive" striped>
                                 <thead>
                                     <tr>
@@ -1766,7 +1765,6 @@ class FrenteCaixa extends React.Component {
                                 <Button variant="outline-secondary" className="gerar-nota">Gerar NFC-e</Button>
                                 <Button variant="outline-secondary" className="gerar-nota">Imprimir comprovante não fiscal</Button>
                             </div>
-
                             <div className="d-flex justify-content-end fixed-bottom mb-4" style={{ height: '40px' }}>
                                 <Button variant="outline-success" className="mr-2" onClick={this.canvasFinalizarPedido} style={{ marginRight: '10px' }}>Cancelar</Button>
                                 <Button variant="success" onClick={this.gerarXmlItensParaEnvio} style={{ marginRight: '10px' }}>Fechar pedido</Button>
