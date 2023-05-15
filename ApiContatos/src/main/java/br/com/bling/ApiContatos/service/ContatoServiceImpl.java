@@ -80,7 +80,7 @@ public class ContatoServiceImpl implements ContatoService {
 
             /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
 //            String url = "http://www.teste.com/";
-            String url = apiBaseUrl + "/contatos/json/" + apikeyparam + apiKey;
+                String url = apiBaseUrl + "/contatos/json/" + apikeyparam + apiKey;
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();

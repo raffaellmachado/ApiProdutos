@@ -14,6 +14,17 @@ body {
   transform: scale(1.5);
 }
 
+.offcanvas-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0000006e;
+  z-index: 1040;
+  transform: scale(1.5);
+}
+
 .busca-contatos {
   margin-bottom: 1rem;
 }
@@ -384,4 +395,20 @@ h5 {
   padding: 10px;
   padding: 1px;
   margin-top: 10px;
+}
+
+.gerar-nota {
+  width: 265px;
+  height: 94px;
+  margin: 10px 10px 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15.6667px;
+  line-height: normal;
+  text-align: center;
+  letter-spacing: normal;
+  color: #495769;
+  background-color: #ffffff;
+  fill: #495769;
+  box-shadow: rgba(73, 87, 105, 0.24) 0px 0px 4px 0px;
+  border-radius: 8px;
 }

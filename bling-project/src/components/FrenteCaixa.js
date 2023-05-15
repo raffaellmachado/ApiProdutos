@@ -1,11 +1,10 @@
 import React from "react";
-
 import '../css/FrenteCaixa.css';
 
 import { IonIcon } from '@ionic/react';
 import { trashOutline } from 'ionicons/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
+import { faExclamationTriangle, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -21,15 +20,11 @@ import Row from 'react-bootstrap/Row'
 import { Stack } from "react-bootstrap"
 import Form from 'react-bootstrap/Form'
 import Table from "react-bootstrap/Table";
-
-
+import { Offcanvas } from 'react-bootstrap';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
+
 import { parse } from 'js2xmlparser';
-
 import Autosuggest from 'react-autosuggest';
-
-
-
 
 
 class FrenteCaixa extends React.Component {
@@ -81,9 +76,9 @@ class FrenteCaixa extends React.Component {
             ModalFinalizarVendaSemItem: false,
             ModalExcluirPedido: false,
             modalInserirProduto: false,
-            modalFinalizarPedido: false,
             modalSalvarPedido: false,
             modalInserirParcela: false,
+            canvasFinalizarPedido: false,
             subtotalComFrete: 0,
             frete: 0,
             freteInserido: false,
@@ -96,6 +91,11 @@ class FrenteCaixa extends React.Component {
             newParcelas: 0,
             numeroPedido: 0,
             ultimoPedido: 0,
+            endereco: '',
+            numero: '',
+            bairro: '',
+            cidade: '',
+            uf: '',
         };
 
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
@@ -116,10 +116,6 @@ class FrenteCaixa extends React.Component {
         this.setState({ modalInserirProduto: !this.state.modalInserirProduto });
     }
 
-    modalFinalizarPedido = () => {
-        this.setState({ modalFinalizarPedido: !this.state.modalFinalizarPedido });
-    }
-
     modalInserirParcela = () => {
         this.setState({ modalInserirParcela: !this.state.modalInserirParcela });
     }
@@ -132,13 +128,15 @@ class FrenteCaixa extends React.Component {
         });
     }
 
+    canvasFinalizarPedido = () => {
+        this.setState({ canvasFinalizarPedido: !this.state.canvasFinalizarPedido });
+    }
 
     componentDidMount() {
         this.buscarDeposito();
         this.buscarVendedor();
         this.buscarPedido()
     }
-
 
     componentDidUpdate(prevProps, prevState) {
         if (prevState.nome !== this.state.nome) {
@@ -149,14 +147,17 @@ class FrenteCaixa extends React.Component {
         }
 
         if (prevState.produtosSelecionados !== this.state.produtosSelecionados ||
-            prevState.subTotal !== this.state.subTotal ||
+            prevState.subTotal.toFixed(2) !== this.state.subTotal.toFixed(2) ||
             prevState.valorDesconto !== this.state.valorDesconto ||
             prevState.subTotalComFrete !== this.state.subTotalComFrete) {
-            const subtotalGeral = this.calcularSubTotalGeral();
-            console.log("Subtotal Geral:", subtotalGeral);
+            const subtotalGeral = this.calcularSubTotalGeral().toFixed(2);
+            // console.log("Subtotal Geral:", subtotalGeral);
             this.setState({ subTotalGeral: subtotalGeral });
         }
     }
+
+    //----------------------------------------- CHAMADAS DE API´S ----------------------------------------------------------
+
 
     buscarProdutos = (value) => {
         // console.log("Buscando produto por:", value);
@@ -211,7 +212,12 @@ class FrenteCaixa extends React.Component {
                         (contato) =>
                             (contato.contato.nome && contato.contato.nome.toLowerCase().includes(value.toLowerCase())) ||
                             (contato.contato.cnpj && contato.contato.cnpj.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.rg && contato.contato.rg.toLowerCase().includes(value.toLowerCase()))
+                            (contato.contato.rg && contato.contato.rg.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.endereco && contato.contato.endereco.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.numero && contato.contato.numero.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.bairro && contato.contato.bairro.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.cidade && contato.contato.cidade.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.uf && contato.contato.uf.toLowerCase().includes(value.toLowerCase()))
                     );
                     console.log("Contato objeto retornado:", contatosFiltrados);
                     this.setState({
@@ -324,9 +330,159 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    //--------------------------------------------- FUNÇÕES DE TELA ---------------------------------------------
+    // -------------------------------------------- FUNÇÕES VENDEDOR --------------------------------------------
+
+    atualizaVendedorSelecionado = (event) => {
+        const vendedorSelecionado = event.target.value;
+        // console.log("vendedor selecionado:", vendedorSelecionado);
+        this.setState({
+            vendedorSelecionado: vendedorSelecionado,
+            vendedor: vendedorSelecionado
+        }, () => {
+            // console.log("vendedor:", this.state.vendedor);
+        });
+    };
+
+    // atualizarBuscaVendedor = (e) => {
+    //     this.setState({
+    //         buscaVendedor: e.target.value
+    //     });
+    // };
+
+    // selecionarVendedor = (contato) => {
+    //     this.setState({
+    //         contatoSelecionado: contato,
+    //         descricao: contato.contato[0].contato.tiposContato[0].tipoContato.descricao,
+    //         contatos: [],
+    //     });
+    //     this.atualizarBuscaContato({ target: { value: '' } });
+    // };
+
+    // adicionarVendedorSelecionado = (vendedorSelecionado) => {
+    //     const { contatosSelecionados, cnpj } = this.state;
+    //     const contatoExistente = contatosSelecionados.find((contato) => contato.contato.id === vendedorSelecionado.contato.id);
+
+    //     if (contatoExistente) {
+    //         contatoExistente.cnpj += cnpj; // Adiciona a quantidade selecionada
+    //     } else {
+    //         contatosSelecionados.push({
+    //             nome: vendedorSelecionado.nome,
+    //             descricao: vendedorSelecionado[0].contato.tiposContato[0].tipoContato.descricao
+    //         });
+    //     }
+
+    //     this.setState({
+    //         contatosSelecionados: contatosSelecionados,
+    //         contatoSelecionado: null,
+    //         nome: '',
+    //         descricao: '',
+    //         contatos: [],
+    //         buscaContato: '',
+    //     });
+    // };
+
+    // -------------------------------------------- FUNÇÕES CONTATO ---------------------------------------------
+
+    atualizarBuscaContato = (event) => {
+        const buscaContato = event.target.value
+        // console.log("atualizarBuscaContato (buscaContato): ", buscaContato)
+        this.setState({
+            buscaContato
+        });
+    };
+
+    atualizaNome = (e) => {
+        // console.log("Nome:", e.target.value);
+        this.setState({
+            nome: e.target.value
+        });
+    };
+
+    atualizaTipo = (e) => {
+        // console.log("Tipo:", e.target.value);
+        this.setState({
+            tipo: e.target.value
+        });
+    };
+
+    atualizaCpfCnpj = (e) => {
+        // console.log("CPF/CNPJ:", e.target.value);
+        this.setState({
+            cnpj: e.target.value
+        });
+    };
+
+    atualizaCodigo = (e) => {
+        // console.log("Codigo:", e.target.value);
+        this.setState({
+            codigo: e.target.value
+        });
+    };
+
+    atualizaFantasia = (e) => {
+        // console.log("Fantasia:", e.target.value);
+        this.setState({
+            fantasia: e.target.value
+        });
+    };
+
+    // -------------------------------------------- FUNÇÕES CONTATO ---------------------------------------------
+
+
+    selecionarContato = (contato) => {
+        // console.log("selecionarContato (contatoSelecionado)", contatoSelecionado)
+        this.setState({
+            contatoSelecionado: contato,
+            nome: contato.contato.nome,
+            tipo: contato.contato.tipo,
+            cnpj: contato.contato.cnpj,
+            codigo: contato.contato.codigo,
+            fantasia: contato.contato.fantasia,
+            endereco: contato.contato.endereco,
+            numero: contato.contato.numero,
+            bairro: contato.contato.bairro,
+            cidade: contato.contato.cidade,
+            uf: contato.contato.uf,
+            contatos: [],
+        });
+        this.atualizarBuscaContato({ target: { value: '' } });
+    };
+
+    // adicionarContatoSelecionado = (contatoSelecionado) => {
+    //     const { contatosSelecionados, cnpj } = this.state;
+    //     const contatoExistente = contatosSelecionados.find((contato) => contato.contato.id === contatoSelecionado.contato.id);
+
+    //     if (contatoExistente) {
+    //         contatoExistente.cnpj += cnpj; // Adiciona a quantidade selecionada
+    //     } else {
+    //         contatosSelecionados.push({
+    //             nome: contatoSelecionado.nome,
+    //             cnpj: cnpj, // Salva a quantidade selecionada
+    //         });
+    //     }
+    //     console.log("contatoscontatosSelecionados: ", contatosSelecionados, "contatoExistente: ", contatoExistente)
+    //     this.setState({
+    //         contatosSelecionados: contatosSelecionados,
+    //         contatoSelecionado: null,
+    //         cnpj: '',
+    //         contatos: [],
+    //         buscaContato: '',
+    //     });
+    // };
+
+    // -------------------------------------------- FUNÇÕES PRODUTO ---------------------------------------------
+
+
+    atualizarBuscaProduto = (e) => {
+        this.setState({
+            buscaProduto: e.target.value
+        });
+    };
+
     selecionarProduto = (produto) => {
-        const precoEmReais = parseFloat(produto.produto.preco).toFixed(2).replace('.', ',');
-        const valorTotal = (parseFloat(produto.produto.preco.replace(',', '.')) * 1).toFixed(2);
+        const precoEmReais = parseFloat(produto.produto.preco).toFixed(2);
+        const valorTotal = (parseFloat(produto.produto.preco) * 1).toFixed(2);
         this.setState({
             produtoSelecionado: produto,
             preco: precoEmReais,
@@ -336,30 +492,6 @@ class FrenteCaixa extends React.Component {
             comentario: '',
         });
         this.atualizarBuscaProduto({ target: { value: '' } });
-    };
-
-    selecionarContato = (contato) => {
-        const contatoSelecionado = contato;
-        // console.log("selecionarContato (contatoSelecionado)", contatoSelecionado)
-        this.setState({
-            contatoSelecionado: contato,
-            nome: contato.contato.nome,
-            tipo: contato.contato.tipo,
-            cnpj: contato.contato.cnpj,
-            codigo: contato.contato.codigo,
-            fantasia: contato.contato.fantasia,
-            contatos: [],
-        });
-        this.atualizarBuscaContato({ target: { value: '' } });
-    };
-
-    selecionarVendedor = (contato) => {
-        this.setState({
-            contatoSelecionado: contato,
-            descricao: contato.contato[0].contato.tiposContato[0].tipoContato.descricao,
-            contatos: [],
-        });
-        this.atualizarBuscaContato({ target: { value: '' } });
     };
 
     adicionarProdutoSelecionado = (produtoSelecionado) => {
@@ -393,59 +525,14 @@ class FrenteCaixa extends React.Component {
         }, () => {
             this.calcularTotal();
         });
-    }
-
-    // adicionarContatoSelecionado = (contatoSelecionado) => {
-    //     const { contatosSelecionados, cnpj } = this.state;
-    //     const contatoExistente = contatosSelecionados.find((contato) => contato.contato.id === contatoSelecionado.contato.id);
-
-    //     if (contatoExistente) {
-    //         contatoExistente.cnpj += cnpj; // Adiciona a quantidade selecionada
-    //     } else {
-    //         contatosSelecionados.push({
-    //             nome: contatoSelecionado.nome,
-    //             cnpj: cnpj, // Salva a quantidade selecionada
-    //         });
-    //     }
-    //     console.log("contatoscontatosSelecionados: ", contatosSelecionados, "contatoExistente: ", contatoExistente)
-    //     this.setState({
-    //         contatosSelecionados: contatosSelecionados,
-    //         contatoSelecionado: null,
-    //         cnpj: '',
-    //         contatos: [],
-    //         buscaContato: '',
-    //     });
-    // };
-
-    // adicionarVendedorSelecionado = (vendedorSelecionado) => {
-    //     const { contatosSelecionados, cnpj } = this.state;
-    //     const contatoExistente = contatosSelecionados.find((contato) => contato.contato.id === vendedorSelecionado.contato.id);
-
-    //     if (contatoExistente) {
-    //         contatoExistente.cnpj += cnpj; // Adiciona a quantidade selecionada
-    //     } else {
-    //         contatosSelecionados.push({
-    //             nome: vendedorSelecionado.nome,
-    //             descricao: vendedorSelecionado[0].contato.tiposContato[0].tipoContato.descricao
-    //         });
-    //     }
-
-    //     this.setState({
-    //         contatosSelecionados: contatosSelecionados,
-    //         contatoSelecionado: null,
-    //         nome: '',
-    //         descricao: '',
-    //         contatos: [],
-    //         buscaContato: '',
-    //     });
-    // };
+    };
 
     excluirProdutoSelecionado = (index) => {
         const produtosSelecionados = [...this.state.produtosSelecionados];
         const produtoExcluido = produtosSelecionados.splice(index, 1)[0];
         const quantidadeExcluida = produtoExcluido.quantidade;
         const produto = produtoExcluido.produto;
-        const subTotalAnterior = this.state.subTotal;
+        const subTotalAnterior = this.state.subTotal.toFixed(2);
         const subTotal = (parseFloat(subTotalAnterior) - this.calcularSubTotal(produto, quantidadeExcluida)).toFixed(2);
         // console.log("Novo Subtotal:", subTotal);
         this.setState({
@@ -454,12 +541,9 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-    calcularValorTotalInicial = () => {
-        const { preco } = this.state;
-        const quantidade = 1;
-        const valorTotal = quantidade * parseFloat(preco.replace(',', '.'));
-        this.setState({ quantidade, valorTotal });
-    };
+
+    // -------------------------------------------- FUNÇÕES CALCULOS ---------------------------------------------
+
 
     calcularTotal() {
         let total = 0;
@@ -472,35 +556,41 @@ class FrenteCaixa extends React.Component {
         if (this.state.subTotal !== subTotal) {
             this.setState({ subTotal });
         }
-        return parseFloat(subTotal); // retorna o valor do subtotal como número
+        return parseFloat(subTotal.toFixed(2));
     }
 
     calcularSubTotal = (produto, quantidade) => {
         const preco = produto.preco;
         return preco * quantidade;
-    }
+    };
 
-    // calcularTotalComDesconto = (desconto, subTotal) => {
-    //     const subtotal = subTotal || this.calcularTotal();
-    //     const valorDesconto = desconto || 0;
-    //     const totalComDesconto = subtotal - valorDesconto;
+    atualizaQuantidade = (e) => {
+        const quantidade = Number(e.target.value);
+        this.setState({ quantidade }, this.atualizarValorTotal);
+    };
 
-    //     const formattedValorDesconto = valorDesconto.toFixed(2);
-    //     const formattedTotalComDesconto = totalComDesconto.toFixed(2);
+    incrementarQuantidade = () => {
+        this.setState(prevState => ({
+            quantidade: prevState.quantidade + 1
+        }), this.atualizarValorTotal);
+    };
 
-    //     console.log("valorDesconto: ", formattedValorDesconto);
-    //     console.log("totalComDesconto: ", formattedTotalComDesconto);
+    decrementarQuantidade = () => {
+        this.setState(prevState => ({
+            quantidade: prevState.quantidade > 1 ? prevState.quantidade - 1 : 1
+        }), this.atualizarValorTotal);
+    };
 
+    atualizaPreco = (e) => {
+        const preco = parseFloat(e.target.value);
+        this.setState({ preco }, this.atualizarValorTotal);
+    };
 
-    //     if (isNaN(totalComDesconto)) {
-    //         console.log("Total com desconto é NaN!");
-    //     }
-
-    //     return {
-    //         valorDesconto: formattedValorDesconto,
-    //         totalComDesconto: formattedTotalComDesconto
-    //     };
-    // }
+    atualizarValorTotal = () => {
+        const { quantidade, preco } = this.state;
+        const valorTotal = (quantidade * parseFloat(preco)).toFixed(2);
+        this.setState({ valorTotal });
+    };
 
     calcularTotalComDesconto = (desconto, subTotal) => {
         const subtotal = subTotal || this.calcularTotal();
@@ -529,28 +619,12 @@ class FrenteCaixa extends React.Component {
             valorDesconto: formattedValorDesconto,
             totalComDesconto: formattedTotalComDesconto
         };
-    }
-
-    atualizaPreco = (e) => {
-        const preco = parseFloat(e.target.value.replace(',', '.'));
-        this.setState({ preco }, this.atualizarValorTotal);
-    };
-
-    atualizaQuantidade = (e) => {
-        const quantidade = Number(e.target.value);
-        this.setState({ quantidade }, this.atualizarValorTotal);
-    };
-
-    atualizarValorTotal = () => {
-        const { quantidade, preco } = this.state;
-        const valorTotal = (quantidade * parseFloat(preco.replace(',', '.')));
-        this.setState({ valorTotal });
     };
 
     atualizaDesconto(event) {
         // console.log("Evento de digitação capturado!");
 
-        const descontoString = event.target.value.replace(',', '.'); // Substitui a vírgula decimal por ponto
+        const descontoString = event.target.value; // Substitui a vírgula decimal por ponto
         const descontoNumber = parseFloat(descontoString.replace(/[^\d.-]/g, '')); // remove caracteres não-numéricos
 
         if (isNaN(descontoNumber)) {
@@ -564,73 +638,20 @@ class FrenteCaixa extends React.Component {
         }
 
         const resultado = this.calcularTotalComDesconto(descontoNumber);
-        console.log(resultado)
+        // console.log(resultado)
         this.setState({
             valorDesconto: descontoString,
             desconto: descontoNumber,
             totalComDesconto: resultado.totalComDesconto,
         });
-    }
+    };
 
-    handleChangeDesconto = (event) => {
-        const { value } = event.target;
-        const desconto = parseFloat(value);
-
-        if (isNaN(desconto)) {
-            this.setState({ desconto: "" });
-            return;
-        }
-
-        const { subTotal } = this.state;
-        const totalComDesconto = subTotal - desconto;
-
-        this.setState({ desconto, totalComDesconto });
-    }
-
-    atualizaTotalComFrete(event) {
-        const valor = event.target.value;
-        // console.log('valor:', valor);
-        let frete = 0;
-        if (typeof valor === 'string') {
-            frete = parseFloat(valor);
-        }
-        // console.log('frete:', frete);
-        const subTotal = this.state.subTotal;
-        const totalComDesconto = this.state.totalComDesconto;
-        // console.log('subTotal:', subTotal);
-        // console.log('totalComDesconto:', totalComDesconto);
-        let subTotalComFrete;
-        if (totalComDesconto && totalComDesconto.length > 0) {
-            subTotalComFrete = parseFloat(totalComDesconto) + frete;
-        } else {
-            subTotalComFrete = parseFloat(subTotal) + frete;
-        }
-        // console.log('subTotalComFrete:', subTotalComFrete);
-        this.setState({
-            subTotalComFrete: subTotalComFrete,
-            frete: frete,
-            freteInserido: true
-        });
-    }
-
-    calcularSubTotalGeral = () => {
-        const subTotal = this.calcularTotal();
-        const desconto = this.state.valorDesconto;
-        const totalComDesconto = this.calcularTotalComDesconto(desconto, subTotal).totalComDesconto;
-        const frete = this.state.frete;
-        const subTotalComFrete = parseFloat(totalComDesconto) + parseFloat(frete);
-        const subTotalGeral = subTotalComFrete.toFixed(2);
-
-        // console.log("Subtotal Geral:", subTotalGeral);
-
-        return parseFloat(subTotalGeral);
-    }
     calcularTotalComDinheiro = (dinheiro) => {
         const totalRecebidoEmDinheiro = parseFloat(dinheiro) || 0;
         const subTotalGeral = this.state.subTotalGeral;
 
         if (isNaN(totalRecebidoEmDinheiro)) {
-            console.log("O valor total recebido em dinheiro não é um número!");
+            // console.log("O valor total recebido em dinheiro não é um número!");
             return {
                 dinheiroRecebido: 0,
                 troco: 0,
@@ -643,11 +664,11 @@ class FrenteCaixa extends React.Component {
             troco = 0;
         }
 
-        console.log("totalRecebidoEmDinheiro:", totalRecebidoEmDinheiro);
-        console.log("troco:", troco);
+        // console.log("totalRecebidoEmDinheiro:", totalRecebidoEmDinheiro);
+        // console.log("troco:", troco);
 
         return {
-            dinheiroRecebido: totalRecebidoEmDinheiro.toFixed(2),
+            dinheiroRecebido: dinheiro,
             troco: troco.toFixed(2),
         };
     };
@@ -670,119 +691,131 @@ class FrenteCaixa extends React.Component {
         }
     };
 
-    atualizarBuscaProduto = (e) => {
+
+    atualizaTotalComFrete(event) {
+        const valor = event.target.value;
+        // console.log('valor:', valor);
+        let frete = 0;
+        if (typeof valor === 'string') {
+            frete = parseFloat(valor);
+        }
+        // console.log('frete:', frete);
+        const subTotal = this.state.subTotal.toFixed(2);
+        const totalComDesconto = this.state.totalComDesconto;
+        // console.log('subTotal:', subTotal);
+        // console.log('totalComDesconto:', totalComDesconto);
+        let subTotalComFrete;
+        if (totalComDesconto && totalComDesconto.length > 0) {
+            subTotalComFrete = (parseFloat(totalComDesconto) + frete).toFixed(2);
+        } else {
+            subTotalComFrete = (parseFloat(subTotal) + frete).toFixed(2);
+        }
+        // console.log('subTotalComFrete:', subTotalComFrete);
         this.setState({
-            buscaProduto: e.target.value
+            subTotalComFrete: subTotalComFrete,
+            frete: frete,
+            freteInserido: true
         });
     };
 
-    atualizarBuscaContato = (event) => {
-        const buscaContato = event.target.value
-        console.log("atualizarBuscaContato (buscaContato): ", buscaContato)
-        this.setState({
-            buscaContato
-        });
-    };
+    calcularSubTotalGeral = () => {
+        const subTotal = this.calcularTotal().toFixed(2);
+        const desconto = this.state.valorDesconto;
+        const totalComDesconto = this.calcularTotalComDesconto(desconto, subTotal).totalComDesconto;
+        const frete = this.state.frete;
+        const subTotalComFrete = parseFloat(totalComDesconto) + parseFloat(frete);
+        const subTotalGeral = subTotalComFrete.toFixed(2);
 
-    atualizarBuscaVendedor = (e) => {
-        this.setState({
-            buscaVendedor: e.target.value
-        });
-    };
+        // console.log("Subtotal Geral:", subTotalGeral);
 
-    incrementarQuantidade = () => {
-        this.setState(prevState => ({
-            quantidade: prevState.quantidade + 1
-        }), this.atualizarValorTotal);
-    }
-
-    decrementarQuantidade = () => {
-        this.setState(prevState => ({
-            quantidade: prevState.quantidade > 1 ? prevState.quantidade - 1 : 1
-        }));
-    }
-
-    atualizaNome = (e) => {
-        console.log("Nome:", e.target.value);
-        this.setState({
-            nome: e.target.value
-        });
-    };
-
-    atualizaTipo = (e) => {
-        console.log("Tipo:", e.target.value);
-        this.setState({
-            tipo: e.target.value
-        });
-    };
-
-    atualizaCpfCnpj = (e) => {
-        console.log("CPF/CNPJ:", e.target.value);
-        this.setState({
-            cnpj: e.target.value
-        });
-    };
-
-    atualizaCodigo = (e) => {
-        console.log("Codigo:", e.target.value);
-        this.setState({
-            codigo: e.target.value
-        });
-    };
-
-    atualizaFantasia = (e) => {
-        console.log("Fantasia:", e.target.value);
-        this.setState({
-            fantasia: e.target.value
-        });
+        return parseFloat(subTotalGeral);
     };
 
     atualizaDataPrevista = (novaDataPrevista) => {
-        console.log(novaDataPrevista);
+        // console.log(novaDataPrevista);
         const dataPrevista = novaDataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
         this.setState({
             dataPrevista: novaDataPrevista
         });
-        console.log(dataPrevista);
-    }
+        // console.log(dataPrevista);
+    };
 
     atualizaDepositoSelecionado = (event) => {
         const depositoSelecionado = event.target.value;
-        console.log(depositoSelecionado); //Esta retornando ID
+        // console.log(depositoSelecionado); //Esta retornando ID
         this.setState({ depositoSelecionado });
-    };
-
-    atualizaVendedorSelecionado = (event) => {
-        const vendedorSelecionado = event.target.value;
-        console.log("vendedor selecionado:", vendedorSelecionado);
-        this.setState({
-            vendedorSelecionado: vendedorSelecionado,
-            vendedor: vendedorSelecionado
-        }, () => {
-            console.log("vendedor:", this.state.vendedor);
-        });
     };
 
     atualizaObservacoes = (event) => {
         const observacoes = event.target.value;
-        console.log(event.target.value);
+        // console.log(event.target.value);
         this.setState({ observacoes });
-    }
+    };
 
     atualizaObservacaoInterna = (event) => {
         const observacaointerna = event.target.value;
-        console.log(event.target.value);
+        // console.log(event.target.value);
         this.setState({ observacaointerna });
-    }
+    };
 
     atualizarComentario = (event) => {
         const comentario = event.target.value;
-        console.log("Comentario", event.target.value);
+        // console.log("Comentario", event.target.value);
         this.setState({ comentario });
-    }
+    };
 
-    //Ação para limpar o campos do PDV caso decida a exclusão do pedido.
+
+    // handleChangeDesconto = (event) => {
+    //     const { value } = event.target;
+    //     const desconto = parseFloat(value);
+
+    //     if (isNaN(desconto)) {
+    //         this.setState({ desconto: "" });
+    //         return;
+    //     }
+
+    //     const { subTotal } = this.state;
+    //     const totalComDesconto = (subTotal - desconto).toFixed(2);
+
+    //     this.setState({ desconto, totalComDesconto });
+    // };
+
+
+    // calcularValorTotalInicial = () => {
+    //     const { preco } = this.state;
+    //     const quantidade = 1;
+    //     const valorTotal = quantidade * parseFloat(preco);
+    //     this.setState({ quantidade, valorTotal });
+    // };
+
+    // calcularTotalComDesconto = (desconto, subTotal) => {
+    //     const subtotal = subTotal || this.calcularTotal();
+    //     const valorDesconto = desconto || 0;
+    //     const totalComDesconto = subtotal - valorDesconto;
+
+    //     const formattedValorDesconto = valorDesconto.toFixed(2);
+    //     const formattedTotalComDesconto = totalComDesconto.toFixed(2);
+
+    //     console.log("valorDesconto: ", formattedValorDesconto);
+    //     console.log("totalComDesconto: ", formattedTotalComDesconto);
+
+
+    //     if (isNaN(totalComDesconto)) {
+    //         console.log("Total com desconto é NaN!");
+    //     }
+
+    //     return {
+    //         valorDesconto: formattedValorDesconto,
+    //         totalComDesconto: formattedTotalComDesconto
+    //     };
+    // }
+
+
+
+    // -------------------------------------------- FUNÇÕES BOTÕES ---------------------------------------------
+
+
     excluirPedido = () => {
         this.setState({
             nome: '',
@@ -816,7 +849,6 @@ class FrenteCaixa extends React.Component {
         this.modalSalvarPedido()
     };
 
-    //Ação para limpar o campos após a finalização da venda no PDV.
     limparPedido = () => {
         this.setState({
             nome: '',
@@ -854,8 +886,9 @@ class FrenteCaixa extends React.Component {
         const cnpj = this.state.cnpj;
         const vendedor = this.state.vendedor;
         const dataPrevista = new Date(this.state.dataPrevista); // converte para objeto Date
-        const dataPrevistaFormatted = `${dataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${dataPrevista.toLocaleTimeString('pt-BR')}`; // formata data        console.log(this.state.dataPrevista)
-        console.log(dataPrevistaFormatted)
+        const dataPrevistaFormatted = `${dataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${dataPrevista.toLocaleTimeString('pt-BR')}`;
+        // console.log(this.state.dataPrevista)
+        // console.log(dataPrevistaFormatted)
         const observacoes = this.state.observacoes;
         const observacaointerna = this.state.observacaointerna;
         const valorDesconto = this.state.desconto;
@@ -885,12 +918,11 @@ class FrenteCaixa extends React.Component {
         });
 
 
-
         if (itens.length === 0) {
             this.ModalFinalizarVendaSemItem();
             return;
         } else {
-            this.modalFinalizarPedido()
+            this.canvasFinalizarPedido()
         }
 
         return { nome, cnpj, itens, vendedor, dataPrevista, dataPrevistaFormatted, observacoes, observacaointerna, valorDesconto, prazo };
@@ -939,53 +971,23 @@ class FrenteCaixa extends React.Component {
         this.cadastrarPedido(xmlContato);
         this.limparPedido();
         this.modalSalvarPedido();
-        this.modalFinalizarPedido();
+        this.canvasFinalizarPedido();
 
         return xml;
-
     };
 
 
+    // -------------------------------------------- FUNÇÕES PARCELAS ---------------------------------------------
 
-    // handleChangeParcela(index, campo, valor) {
-    //     const parcelas = [...this.state.parcelas];
-    //     parcelas[index][campo] = valor;
-    //     this.setState({ parcelas });
-    // }
-
-    // adicionarParcela() {
-    //     const { condicao } = this.state;
-    //     const dias = parseInt(condicao);
-    //     const hoje = new Date();
-    //     const data = new Date(hoje.getTime() + dias * 24 * 60 * 60 * 1000);
-    //     const dataFormatada = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-    //     const novaParcela = {
-    //         dias,
-    //         data: dataFormatada,
-    //         valor: '',
-    //         forma: '',
-    //         observacao: '',
-    //         acao: '',
-    //     };
-
-    //     console.log(dataFormatada)
-
-    //     let parcelas = [...this.state.parcelas];
-    //     const index = parcelas.findIndex(parcela => parcela.dias === 0);
-    //     if (index !== -1) {
-    //         parcelas.splice(index, 1);
-    //     }
-    //     parcelas = [...parcelas, novaParcela];
-
-    //     this.setState({ parcelas });
-    // }
+    handleChange(event) {
+        this.setState({ condicao: event.target.value });
+    };
 
     handleChangeParcela(index, campo, valor) {
         const parcelas = [...this.state.parcelas];
         parcelas[index][campo] = valor;
         this.setState({ parcelas });
-    }
+    };
 
     adicionarParcela() {
         const { condicao } = this.state;
@@ -1020,7 +1022,7 @@ class FrenteCaixa extends React.Component {
         }));
 
         this.setState({ parcelas, numLinhas: this.state.numLinhas + 1, parcelas: newParcelas });
-    }
+    };
 
     handleValorChangeParcela(index, campo, valor) {
         const parcelas = [...this.state.parcelas];
@@ -1049,14 +1051,13 @@ class FrenteCaixa extends React.Component {
         });
 
         this.setState({ parcelas: newParcelas });
-    }
+    };
 
     handleFormaChange = (index, event) => {
         const parcelas = [...this.state.parcelas];
         parcelas[index].forma = event.target.value;
         this.setState({ parcelas });
     };
-
 
     handleObservacaoChange = (index, event) => {
         const parcelas = [...this.state.parcelas];
@@ -1098,7 +1099,7 @@ class FrenteCaixa extends React.Component {
             parcelas: [...newParcelas, ...parcelasRestantes],
             valorTotalParcela: valorRestanteParcela.toFixed(2),
         });
-    }
+    };
 
     calcularData = (dias) => {
         const dataAtual = new Date();
@@ -1107,27 +1108,63 @@ class FrenteCaixa extends React.Component {
         const mes = (dataCalculada.getMonth() + 1).toString().padStart(2, '0');
         const ano = dataCalculada.getFullYear();
         return `${dia}/${mes}/${ano}`;
-    }
+    };
 
-    handleChange(event) {
-        this.setState({ condicao: event.target.value });
-    }
+    // handleChangeParcela(index, campo, valor) {
+    //     const parcelas = [...this.state.parcelas];
+    //     parcelas[index][campo] = valor;
+    //     this.setState({ parcelas });
+    // }
+
+    // adicionarParcela() {
+    //     const { condicao } = this.state;
+    //     const dias = parseInt(condicao);
+    //     const hoje = new Date();
+    //     const data = new Date(hoje.getTime() + dias * 24 * 60 * 60 * 1000);
+    //     const dataFormatada = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    //     const novaParcela = {
+    //         dias,
+    //         data: dataFormatada,
+    //         valor: '',
+    //         forma: '',
+    //         observacao: '',
+    //         acao: '',
+    //     };
+
+    //     console.log(dataFormatada)
+
+    //     let parcelas = [...this.state.parcelas];
+    //     const index = parcelas.findIndex(parcela => parcela.dias === 0);
+    //     if (index !== -1) {
+    //         parcelas.splice(index, 1);
+    //     }
+    //     parcelas = [...parcelas, novaParcela];
+
+    //     this.setState({ parcelas });
+    // }
+
+    // --------------------------------------- FUNÇÕES ACRESCENTA .00 CAMPOS ----------------------------------------
+
 
     formatarDesconto = (e) => {
-        const desconto = parseFloat(e.target.value.replace(',', '.')).toFixed(2);
+        let valor = e.target.value.trim();
+        let desconto = valor !== '' && !isNaN(valor) ? parseFloat(valor).toFixed(2) : 0;
         this.setState({ valorDesconto: desconto });
-    }
+    };
 
     formatarFrete = (e) => {
-        const frete = parseFloat(e.target.value.replace(',', '.')).toFixed(2);
+        const valorFrete = e.target.value.trim();
+        const frete = valorFrete !== '' && !isNaN(valorFrete) ? parseFloat(valorFrete).toFixed(2) : 0;
         this.setState({ frete: frete });
-    }
+    };
 
     formatarTroco = (e) => {
-        let troco = parseFloat(e.target.value.replace(',', '.')).toFixed(2);
-        troco = troco.toString().replace('.', ',') + ',00';
-        this.setState({ dinheiroRecebido: troco });
-    }
+        const dinheiroRecebido = e.target.value.trim();
+        const dinheiro = dinheiroRecebido !== '' && !isNaN(dinheiroRecebido) ? parseFloat(dinheiroRecebido).toFixed(2) : 0;
+        // console.log(dinheiroRecebido, dinheiro)
+        this.setState({ dinheiroRecebido: dinheiro });
+    };
 
 
 
@@ -1136,7 +1173,7 @@ class FrenteCaixa extends React.Component {
 
 
         const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, comentario, subTotal, subTotalComDesconto } = this.state;
-        const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, buscaVendedor, total, index, dinheiro, dataPrevista, vendedorSelecionado, observacoes, observacaointerna, valorDesconto, totalComDesconto, dinheiroRecebido, troco, subTotalComFrete, frete } = this.state;
+        const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, endereco, numero, bairro, cidade, uf, buscaVendedor, total, index, dinheiro, dataPrevista, vendedorSelecionado, observacoes, observacaointerna, valorDesconto, totalComDesconto, dinheiroRecebido, troco, subTotalComFrete, frete } = this.state;
         const { subTotalGeral, condicao } = this.state;
 
 
@@ -1269,7 +1306,7 @@ class FrenteCaixa extends React.Component {
                                                         }}
                                                         tabIndex={0}
                                                     >
-                                                        Cód: {produto.produto.codigo} Produto: {produto.produto.descricao} - PreçoR$ {produto.produto.preco = parseFloat(produto.produto.preco).toFixed(2)}
+                                                        Cód: {produto.produto.codigo} Produto: {produto.produto.descricao} - Preço R$ {produto.produto.preco = parseFloat(produto.produto.preco).toFixed(2)}
                                                     </li>
                                                 ))}
                                             </ul>
@@ -1332,19 +1369,19 @@ class FrenteCaixa extends React.Component {
                                                     <Col className="col">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="subtotal" className="texto-campos">Sub total</Form.Label>
-                                                            <Form.Control type="text" id="subtotal" className="campos-pagamento" name="subtotal" placeholder="00,00" defaultValue={subTotal || ''} disabled />
+                                                            <Form.Control type="text" id="subtotal" className="" name="subtotal" placeholder="00,00" value={this.state.subTotal || ''} disabled />
                                                         </Form.Group>
                                                     </Col>
                                                     <Col className="col">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="desconto" className="texto-campos">Desconto</Form.Label>
-                                                            <Form.Control type="text" id="desconto" className="campos-pagamento" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizaDesconto} onBlur={this.formatarDesconto} />
+                                                            <Form.Control type="text" id="desconto" className="" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizaDesconto} onBlur={this.formatarDesconto} />
                                                         </Form.Group>
                                                     </Col>
                                                     <Col className="col">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="totaldavenda" className="texto-campos">Total da venda</Form.Label>
-                                                            <Form.Control type="text" id="totaldavenda" className="campos-pagamento" name="totaldavenda" placeholder="00,00" defaultValue={subTotalGeral || ''} disabled />
+                                                            <Form.Control type="text" id="totaldavenda" className="" name="totaldavenda" placeholder="00,00" defaultValue={subTotalGeral || ''} disabled />
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
@@ -1355,10 +1392,10 @@ class FrenteCaixa extends React.Component {
                                                             <Form.Control
                                                                 type="text"
                                                                 id="totaldinheiro"
-                                                                className="campos-pagamento"
+                                                                className=""
                                                                 name="totaldinheiro"
                                                                 placeholder="00,00"
-                                                                defaultValue={dinheiroRecebido || ''}
+                                                                value={dinheiroRecebido || ''}
                                                                 onChange={this.atualizaTroco}
                                                                 onBlur={this.formatarTroco}
                                                             />
@@ -1367,7 +1404,7 @@ class FrenteCaixa extends React.Component {
                                                     <Col className="col mb-3">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="trocodinheiro" className="texto-campos">Troco em dinheiro</Form.Label>
-                                                            <Form.Control type="text" id="trocodinheiro" className="campos-pagamento" name="trocodinheiro" placeholder="00,00" defaultValue={troco || ''} disabled />
+                                                            <Form.Control type="text" id="trocodinheiro" className="" name="trocodinheiro" placeholder="00,00" defaultValue={troco || ''} disabled />
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
@@ -1520,7 +1557,7 @@ class FrenteCaixa extends React.Component {
                                                     <div className="col">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="depositolancamento" className="texto-campos">Depósito para lançamento</Form.Label>
-                                                            <Form.Select className="campos-informacoes" id="depositolancamento" name="depositolancamento" value={this.state.depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
+                                                            <Form.Select className="" id="depositolancamento" name="depositolancamento" value={this.state.depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
                                                                 {this.state.depositos.map((deposito) => (
                                                                     <option key={deposito.deposito.id} value={deposito.deposito.id}>
                                                                         {deposito.deposito.descricao}
@@ -1532,7 +1569,7 @@ class FrenteCaixa extends React.Component {
                                                     <div className="col">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
-                                                            <Form.Control type="text" className="campos-informacoes" id="frete" name="frete" placeholder="00,00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
+                                                            <Form.Control type="text" className="" id="frete" name="frete" placeholder="00,00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
                                                         </Form.Group>
                                                     </div>
                                                 </div>
@@ -1574,9 +1611,9 @@ class FrenteCaixa extends React.Component {
                                                 <td>{produto.produto.codigo} - {produto.produto.descricao}</td>
                                                 <td>{produto.quantidade}</td>
                                                 <td>R$ {typeof produto.produto.preco === "number"
-                                                    ? produto.produto.preco.toFixed(2).replace(".", ",")
-                                                    : parseFloat(produto.produto.preco.replace(",", ".")).toFixed(2).replace(".", ",")}</td>
-                                                <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade).toFixed(2).replace(".", ",")}</td>
+                                                    ? produto.produto.preco.toFixed(2)
+                                                    : parseFloat(produto.produto.preco).toFixed(2)}</td>
+                                                <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade).toFixed(2)}</td>
                                                 <td><Button variant="light" className="transparent-button" onClick={() => {
                                                     if (window.confirm('Deseja excluir o item?\nEssa ação não poderá ser desfeita.')) {
                                                         this.excluirProdutoSelecionado(index);
@@ -1608,7 +1645,7 @@ class FrenteCaixa extends React.Component {
                                 <div className="div_total_venda">
                                     <div>
                                         <span className="span-total">Total:</span>
-                                        <span className="span-valor">R$ {this.calcularSubTotalGeral()}</span>
+                                        <span className="span-valor">R$ {this.calcularSubTotalGeral().toFixed(2)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1656,16 +1693,27 @@ class FrenteCaixa extends React.Component {
                             <Button variant="success" onClick={this.modalInserirProduto}>Fechar</Button>
                         </Modal.Footer>
                     </Modal>
-                    <Modal show={this.state.modalFinalizarPedido} onHide={this.modalFinalizarPedido} size="lg" centered>
-                        <Modal.Header closeButton className="bg-success text-white">
+
+                    <Offcanvas show={this.state.canvasFinalizarPedido} onHide={this.canvasFinalizarPedido} size="lg" centered placement="end" style={{ width: '35%' }}>
+                        <Offcanvas.Header closeButton className="bg-success text-white">
                             <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
-                            <Modal.Title>Atenção </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ padding: '20px' }}>
-                            <div className="d-flex flex-column align-items-center mb-4">
-                                <h5 className="mb-3"><strong>Resumo do pedido:</strong></h5>
-                                <span className="mb-2"><strong>Data: {new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</strong></span>
-                                <span><strong>Nome do Cliente:</strong> {nome}</span>
+                            <Offcanvas.Title>Atenção </Offcanvas.Title>
+                        </Offcanvas.Header>
+                        <Offcanvas.Body style={{ padding: '20px' }}>
+                            <div className="d-flex flex-column  mb-4">
+                                <h5 className="mb-3">
+                                    <strong>
+                                        Resumo do pedido:
+                                    </strong>
+                                </h5>
+                                <div className="d-flex justify-content-between mb-2">
+                                    <strong>
+                                        <FontAwesomeIcon icon={faCalendarAlt} className="mr-2" style={{ marginRight: '10px' }} />
+                                        Data: {new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</strong>
+                                    <span>CPF/CNPJ: {cnpj}</span>
+                                </div>
+                                <span>Nome do Cliente: {nome}</span>
+                                <span>Endereço: {endereco}, {numero}, {bairro}, {cidade} - {uf}</span>
                             </div>
 
                             <Table responsive="lg" className="table-responsive" striped>
@@ -1683,29 +1731,48 @@ class FrenteCaixa extends React.Component {
                                             <td>{produto.produto.codigo} - {produto.produto.descricao}</td>
                                             <td>{produto.quantidade}</td>
                                             <td>R$ {typeof produto.produto.preco === "number"
-                                                ? produto.produto.preco.toFixed(2).replace(".", ",")
-                                                : parseFloat(produto.produto.preco.replace(",", ".")).toFixed(2).replace(".", ",")}</td>
-                                            <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade).toFixed(2).replace(".", ",")}</td>
+                                                ? produto.produto.preco.toFixed(2)
+                                                : parseFloat(produto.produto.preco).toFixed(2)}</td>
+                                            <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade).toFixed(2)}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                                 <tfoot>
+                                    <tr>
+                                        <td colSpan="3" className="text-right"><strong>Desconto:</strong></td>
+                                        <td><strong>R$ {desconto},00</strong></td>
+                                    </tr>
                                     <tr>
                                         <td colSpan="3" className="text-right"><strong>Quantidade total:</strong></td>
                                         <td><strong>{quantidadeTotal}</strong></td>
                                     </tr>
                                     <tr>
                                         <td colSpan="3" className="text-right"><strong>Total:</strong></td>
-                                        <td><strong>R$ {this.calcularSubTotalGeral().toFixed(2).replace(".", ",")}</strong></td>
+                                        <td><strong>R$ {this.calcularSubTotalGeral().toFixed(2)}</strong></td>
                                     </tr>
                                 </tfoot>
                             </Table>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="outline-secondary" onClick={this.modalFinalizarPedido}>Cancelar</Button>
-                            <Button variant="success" onClick={this.gerarXmlItensParaEnvio}>Fechar pedido</Button>
-                        </Modal.Footer>
-                    </Modal>
+
+                            <div className="divisa"></div>
+
+                            <div className="d-flex flex-column  mb-4">
+                                <h5 className="mb-3">
+                                    <strong>
+                                        O que fazer após fechar o pedido?
+                                    </strong>
+                                </h5>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <Button variant="outline-secondary" className="gerar-nota">Gerar NFC-e</Button>
+                                <Button variant="outline-secondary" className="gerar-nota">Imprimir comprovante não fiscal</Button>
+                            </div>
+
+                            <div className="d-flex justify-content-end fixed-bottom mb-4" style={{ height: '40px' }}>
+                                <Button variant="outline-success" className="mr-2" onClick={this.canvasFinalizarPedido} style={{ marginRight: '10px' }}>Cancelar</Button>
+                                <Button variant="success" onClick={this.gerarXmlItensParaEnvio} style={{ marginRight: '10px' }}>Fechar pedido</Button>
+                            </div>
+                        </Offcanvas.Body>
+                    </Offcanvas>
 
                     <Modal show={this.state.modalInserirParcela} onHide={this.modalInserirParcela} centered>
                         <Modal.Header closeButton className="bg-success text-white">
