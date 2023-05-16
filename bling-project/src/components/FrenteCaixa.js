@@ -6,7 +6,6 @@ import { trashOutline } from 'ionicons/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
-import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -17,14 +16,16 @@ import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
-import { Stack } from "react-bootstrap"
 import Form from 'react-bootstrap/Form'
 import Table from "react-bootstrap/Table";
 import { Offcanvas } from 'react-bootstrap';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
-import { parse } from 'js2xmlparser';
-import Autosuggest from 'react-autosuggest';
+
+// import { Stack } from "react-bootstrap"
+// import FloatingLabel from 'react-bootstrap/FloatingLabel';
+// import { format } from 'date-fns';
+// import { parse } from 'js2xmlparser';
+// import Autosuggest from 'react-autosuggest';
 
 
 class FrenteCaixa extends React.Component {
@@ -109,31 +110,45 @@ class FrenteCaixa extends React.Component {
     }
 
     ModalFinalizarVendaSemItem = () => {
-        this.setState({ ModalFinalizarVendaSemItem: !this.state.ModalFinalizarVendaSemItem });
+        this.setState({
+            ModalFinalizarVendaSemItem: !this.state.ModalFinalizarVendaSemItem
+        });
     }
 
     ModalExcluirPedido = () => {
-        this.setState({ ModalExcluirPedido: !this.state.ModalExcluirPedido });
+        this.setState({
+            ModalExcluirPedido: !this.state.ModalExcluirPedido
+        });
     }
 
     modalInserirProduto = () => {
-        this.setState({ modalInserirProduto: !this.state.modalInserirProduto });
+        this.setState({
+            modalInserirProduto: !this.state.modalInserirProduto
+        });
     }
 
     modalInserirParcela = () => {
-        this.setState({ modalInserirParcela: !this.state.modalInserirParcela });
+        this.setState({
+            modalInserirParcela: !this.state.modalInserirParcela
+        });
     }
 
     modalSalvarPedido = () => {
-        this.setState({ modalSalvarPedido: !this.state.modalSalvarPedido }, () => {
+        this.setState({
+            modalSalvarPedido: !this.state.modalSalvarPedido
+        }, () => {
             setTimeout(() => {
-                this.setState({ modalSalvarPedido: false });
+                this.setState({
+                    modalSalvarPedido: false
+                })
             }, 3000);
         });
     }
 
     canvasFinalizarPedido = () => {
-        this.setState({ canvasFinalizarPedido: !this.state.canvasFinalizarPedido });
+        this.setState({
+            canvasFinalizarPedido: !this.state.canvasFinalizarPedido
+        });
     }
 
     componentDidMount() {
@@ -155,7 +170,9 @@ class FrenteCaixa extends React.Component {
             prevState.subTotalComFrete !== this.state.subTotalComFrete) {
             const subtotalGeral = this.calcularSubTotalGeral().toFixed(2);
             // console.log("Subtotal Geral:", subtotalGeral);
-            this.setState({ subTotalGeral: subtotalGeral });
+            this.setState({
+                subTotalGeral: subtotalGeral
+            });
         }
     }
 
@@ -190,12 +207,18 @@ class FrenteCaixa extends React.Component {
                         carregando: false,
                     });
                 } else {
-                    this.setState({ produtos: [], carregando: false });
+                    this.setState({
+                        produtos: [],
+                        carregando: false
+                    });
                 }
             })
             .catch((error) => {
                 console.log("Erro ao buscar produtos:", error);
-                this.setState({ produtos: [], carregando: false });
+                this.setState({
+                    produtos: [],
+                    carregando: false
+                });
             });
     };
 
@@ -238,12 +261,18 @@ class FrenteCaixa extends React.Component {
                         carregando: false,
                     });
                 } else {
-                    this.setState({ contatos: [], carregando: false });
+                    this.setState({
+                        contatos: [],
+                        carregando: false
+                    });
                 }
             })
             .catch((error) => {
                 console.log("Erro ao buscar contatos:", error);
-                this.setState({ contatos: [], carregando: false });
+                this.setState({
+                    contatos: [],
+                    carregando: false
+                });
             });
     };
 
@@ -272,12 +301,18 @@ class FrenteCaixa extends React.Component {
                         vendedoresFiltrados: vendedoresFiltrados // adiciona essa linha
                     });
                 } else {
-                    this.setState({ vendedores: [], carregando: false });
+                    this.setState({
+                        vendedores: [],
+                        carregando: false
+                    });
                 }
             })
             .catch((error) => {
                 console.log("Erro ao buscar vendedor:", error);
-                this.setState({ vendedores: [], carregando: false });
+                this.setState({
+                    vendedores: [],
+                    carregando: false
+                });
             });
     };
 
@@ -293,13 +328,20 @@ class FrenteCaixa extends React.Component {
                         depositoSelecionado: dados.retorno.depositos[0].deposito.id // define o primeiro depósito como selecionado
                     })
                 } else {
-                    this.setState({ depositos: [] })
+                    this.setState({
+                        depositos: []
+                    })
                 }
-                this.setState({ carregando: false })
+                this.setState({
+                    carregando: false
+                })
             })
             .catch((error) => {
                 console.log("Erro ao buscar deposito:", error);
-                this.setState({ depositos: [], carregando: false });
+                this.setState({
+                    depositos: [],
+                    carregando: false
+                });
             });
     }
 
@@ -319,13 +361,20 @@ class FrenteCaixa extends React.Component {
                     console.log("Numero do ultimo pedido:", ultimoPedido);
 
                 } else {
-                    this.setState({ pedidos: [] })
+                    this.setState({
+                        pedidos: []
+                    })
                 }
-                this.setState({ carregando: false })
+                this.setState({
+                    carregando: false
+                })
             })
             .catch((error) => {
                 console.log("Erro ao buscar deposito:", error);
-                this.setState({ depositos: [], carregando: false });
+                this.setState({
+                    depositos: [],
+                    carregando: false
+                });
             });
     }
 
@@ -357,9 +406,9 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-    // atualizarBuscaVendedor = (e) => {
+    // atualizarBuscaVendedor = (event) => {
     //     this.setState({
-    //         buscaVendedor: e.target.value
+    //         buscaVendedor: event.target.value
     //     });
     // };
 
@@ -405,38 +454,38 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-    atualizaNome = (e) => {
-        // console.log("Nome:", e.target.value);
+    atualizaNome = (event) => {
+        // console.log("Nome:", event.target.value);
         this.setState({
-            nome: e.target.value
+            nome: event.target.value
         });
     };
 
-    atualizaTipo = (e) => {
-        // console.log("Tipo:", e.target.value);
+    atualizaTipo = (event) => {
+        // console.log("Tipo:", event.target.value);
         this.setState({
-            tipo: e.target.value
+            tipo: event.target.value
         });
     };
 
-    atualizaCpfCnpj = (e) => {
-        // console.log("CPF/CNPJ:", e.target.value);
+    atualizaCpfCnpj = (event) => {
+        // console.log("CPF/CNPJ:", event.target.value);
         this.setState({
-            cnpj: e.target.value
+            cnpj: event.target.value
         });
     };
 
-    atualizaCodigo = (e) => {
-        // console.log("Codigo:", e.target.value);
+    atualizaCodigo = (event) => {
+        // console.log("Codigo:", event.target.value);
         this.setState({
-            codigo: e.target.value
+            codigo: event.target.value
         });
     };
 
-    atualizaFantasia = (e) => {
-        // console.log("Fantasia:", e.target.value);
+    atualizaFantasia = (event) => {
+        // console.log("Fantasia:", event.target.value);
         this.setState({
-            fantasia: e.target.value
+            fantasia: event.target.value
         });
     };
 
@@ -488,9 +537,9 @@ class FrenteCaixa extends React.Component {
     // -------------------------------------------- FUNÇÕES PRODUTO ---------------------------------------------
 
 
-    atualizarBuscaProduto = (e) => {
+    atualizarBuscaProduto = (event) => {
         this.setState({
-            buscaProduto: e.target.value
+            buscaProduto: event.target.value
         });
     };
 
@@ -578,32 +627,42 @@ class FrenteCaixa extends React.Component {
         return preco * quantidade;
     };
 
-    atualizaQuantidade = (e) => {
-        const quantidade = Number(e.target.value);
-        this.setState({ quantidade }, this.atualizarValorTotal);
+    atualizaQuantidade = (event) => {
+        const quantidade = Number(event.target.value);
+        this.setState({
+            quantidade
+        },
+            this.atualizarValorTotal);
     };
 
     incrementarQuantidade = () => {
         this.setState(prevState => ({
             quantidade: prevState.quantidade + 1
-        }), this.atualizarValorTotal);
+        }),
+            this.atualizarValorTotal);
     };
 
     decrementarQuantidade = () => {
         this.setState(prevState => ({
             quantidade: prevState.quantidade > 1 ? prevState.quantidade - 1 : 1
-        }), this.atualizarValorTotal);
+        }),
+            this.atualizarValorTotal);
     };
 
-    atualizaPreco = (e) => {
-        const preco = parseFloat(e.target.value);
-        this.setState({ preco }, this.atualizarValorTotal);
+    atualizaPreco = (event) => {
+        const preco = parseFloat(event.target.value);
+        this.setState({
+            preco
+        },
+            this.atualizarValorTotal);
     };
 
     atualizarValorTotal = () => {
         const { quantidade, preco } = this.state;
         const valorTotal = (quantidade * parseFloat(preco)).toFixed(2);
-        this.setState({ valorTotal });
+        this.setState({
+            valorTotal
+        });
     };
 
     calcularTotalComDesconto = (desconto, subTotal) => {
@@ -692,7 +751,10 @@ class FrenteCaixa extends React.Component {
 
         // Verifica se o valor recebido é vazio ou nulo
         if (!valorRecebido) {
-            this.setState({ dinheiroRecebido: 0, troco: 0 });
+            this.setState({
+                dinheiroRecebido: 0,
+                troco: 0
+            });
             return;
         }
 
@@ -701,7 +763,10 @@ class FrenteCaixa extends React.Component {
             const { totalComDesconto } = this.state;
             const { dinheiroRecebido, troco } = this.calcularTotalComDinheiro(valorRecebido, totalComDesconto);
 
-            this.setState({ dinheiroRecebido, troco: Math.abs(troco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) });
+            this.setState({
+                dinheiroRecebido,
+                troco: Math.abs(troco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+            });
         }
     };
 
@@ -748,35 +813,43 @@ class FrenteCaixa extends React.Component {
     atualizaDataPrevista = (novaDataPrevista) => {
         // console.log(novaDataPrevista);
         const dataPrevista = novaDataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
+        // console.log(dataPrevista);
         this.setState({
             dataPrevista: novaDataPrevista
         });
-        // console.log(dataPrevista);
     };
+
 
     atualizaDepositoSelecionado = (event) => {
         const depositoSelecionado = event.target.value;
         // console.log(depositoSelecionado); //Esta retornando ID
-        this.setState({ depositoSelecionado });
+        this.setState({
+            depositoSelecionado
+        });
     };
 
     atualizaObservacoes = (event) => {
         const observacoes = event.target.value;
         // console.log(event.target.value);
-        this.setState({ observacoes });
+        this.setState({
+            observacoes
+        });
     };
 
     atualizaObservacaoInterna = (event) => {
         const observacaointerna = event.target.value;
         // console.log(event.target.value);
-        this.setState({ observacaointerna });
+        this.setState({
+            observacaointerna
+        });
     };
 
     atualizarComentario = (event) => {
         const comentario = event.target.value;
         // console.log("Comentario", event.target.value);
-        this.setState({ comentario });
+        this.setState({
+            comentario
+        });
     };
 
 
@@ -832,32 +905,34 @@ class FrenteCaixa extends React.Component {
 
     excluirPedido = () => {
         this.setState({
+            vendedor: '',
+            vendedorSelecionado: '',
+            contatoSelecionado: '',
             nome: '',
             tipo: '',
             cnpj: '',
             codigo: '',
             fantasia: '',
+            produtosSelecionados: [], // adiciona a limpeza da lista aqui
             quantidade: 1,
             desconto: '',
             preco: 0,
             valorTotal: 0,
+            comentario: '',
             subTotal: 0,
             valorDesconto: 0,
             totalComDesconto: 0,
+            dinheiroRecebido: '',
             dinheiro: 0,
             troco: 0,
+            condicao: '',
+            parcelas: [{ dias: 0, observacao: '', valor: '' }],
             dataPrevista: '',
             depositoSelecionado: '',
             frete: 0,
             observacoes: '',
             observacaointerna: '',
-            produtosSelecionados: [], // adiciona a limpeza da lista aqui
-            comentario: '',
-            contatoSelecionado: '',
-            vendedorSelecionado: '',
-            dinheiroRecebido: '',
-            condicao: '',
-            parcelas: []
+            subTotalGeral: 0
         });
         this.ModalExcluirPedido()
         this.modalSalvarPedido()
@@ -865,33 +940,33 @@ class FrenteCaixa extends React.Component {
 
     limparPedido = () => {
         this.setState({
+            vendedor: '',
+            vendedorSelecionado: '',
+            contatoSelecionado: '',
             nome: '',
             tipo: '',
             cnpj: '',
             codigo: '',
             fantasia: '',
+            produtosSelecionados: [], // adiciona a limpeza da lista aqui
             quantidade: 1,
             desconto: '',
             preco: 0,
             valorTotal: 0,
+            comentario: '',
             subTotal: 0,
             valorDesconto: 0,
             totalComDesconto: 0,
+            dinheiroRecebido: '',
             dinheiro: 0,
             troco: 0,
+            condicao: '',
+            parcelas: [{ dias: 0, observacao: '', valor: '' }],
             dataPrevista: '',
             depositoSelecionado: '',
             frete: 0,
             observacoes: '',
             observacaointerna: '',
-            produtosSelecionados: [], // adiciona a limpeza da lista aqui
-            comentario: '',
-            vendedor: '',
-            contatoSelecionado: '',
-            vendedorSelecionado: '',
-            dinheiroRecebido: '',
-            condicao: '',
-            parcelas: []
         });
     };
 
@@ -908,7 +983,6 @@ class FrenteCaixa extends React.Component {
         const valorDesconto = this.state.desconto;
         const itens = [];
         const prazo = [];
-
 
         this.state.produtosSelecionados.forEach((produto) => {
             const item = {
@@ -994,13 +1068,17 @@ class FrenteCaixa extends React.Component {
     // -------------------------------------------- FUNÇÕES PARCELAS ---------------------------------------------
 
     handleChange(event) {
-        this.setState({ condicao: event.target.value });
+        this.setState({
+            condicao: event.target.value
+        });
     };
 
     handleChangeParcela(index, campo, valor) {
         const parcelas = [...this.state.parcelas];
         parcelas[index][campo] = valor;
-        this.setState({ parcelas });
+        this.setState({
+            parcelas
+        });
     };
 
     adicionarParcela() {
@@ -1035,7 +1113,10 @@ class FrenteCaixa extends React.Component {
             valor: valorParcela,
         }));
 
-        this.setState({ parcelas, numLinhas: this.state.numLinhas + 1, parcelas: newParcelas });
+        this.setState({
+            numLinhas: this.state.numLinhas + 1,
+            parcelas: newParcelas
+        });
     };
 
     handleValorChangeParcela(index, campo, valor) {
@@ -1070,13 +1151,17 @@ class FrenteCaixa extends React.Component {
     handleFormaChange = (index, event) => {
         const parcelas = [...this.state.parcelas];
         parcelas[index].forma = event.target.value;
-        this.setState({ parcelas });
+        this.setState({
+            parcelas
+        });
     };
 
     handleObservacaoChange = (index, event) => {
         const parcelas = [...this.state.parcelas];
         parcelas[index].observacao = event.target.value;
-        this.setState({ parcelas });
+        this.setState({
+            parcelas
+        });
     };
 
     handleDeleteParcela(index) {
@@ -1161,23 +1246,29 @@ class FrenteCaixa extends React.Component {
     // --------------------------------------- FUNÇÕES ACRESCENTA .00 CAMPOS ----------------------------------------
 
 
-    formatarDesconto = (e) => {
-        let valor = e.target.value.trim();
+    formatarDesconto = (event) => {
+        let valor = event.target.value.trim();
         let desconto = valor !== '' && !isNaN(valor) ? parseFloat(valor).toFixed(2) : 0;
-        this.setState({ valorDesconto: desconto });
+        this.setState({
+            valorDesconto: desconto
+        });
     };
 
-    formatarFrete = (e) => {
-        const valorFrete = e.target.value.trim();
+    formatarFrete = (event) => {
+        const valorFrete = event.target.value.trim();
         const frete = valorFrete !== '' && !isNaN(valorFrete) ? parseFloat(valorFrete).toFixed(2) : 0;
-        this.setState({ frete: frete });
+        this.setState({
+            frete: frete
+        });
     };
 
-    formatarTroco = (e) => {
-        const dinheiroRecebido = e.target.value.trim();
+    formatarTroco = (event) => {
+        const dinheiroRecebido = event.target.value.trim();
         const dinheiro = dinheiroRecebido !== '' && !isNaN(dinheiroRecebido) ? parseFloat(dinheiroRecebido).toFixed(2) : 0;
         // console.log(dinheiroRecebido, dinheiro)
-        this.setState({ dinheiroRecebido: dinheiro });
+        this.setState({
+            dinheiroRecebido: dinheiro
+        });
     };
 
 
@@ -1186,8 +1277,8 @@ class FrenteCaixa extends React.Component {
     render() {
 
 
-        const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, comentario, subTotal, subTotalComDesconto } = this.state;
-        const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, endereco, numero, bairro, cidade, uf, buscaVendedor, total, index, dinheiro, dataPrevista, vendedorSelecionado, observacoes, observacaointerna, valorDesconto, totalComDesconto, dinheiroRecebido, troco, subTotalComFrete, frete } = this.state;
+        const { produtos, produtoSelecionado, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto } = this.state;
+        const { contatos, contatoSelecionado, buscaContato, cnpj, nome, tipo, codigo, fantasia, endereco, numero, bairro, cidade, uf, dataPrevista, observacoes, observacaointerna, valorDesconto, dinheiroRecebido, troco, frete } = this.state;
         const { subTotalGeral, condicao, consumidorFinal } = this.state;
 
 
@@ -1282,7 +1373,7 @@ class FrenteCaixa extends React.Component {
                                     <Row className="row">
                                         <Col className="col">
                                             <Form.Group className="mb-3">
-                                                <Form.Label htmlFor="cpf" className="texto-campos">CPF</Form.Label>
+                                                <Form.Label htmlFor="cpf" className="texto-campos">{tipo === 'J' ? 'CNPJ' : 'CPF'}</Form.Label>
                                                 <Form.Control type="text" id="cpf" className="form-control" name="cpf" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
                                             </Form.Group>
                                         </Col>
@@ -1422,6 +1513,12 @@ class FrenteCaixa extends React.Component {
                                                             <Form.Control type="text" id="trocodinheiro" className="" name="trocodinheiro" placeholder="00,00" defaultValue={troco || ''} disabled />
                                                         </Form.Group>
                                                     </Col>
+                                                    <Col className="col mb-3">
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
+                                                            <Form.Control type="text" className="" id="frete" name="frete" placeholder="00,00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
+                                                        </Form.Group>
+                                                    </Col>
                                                 </Row>
                                                 <div className="mb-3">
                                                     <h5>Forma de pagamento</h5>
@@ -1438,7 +1535,8 @@ class FrenteCaixa extends React.Component {
                                                             <Form.Group className="mb-3">
                                                                 <Form.Label htmlFor="gerarparcelas" className="texto-campos" style={{ marginRight: '20px' }}></Form.Label>
                                                                 <Button variant="outline-success" className="" onClick={() => {
-                                                                    if (this.state.subTotalGeral === 0) {
+                                                                    console.log(this.state.subTotalGeral)
+                                                                    if (this.state.subTotalGeral === undefined) {
                                                                         this.modalInserirParcela();
                                                                     } else {
                                                                         this.adicionarParcela();
@@ -1470,7 +1568,7 @@ class FrenteCaixa extends React.Component {
                                                                             <Form.Control
                                                                                 type="number"
                                                                                 value={parcela.dias}
-                                                                                onChange={(e) => this.handleChangeParcela(index, 'dias', e.target.value) || ''} />
+                                                                                onChange={(event) => this.handleChangeParcela(index, 'dias', event.target.value) || ''} />
                                                                         </td>
                                                                         <td>
                                                                             <Form.Control
@@ -1538,21 +1636,21 @@ class FrenteCaixa extends React.Component {
                                                 <div>
                                                     <h5>Outras informações</h5>
                                                 </div>
-                                                <div className="row">
-                                                    {/* <div className="col">
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="vendedor" className="texto-campos">Vendedor</Form.Label>
-                                                        <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado} onChange={this.atualizaVendedorSelecionado} >
-                                                            <option value="">Selecione um vendedor</option>
-                                                            {this.state.vendedor.map((contato) => (
-                                                                <option key={contato.contato.id} value={contato.contato.id}>
-                                                                    {contato.contato.nome}
-                                                                </option>
-                                                            ))}
-                                                        </Form.Select>
-                                                    </Form.Group>
-                                                </div> */}
-                                                    <div className="col">
+                                                <Row className="row">
+                                                    {/* <Col className="col">
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="vendedor" className="texto-campos">Vendedor</Form.Label>
+                                                            <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado} onChange={this.atualizaVendedorSelecionado} >
+                                                                <option value="">Selecione um vendedor</option>
+                                                                {this.state.vendedor.map((contato) => (
+                                                                    <option key={contato.contato.id} value={contato.contato.id}>
+                                                                        {contato.contato.nome}
+                                                                    </option>
+                                                                ))}
+                                                            </Form.Select>
+                                                        </Form.Group>
+                                                    </Col> */}
+                                                    <Col className="col">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="dataprevista" className="texto-campos">Data prevista</Form.Label>
                                                             <DatePicker
@@ -1566,10 +1664,8 @@ class FrenteCaixa extends React.Component {
                                                                 dateFormat="dd/MM/yyyy"
                                                             />
                                                         </Form.Group>
-                                                    </div>
-                                                </div>
-                                                <div className="row">
-                                                    <div className="col">
+                                                    </Col>
+                                                    <Col className="col">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="depositolancamento" className="texto-campos">Depósito para lançamento</Form.Label>
                                                             <Form.Select className="" id="depositolancamento" name="depositolancamento" value={this.state.depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
@@ -1580,28 +1676,22 @@ class FrenteCaixa extends React.Component {
                                                                 ))}
                                                             </Form.Select>
                                                         </Form.Group>
-                                                    </div>
-                                                    <div className="col">
-                                                        <Form.Group className="mb-3">
-                                                            <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
-                                                            <Form.Control type="text" className="" id="frete" name="frete" placeholder="00,00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
-                                                        </Form.Group>
-                                                    </div>
-                                                </div>
-                                                <div className="col">
-                                                    <div >
+                                                    </Col>
+                                                </Row>
+                                                <Col className="col">
+                                                    <Row className="row">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="observacoes" className="texto-campos">Observações</Form.Label>
                                                             <textarea className="form-control" id="observacoes" rows="3" value={observacoes || ''} onChange={this.atualizaObservacoes} ></textarea>
                                                         </Form.Group>
-                                                    </div>
-                                                    <div className="col">
+                                                    </Row>
+                                                    <Row className="row">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="observacaointerna" className="texto-campos">Observações internas </Form.Label>
                                                             <textarea className="form-control" id="observacaointerna" rows="3" value={observacaointerna || ''} onChange={this.atualizaObservacaoInterna} ></textarea>
                                                         </Form.Group>
-                                                    </div>
-                                                </div>
+                                                    </Row>
+                                                </Col>
                                             </div>
                                         </div>
                                     </div>

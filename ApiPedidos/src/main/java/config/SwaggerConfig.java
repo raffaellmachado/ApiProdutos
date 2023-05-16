@@ -21,15 +21,15 @@ public class SwaggerConfig {
 	@Bean
 	public Docket productApi() {
 		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("br.com.bling.ApiCategorias")).paths(PathSelectors.regex("/api.*"))
+				.apis(RequestHandlerSelectors.basePackage("br.com.bling.ApiPedidos")).paths(PathSelectors.regex("/api.*"))
 				.build().apiInfo(metaInfo());
 	}
 
 	public ApiInfo metaInfo() {
 
         ApiInfo apiInfo = new ApiInfo(
-                "API REST CATEGORIAS",
-                "API REST para consumo de categorias Bling.",
+                "API REST PEDIDOS",
+                "API REST para consumo de pedidos Bling.",
                 "1.0",
                 "Terms of Service",
 				new Contact("Okeaa", "http://www.okeaatecnologia.com/", "rafael.machado@okeaatecnologia.com.br"),
