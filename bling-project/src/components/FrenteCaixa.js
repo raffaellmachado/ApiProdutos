@@ -96,6 +96,10 @@ class FrenteCaixa extends React.Component {
             bairro: '',
             cidade: '',
             uf: '',
+            consumidorFinal: '',
+            data: '',
+            valor: '',
+            observacao: '',
         };
 
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
@@ -219,8 +223,17 @@ class FrenteCaixa extends React.Component {
                             (contato.contato.uf && contato.contato.uf.toLowerCase().includes(value.toLowerCase()))
                     );
                     console.log("Contato objeto retornado:", contatosFiltrados);
+
+                    // const consumidorFinal = dados.retorno.contatos.find(
+                    //     (contato) =>
+                    //         (contato.contato.nome === "Consumidor Final" && contato.contato.nome.toLowerCase().includes(value.toLowerCase())));
+                    // console.log(consumidorFinal)
+                    // console.log(consumidorFinal.contato.nome);
+
+
                     this.setState({
                         contatos: contatosFiltrados,
+                        // consumidorFinal: consumidorFinal.contato.nome,
                         contatoSelecionado: null,
                         carregando: false,
                     });
@@ -234,6 +247,7 @@ class FrenteCaixa extends React.Component {
             });
     };
 
+
     buscarVendedor = (value) => {
         // console.log("Buscando vendedor por:", value);
         this.setState({ buscaVendedor: value, carregando: false });
@@ -246,7 +260,7 @@ class FrenteCaixa extends React.Component {
             })
             .then((dados) => {
                 if (dados.retorno.contatos) {
-                    console.log("Vendedor objeto retornado:", dados);
+                    // console.log("Vendedor objeto retornado:", dados);
 
                     const vendedoresFiltrados = dados.retorno.contatos.filter(
                         (contato) => contato?.contato?.tiposContato?.some((tipoContato) => tipoContato?.tipoContato?.descricao?.toLowerCase().includes('vendedor'))
@@ -272,7 +286,7 @@ class FrenteCaixa extends React.Component {
             .then(resposta => resposta.json())
             .then(dados => {
                 if (dados.retorno.depositos) {
-                    console.log("Deposito objeto retornado:", dados);
+                    // console.log("Deposito objeto retornado:", dados);
 
                     this.setState({
                         depositos: dados.retorno.depositos,
@@ -295,7 +309,7 @@ class FrenteCaixa extends React.Component {
             .then(resposta => resposta.json())
             .then(dados => {
                 if (dados.retorno.pedidos) {
-                    console.log("pedidos retornados:", dados);
+                    // console.log("pedidos retornados:", dados);
                     const ultimoPedido = dados.retorno.pedidos[dados.retorno.pedidos.length - 1];
                     console.log("posicao NUMERO:", ultimoPedido.pedido.numero);
                     this.setState({
@@ -434,6 +448,7 @@ class FrenteCaixa extends React.Component {
         this.setState({
             contatoSelecionado: contato,
             nome: contato.contato.nome,
+            consumidorFinal: contato.contato.nome,
             tipo: contato.contato.tipo,
             cnpj: contato.contato.cnpj,
             codigo: contato.contato.codigo,
@@ -1173,13 +1188,14 @@ class FrenteCaixa extends React.Component {
 
         const { produtos, produtoSelecionado, produtosSelecionados, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, comentario, subTotal, subTotalComDesconto } = this.state;
         const { contatos, contatoSelecionado, buscaContato, carregandoContato, cnpj, nome, tipo, codigo, fantasia, endereco, numero, bairro, cidade, uf, buscaVendedor, total, index, dinheiro, dataPrevista, vendedorSelecionado, observacoes, observacaointerna, valorDesconto, totalComDesconto, dinheiroRecebido, troco, subTotalComFrete, frete } = this.state;
-        const { subTotalGeral, condicao } = this.state;
+        const { subTotalGeral, condicao, consumidorFinal } = this.state;
 
 
         let quantidadeTotal = 0;
         for (const produto of this.state.produtosSelecionados) {
             quantidadeTotal += produto.quantidade;
         }
+
         if (this.state.carregando) {
             return (
                 <div className="spinner-container">
@@ -1249,15 +1265,15 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="nome" className="texto-campos">Nome</Form.Label>
-                                                <Form.Control type="text" id="nome" className="form-control" name="nome" value={nome || ''} onChange={this.atualizaNome} />
+                                                <Form.Control type="text" id="nome" className="form-control" name="nome" value={nome || consumidorFinal} onChange={this.atualizaNome} />
                                             </Form.Group>
                                         </Col>
                                         <Col className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="tipo" className="texto-campos">Tipo</Form.Label>
                                                 <Form.Select as="select" id="tipo" className="form-control" name="tipo" value={tipo || ''} onChange={this.atualizaTipo}>
-                                                    <option value="J">Pessoa Jurídica</option>
                                                     <option value="F">Pessoa Física</option>
+                                                    <option value="J">Pessoa Jurídica</option>
                                                     <option value="E">Estrangeiro</option>
                                                 </Form.Select>
                                             </Form.Group>
@@ -1694,7 +1710,7 @@ class FrenteCaixa extends React.Component {
                         </Modal.Footer>
                     </Modal>
 
-                    <Offcanvas show={this.state.canvasFinalizarPedido} onHide={this.canvasFinalizarPedido} size="lg" centered placement="end" style={{ width: '35%' }}>
+                    <Offcanvas show={this.state.canvasFinalizarPedido} onHide={this.canvasFinalizarPedido} size="lg" placement="end" style={{ width: '35%' }}>
                         <Offcanvas.Header closeButton className="bg-success text-white">
                             <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
                             <Offcanvas.Title>Atenção </Offcanvas.Title>
