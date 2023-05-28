@@ -165,7 +165,7 @@ class FrenteCaixa extends React.Component {
             this.atualizaCpfCnpj({ target: { value: this.state.cnpj } });
         }
         if (prevState.produtosSelecionados !== this.state.produtosSelecionados ||
-            prevState.subTotal.toFixed(2) !== this.state.subTotal.toFixed(2) ||
+            prevState.subTotal !== this.state.subTotal ||
             prevState.valorDesconto !== this.state.valorDesconto ||
             prevState.subTotalComFrete !== this.state.subTotalComFrete) {
             const subtotalGeral = this.calcularSubTotalGeral().toFixed(2);
