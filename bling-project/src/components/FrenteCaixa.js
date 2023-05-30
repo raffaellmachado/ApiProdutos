@@ -1356,7 +1356,7 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col">
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="nome" className="texto-campos">Nome</Form.Label>
-                                                <Form.Control type="text" id="nome" className="form-control" name="nome" value={nome || consumidorFinal} onChange={this.atualizaNome} />
+                                                <Form.Control type="text" id="nome" className="form-control" name="nome" value={nome || ''} onChange={this.atualizaNome} />
                                             </Form.Group>
                                         </Col>
                                         <Col className="col">
