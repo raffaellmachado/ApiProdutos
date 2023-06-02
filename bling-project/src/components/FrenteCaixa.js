@@ -4,7 +4,7 @@ import '../css/FrenteCaixa.css';
 import { IonIcon } from '@ionic/react';
 import { trashOutline } from 'ionicons/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle, faCalendarAlt, faHandPaper } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 import ptBR from 'date-fns/locale/pt-BR';
 import DatePicker from 'react-datepicker';
