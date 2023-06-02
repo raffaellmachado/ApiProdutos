@@ -4,7 +4,7 @@ import '../css/FrenteCaixa.css';
 import { IonIcon } from '@ionic/react';
 import { trashOutline } from 'ionicons/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faCalendarAlt, faHandPaper } from '@fortawesome/free-solid-svg-icons';
 
 import ptBR from 'date-fns/locale/pt-BR';
 import DatePicker from 'react-datepicker';
@@ -47,6 +47,7 @@ class FrenteCaixa extends React.Component {
             depositos: [],
             vendedores: [],
             pedidos: [],
+            formaspagamento: [],
             produtosSelecionados: [],
             contatosSelecionados: [],
             vendedoresSelecionados: [],
@@ -101,12 +102,17 @@ class FrenteCaixa extends React.Component {
             data: '',
             valor: '',
             observacao: '',
+            prazo: 0,
+            carregado: false, // novo estado
+            erro: null
         };
 
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
         this.atualizaTotalComFrete = this.atualizaTotalComFrete.bind(this);
         this.adicionarParcela = this.adicionarParcela.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleChangePrazo = this.handleChangePrazo.bind(this);
+
     }
 
     ModalFinalizarVendaSemItem = () => {
@@ -152,9 +158,20 @@ class FrenteCaixa extends React.Component {
     }
 
     componentDidMount() {
-        this.buscarDeposito();
-        this.buscarVendedor();
-        this.buscarPedido()
+        this.buscarVendedor()
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => this.buscarFormaDePagamento())
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => this.buscarDeposito())
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => this.buscarPedido())
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => {
+                this.setState({ carregado: true });
+            })
+            .catch((error) => {
+                this.setState({ erro: error.message });
+            });
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -278,105 +295,168 @@ class FrenteCaixa extends React.Component {
 
 
     buscarVendedor = (value) => {
-        // console.log("Buscando vendedor por:", value);
-        this.setState({ buscaVendedor: value, carregando: false });
-        fetch(`http://localhost:8080/api/v1/contatos`)
-            .then((resposta) => {
-                if (!resposta.ok) {
-                    throw new Error("Erro na chamada da API");
-                }
-                return resposta.json();
-            })
-            .then((dados) => {
-                if (dados.retorno.contatos) {
-                    // console.log("Vendedor objeto retornado:", dados);
-
-                    const vendedoresFiltrados = dados.retorno.contatos.filter(
-                        (contato) => contato?.contato?.tiposContato?.some((tipoContato) => tipoContato?.tipoContato?.descricao?.toLowerCase().includes('vendedor'))
-                    );
-                    this.setState({
-                        vendedores: vendedoresFiltrados,
-                        vendedorSelecionado: null,
-                        carregando: false,
-                        vendedoresFiltrados: vendedoresFiltrados // adiciona essa linha
-                    });
-                } else {
+        return new Promise((resolve, reject) => {
+            // console.log("Buscando vendedor por:", value);
+            this.setState({ buscaVendedor: value, carregando: false });
+            fetch(`http://localhost:8080/api/v1/contatos`)
+                .then((resposta) => {
+                    if (!resposta.ok) {
+                        throw new Error("Erro na chamada da API");
+                    }
+                    return resposta.json();
+                })
+                .then((dados) => {
+                    if (dados.retorno.contatos) {
+                        const vendedoresFiltrados = dados.retorno.contatos.filter(
+                            (contato) =>
+                                contato?.contato?.tiposContato?.some(
+                                    (tipoContato) =>
+                                        tipoContato?.tipoContato?.descricao
+                                            ?.toLowerCase()
+                                            .includes("vendedor")
+                                )
+                        );
+                        this.setState({
+                            vendedores: vendedoresFiltrados,
+                            vendedorSelecionado: null,
+                            carregando: false,
+                            vendedoresFiltrados: vendedoresFiltrados,
+                        });
+                    } else {
+                        this.setState({
+                            vendedores: [],
+                            carregando: false,
+                        });
+                    }
+                    resolve(); // Resolva a Promise quando a chamada da API for concluída com sucesso
+                })
+                .catch((error) => {
+                    console.log("Erro ao buscar vendedor:", error);
                     this.setState({
                         vendedores: [],
-                        carregando: false
+                        carregando: false,
                     });
-                }
-            })
-            .catch((error) => {
-                console.log("Erro ao buscar vendedor:", error);
-                this.setState({
-                    vendedores: [],
-                    carregando: false
+                    reject(error); // Rejeite a Promise se ocorrer um erro na chamada da API
                 });
-            });
+        });
     };
 
-    buscarDeposito = () => {
-        fetch("http://localhost:8083/api/v1/depositos")
-            .then(resposta => resposta.json())
-            .then(dados => {
-                if (dados.retorno.depositos) {
-                    // console.log("Deposito objeto retornado:", dados);
 
-                    this.setState({
-                        depositos: dados.retorno.depositos,
-                        depositoSelecionado: dados.retorno.depositos[0].deposito.id // define o primeiro depósito como selecionado
-                    })
-                } else {
-                    this.setState({
-                        depositos: []
-                    })
-                }
-                this.setState({
-                    carregando: false
+    buscarDeposito = () => {
+        return new Promise((resolve, reject) => {
+            fetch("http://localhost:8083/api/v1/depositos")
+                .then((resposta) => {
+                    if (!resposta.ok) {
+                        throw new Error("Erro na chamada da API");
+                    }
+                    return resposta.json();
                 })
-            })
-            .catch((error) => {
-                console.log("Erro ao buscar deposito:", error);
-                this.setState({
-                    depositos: [],
-                    carregando: false
+                .then(dados => {
+                    if (dados.retorno.depositos) {
+                        this.setState({
+                            depositos: dados.retorno.depositos,
+                        });
+                    } else {
+                        this.setState({
+                            depositos: []
+                        });
+                    }
+                    this.setState({
+                        carregando: false
+                    });
+                    resolve(); // Resolva a Promise quando a chamada da API for concluída com sucesso
+                })
+                .catch((error) => {
+                    console.log("Erro ao buscar deposito:", error);
+                    this.setState({
+                        depositos: [],
+                        carregando: false
+                    });
+                    reject(error); // Rejeite a Promise se ocorrer um erro na chamada da API
                 });
-            });
-    }
+        });
+    };
+
 
     buscarPedido = (value) => {
-        this.setState({ buscaPedido: value, carregando: true });
-        fetch("http://localhost:8085/api/v1/pedidos")
-            .then(resposta => resposta.json())
-            .then(dados => {
-                if (dados.retorno.pedidos) {
-                    // console.log("pedidos retornados:", dados);
-                    const ultimoPedido = dados.retorno.pedidos[dados.retorno.pedidos.length - 1];
-                    console.log("posicao NUMERO:", ultimoPedido.pedido.numero);
-                    this.setState({
-                        numeroPedido: ultimoPedido.pedido.numero,
-                        ultimoPedido: ultimoPedido.pedido.numero // Adiciona o valor de ultimoPedido ao estado
-                    });
-                    console.log("Numero do ultimo pedido:", ultimoPedido);
-
-                } else {
-                    this.setState({
-                        pedidos: []
-                    })
-                }
-                this.setState({
-                    carregando: false
+        return new Promise((resolve, reject) => {
+            this.setState({ buscaPedido: value, carregando: true });
+            fetch("http://localhost:8085/api/v1/pedidos")
+                .then((resposta) => {
+                    if (!resposta.ok) {
+                        throw new Error("Erro na chamada da API");
+                    }
+                    return resposta.json();
                 })
-            })
-            .catch((error) => {
-                console.log("Erro ao buscar deposito:", error);
-                this.setState({
-                    depositos: [],
-                    carregando: false
+                .then((dados) => {
+                    if (dados.retorno.pedidos) {
+                        const ultimoPedido = dados.retorno.pedidos[dados.retorno.pedidos.length - 1];
+                        const numeroPedido = +ultimoPedido.pedido.numero + 1; // Adiciona 1 ao último pedido
+                        console.log("Numero do ultimo pedido:", ultimoPedido);
+                        console.log("Numero do proximo pedido:", numeroPedido);
+                        this.setState({
+                            numeroPedido: ultimoPedido.pedido.numero,
+                            ultimoPedido: numeroPedido,
+                        });
+                    } else {
+                        this.setState({
+                            pedidos: [],
+                        });
+                    }
+                    this.setState({
+                        carregando: false,
+                    });
+                    resolve(); // Resolva a Promise quando a chamada da API for concluída com sucesso
+                })
+                .catch((error) => {
+                    console.log("Erro ao buscar pedido:", error);
+                    this.setState({
+                        pedidos: [],
+                        carregando: false,
+                    });
+                    reject(error); // Rejeite a Promise se ocorrer um erro na chamada da API
                 });
-            });
-    }
+        });
+    };
+
+
+
+    buscarFormaDePagamento = () => {
+        return new Promise((resolve, reject) => {
+            fetch("http://localhost:8086/api/v1/formaspagamento")
+                .then((resposta) => {
+                    if (!resposta.ok) {
+                        throw new Error("Erro na chamada da API");
+                    }
+                    return resposta.json();
+                })
+                .then((dados) => {
+                    if (dados.retorno.formaspagamento) {
+                        console.log("Forma de pagamento objeto retornado:", dados);
+                        this.setState({
+                            formaspagamento: dados.retorno.formaspagamento,
+                        });
+                    } else {
+                        this.setState({
+                            formaspagamento: [],
+                        });
+                    }
+                    this.setState({
+                        carregando: false,
+                    });
+                    resolve(); // Resolva a Promise quando a chamada da API for concluída com sucesso
+                })
+                .catch((error) => {
+                    console.log("Erro ao buscar forma de pagamento:", error);
+                    this.setState({
+                        formaspagamento: [],
+                        carregando: false,
+                    });
+                    reject(error); // Rejeite a Promise se ocorrer um erro na chamada da API
+                });
+        });
+    };
+
 
     cadastrarPedido = (xmlPedido) => {
         const parser = new DOMParser();
@@ -384,6 +464,20 @@ class FrenteCaixa extends React.Component {
         const stringXml = new XMLSerializer().serializeToString(xml);
 
         fetch('http://localhost:8085/api/v1/cadastrarpedido', {
+            method: 'POST',
+            body: stringXml,
+            headers: {
+                'Content-Type': 'application/xml'
+            }
+        });
+    };
+
+    cadastrarFormaDePagamento = (xmlFormaPagamento) => {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlFormaPagamento, 'text/xml');
+        const stringXml = new XMLSerializer().serializeToString(xml);
+
+        fetch('http://localhost:8086/api/v1/cadastrarformapagamento', {
             method: 'POST',
             body: stringXml,
             headers: {
@@ -1001,6 +1095,7 @@ class FrenteCaixa extends React.Component {
                 data: parcela.data,
                 valor: parcela.valor,
                 observacao: parcela.observacao,
+                forma: parcela.forma
             };
             prazo.push(parcelas);
         });
@@ -1047,6 +1142,9 @@ class FrenteCaixa extends React.Component {
                     <data>${parcelas.data}</data>
                     <vlr>${parcelas.valor}</vlr>
                     <obs>${parcelas.observacao}</obs>
+                    <forma_pagamento>
+                        <id>${parcelas.forma}</id>
+                    </forma_pagamento>
                </parcela>
                 `).join('')}
             </parcelas>
@@ -1069,9 +1167,25 @@ class FrenteCaixa extends React.Component {
 
     handleChange(event) {
         this.setState({
-            condicao: event.target.value
+            condicao: event.target.value,
         });
     };
+
+    handleChangePrazo(event) {
+        this.setState({
+            prazo: event.target.value
+        });
+    };
+
+    handleChangeDias = (index, value) => {
+        const { parcelas } = this.state;
+        const newParcelas = [...parcelas];
+        newParcelas[index].dias = value;
+        // Atualize o valor da data com base nos dias alterados
+        newParcelas[index].data = this.calcularData(value);
+        this.setState({ parcelas: newParcelas });
+    };
+
 
     handleChangeParcela(index, campo, valor) {
         const parcelas = [...this.state.parcelas];
@@ -1083,21 +1197,24 @@ class FrenteCaixa extends React.Component {
 
     adicionarParcela() {
         const { condicao } = this.state;
-        const dias = parseInt(condicao);
+        const { prazo } = this.state;
+        console.log("prazo: ", prazo)
+        const dias = parseInt(prazo);
+        const forma = condicao;
         const hoje = new Date();
-        const data = new Date(hoje.getTime() + dias * 24 * 60 * 60 * 1000);
+        const data = new Date(hoje.getTime() + parseInt(dias) * 24 * 60 * 60 * 1000);
         const dataFormatada = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
         const novaParcela = {
-            dias,
+            dias: prazo,
             data: dataFormatada,
             valor: '',
-            forma: '',
+            forma, // Atribui o valor de "condicao" em "forma"
             observacao: '',
             acao: '',
         };
 
         let parcelas = [...this.state.parcelas];
-        const index = parcelas.findIndex(parcela => parcela.dias === 0);
+        const index = parcelas.findIndex((parcela) => parcela.dias === 0);
         if (index !== -1) {
             parcelas.splice(index, 1);
         }
@@ -1115,38 +1232,42 @@ class FrenteCaixa extends React.Component {
 
         this.setState({
             numLinhas: this.state.numLinhas + 1,
-            parcelas: newParcelas
+            parcelas: newParcelas,
         });
-    };
+
+        console.log("dias", dias)
+        console.log("data", dataFormatada)
+    }
+
 
     handleValorChangeParcela(index, campo, valor) {
         const parcelas = [...this.state.parcelas];
         const numParcelas = parcelas.length;
 
+        // Calcula a soma total dos valores das parcelas
+        // const valorTotalParcelas = parcelas.reduce((acc, curr) => acc + parseFloat(curr.valor || 0), 0);
+
+        // Calcula o valor atual da parcela selecionada
+        const valorAtualParcela = parseFloat(parcelas[index].valor || 0);
+
+        // Calcula a diferença de valor a ser aplicada nas demais parcelas
+        const diferenca = (valorAtualParcela - valor) / (numParcelas - 1);
+
         // Atualiza o valor da parcela selecionada
         parcelas[index][campo] = valor;
 
-        // Calcula a soma total dos valores das parcelas
-        const valorTotalParcelas = parcelas.reduce((acc, curr) => acc + parseFloat(curr.valor || 0), 0);
-
-        // Calcula o valor médio das parcelas após a atualização
-        const valorMedioParcelas = valorTotalParcelas / numParcelas;
-
-        // Calcula a diferença entre o valor médio das parcelas e o valor de cada parcela
-        const diferenca = valorMedioParcelas - valor;
-
         // Atualiza os valores das outras parcelas com a diferença calculada
         const newParcelas = parcelas.map((parcela, i) => {
-            if (i === index) {
-                return { ...parcela, [campo]: valor };
-            } else {
-                const novoValor = (parseFloat(parcela.valor) || 0) + diferenca;
+            if (i !== index) {
+                const novoValor = parseFloat(parcela.valor || 0) + diferenca;
                 return { ...parcela, valor: novoValor.toFixed(2) };
             }
+            return parcela;
         });
 
         this.setState({ parcelas: newParcelas });
     };
+
 
     handleFormaChange = (index, event) => {
         const parcelas = [...this.state.parcelas];
@@ -1279,15 +1400,40 @@ class FrenteCaixa extends React.Component {
 
         const { produtos, produtoSelecionado, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto } = this.state;
         const { contatos, contatoSelecionado, buscaContato, cnpj, nome, tipo, codigo, fantasia, endereco, numero, bairro, cidade, uf, dataPrevista, observacoes, observacaointerna, valorDesconto, dinheiroRecebido, troco, frete } = this.state;
-        const { subTotalGeral, condicao, consumidorFinal } = this.state;
-
+        const { subTotalGeral, condicao, consumidorFinal, prazo, depositoSelecionado, numeroPedido } = this.state;
+        const { carregado, erro } = this.state;
 
         let quantidadeTotal = 0;
         for (const produto of this.state.produtosSelecionados) {
             quantidadeTotal += produto.quantidade;
         }
 
-        if (this.state.carregando) {
+        if (erro) {
+            return (
+                <Modal show={true} onHide={() => window.location.reload()} centered>
+                    <Modal.Header closeButton className="bg-danger text-white">
+                        <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                        <Modal.Title>
+                            ERRO
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <div style={{ textAlign: "center" }}>
+                            <p style={{ fontSize: "20px", fontWeight: "bold" }}>Ocorreu um erro:</p>
+                            <p style={{ fontSize: "20px" }}>{erro}</p>
+                        </div>
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                        <Button variant="dark" onClick={() => window.location.reload()}>
+                            Tentar novamente
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            );
+        }
+
+        if (!carregado) {
             return (
                 <div className="spinner-container">
                     <div className="d-flex align-items-center justify-content-center">
@@ -1446,7 +1592,7 @@ class FrenteCaixa extends React.Component {
                                             <Col className="col">
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="preco" className="texto-campos">Valor unitário</Form.Label>
-                                                    <Form.Control type="text" id="preco" className="form-control" name="preco" placeholder="00,00" value={preco || ''} onChange={this.atualizaPreco} disabled={!produtoSelecionado} />
+                                                    <Form.Control type="text" id="preco" className="form-control" name="preco" placeholder="00,00" value={preco || ''} onChange={this.atualizaPreco} disabled={!produtoSelecionado} readOnly />
                                                 </Form.Group>
                                             </Col>
                                             <Col className="col">
@@ -1524,31 +1670,41 @@ class FrenteCaixa extends React.Component {
                                                     <h5>Forma de pagamento</h5>
                                                 </div>
                                                 <Row className="mb-3">
-                                                    <div className="d-flex align-items-end">
-                                                        <Col className="col">
-                                                            <Form.Group className="mb-3" controlId="condicao">
-                                                                <Form.Label>Condição</Form.Label>
-                                                                <Form.Control type="number" placeholder="Digite a condição" value={condicao || ''} onChange={this.handleChange} />
-                                                            </Form.Group>
-                                                        </Col>
-                                                        <Col className="col">
-                                                            <Form.Group className="mb-3">
-                                                                <Form.Label htmlFor="gerarparcelas" className="texto-campos" style={{ marginRight: '20px' }}></Form.Label>
-                                                                <Button variant="outline-success" className="" onClick={() => {
-                                                                    console.log(this.state.subTotalGeral)
-                                                                    if (this.state.subTotalGeral === undefined) {
-                                                                        this.modalInserirParcela();
-                                                                    } else {
-                                                                        this.adicionarParcela();
-                                                                    }
-                                                                }}
-                                                                    style={{ width: "200px" }}
-                                                                >
-                                                                    Gerar parcelas
-                                                                </Button>
-                                                            </Form.Group>
-                                                        </Col>
-                                                    </div>
+                                                    <Col className="col mb-3">
+                                                        <Form.Group className="mb-3" controlId="condicao">
+                                                            <Form.Label>Formas de pagamento</Form.Label>
+                                                            <Form.Select type="number" placeholder="Digite a condição" value={condicao || ''} onChange={this.handleChange} >
+                                                                <option>Selecione a forma</option>
+                                                                {this.state.formaspagamento.map((formapagamento) => (
+                                                                    <option key={formapagamento.formapagamento.id} value={formapagamento.formapagamento.id}>
+                                                                        {formapagamento.formapagamento.descricao}
+                                                                    </option>
+                                                                ))}
+                                                            </Form.Select>
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col mb-3">
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label>Condição</Form.Label>
+                                                            <Form.Control type="number" id="prazo" className="" name="trocodinheiro" value={this.state.prazo || ''} onChange={this.handleChangePrazo} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col mb-3">
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="gerarparcelas" className="texto-campos" style={{ marginRight: '20px' }}></Form.Label>
+                                                            <Button variant="outline-success" className="" onClick={() => {
+                                                                if (this.state.subTotalGeral === undefined) {
+                                                                    this.modalInserirParcela();
+                                                                } else {
+                                                                    this.adicionarParcela();
+                                                                }
+                                                            }}
+                                                                style={{ width: "200px", marginTop: "33px" }}
+                                                            >
+                                                                Gerar parcelas
+                                                            </Button>
+                                                        </Form.Group>
+                                                    </Col>
                                                     <div>
                                                         <Table responsive="lg" className="table-responsive" striped>
                                                             <thead>
@@ -1568,31 +1724,33 @@ class FrenteCaixa extends React.Component {
                                                                             <Form.Control
                                                                                 type="number"
                                                                                 value={parcela.dias}
-                                                                                onChange={(event) => this.handleChangeParcela(index, 'dias', event.target.value) || ''} />
+                                                                                onChange={(event) => this.handleChangeDias(index, event.target.value)}
+                                                                            />
+
                                                                         </td>
                                                                         <td>
                                                                             <Form.Control
                                                                                 type="text"
-                                                                                value={this.calcularData(parcela.dias) || ''}
-                                                                                disabled
-                                                                            />
+                                                                                value={this.calcularData(parcela.dias) || ''} disabled />
                                                                         </td>
                                                                         <td>
                                                                             <Form.Control
                                                                                 type="number"
                                                                                 value={parcela.valor}
                                                                                 onChange={(event) => this.handleValorChangeParcela(index, 'valor', event.target.value)}
-                                                                                disabled
+
                                                                             />
                                                                         </td>
                                                                         <td>
                                                                             <Form.Select
                                                                                 value={parcela.forma || ''}
                                                                                 onChange={(e) => this.handleFormaChange(index, e)}>
-                                                                                <option value="2">Conta a receber/pagar</option>
-                                                                                <option value="1">Dinheiro</option>
+                                                                                {this.state.formaspagamento.map((formapagamento) => (
+                                                                                    <option key={formapagamento.formapagamento.id} value={formapagamento.formapagamento.id}>
+                                                                                        {formapagamento.formapagamento.descricao}
+                                                                                    </option>
+                                                                                ))}
                                                                             </Form.Select>
-
                                                                         </td>
                                                                         <td>
                                                                             <Form.Control
@@ -1609,7 +1767,7 @@ class FrenteCaixa extends React.Component {
                                                                 ))}
                                                             </tbody>
                                                         </Table>
-                                                        <div className="col d-flex justify-content-end">
+                                                        {/* <div className="col d-flex justify-content-end">
                                                             <Button variant="light" onClick={() => {
                                                                 if (this.state.subTotalGeral === 0) {
                                                                     this.modalInserirParcela();
@@ -1617,7 +1775,7 @@ class FrenteCaixa extends React.Component {
                                                                     this.adicionarParcela();
                                                                 }
                                                             }} defaultValue="0">+ Adicionar outra parcela</Button>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                     {/* <Col className="col">
                                                     <Form.Group className="mb-3">
@@ -1668,7 +1826,8 @@ class FrenteCaixa extends React.Component {
                                                     <Col className="col">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="depositolancamento" className="texto-campos">Depósito para lançamento</Form.Label>
-                                                            <Form.Select className="" id="depositolancamento" name="depositolancamento" value={this.state.depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
+                                                            <Form.Select className="" id="depositolancamento" name="depositolancamento" value={depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
+                                                                <option>Selecione o deposito</option>
                                                                 {this.state.depositos.map((deposito) => (
                                                                     <option key={deposito.deposito.id} value={deposito.deposito.id}>
                                                                         {deposito.deposito.descricao}
@@ -1778,7 +1937,7 @@ class FrenteCaixa extends React.Component {
                             <Modal.Title>Atenção </Modal.Title>
                         </Modal.Header>
                         <Modal.Body style={{ padding: '20px' }}>
-                            <div>Deseja excluir o pedido {this.state.numeroPedido}?</div>
+                            <div>Deseja excluir o pedido {this.state.ultimoPedido}?</div>
                             <div>Essa ação não poderá ser desfeita.</div>
                         </Modal.Body>
                         <Modal.Footer>
@@ -1892,8 +2051,8 @@ class FrenteCaixa extends React.Component {
                     </Modal>
                     <Modal show={this.state.modalSalvarPedido} onHide={this.modalSalvarPedido} centered>
                         <Modal.Body>
-                            <span style={{ display: 'block' }} ><strong>Pedido N.º: {this.state.numeroPedido} </strong></span>
-                            <span style={{ display: 'block' }} ><strong>Salvo com sucesso!</strong></span>
+                            <span style={{ display: 'block' }} ><strong>Pedido N.º: {this.state.ultimoPedido} </strong></span>
+                            <span style={{ display: 'block' }}><strong>Salvo com sucesso!</strong></span>
                         </Modal.Body>
                     </Modal>
                 </Container >
