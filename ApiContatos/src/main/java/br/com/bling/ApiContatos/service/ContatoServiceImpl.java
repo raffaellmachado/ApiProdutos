@@ -80,7 +80,7 @@ public class ContatoServiceImpl implements ContatoService {
 
             /* TESTE BANCO DE DADOS, DESCOMENTAR LINHA ABAIXO */
 //            String url = "http://www.teste.com/";
-                String url = apiBaseUrl + "/contatos/json/" + apikeyparam + apiKey;
+            String url = apiBaseUrl + "/contatos/json/" + apikeyparam + apiKey;
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -424,13 +424,13 @@ public class ContatoServiceImpl implements ContatoService {
         }
     }
 
-        /**
-         * ---------------------------------------------------- VERSÃO 1 - SEM CONEXÃO AO BANCO DE DADOS. ----------------------------------------------------------
-         */
+    /**
+     * ---------------------------------------------------- VERSÃO 1 - SEM CONEXÃO AO BANCO DE DADOS. ----------------------------------------------------------
+     */
 
-        /**
-         * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
-         *///    @Override
+    /**
+     * GET "BUSCAR A LISTA DE PRODUTOS CADASTRADO NO BLING".
+     *///    @Override
 //    public JsonResponse getAllContacts() throws ApiContatoException {
 //        try {
 //            HttpHeaders headers = new HttpHeaders();
@@ -452,9 +452,9 @@ public class ContatoServiceImpl implements ContatoService {
 //        }
 //    }
 
-        /**
-         * GET "BUSCAR UM PRODUTO PELO CÒDIGO (ID)".
-         */
+    /**
+     * GET "BUSCAR UM PRODUTO PELO CÒDIGO (ID)".
+     */
 //    @Override
 //    public JsonResponse getContactsById(String id) throws ApiContatoException {
 //        try {
@@ -494,9 +494,9 @@ public class ContatoServiceImpl implements ContatoService {
 //        }
 //    }
 
-        /**
-         * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
-         */
+    /**
+     * POST "CADASTRAR UM NOVO PRODUTO" UTILIZANDO XML.
+     */
 //    @Override
 //    public JsonRequest createContact(String xmlContato) throws ApiContatoException {
 //        try {
@@ -524,9 +524,9 @@ public class ContatoServiceImpl implements ContatoService {
 //        }
 //    }
 
-        /**
-         * PUT "ATUALIZAR PRODUTO PELO ID UTILIZANDO XML.
-         */
+    /**
+     * PUT "ATUALIZAR PRODUTO PELO ID UTILIZANDO XML.
+     */
 //    @Override
 //    public JsonRequest updateContact(@RequestBody @Valid String xmlContato, @PathVariable("id") String id) throws ApiContatoException {
 //        try {
@@ -553,4 +553,4 @@ public class ContatoServiceImpl implements ContatoService {
 //            throw new ApiContatoException("Erro ao chamar API", e);
 //        }
 //    }
-    }
+}

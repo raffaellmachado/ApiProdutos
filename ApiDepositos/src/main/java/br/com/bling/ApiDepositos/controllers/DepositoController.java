@@ -38,17 +38,17 @@ public class DepositoController {
                 throw new DepositoListaException("Não foi possível localizar a lista de depositos");
             }
 
-            if (request.retorno.depositos != null) {
-                for (RetornoResponse.Depositos listaDepositos : request.getRetorno().getDepositos()) {
-                    System.out.println("-------------------------------------------------------------------");
-                    System.out.println("Id Deposito: " + listaDepositos.deposito.id);
-                    System.out.println("Descrição: " + listaDepositos.deposito.descricao);
-                    System.out.println("Situação: " + listaDepositos.deposito.situacao);
-                    System.out.println("Deposito Padrão: " + listaDepositos.deposito.depositoPadrao);
-                    System.out.println("Desconsiderar Saldo: " + listaDepositos.deposito.desconsiderarSaldo);
-                    System.out.println("-------------------------------------------------------------------");
-                }
-            }
+//            if (request.retorno.depositos != null) {
+//                for (RetornoResponse.Depositos listaDepositos : request.getRetorno().getDepositos()) {
+//                    System.out.println("-------------------------------------------------------------------");
+//                    System.out.println("Id Deposito: " + listaDepositos.deposito.id);
+//                    System.out.println("Descrição: " + listaDepositos.deposito.descricao);
+//                    System.out.println("Situação: " + listaDepositos.deposito.situacao);
+//                    System.out.println("Deposito Padrão: " + listaDepositos.deposito.depositoPadrao);
+//                    System.out.println("Desconsiderar Saldo: " + listaDepositos.deposito.desconsiderarSaldo);
+//                    System.out.println("-------------------------------------------------------------------");
+//                }
+//            }
 
             System.out.println(request);
 
@@ -71,17 +71,17 @@ public class DepositoController {
                 throw new DepositoIdDepositoException("Contato com o número de CPF/CNPJ: " + idDeposito + " não encontrado.");
             }
 
-            if (request.retorno.depositos != null) {
-                for (RetornoResponse.Depositos listaDepositos : request.getRetorno().getDepositos()) {
-                    System.out.println("-------------------------------------------------------------------");
-                    System.out.println("Id Deposito: " + listaDepositos.deposito.id);
-                    System.out.println("Descrição: " + listaDepositos.deposito.descricao);
-                    System.out.println("Situação: " + listaDepositos.deposito.situacao);
-                    System.out.println("Deposito Padrão: " + listaDepositos.deposito.depositoPadrao);
-                    System.out.println("Desconsiderar Saldo: " + listaDepositos.deposito.desconsiderarSaldo);
-                    System.out.println("-------------------------------------------------------------------");
-                }
-            }
+//            if (request.retorno.depositos != null) {
+//                for (RetornoResponse.Depositos listaDepositos : request.getRetorno().getDepositos()) {
+//                    System.out.println("-------------------------------------------------------------------");
+//                    System.out.println("Id Deposito: " + listaDepositos.deposito.id);
+//                    System.out.println("Descrição: " + listaDepositos.deposito.descricao);
+//                    System.out.println("Situação: " + listaDepositos.deposito.situacao);
+//                    System.out.println("Deposito Padrão: " + listaDepositos.deposito.depositoPadrao);
+//                    System.out.println("Desconsiderar Saldo: " + listaDepositos.deposito.desconsiderarSaldo);
+//                    System.out.println("-------------------------------------------------------------------");
+//                }
+//            }
 
             System.out.println(request);
 
