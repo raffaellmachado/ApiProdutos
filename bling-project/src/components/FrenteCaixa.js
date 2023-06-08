@@ -1269,13 +1269,13 @@ class FrenteCaixa extends React.Component {
     };
 
 
-    handleFormaChange = (index, event) => {
-        const parcelas = [...this.state.parcelas];
-        parcelas[index].forma = event.target.value;
-        this.setState({
-            parcelas
-        });
-    };
+    // handleFormaChange = (index, event) => {
+    //     const parcelas = [...this.state.parcelas];
+    //     parcelas[index].forma = event.target.value;
+    //     this.setState({
+    //         parcelas
+    //     });
+    // };
 
     handleObservacaoChange = (index, event) => {
         const parcelas = [...this.state.parcelas];
@@ -1712,7 +1712,7 @@ class FrenteCaixa extends React.Component {
                                                                     <th>Dias</th>
                                                                     <th>Data</th>
                                                                     <th>Valor</th>
-                                                                    <th>Forma</th>
+                                                                    {/* <th>Forma</th> */}
                                                                     <th>Observação</th>
                                                                     <th>Ação</th>
                                                                 </tr>
@@ -1741,7 +1741,7 @@ class FrenteCaixa extends React.Component {
 
                                                                             />
                                                                         </td>
-                                                                        <td>
+                                                                        {/* <td>
                                                                             <Form.Select
                                                                                 value={parcela.forma || ''}
                                                                                 onChange={(e) => this.handleFormaChange(index, e)}>
@@ -1751,7 +1751,7 @@ class FrenteCaixa extends React.Component {
                                                                                     </option>
                                                                                 ))}
                                                                             </Form.Select>
-                                                                        </td>
+                                                                        </td> */}
                                                                         <td>
                                                                             <Form.Control
                                                                                 type="text"
