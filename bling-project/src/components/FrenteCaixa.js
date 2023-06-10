@@ -2026,7 +2026,7 @@ class FrenteCaixa extends React.Component {
                                     </strong>
                                 </h5>
                             </div>
-                            <div class="d-flex justify-content-center">
+                            <div className="d-flex justify-content-center">
                                 <Button variant="outline-secondary" className="gerar-nota">Gerar NFC-e</Button>
                                 <Button variant="outline-secondary" className="gerar-nota">Imprimir comprovante não fiscal</Button>
                             </div>
