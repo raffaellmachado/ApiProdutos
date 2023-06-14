@@ -270,9 +270,9 @@ h5 {
 
 .table thead th {
   font-family: "Roboto", sans-serif;
-  background-color: #4d856b;
-  color: #ffffffce;
-  border-radius: px;
+  background-color: #6c757d;
+  color: #ffffff;
+  border-radius: 2px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
@@ -290,6 +290,10 @@ h5 {
 
 .red-icon {
   color: red;
+}
+
+.blue-icon {
+  color: rgb(12, 16, 255);
 }
 
 .rodape {
@@ -335,7 +339,7 @@ h5 {
   text-align: center;
   letter-spacing: normal;
   color: #ffffff;
-  background-color: #3faf6c;
+  background-color: #198754;
   box-shadow: none;
   border-radius: 8px;
   width: 360px;

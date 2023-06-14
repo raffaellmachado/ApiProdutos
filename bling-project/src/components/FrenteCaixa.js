@@ -230,6 +230,7 @@ class FrenteCaixa extends React.Component {
                             (produto.produto.gtin && produto.produto.gtin.toLowerCase().includes(value.toLowerCase())) ||
                             (produto.produto.gtinEmbalagem && produto.produto.gtinEmbalagem.toLowerCase().includes(value.toLowerCase())) ||
                             (produto.produto.descricaoFornecedor && produto.produto.descricaoFornecedor.toLowerCase().includes(value.toLowerCase())) ||
+                            (produto.produto.nomeFornecedor && produto.produto.nomeFornecedor.toLowerCase().includes(value.toLowerCase())) ||
                             (produto.produto.idFabricante && produto.produto.idFabricante.toLowerCase().includes(value.toLowerCase()))
                     );
                     console.log("Produto objeto retornado:", produtosFiltrados);
@@ -1479,10 +1480,10 @@ class FrenteCaixa extends React.Component {
                                                 <Form.Label htmlFor="produto" className="texto-campos">Adicionar produto</Form.Label>
                                                 <Row>
                                                     <Col xs={8}>
-                                                        <Form.Control type="text" id="produto" className="form-control" placeholder="Busque um produto pelo nome ou código ou SKU ou EAN" value={buscaProduto || ''} onChange={this.atualizarBuscaProduto} />
+                                                        <Form.Control type="text" id="produto" className="form-control" placeholder="Busque um produto pelo (Nome ou Código ou SKU ou EAN ou Descrição/Nome Fornecedor)" value={buscaProduto || ''} onChange={this.atualizarBuscaProduto} />
                                                     </Col>
                                                     <Col xs={4}>
-                                                        <Button variant="success" onClick={() => this.buscarProdutos(buscaProduto)}>Buscar</Button>
+                                                        <Button variant="secondary" onClick={() => this.buscarProdutos(buscaProduto)}>Buscar</Button>
                                                     </Col>
                                                 </Row>
                                             </div>
@@ -1698,11 +1699,11 @@ class FrenteCaixa extends React.Component {
                                     <div className="busca-cliente d-grid gap-2">
                                         <Form.Label htmlFor="produto" className="texto-campos">Cliente (Nome)</Form.Label>
                                         <Row>
-                                            <Col xs={8}>
+                                            <Col xs={6}>
                                                 <Form.Control type="text" id="cliente" className="form-control" placeholder="Digite o nome do cliente" value={buscaContato || ''} onChange={this.atualizarBuscaContato} />
                                             </Col>
                                             <Col xs={4}>
-                                                <Button variant="success" onClick={() => this.buscarContato(buscaContato, nome, cnpj)}>Buscar</Button>
+                                                <Button variant="secondary" onClick={() => this.buscarContato(buscaContato, nome, cnpj)}>Buscar</Button>
                                             </Col>
                                         </Row>
                                     </div>
@@ -1820,7 +1821,7 @@ class FrenteCaixa extends React.Component {
                                             <h5>Forma de pagamento</h5>
                                         </div>
                                         <Row className="mb-3">
-                                            <Col className="col mb-3">
+                                            <Col className="col mb-3" xs={3}>
                                                 <Form.Group className="mb-3" controlId="condicao">
                                                     <Form.Label>Formas de pagamento</Form.Label>
                                                     <Form.Select type="number" placeholder="Digite a condição" value={condicao || ''} onChange={this.handleChange} >
@@ -1833,13 +1834,13 @@ class FrenteCaixa extends React.Component {
                                                     </Form.Select>
                                                 </Form.Group>
                                             </Col>
-                                            <Col className="col mb-3">
+                                            <Col className="col mb-3" xs={2}>
                                                 <Form.Group className="mb-3">
                                                     <Form.Label>Condição</Form.Label>
                                                     <Form.Control type="number" id="prazo" className="" name="trocodinheiro" value={this.state.prazo || ''} onChange={this.handleChangePrazo} />
                                                 </Form.Group>
                                             </Col>
-                                            <Col className="col mb-3">
+                                            <Col className="col mb-3" >
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="gerarparcelas" className="texto-campos" style={{ marginRight: '20px' }}></Form.Label>
                                                     <Button variant="outline-success" className="" onClick={() => {
@@ -2074,7 +2075,8 @@ class FrenteCaixa extends React.Component {
                             </Row>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="success" onClick={this.modalEditarProduto}>Fechar</Button>
+                            <Button variant="outline-success" className="mr-2" onClick={this.modalEditarProduto} style={{ marginRight: '10px' }}>Cancelar</Button>
+                            <Button variant="success" onClick={this.modalEditarProduto}>Salvar</Button>
                         </Modal.Footer>
                     </Modal>
 
