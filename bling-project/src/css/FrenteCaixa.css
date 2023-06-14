@@ -1,5 +1,5 @@
 body {
-  padding-top: 60px;
+  padding-top: 70px;
   zoom: 0.8;
 }
 
@@ -34,6 +34,7 @@ body {
   padding: 0;
   list-style-type: none;
   margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .lista-contatos li {
@@ -44,7 +45,7 @@ body {
   border: 1px solid #e4e4e4;
   margin-bottom: 0.5rem;
   transition: all 0.2s ease-in-out;
-  border-radius: 4px;
+  border-radius: 9px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -58,6 +59,7 @@ body {
   padding: 0;
   list-style-type: none;
   margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .lista-produtos li {
@@ -68,7 +70,7 @@ body {
   border: 1px solid #e4e4e4;
   margin-bottom: 0.5rem;
   transition: all 0.2s ease-in-out;
-  border-radius: 4px;
+  border-radius: 9px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -77,37 +79,36 @@ body {
   border: 1px solid #34ad61;
 }
 
-.grid-1 {
-  position: sticky;
-  top: 60px; /* valor ajustável */
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 0.25rem;
-  padding: 1rem;
-  margin-left: 50px;
-  margin-right: 50px;
-  max-width: 1000px;
-  opacity: 0;
-  transform: translateY(50%);
-  animation: bolha 0.5s ease forwards;
-  z-index: 1;
-}
-
+.grid-1,
 .grid-2 {
   position: sticky;
-  top: 60px; /* valor ajustável */
+  top: 60px;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 0.25rem;
   padding: 1rem;
-  margin-left: 20px;
-  margin-right: auto;
-  max-width: 1000px;
+  max-width: auto;
   opacity: 0;
   transform: translateY(50%);
-  animation: bolha 0.5s ease forwards;
+  animation: bolha 0.9s ease forwards;
   z-index: 1;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
 }
+
+/* .grid-2 {
+  position: sticky;
+  top: 60px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  max-width: auto;
+  opacity: 0;
+  transform: translateY(50%);
+  animation: bolha 0.9s ease forwards;
+  z-index: 1;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+} */
 
 @keyframes bolha {
   0% {
@@ -121,9 +122,10 @@ body {
 }
 
 .divisa {
-  border-top: 1px solid rgb(44, 44, 44);
+  border-top: 1px solid rgb(199, 199, 199);
   margin-top: 20px;
   margin-bottom: 20px;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
 }
 
 .produto-header {
@@ -268,9 +270,9 @@ h5 {
 
 .table thead th {
   font-family: "Roboto", sans-serif;
-  background-color: #000000a1;
+  background-color: #4d856b;
   color: #ffffffce;
-  border-radius: 2px;
+  border-radius: px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
