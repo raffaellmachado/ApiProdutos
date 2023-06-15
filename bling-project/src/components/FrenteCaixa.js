@@ -146,11 +146,18 @@ class FrenteCaixa extends React.Component {
         });
     }
 
-    modalEditarProduto = () => {
+    modalEditarProduto = (produto) => {
         this.setState({
-            modalEditarProduto: !this.state.modalEditarProduto
+            produtoSelecionadoLista: produto,
+            valorLista: produto.produto.preco || '',
+            quantidade: produto.quantidade || '',
+            descontoItem: produto.descontoItem || '',
+            valorUnitario: produto.preco || '',
+            subTotal: produto.subTotal || '',
+            observacaointerna: produto.observacaointerna || '',
+            modalEditarProduto: !this.state.modalEditarProduto,
         });
-    }
+    };
 
     modalSalvarPedido = () => {
         this.setState({
@@ -172,19 +179,19 @@ class FrenteCaixa extends React.Component {
 
     componentDidMount() {
         this.buscarVendedor()
-        //         .catch(() => { throw new Error("Erro ao conectar a API"); })
-        //         .then(() => this.buscarFormaDePagamento())
-        //         .catch(() => { throw new Error("Erro ao conectar a API"); })
-        //         .then(() => this.buscarDeposito())
-        //         .catch(() => { throw new Error("Erro ao conectar a API"); })
-        //         .then(() => this.buscarPedido())
-        //         .catch(() => { throw new Error("Erro ao conectar a API"); })
-        //         .then(() => {
-        //             this.setState({ carregado: true });
-        //         })
-        //         .catch((error) => {
-        //             this.setState({ erro: error.message });
-        //         });
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => this.buscarFormaDePagamento())
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => this.buscarDeposito())
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => this.buscarPedido())
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => {
+                this.setState({ carregado: true });
+            })
+            .catch((error) => {
+                this.setState({ erro: error.message });
+            });
 
         this.setState({ carregado: true }); //APAGAR (GAMBIARRA)
     }
@@ -655,11 +662,11 @@ class FrenteCaixa extends React.Component {
     };
 
     selecionarProduto = (produto) => {
-        const precoEmReais = parseFloat(produto.produto.preco).toFixed(2);
+        const preco = parseFloat(produto.produto.preco).toFixed(2);
         const valorTotal = (parseFloat(produto.produto.preco) * 1).toFixed(2);
         this.setState({
             produtoSelecionado: produto,
-            preco: precoEmReais,
+            preco: preco,
             produtos: [],
             quantidade: 1,
             valorTotal: valorTotal,
@@ -724,7 +731,7 @@ class FrenteCaixa extends React.Component {
     calcularTotal() {
         let total = 0;
         this.state.produtosSelecionados.forEach((produto) => {
-            total += this.calcularSubTotal(produto.produto, produto.quantidade);
+            total += this.calcularSubTotal(produto.produto, produto.quantidade, produto.preco);
         });
         const subTotal = total;
         // console.log("Subtotal:", subTotal);
@@ -735,8 +742,7 @@ class FrenteCaixa extends React.Component {
         return parseFloat(subTotal.toFixed(2));
     }
 
-    calcularSubTotal = (produto, quantidade) => {
-        const preco = produto.preco;
+    calcularSubTotal = (produto, quantidade, preco) => {
         return preco * quantidade;
     };
 
@@ -771,10 +777,10 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizarValorTotal = () => {
-        const { quantidade, preco } = this.state;
+        const { quantidade, preco, valorUnitario } = this.state;
         const valorTotal = (quantidade * parseFloat(preco)).toFixed(2);
         this.setState({
-            valorTotal
+            valorTotal,
         });
     };
 
@@ -1102,7 +1108,7 @@ class FrenteCaixa extends React.Component {
                 codigo: produto.produto.codigo,
                 descricao: produto.produto.descricao,
                 qtde: produto.quantidade,
-                vlr_unit: produto.produto.preco,
+                vlr_unit: produto.preco,
             };
             itens.push(item);
         });
@@ -1412,6 +1418,77 @@ class FrenteCaixa extends React.Component {
     };
 
 
+    // --------------------------------------- FUNÇÕES EDITAR LISTA DE PRODUTOS ----------------------------------------
+
+
+    atualizaValorLista = (event) => {
+        this.setState({
+            valorLista: event.target.value
+        });
+    };
+
+    atualizaDescontoItem = (event) => {
+        this.setState({
+            descontoItem: event.target.value
+        });
+    };
+
+    atualizaValorUnitario = (event) => {
+        const novoValorUnitario = parseFloat(event.target.value);
+        this.setState({
+            valorUnitario: novoValorUnitario
+        },
+            this.atualizarValorTotal);
+    };
+
+    atualizaSubTotal = (event) => {
+        this.setState({
+            subTotal: event.target.value
+        });
+    };
+
+    fecharModalEditarProduto = () => {
+        this.setState({
+            modalEditarProduto: !this.state.modalEditarProduto,
+        })
+    }
+
+    salvarProdutoLista = () => {
+        const {
+            valorLista,
+            quantidade,
+            valorUnitario,
+            produtosSelecionados,
+            produtoSelecionadoLista
+        } = this.state;
+
+        if (produtoSelecionadoLista) {
+            // Atualizar o produto selecionado com os novos valores
+            const produtoAtualizado = {
+                ...produtoSelecionadoLista,
+                valorLista: valorLista,
+                quantidade: quantidade,
+                valorUnitario: valorUnitario
+            };
+
+            const produtosAtualizados = produtosSelecionados.map((produto) => {
+                if (produto.produto.id === produtoSelecionadoLista.produto.id) {
+                    return produtoAtualizado;
+                }
+                return produto;
+            });
+
+            this.setState({
+                produtosSelecionados: produtosAtualizados,
+                modalEditarProduto: false,
+                valorLista: '',
+                quantidade: '',
+                valorUnitario: ''
+            });
+        }
+    };
+
+
 
 
     render() {
@@ -1550,7 +1627,7 @@ class FrenteCaixa extends React.Component {
                                                         <Col className="col">
                                                             <Form.Group className="mb-3">
                                                                 <Form.Label htmlFor="valorTotal" className="texto-campos">Sub total</Form.Label>
-                                                                <Form.Control type="number" id="valorTotal" className="form-control" name="valorTotal" placeholder="00,00" value={valorTotal || ''} onChange={this.atualizarValorTotal} readOnly />
+                                                                <Form.Control type="text" id="valorTotal" className="form-control" name="valorTotal" placeholder="00,00" value={valorTotal || ''} onChange={this.atualizarValorTotal} readOnly />
                                                             </Form.Group>
                                                         </Col>
                                                     </Row>
@@ -1585,17 +1662,17 @@ class FrenteCaixa extends React.Component {
                                                     <tr key={produto.produto.id}>
                                                         <td>{produto.produto.codigo} - {produto.produto.descricao}</td>
                                                         <td>{produto.quantidade}</td>
-                                                        <td>R$ {typeof produto.produto.preco === "number"
-                                                            ? produto.produto.preco.toFixed(2)
-                                                            : parseFloat(produto.produto.preco).toFixed(2)}</td>
-                                                        <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade).toFixed(2)}</td>
+                                                        <td>R$ {typeof produto.preco === "number"
+                                                            ? produto.preco.toFixed(2)
+                                                            : parseFloat(produto.preco).toFixed(2)}</td>
+                                                        <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade, produto.preco).toFixed(2)}</td>
                                                         <td>
-                                                            <Button variant="light" className="transparent-button" onClick={() => {
-                                                                this.modalEditarProduto()
+                                                            <Button variant="light" title="Editar produto" className="transparent-button" onClick={() => {
+                                                                this.modalEditarProduto(produto)
                                                             }}>
                                                                 <IonIcon icon={pencil} className="blue-icon" size="medium" />
                                                             </Button>
-                                                            <Button variant="light" className="transparent-button" onClick={() => {
+                                                            <Button variant="light" title="Excluir produto" className="transparent-button" onClick={() => {
                                                                 if (window.confirm('Deseja excluir o item?\nEssa ação não poderá ser desfeita.')) {
                                                                     this.excluirProdutoSelecionado(index);
                                                                 }
@@ -1603,65 +1680,115 @@ class FrenteCaixa extends React.Component {
                                                                 <IonIcon icon={trashOutline} className="red-icon" size="medium" />
                                                             </Button></td>
                                                     </tr>
-
-
                                                 ))}
                                             </tbody>
                                         </Table>
 
+                                        <Modal show={this.state.modalEditarProduto} onHide={this.modalEditarProduto} size="lg" centered>
+                                            <Modal.Header closeButton className="">
+                                                <Modal.Title>Editar</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body style={{ padding: '20px' }}>
+                                                {this.state.produtoSelecionadoLista && (
+                                                    <div>
+                                                        <Row className="row">
+                                                            <Col className="col" xs={4}>
+                                                                <Form.Group className="mb-3">
+                                                                    <Form.Label htmlFor="valorLista" className="texto-campos">Valor de lista</Form.Label>
+                                                                    <Form.Control type="text" id="valorLista" className="form-control" name="valorLista" value={this.state.valorLista || ''} disabled />
+                                                                </Form.Group>
+                                                            </Col>
+                                                            <Col className="col" xs={4}>
+                                                                <Form.Group className="mb-3">
+                                                                    <Form.Label htmlFor="quantidade" className="texto-campos">Quantidade</Form.Label>
+                                                                    <Form.Control type="text" id="quantidade" className="form-control" name="quantidade" value={this.state.quantidade || ''} onChange={this.atualizaQuantidade} />
+                                                                </Form.Group>
+                                                            </Col>
+                                                            <Col className="col" xs={4}>
+                                                                <Form.Group className="mb-3">
+                                                                    <Form.Label htmlFor="descontoItem" className="texto-campos">Desconto item</Form.Label>
+                                                                    <Form.Control type="text" id="descontoItem" className="form-control" name="descontoItem" value={tipo || ''} disabled />
+                                                                </Form.Group>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row className="row">
+                                                            <Col className="col" xs={4}>
+                                                                <Form.Group className="mb-3">
+                                                                    <Form.Label htmlFor="valorUnitario" className="texto-campos">Valor unitário</Form.Label>
+                                                                    <Form.Control type="text" id="valorUnitario" className="form-control" name="valorUnitario" value={this.state.valorUnitario || ''} onChange={this.atualizaValorUnitario} />
+                                                                </Form.Group>
+                                                            </Col>
+
+                                                            <Col className="col" xs={4}>
+                                                                <Form.Group className="mb-3">
+                                                                    <Form.Label htmlFor="subTotal" className="texto-campos">Sub total</Form.Label>
+                                                                    <Form.Control type="text" id="subTotal" className="form-control" name="subTotal" value={cnpj || ''} disabled />
+                                                                </Form.Group>
+                                                            </Col>
+                                                        </Row>
+                                                        {/* <Row>
+                                                            <Col className="col">
+                                                                <Form.Group className="mb-3">
+                                                                    <Form.Label htmlFor="observacaointerna" className="texto-campos">Comentário</Form.Label>
+                                                                    <textarea className="form-control" id="observacaointerna" rows="3" value={observacaointerna || ''} onChange={this.atualizaObservacaoInterna} ></textarea>
+                                                                </Form.Group>
+                                                            </Col>
+                                                        </Row> */}
+                                                    </div>
+                                                )}
+                                            </Modal.Body>
+                                            <Modal.Footer>
+                                                <Button variant="outline-success" className="mr-2" onClick={this.fecharModalEditarProduto} style={{ marginRight: '10px' }}>Cancelar</Button>
+                                                <Button variant="success" className="mr-2" onClick={this.salvarProdutoLista}>Salvar</Button>
+                                            </Modal.Footer>
+                                        </Modal>
+
 
                                         <div className="divisa"></div>
-                                        <div>
-                                            <h5>Outras informações</h5>
-                                        </div>
+
+                                        <h5>Totais</h5>
+
                                         <Row className="row">
-                                            {/* <Col className="col">
-                                                        <Form.Group className="mb-3">
-                                                            <Form.Label htmlFor="vendedor" className="texto-campos">Vendedor</Form.Label>
-                                                            <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado} onChange={this.atualizaVendedorSelecionado} >
-                                                                <option value="">Selecione um vendedor</option>
-                                                                {this.state.vendedor.map((contato) => (
-                                                                    <option key={contato.contato.id} value={contato.contato.id}>
-                                                                        {contato.contato.nome}
-                                                                    </option>
-                                                                ))}
-                                                            </Form.Select>
-                                                        </Form.Group>
-                                                    </Col> */}
-                                            <Col className="col">
+                                            <Col className="col" xs={3}>
                                                 <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="dataprevista" className="texto-campos">Data prevista</Form.Label>
-                                                    <DatePicker locale={ptBR} id="dataprevista" name="dataprevista" selected={dataPrevista} onChange={this.atualizaDataPrevista} placeholderText="Selecione uma data" className="form-select" dateFormat="dd/MM/yyyy" />
+                                                    <Form.Label htmlFor="subtotal" className="texto-campos">Sub total</Form.Label>
+                                                    <Form.Control type="text" id="subtotal" className="" name="subtotal" placeholder="00,00" value={this.state.subTotal || ''} disabled />
                                                 </Form.Group>
                                             </Col>
-                                            <Col className="col">
+                                            <Col className="col" xs={3}>
                                                 <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="depositolancamento" className="texto-campos">Depósito para lançamento</Form.Label>
-                                                    <Form.Select className="" id="depositolancamento" name="depositolancamento" value={depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
-                                                        <option>Selecione o deposito</option>
-                                                        {this.state.depositos.map((deposito) => (
-                                                            <option key={deposito.deposito.id} value={deposito.deposito.id}>
-                                                                {deposito.deposito.descricao}
-                                                            </option>
-                                                        ))}
-                                                    </Form.Select>
+                                                    <Form.Label htmlFor="desconto" className="texto-campos">Desconto (Total)</Form.Label>
+                                                    <Form.Control type="text" id="desconto" className="" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizaDesconto} onBlur={this.formatarDesconto} />
                                                 </Form.Group>
                                             </Col>
+                                            <Col className="col" xs={3}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label htmlFor="totaldavenda" className="texto-campos">Total da venda</Form.Label>
+                                                    <Form.Control type="text" id="totaldavenda" className="" name="totaldavenda" placeholder="00,00" defaultValue={subTotalGeral || ''} disabled />
+                                                </Form.Group>
+                                            </Col>
+                                            <Col className="col mb-3" xs={3}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
+                                                    <Form.Control type="text" className="" id="frete" name="frete" placeholder="00,00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
+                                                </Form.Group>
+                                            </Col>
+                                            <Row>
+                                                <Col className="col" xs={3}>
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label htmlFor="totaldinheiro" className="texto-campos">Total em dinheiro</Form.Label>
+                                                        <Form.Control type="text" id="totaldinheiro" className="" name="totaldinheiro" placeholder="00,00" value={dinheiroRecebido || ''} onChange={this.atualizaTroco} onBlur={this.formatarTroco} />
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col className="col mb-3" xs={3}>
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label htmlFor="trocodinheiro" className="texto-campos">Troco em dinheiro</Form.Label>
+                                                        <Form.Control type="text" id="trocodinheiro" className="" name="trocodinheiro" placeholder="00,00" defaultValue={troco || ''} disabled />
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
                                         </Row>
-                                        <Row className="row">
-                                            <Col className="col">
-                                                <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="observacoes" className="texto-campos">Observações</Form.Label>
-                                                    <textarea className="form-control" id="observacoes" rows="3" value={observacoes || ''} onChange={this.atualizaObservacoes} ></textarea>
-                                                </Form.Group>
-                                            </Col>
-                                            <Col className="col">
-                                                <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="observacaointerna" className="texto-campos">Observações internas</Form.Label>
-                                                    <textarea className="form-control" id="observacaointerna" rows="3" value={observacaointerna || ''} onChange={this.atualizaObservacaoInterna} ></textarea>
-                                                </Form.Group>
-                                            </Col>
-                                        </Row>
+
                                     </div>
                                 </div>
                             </Form>
@@ -1771,48 +1898,58 @@ class FrenteCaixa extends React.Component {
 
                                 <div className="divisa"></div>
                                 <div>
-                                    <h5>Totais</h5>
                                     <div>
+                                        <div>
+                                            <h5>Outras informações</h5>
+                                        </div>
                                         <Row className="row">
-                                            <Col className="col" xs={3}>
+                                            {/* <Col className="col">
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="vendedor" className="texto-campos">Vendedor</Form.Label>
+                                                            <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado} onChange={this.atualizaVendedorSelecionado} >
+                                                                <option value="">Selecione um vendedor</option>
+                                                                {this.state.vendedor.map((contato) => (
+                                                                    <option key={contato.contato.id} value={contato.contato.id}>
+                                                                        {contato.contato.nome}
+                                                                    </option>
+                                                                ))}
+                                                            </Form.Select>
+                                                        </Form.Group>
+                                                    </Col> */}
+                                            <Col className="col">
                                                 <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="subtotal" className="texto-campos">Sub total</Form.Label>
-                                                    <Form.Control type="text" id="subtotal" className="" name="subtotal" placeholder="00,00" value={this.state.subTotal || ''} disabled />
+                                                    <Form.Label htmlFor="dataprevista" className="texto-campos">Data prevista</Form.Label>
+                                                    <DatePicker locale={ptBR} id="dataprevista" name="dataprevista" selected={dataPrevista} onChange={this.atualizaDataPrevista} placeholderText="Selecione uma data" className="form-select" dateFormat="dd/MM/yyyy" />
                                                 </Form.Group>
                                             </Col>
-                                            <Col className="col" xs={3}>
+                                            <Col className="col">
                                                 <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="desconto" className="texto-campos">Desconto</Form.Label>
-                                                    <Form.Control type="text" id="desconto" className="" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizaDesconto} onBlur={this.formatarDesconto} />
+                                                    <Form.Label htmlFor="depositolancamento" className="texto-campos">Depósito para lançamento</Form.Label>
+                                                    <Form.Select className="" id="depositolancamento" name="depositolancamento" value={depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
+                                                        <option>Selecione o deposito</option>
+                                                        {this.state.depositos.map((deposito) => (
+                                                            <option key={deposito.deposito.id} value={deposito.deposito.id}>
+                                                                {deposito.deposito.descricao}
+                                                            </option>
+                                                        ))}
+                                                    </Form.Select>
                                                 </Form.Group>
                                             </Col>
-                                            <Col className="col" xs={3}>
-                                                <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="totaldavenda" className="texto-campos">Total da venda</Form.Label>
-                                                    <Form.Control type="text" id="totaldavenda" className="" name="totaldavenda" placeholder="00,00" defaultValue={subTotalGeral || ''} disabled />
-                                                </Form.Group>
-                                            </Col>
-                                            <Col className="col mb-3" xs={3}>
-                                                <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
-                                                    <Form.Control type="text" className="" id="frete" name="frete" placeholder="00,00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
-                                                </Form.Group>
-                                            </Col>
-                                            <Row>
-                                                <Col className="col" xs={3}>
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="totaldinheiro" className="texto-campos">Total em dinheiro</Form.Label>
-                                                        <Form.Control type="text" id="totaldinheiro" className="" name="totaldinheiro" placeholder="00,00" value={dinheiroRecebido || ''} onChange={this.atualizaTroco} onBlur={this.formatarTroco} />
-                                                    </Form.Group>
-                                                </Col>
-                                                <Col className="col mb-3" xs={3}>
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="trocodinheiro" className="texto-campos">Troco em dinheiro</Form.Label>
-                                                        <Form.Control type="text" id="trocodinheiro" className="" name="trocodinheiro" placeholder="00,00" defaultValue={troco || ''} disabled />
-                                                    </Form.Group>
-                                                </Col>
-                                            </Row>
                                         </Row>
+                                        {/* <Row className="row">
+                                            <Col className="col">
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label htmlFor="observacoes" className="texto-campos">Observações</Form.Label>
+                                                    <textarea className="form-control" id="observacoes" rows="3" value={observacoes || ''} onChange={this.atualizaObservacoes} ></textarea>
+                                                </Form.Group>
+                                            </Col>
+                                            <Col className="col">
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label htmlFor="observacaointerna" className="texto-campos">Observações internas</Form.Label>
+                                                    <textarea className="form-control" id="observacaointerna" rows="3" value={observacaointerna || ''} onChange={this.atualizaObservacaoInterna} ></textarea>
+                                                </Form.Group>
+                                            </Col>
+                                        </Row> */}
                                         {/* <div className="pagamento-header">Pagamento</div> */}
 
 
@@ -1837,7 +1974,7 @@ class FrenteCaixa extends React.Component {
                                             <Col className="col mb-3" xs={2}>
                                                 <Form.Group className="mb-3">
                                                     <Form.Label>Condição</Form.Label>
-                                                    <Form.Control type="number" id="prazo" className="" name="trocodinheiro" value={this.state.prazo || ''} onChange={this.handleChangePrazo} />
+                                                    <Form.Control type="text" id="prazo" className="" name="trocodinheiro" value={this.state.prazo || ''} onChange={this.handleChangePrazo} />
                                                 </Form.Group>
                                             </Col>
                                             <Col className="col mb-3" >
@@ -2026,59 +2163,7 @@ class FrenteCaixa extends React.Component {
                         </Modal.Footer>
                     </Modal>
 
-                    <Modal show={this.state.modalEditarProduto} onHide={this.modalEditarProduto} size="lg" centered>
-                        <Modal.Header closeButton className="">
-                            <Modal.Title>Editar</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ padding: '20px' }}>
-                            <Row className="row">
-                                <Col className="col" xs={4}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label htmlFor="valorLista" className="texto-campos">Valor de lista</Form.Label>
-                                        <Form.Control type="text" id="valorLista" className="form-control" name="valorLista" value={nome || ''} onChange={this.atualizaNome} />
-                                    </Form.Group>
-                                </Col>
-                                <Col className="col" xs={4}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label htmlFor="quantidade" className="texto-campos">Quantidade</Form.Label>
-                                        <Form.Control type="text" id="quantidade" className="form-control" name="quantidade" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
-                                    </Form.Group>
-                                </Col>
-                                <Col className="col" xs={4}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label htmlFor="descontoItem" className="texto-campos">Desconto item</Form.Label>
-                                        <Form.Control type="text" id="descontoItem" className="form-control" name="descontoItem" value={tipo || ''} onChange={this.atualizaTipo} />
-                                    </Form.Group>
-                                </Col>
-                            </Row>
-                            <Row className="row">
-                                <Col className="col" xs={6}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label htmlFor="valorUnitario" className="texto-campos">Valor unitário</Form.Label>
-                                        <Form.Control type="text" id="valorUnitario" className="form-control" name="valorUnitario" value={nome || ''} onChange={this.atualizaNome} />
-                                    </Form.Group>
-                                </Col>
-                                <Col className="col" xs={6}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label htmlFor="subTotal" className="texto-campos">Sub total</Form.Label>
-                                        <Form.Control type="text" id="subTotal" className="form-control" name="subTotal" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
-                                    </Form.Group>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col className="col">
-                                    <Form.Group className="mb-3">
-                                        <Form.Label htmlFor="observacaointerna" className="texto-campos">Comentário</Form.Label>
-                                        <textarea className="form-control" id="observacaointerna" rows="3" value={observacaointerna || ''} onChange={this.atualizaObservacaoInterna} ></textarea>
-                                    </Form.Group>
-                                </Col>
-                            </Row>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="outline-success" className="mr-2" onClick={this.modalEditarProduto} style={{ marginRight: '10px' }}>Cancelar</Button>
-                            <Button variant="success" onClick={this.modalEditarProduto}>Salvar</Button>
-                        </Modal.Footer>
-                    </Modal>
+
 
 
                     <Offcanvas show={this.state.canvasFinalizarPedido} onHide={this.canvasFinalizarPedido} size="lg" placement="end" style={{ width: '35%' }}>
@@ -2116,10 +2201,10 @@ class FrenteCaixa extends React.Component {
                                         <tr key={produto.produto.id}>
                                             <td>{produto.produto.codigo} - {produto.produto.descricao}</td>
                                             <td>{produto.quantidade}</td>
-                                            <td>R$ {typeof produto.produto.preco === "number"
-                                                ? produto.produto.preco.toFixed(2)
-                                                : parseFloat(produto.produto.preco).toFixed(2)}</td>
-                                            <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade).toFixed(2)}</td>
+                                            <td>R$ {typeof produto.preco === "number"
+                                                ? produto.preco.toFixed(2)
+                                                : parseFloat(produto.preco).toFixed(2)}</td>
+                                            <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade, produto.preco).toFixed(2)}</td>
                                         </tr>
                                     ))}
                                 </tbody>
