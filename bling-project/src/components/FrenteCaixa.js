@@ -22,10 +22,6 @@ import Table from "react-bootstrap/Table";
 import { Offcanvas } from 'react-bootstrap';
 import Image from 'react-bootstrap/Image'
 
-
-
-
-
 // import { Stack } from "react-bootstrap"
 // import FloatingLabel from 'react-bootstrap/FloatingLabel';
 // import { format } from 'date-fns';
@@ -147,15 +143,20 @@ class FrenteCaixa extends React.Component {
     }
 
     modalEditarProduto = (produto) => {
+        const index = this.state.produtosSelecionados.findIndex((p) => p.produto.id === produto.produto.id);
+
         this.setState({
+            produtoSelecionadoIndex: index,
             produtoSelecionadoLista: produto,
             valorLista: produto.produto.preco || '',
-            quantidade: produto.quantidade || '',
+            quantidadeLista: produto.quantidade || '',
             descontoItem: produto.descontoItem || '',
-            valorUnitario: produto.preco || '',
-            subTotal: produto.subTotal || '',
+            valorUnitarioLista: produto.preco || '',
+            valorTotalLista: produto.subTotal || '',
             observacaointerna: produto.observacaointerna || '',
-            modalEditarProduto: !this.state.modalEditarProduto,
+            modalEditarProduto: true,
+        }, () => {
+            this.atualizaSubTotalLista();
         });
     };
 
@@ -178,20 +179,20 @@ class FrenteCaixa extends React.Component {
     }
 
     componentDidMount() {
-        this.buscarVendedor()
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarFormaDePagamento())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarDeposito())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarPedido())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => {
-                this.setState({ carregado: true });
-            })
-            .catch((error) => {
-                this.setState({ erro: error.message });
-            });
+        // this.buscarVendedor()
+        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+        //     .then(() => this.buscarFormaDePagamento())
+        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+        //     .then(() => this.buscarDeposito())
+        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+        //     .then(() => this.buscarPedido())
+        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+        //     .then(() => {
+        //         this.setState({ carregado: true });
+        //     })
+        //     .catch((error) => {
+        //         this.setState({ erro: error.message });
+        //     });
 
         this.setState({ carregado: true }); //APAGAR (GAMBIARRA)
     }
@@ -777,7 +778,7 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizarValorTotal = () => {
-        const { quantidade, preco, valorUnitario } = this.state;
+        const { quantidade, preco } = this.state;
         const valorTotal = (quantidade * parseFloat(preco)).toFixed(2);
         this.setState({
             valorTotal,
@@ -1033,6 +1034,7 @@ class FrenteCaixa extends React.Component {
             codigo: '',
             fantasia: '',
             produtosSelecionados: [], // adiciona a limpeza da lista aqui
+            produtoSelecionado: '',
             quantidade: 1,
             desconto: '',
             preco: 0,
@@ -1427,6 +1429,14 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    atualizaQuantidadeLista = (event) => {
+        const quantidadeLista = Number(event.target.value);
+        this.setState({
+            quantidadeLista
+        },
+            this.atualizaSubTotalLista);
+    };
+
     atualizaDescontoItem = (event) => {
         this.setState({
             descontoItem: event.target.value
@@ -1434,16 +1444,18 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizaValorUnitario = (event) => {
-        const novoValorUnitario = parseFloat(event.target.value);
+        const valorUnitarioLista = event.target.value;
         this.setState({
-            valorUnitario: novoValorUnitario
+            valorUnitarioLista
         },
-            this.atualizarValorTotal);
+            this.atualizaSubTotalLista);
     };
 
-    atualizaSubTotal = (event) => {
+    atualizaSubTotalLista = () => {
+        const { quantidadeLista, valorUnitarioLista } = this.state;
+        const valorTotalLista = (quantidadeLista * parseFloat(valorUnitarioLista)).toFixed(2);
         this.setState({
-            subTotal: event.target.value
+            valorTotalLista
         });
     };
 
@@ -1455,35 +1467,28 @@ class FrenteCaixa extends React.Component {
 
     salvarProdutoLista = () => {
         const {
-            valorLista,
-            quantidade,
-            valorUnitario,
+            produtoSelecionadoIndex,
+            quantidadeLista,
+            valorUnitarioLista,
             produtosSelecionados,
-            produtoSelecionadoLista
         } = this.state;
 
-        if (produtoSelecionadoLista) {
-            // Atualizar o produto selecionado com os novos valores
+        if (produtoSelecionadoIndex !== null && produtoSelecionadoIndex >= 0) {
+            const produtosAtualizados = [...produtosSelecionados];
             const produtoAtualizado = {
-                ...produtoSelecionadoLista,
-                valorLista: valorLista,
-                quantidade: quantidade,
-                valorUnitario: valorUnitario
+                ...produtosAtualizados[produtoSelecionadoIndex],
+                quantidade: quantidadeLista,
+                preco: valorUnitarioLista,
             };
 
-            const produtosAtualizados = produtosSelecionados.map((produto) => {
-                if (produto.produto.id === produtoSelecionadoLista.produto.id) {
-                    return produtoAtualizado;
-                }
-                return produto;
-            });
+            produtosAtualizados[produtoSelecionadoIndex] = produtoAtualizado;
 
             this.setState({
                 produtosSelecionados: produtosAtualizados,
                 modalEditarProduto: false,
                 valorLista: '',
-                quantidade: '',
-                valorUnitario: ''
+                quantidadeLista: '',
+                valorUnitarioLista: '',
             });
         }
     };
@@ -1644,10 +1649,7 @@ class FrenteCaixa extends React.Component {
 
 
                                         <div className="divisa"></div>
-                                        {carregandoProduto &&
-                                            <div>Carregando produto na lista...</div>
-                                        }
-                                        <Table responsive="lg" className="table" striped>
+                                        <Table responsive="lg" className="table table-sm table-transparent" >
                                             <thead>
                                                 <tr>
                                                     <th>Produto</th>
@@ -1701,7 +1703,7 @@ class FrenteCaixa extends React.Component {
                                                             <Col className="col" xs={4}>
                                                                 <Form.Group className="mb-3">
                                                                     <Form.Label htmlFor="quantidade" className="texto-campos">Quantidade</Form.Label>
-                                                                    <Form.Control type="text" id="quantidade" className="form-control" name="quantidade" value={this.state.quantidade || ''} onChange={this.atualizaQuantidade} />
+                                                                    <Form.Control type="text" id="quantidade" className="form-control" name="quantidade" value={this.state.quantidadeLista || ''} onChange={this.atualizaQuantidadeLista} />
                                                                 </Form.Group>
                                                             </Col>
                                                             <Col className="col" xs={4}>
@@ -1715,14 +1717,14 @@ class FrenteCaixa extends React.Component {
                                                             <Col className="col" xs={4}>
                                                                 <Form.Group className="mb-3">
                                                                     <Form.Label htmlFor="valorUnitario" className="texto-campos">Valor unitário</Form.Label>
-                                                                    <Form.Control type="text" id="valorUnitario" className="form-control" name="valorUnitario" value={this.state.valorUnitario || ''} onChange={this.atualizaValorUnitario} />
+                                                                    <Form.Control type="text" id="valorUnitario" className="form-control" name="valorUnitario" value={this.state.valorUnitarioLista || ''} onChange={this.atualizaValorUnitario} />
                                                                 </Form.Group>
                                                             </Col>
 
                                                             <Col className="col" xs={4}>
                                                                 <Form.Group className="mb-3">
                                                                     <Form.Label htmlFor="subTotal" className="texto-campos">Sub total</Form.Label>
-                                                                    <Form.Control type="text" id="subTotal" className="form-control" name="subTotal" value={cnpj || ''} disabled />
+                                                                    <Form.Control type="text" id="subTotal" className="form-control" name="subTotal" value={this.state.valorTotalLista || ''} disabled />
                                                                 </Form.Group>
                                                             </Col>
                                                         </Row>
@@ -1994,7 +1996,7 @@ class FrenteCaixa extends React.Component {
                                                 </Form.Group>
                                             </Col>
                                             <div>
-                                                <Table responsive="lg" className="table-responsive" striped>
+                                                <Table responsive="lg" className="table table-sm" striped>
                                                     <thead>
                                                         <tr>
                                                             <th>Dias</th>
@@ -2187,7 +2189,7 @@ class FrenteCaixa extends React.Component {
                                 <span>Nome do Cliente: {nome}</span>
                                 <span>Endereço: {endereco}, {numero}, {bairro}, {cidade} - {uf}</span>
                             </div>
-                            <Table responsive="lg" className="table-responsive" striped>
+                            <Table responsive="lg" className="table-responsive">
                                 <thead>
                                     <tr>
                                         <th>Nome do produto</th>
