@@ -13,9 +13,4 @@ public class ApiFormaPagamentoApplication {
 		SpringApplication.run(ApiFormaPagamentoApplication.class, args);
 	}
 
-	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		return builder.build();
-	}
-
 }

@@ -19,8 +19,10 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
 import Table from "react-bootstrap/Table";
+import Switch from 'react-bootstrap/Switch';
 import { Offcanvas } from 'react-bootstrap';
 import Image from 'react-bootstrap/Image'
+
 
 // import { Stack } from "react-bootstrap"
 // import FloatingLabel from 'react-bootstrap/FloatingLabel';
@@ -49,6 +51,7 @@ class FrenteCaixa extends React.Component {
             vendedores: [],
             pedidos: [],
             formaspagamento: [],
+            lojas: [],
             produtosSelecionados: [],
             contatosSelecionados: [],
             vendedoresSelecionados: [],
@@ -83,6 +86,7 @@ class FrenteCaixa extends React.Component {
             modalInserirParcela: false,
             modalEditarProduto: false,
             canvasFinalizarPedido: false,
+            ModalSelecionarLoja: false,
             subtotalComFrete: 0,
             frete: 0,
             freteInserido: false,
@@ -109,7 +113,9 @@ class FrenteCaixa extends React.Component {
             erro: null,
             imagem: '',
             descontoProduto: 0,
-            descontoTotal: 0
+            descontoTotal: 0,
+            opcaoDescontoItem: 'desliga',
+            opcaoDescontoLista: 'desliga'
         };
 
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
@@ -118,6 +124,12 @@ class FrenteCaixa extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleChangePrazo = this.handleChangePrazo.bind(this);
 
+    }
+
+    ModalSelecionarLoja = () => {
+        this.setState({
+            ModalSelecionarLoja: !this.state.ModalSelecionarLoja
+        });
     }
 
     ModalFinalizarVendaSemItem = () => {
@@ -152,7 +164,7 @@ class FrenteCaixa extends React.Component {
             produtoSelecionadoLista: produto,
             valorLista: produto.produto.preco || '',
             quantidadeLista: produto.quantidade || '',
-            descontoItem: produto.descontoItem || '',
+            descontoItemLista: produto.descontoItem || '',
             valorUnitarioLista: produto.preco || '',
             valorTotalLista: produto.subTotal || '',
             observacaointerna: produto.observacaointerna || '',
@@ -182,6 +194,8 @@ class FrenteCaixa extends React.Component {
     }
 
     componentDidMount() {
+        this.buscarLoja()
+        this.ModalSelecionarLoja()
         this.buscarVendedor()
             .catch(() => { throw new Error("Erro ao conectar a API"); })
             .then(() => this.buscarFormaDePagamento())
@@ -484,6 +498,52 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    buscarLoja = () => {
+        return new Promise((resolve, reject) => {
+            fetch("http://localhost:8086/api/v1/selecionaLojas")
+                .then((resposta) => {
+                    if (!resposta.ok) {
+                        throw new Error("Erro na chamada da API");
+                    }
+                    return resposta.json();
+                })
+                .then((dados) => {
+                    if (dados) {
+                        console.log("Forma de pagamento objeto retornado:", dados);
+                        const idLojas = dados.map((objeto) => objeto.idLoja);
+                        const unidade = dados.map((objeto) => objeto.unidade);
+                        console.log("idLojas:", idLojas, "unidade: ", unidade);
+                        this.setState({
+                            idLoja: idLojas,
+                            unidadeLoja: unidade,
+                            objeto: dados // Defina o estado 'objeto' com 'dados' diretamente
+                        });
+                    } else {
+                        this.setState({
+                            idLoja: [], // Defina os estados como arrays vazios se não houver dados
+                            unidadeLoja: [],
+                            objeto: []
+                        });
+                    }
+                    this.setState({
+                        carregando: false,
+                    });
+                    resolve();
+                })
+                .catch((error) => {
+                    console.log("Erro ao buscar forma de pagamento:", error);
+                    this.setState({
+                        idLoja: [], // Defina os estados como arrays vazios em caso de erro
+                        unidadeLoja: [],
+                        objeto: []
+                    });
+                    reject(error);
+                });
+        });
+    };
+
+
+
 
     cadastrarPedido = (xmlPedido) => {
         const parser = new DOMParser();
@@ -671,10 +731,12 @@ class FrenteCaixa extends React.Component {
         this.setState({
             produtoSelecionado: produto,
             preco: preco,
+            precoUnitario: preco,
             produtos: [],
             quantidade: 1,
             valorTotal: valorTotal,
             comentario: '',
+            descontoInicialProduto: '',
             imagem: produto.produto.imageThumbnail
         });
         this.atualizarBuscaProduto({ target: { value: '' } });
@@ -686,7 +748,7 @@ class FrenteCaixa extends React.Component {
             return;
         }
 
-        const { produtosSelecionados, quantidade, preco } = this.state;
+        const { produtosSelecionados, quantidade, preco, precoUnitario } = this.state;
         const produtoExistenteIndex = produtosSelecionados.findIndex((produto) => produto.produto.id === produtoSelecionado.produto.id);
 
         if (produtoExistenteIndex !== -1) {
@@ -695,7 +757,8 @@ class FrenteCaixa extends React.Component {
             produtosSelecionados.push({
                 produto: produtoSelecionado.produto,
                 quantidade: quantidade,
-                preco: preco
+                preco: preco,
+                precoUnitario: preco
             });
         }
 
@@ -709,6 +772,7 @@ class FrenteCaixa extends React.Component {
             preco: '',
             desconto: 0,
             comentario: '',
+            descontoInicialProduto: ''
         }, () => {
             this.calcularTotal();
         });
@@ -790,25 +854,33 @@ class FrenteCaixa extends React.Component {
 
     atualizarValorTotal = () => {
         const { quantidade, preco, descontoInicialProduto } = this.state;
-        let novoPreco = parseFloat(preco);
+        let novoPrecoDesconto = parseFloat(preco);
         let descontoTotal = 0;
 
         if (descontoInicialProduto !== '') {
-            descontoTotal = parseFloat(descontoInicialProduto);
-            novoPreco -= descontoTotal;
+            const descontoPorcentagem = parseFloat(descontoInicialProduto.replace(',', '.'));
+
+            // Converter a porcentagem para decimal dividindo por 100
+            const descontoDecimal = descontoPorcentagem / 100;
+
+            // Calcular o desconto em valor monetário
+            descontoTotal = novoPrecoDesconto * descontoDecimal;
+            novoPrecoDesconto -= descontoTotal;
         }
-        console.log(novoPreco, preco)
-        const valorTotal = (quantidade * preco);
+
+        const valorTotal = quantidade * novoPrecoDesconto;
         descontoTotal = descontoTotal.toFixed(2);
 
         console.log("DESCONTO: ", descontoTotal);
-        console.log("VALOR TOTAL: ", descontoTotal);
+        console.log("VALOR TOTAL: ", valorTotal);
 
         this.setState({
-            preco,
+            preco: novoPrecoDesconto.toFixed(2),
             valorTotal,
         });
     };
+
+
 
 
     calcularTotalComDesconto = (desconto, subTotal) => {
@@ -1079,7 +1151,8 @@ class FrenteCaixa extends React.Component {
             frete: 0,
             observacoes: '',
             observacaointerna: '',
-            subTotalGeral: 0
+            subTotalGeral: 0,
+            descontoInicialProduto: 0
         });
         this.ModalExcluirPedido()
         this.modalSalvarPedido()
@@ -1114,6 +1187,7 @@ class FrenteCaixa extends React.Component {
             frete: 0,
             observacoes: '',
             observacaointerna: '',
+            descontoInicialProduto: 0
         });
     };
 
@@ -1136,7 +1210,7 @@ class FrenteCaixa extends React.Component {
                 codigo: produto.produto.codigo,
                 descricao: produto.produto.descricao,
                 qtde: produto.quantidade,
-                vlr_unit: produto.preco,
+                vlr_unit: produto.precoUnitario,
                 descontoItemLista: produto.descontoItem
             };
             itens.push(item);
@@ -1176,6 +1250,7 @@ class FrenteCaixa extends React.Component {
             <obs_internas>${this.state.observacaointerna}</obs_internas>
             <vendedor>${this.state.vendedor}</vendedor>
             <vlr_frete>${this.state.frete}</vlr_frete>
+            <loja>${this.state.idLoja}</loja>
             <cliente>
               <nome>${this.state.nome}</nome>
               <cnpj>${this.state.cnpj}</cnpj>
@@ -1472,16 +1547,29 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    atualizaValorUnitario = (event) => {
+        let valorUnitarioLista = event.target.value;
+
+        this.setState({
+            valorUnitarioLista
+        },
+            this.atualizaSubTotalLista
+        );
+    };
+
     aplicaDescontoItem = () => {
         const { descontoItemLista, valorUnitarioLista, quantidadeLista } = this.state;
 
         if (descontoItemLista !== '') {
             const descontoPorcentagem = parseFloat(descontoItemLista.replace(',', '.'));
+
+            // Converter a porcentagem para decimal dividindo por 100
             const descontoDecimal = descontoPorcentagem / 100;
 
-            let novoValorUnitario = valorUnitarioLista;
-            novoValorUnitario = (valorUnitarioLista - (valorUnitarioLista * descontoDecimal)).toFixed(2);
+            // Calcular o novo valor unitário com o desconto percentual
+            const novoValorUnitario = (valorUnitarioLista * (1 - descontoDecimal)).toFixed(2);
 
+            // Calcular o valor total com o novo valor unitário
             const valorTotalLista = (quantidadeLista * novoValorUnitario).toFixed(2);
 
             this.setState({
@@ -1494,16 +1582,6 @@ class FrenteCaixa extends React.Component {
         }
     };
 
-    atualizaValorUnitario = (event) => {
-        let valorUnitarioLista = event.target.value;
-
-        this.setState(
-            {
-                valorUnitarioLista
-            },
-            this.atualizaSubTotalLista
-        );
-    };
 
     atualizaSubTotalLista = () => {
         const { quantidadeLista, valorUnitarioLista } = this.state;
@@ -1524,6 +1602,7 @@ class FrenteCaixa extends React.Component {
             });
         }
     };
+
 
 
 
@@ -1606,7 +1685,6 @@ class FrenteCaixa extends React.Component {
             modalEditarProduto: !this.state.modalEditarProduto,
         })
     }
-
     salvarProdutoLista = () => {
         const {
             produtoSelecionadoIndex,
@@ -1618,10 +1696,22 @@ class FrenteCaixa extends React.Component {
 
         if (produtoSelecionadoIndex !== null && produtoSelecionadoIndex >= 0) {
             const produtosAtualizados = [...produtosSelecionados];
+            let novoPreco = valorUnitarioLista;
+
+            if (descontoItemLista !== '') {
+                const descontoPorcentagem = parseFloat(descontoItemLista.replace(',', '.'));
+
+                // Converter a porcentagem para decimal dividindo por 100
+                const descontoDecimal = descontoPorcentagem / 100;
+
+                // Calcular o novo valor unitário com o desconto percentual
+                novoPreco = (valorUnitarioLista * (1 - descontoDecimal)).toFixed(2);
+            }
+
             const produtoAtualizado = {
                 ...produtosAtualizados[produtoSelecionadoIndex],
                 quantidade: quantidadeLista,
-                preco: descontoItemLista !== '' ? valorUnitarioLista - parseFloat(descontoItemLista.replace(',', '.')) : valorUnitarioLista,
+                preco: novoPreco,
                 descontoItem: descontoItemLista,
             };
 
@@ -1633,7 +1723,6 @@ class FrenteCaixa extends React.Component {
                 valorLista: '',
                 quantidadeLista: '',
                 valorUnitarioLista: '',
-                descontoItemLista: '',
             });
         }
     };
@@ -1644,7 +1733,7 @@ class FrenteCaixa extends React.Component {
 
         const { produtos, produtoSelecionado, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto } = this.state;
         const { contatos, contatoSelecionado, buscaContato, cnpj, nome, tipo, codigo, fantasia, endereco, numero, bairro, cidade, uf, dataPrevista, observacoes, observacaointerna, valorDesconto, dinheiroRecebido, troco, frete } = this.state;
-        const { subTotalGeral, condicao, consumidorFinal, prazo, depositoSelecionado, numeroPedido, descontoProduto } = this.state;
+        const { subTotalGeral, condicao, consumidorFinal, prazo, depositoSelecionado, numeroPedido, descontoProduto, subTotal } = this.state;
         const { carregado, erro, imagem } = this.state;
 
         let quantidadeTotal = 0;
@@ -1705,7 +1794,22 @@ class FrenteCaixa extends React.Component {
                                                 <Form.Label htmlFor="produto" className="texto-campos">Adicionar produto</Form.Label>
                                                 <Row>
                                                     <Col xs={8}>
-                                                        <Form.Control type="text" id="produto" className="form-control" placeholder="Busque um produto pelo (Nome ou Código ou SKU ou EAN ou Descrição/Nome Fornecedor)" value={buscaProduto || ''} onChange={this.atualizarBuscaProduto} />
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Control
+                                                                type="text"
+                                                                id="produto"
+                                                                className="form-control"
+                                                                placeholder="Busque um produto pelo (Nome ou Código ou SKU ou EAN ou Descrição/Nome Fornecedor)"
+                                                                value={buscaProduto || ''}
+                                                                onChange={this.atualizarBuscaProduto}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.keyCode === 13) {
+                                                                        // Código 13 corresponde à tecla Enter
+                                                                        this.buscarProdutos(buscaProduto); // Chame a função de busca aqui
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </Form.Group>
                                                     </Col>
                                                     <Col xs={4}>
                                                         <Button variant="secondary" onClick={() => this.buscarProdutos(buscaProduto)}>Buscar</Button>
@@ -1760,15 +1864,34 @@ class FrenteCaixa extends React.Component {
                                                                 </div>
                                                             </Form.Group>
                                                         </Col>
-                                                        {/* <Col className="col" >
+                                                        <Col className="col" >
                                                             <Form.Group className="mb-3">
-                                                                <Form.Label htmlFor="desconto" className="texto-campos">Desconto (%)</Form.Label>
-                                                                <Form.Control type="text" id="desconto" className="form-control" name="desconto" placeholder="00.00" value={this.state.descontoInicialProduto || ''} onChange={this.atualizaDescontoProduto} onBlur={this.atualizarValorTotal} />
+                                                                <Form.Label htmlFor="desconto" className="texto-campos">
+                                                                    Desconto preço (%)
+                                                                </Form.Label>
+                                                                <Form.Control
+                                                                    type="text"
+                                                                    id="desconto"
+                                                                    className="form-control"
+                                                                    name="desconto"
+                                                                    placeholder="0.00"
+                                                                    value={this.state.descontoInicialProduto || ''}
+                                                                    onChange={this.atualizaDescontoProduto}
+                                                                    onBlur={this.atualizarValorTotal}
+                                                                    disabled={this.state.opcaoDescontoItem === 'desliga'}
+                                                                />
+                                                                <Form.Check
+                                                                    type="switch"
+                                                                    id="ligaSwitch"
+                                                                    label="Habilitado"
+                                                                    checked={this.state.opcaoDescontoItem === 'liga'}
+                                                                    onChange={(e) => this.setState({ opcaoDescontoItem: e.target.checked ? 'liga' : 'desliga' })}
+                                                                />
                                                             </Form.Group>
-                                                        </Col> */}
+                                                        </Col>
                                                         <Col className="col">
                                                             <Form.Group className="mb-3">
-                                                                <Form.Label htmlFor="preco" className="texto-campos">Valor unitário</Form.Label>
+                                                                <Form.Label htmlFor="preco" className="texto-campos">Preço unitário</Form.Label>
                                                                 <Form.Control type="text" id="preco" className="form-control" name="preco" placeholder="00.00" value={preco || ''} onChange={this.atualizaPreco} disabled={!produtoSelecionado} />
                                                             </Form.Group>
                                                         </Col>
@@ -1851,8 +1974,15 @@ class FrenteCaixa extends React.Component {
                                                             </Col>
                                                             <Col className="col" xs={4}>
                                                                 <Form.Group className="mb-3">
-                                                                    <Form.Label htmlFor="descontoItem" className="texto-campos">Desconto item</Form.Label>
-                                                                    <Form.Control type="text" id="descontoItem" className="form-control" name="descontoItem" value={this.state.descontoItemLista || ''} onChange={this.atualizaDescontoItem} onBlur={this.aplicaDescontoItem} />
+                                                                    <Form.Label htmlFor="descontoItem" className="texto-campos">Desconto item lista (%)</Form.Label>
+                                                                    <Form.Control type="text" id="descontoItem" className="form-control" name="descontoItem" placeholder="00.00" value={this.state.descontoItemLista || ''} onChange={this.atualizaDescontoItem} onBlur={this.aplicaDescontoItem} disabled={this.state.opcaoDescontoLista === 'desliga'} />
+                                                                    <Form.Check
+                                                                        type="switch"
+                                                                        id="ligaSwitch"
+                                                                        label="Habilitado"
+                                                                        checked={this.state.opcaoDescontoLista === 'liga'}
+                                                                        onChange={(e) => this.setState({ opcaoDescontoLista: e.target.checked ? 'liga' : 'desliga' })}
+                                                                    />
                                                                 </Form.Group>
                                                             </Col>
                                                         </Row>
@@ -1884,7 +2014,7 @@ class FrenteCaixa extends React.Component {
                                             </Modal.Body>
                                             <Modal.Footer>
                                                 <Button variant="outline-success" className="mr-2" onClick={this.fecharModalEditarProduto} style={{ marginRight: '10px' }}>Cancelar</Button>
-                                                <Button variant="success" className="mr-2" onClick={this.salvarProdutoLista}>Salvar</Button>
+                                                <Button variant="secondary" className="mr-2" onClick={this.salvarProdutoLista}>Salvar</Button>
                                             </Modal.Footer>
                                         </Modal>
 
@@ -1897,7 +2027,7 @@ class FrenteCaixa extends React.Component {
                                             <Col className="col" xs={3}>
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="subtotal" className="texto-campos">Sub total</Form.Label>
-                                                    <Form.Control type="text" id="subtotal" className="" name="subtotal" placeholder="00.00" value={this.state.subTotal || ''} disabled />
+                                                    <Form.Control type="text" id="subtotal" className="" name="subtotal" placeholder="00.00" value={subTotal || ''} disabled />
                                                 </Form.Group>
                                             </Col>
                                             <Col className="col" xs={3}>
@@ -1973,7 +2103,12 @@ class FrenteCaixa extends React.Component {
                                         <Form.Label htmlFor="produto" className="texto-campos">Cliente (Nome)</Form.Label>
                                         <Row>
                                             <Col xs={6}>
-                                                <Form.Control type="text" id="cliente" className="form-control" placeholder="Digite o nome do cliente" value={buscaContato || ''} onChange={this.atualizarBuscaContato} />
+                                                <Form.Control type="text" id="cliente" className="form-control" placeholder="Digite o nome do cliente" value={buscaContato || ''} onChange={this.atualizarBuscaContato} onKeyDown={(e) => {
+                                                    if (e.keyCode === 13) {
+                                                        // Código 13 corresponde à tecla Enter
+                                                        this.buscarContato(buscaContato, nome, cnpj); // Chame a função de busca aqui
+                                                    }
+                                                }} />
                                             </Col>
                                             <Col xs={4}>
                                                 <Button variant="secondary" onClick={() => this.buscarContato(buscaContato, nome, cnpj)}>Buscar</Button>
@@ -2305,11 +2440,9 @@ class FrenteCaixa extends React.Component {
                             Nenhum produto selecionado!
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="success" onClick={this.modalInserirProduto}>Fechar</Button>
+                            <Button className="botao-finalizarvenda" variant="success" onClick={this.modalInserirProduto}>Fechar</Button>
                         </Modal.Footer>
                     </Modal>
-
-
 
 
                     <Offcanvas show={this.state.canvasFinalizarPedido} onHide={this.canvasFinalizarPedido} size="lg" placement="end" style={{ width: '35%' }}>
@@ -2423,6 +2556,46 @@ class FrenteCaixa extends React.Component {
                             <span style={{ display: 'block' }} ><strong>Pedido N.º: {this.state.ultimoPedido} </strong></span>
                             <span style={{ display: 'block' }}><strong>Salvo com sucesso!</strong></span>
                         </Modal.Body>
+                    </Modal>
+
+                    <Modal show={this.state.ModalSelecionarLoja} onHide={this.ModalSelecionarLoja} centered>
+                        <Modal.Header closeButton className="bg-secondary text-white">
+                            <Modal.Title>Seleciona uma Loja</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{ padding: '20px' }}>
+                            <div className="text-center" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', color: '#6c757d' }}>
+                                Bem vindo ao frente de caixa!
+                            </div>
+                            <Col className="col">
+                                <Form.Group className="mb-3">
+                                    <Form.Label htmlFor="depositolancamento" className="texto-campos">Depósito para lançamento</Form.Label>
+                                    <Form.Select className="" id="depositolancamento" name="depositolancamento" value={depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
+                                        <option>Selecione a loja</option>
+                                        {this.state.objeto && this.state.objeto.map((objeto) => (
+                                            <option key={objeto.idLoja} value={objeto.idLoja}>
+                                                {objeto.nomeLoja}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
+                            <Col className="col">
+                                <Form.Group className="mb-3">
+                                    <Form.Label htmlFor="depositolancamento" className="texto-campos">Depósito para lançamento</Form.Label>
+                                    <Form.Select className="" id="depositolancamento" name="depositolancamento" value={depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
+                                        <option>Selecione a unidade de negócio</option>
+                                        {this.state.objeto && this.state.objeto.map((objeto) => (
+                                            <option key={objeto.idLoja} value={objeto.idLoja}>
+                                                {objeto.unidadeLoja}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="success" onClick={this.ModalSelecionarLoja}>Fechar</Button>
+                        </Modal.Footer>
                     </Modal>
                 </Container >
             );
