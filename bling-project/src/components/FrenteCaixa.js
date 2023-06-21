@@ -19,7 +19,6 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
 import Table from "react-bootstrap/Table";
-import Switch from 'react-bootstrap/Switch';
 import { Offcanvas } from 'react-bootstrap';
 import Image from 'react-bootstrap/Image'
 
@@ -195,8 +194,6 @@ class FrenteCaixa extends React.Component {
 
     componentDidMount() {
         this.buscarLoja()
-        this.ModalSelecionarLoja()
-        this.buscarVendedor()
             .catch(() => { throw new Error("Erro ao conectar a API"); })
             .then(() => this.buscarFormaDePagamento())
             .catch(() => { throw new Error("Erro ao conectar a API"); })
@@ -204,12 +201,15 @@ class FrenteCaixa extends React.Component {
             .catch(() => { throw new Error("Erro ao conectar a API"); })
             .then(() => this.buscarPedido())
             .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => this.buscarVendedor())
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
             .then(() => {
                 this.setState({ carregado: true });
             })
             .catch((error) => {
                 this.setState({ erro: error.message });
             });
+        this.ModalSelecionarLoja()
 
         this.setState({ carregado: true }); //APAGAR (GAMBIARRA)
     }
@@ -1854,13 +1854,13 @@ class FrenteCaixa extends React.Component {
                                                             <Form.Group className="mb-3">
                                                                 <Form.Label htmlFor="quantidade" className="texto-campos">Quantidade</Form.Label>
                                                                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                                    <Button variant="outline-success rounded-0" type="button" onClick={this.decrementarQuantidade} disabled={!produtoSelecionado}>
+                                                                    {/* <Button variant="outline-success rounded-0" type="button" onClick={this.decrementarQuantidade} disabled={!produtoSelecionado}>
                                                                         -
-                                                                    </Button>
-                                                                    <Form.Control type="text" id="quantidade" className="form-control rounded-0" name="quantidade" value={quantidade || ''} onChange={this.atualizaQuantidade} disabled={!produtoSelecionado} />
-                                                                    <Button variant="outline-success rounded-0" type="button" onClick={this.incrementarQuantidade} disabled={!produtoSelecionado}>
+                                                                    </Button> */}
+                                                                    <Form.Control type="text" id="quantidade" className="form-control" name="quantidade" value={quantidade || ''} onChange={this.atualizaQuantidade} disabled={!produtoSelecionado} />
+                                                                    {/* <Button variant="outline-success rounded-0" type="button" onClick={this.incrementarQuantidade} disabled={!produtoSelecionado}>
                                                                         +
-                                                                    </Button>
+                                                                    </Button> */}
                                                                 </div>
                                                             </Form.Group>
                                                         </Col>
@@ -1883,7 +1883,7 @@ class FrenteCaixa extends React.Component {
                                                                 <Form.Check
                                                                     type="switch"
                                                                     id="ligaSwitch"
-                                                                    label="Habilitado"
+                                                                    label={this.state.opcaoDescontoItem === 'liga' ? 'Habilitado' : 'Desabilitado'}
                                                                     checked={this.state.opcaoDescontoItem === 'liga'}
                                                                     onChange={(e) => this.setState({ opcaoDescontoItem: e.target.checked ? 'liga' : 'desliga' })}
                                                                 />
@@ -1975,16 +1975,27 @@ class FrenteCaixa extends React.Component {
                                                             <Col className="col" xs={4}>
                                                                 <Form.Group className="mb-3">
                                                                     <Form.Label htmlFor="descontoItem" className="texto-campos">Desconto item lista (%)</Form.Label>
-                                                                    <Form.Control type="text" id="descontoItem" className="form-control" name="descontoItem" placeholder="00.00" value={this.state.descontoItemLista || ''} onChange={this.atualizaDescontoItem} onBlur={this.aplicaDescontoItem} disabled={this.state.opcaoDescontoLista === 'desliga'} />
+                                                                    <Form.Control
+                                                                        type="text"
+                                                                        id="descontoItem"
+                                                                        className="form-control"
+                                                                        name="descontoItem"
+                                                                        placeholder="00.00"
+                                                                        value={this.state.descontoItemLista || ''}
+                                                                        onChange={this.atualizaDescontoItem}
+                                                                        onBlur={this.aplicaDescontoItem}
+                                                                        disabled={this.state.opcaoDescontoLista === 'desliga'}
+                                                                    />
                                                                     <Form.Check
                                                                         type="switch"
                                                                         id="ligaSwitch"
-                                                                        label="Habilitado"
+                                                                        label={this.state.opcaoDescontoLista === 'liga' ? 'Habilitado' : 'Desabilitado'}
                                                                         checked={this.state.opcaoDescontoLista === 'liga'}
                                                                         onChange={(e) => this.setState({ opcaoDescontoLista: e.target.checked ? 'liga' : 'desliga' })}
                                                                     />
                                                                 </Form.Group>
                                                             </Col>
+
                                                         </Row>
                                                         <Row className="row">
                                                             <Col className="col" xs={4}>
