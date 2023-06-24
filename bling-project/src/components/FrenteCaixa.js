@@ -41,6 +41,17 @@ class FrenteCaixa extends React.Component {
             buscaVendedor: '',
             nome: '',
             cnpj: '',
+            endereco: '',
+            numero: '',
+            bairro: '',
+            cidade: '',
+            uf: '',
+            consumidorFinal: '',
+            ie_rg: '',
+            rg: '',
+            ie: '',
+            complemento: '',
+            email: '',
             observacoes: '',
             observacaointerna: '',
             comentario: '',
@@ -86,6 +97,7 @@ class FrenteCaixa extends React.Component {
             modalEditarProduto: false,
             canvasFinalizarPedido: false,
             ModalSelecionarLoja: false,
+            ModalCadastrarCliente: false,
             subtotalComFrete: 0,
             frete: 0,
             freteInserido: false,
@@ -98,12 +110,6 @@ class FrenteCaixa extends React.Component {
             newParcelas: 0,
             numeroPedido: 0,
             ultimoPedido: 0,
-            endereco: '',
-            numero: '',
-            bairro: '',
-            cidade: '',
-            uf: '',
-            consumidorFinal: '',
             data: '',
             valor: '',
             observacao: '',
@@ -123,6 +129,12 @@ class FrenteCaixa extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleChangePrazo = this.handleChangePrazo.bind(this);
 
+    }
+
+    ModalCadastrarCliente = () => {
+        this.setState({
+            ModalCadastrarCliente: !this.state.ModalCadastrarCliente
+        });
     }
 
     ModalSelecionarLoja = () => {
@@ -193,23 +205,23 @@ class FrenteCaixa extends React.Component {
     }
 
     componentDidMount() {
-        this.buscarLoja()
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarFormaDePagamento())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarDeposito())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarPedido())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarVendedor())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => {
-                this.setState({ carregado: true });
-            })
-            .catch((error) => {
-                this.setState({ erro: error.message });
-            });
-        this.ModalSelecionarLoja()
+        // this.buscarLoja()
+        // .catch(() => { throw new Error("Erro ao conectar a API"); })
+        // .then(() => this.buscarFormaDePagamento())
+        // .catch(() => { throw new Error("Erro ao conectar a API"); })
+        // // .then(() => this.buscarDeposito())
+        // // .catch(() => { throw new Error("Erro ao conectar a API"); })
+        // .then(() => this.buscarPedido())
+        // .catch(() => { throw new Error("Erro ao conectar a API"); })
+        // .then(() => this.buscarVendedor())
+        // .catch(() => { throw new Error("Erro ao conectar a API"); })
+        // .then(() => {
+        //     this.setState({ carregado: true });
+        // })
+        // .catch((error) => {
+        //     this.setState({ erro: error.message });
+        // });
+        // this.ModalSelecionarLoja()
 
         this.setState({ carregado: true }); //APAGAR (GAMBIARRA)
     }
@@ -297,11 +309,18 @@ class FrenteCaixa extends React.Component {
                             (contato.contato.nome && contato.contato.nome.toLowerCase().includes(value.toLowerCase())) ||
                             (contato.contato.cnpj && contato.contato.cnpj.toLowerCase().includes(value.toLowerCase())) ||
                             (contato.contato.rg && contato.contato.rg.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.ie_rg && contato.contato.ie_rg.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.contribuinte && contato.contato.contribuinte.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.cidade && contato.contato.cidade.toLowerCase().includes(value.toLowerCase())) ||
                             (contato.contato.endereco && contato.contato.endereco.toLowerCase().includes(value.toLowerCase())) ||
                             (contato.contato.numero && contato.contato.numero.toLowerCase().includes(value.toLowerCase())) ||
                             (contato.contato.bairro && contato.contato.bairro.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.cidade && contato.contato.cidade.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.uf && contato.contato.uf.toLowerCase().includes(value.toLowerCase()))
+                            (contato.contato.complemento && contato.contato.complemento.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.cep && contato.contato.cep.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.uf && contato.contato.uf.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.email && contato.contato.email.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.celular && contato.contato.celular.toLowerCase().includes(value.toLowerCase())) ||
+                            (contato.contato.fone && contato.contato.fone.toLowerCase().includes(value.toLowerCase()))
                     );
                     console.log("Contato objeto retornado:", contatosFiltrados);
 
@@ -310,7 +329,6 @@ class FrenteCaixa extends React.Component {
                     //         (contato.contato.nome === "Consumidor Final" && contato.contato.nome.toLowerCase().includes(value.toLowerCase())));
                     // console.log(consumidorFinal)
                     // console.log(consumidorFinal.contato.nome);
-
 
                     this.setState({
                         contatos: contatosFiltrados,
@@ -334,7 +352,6 @@ class FrenteCaixa extends React.Component {
             });
     };
 
-
     buscarVendedor = (value) => {
         return new Promise((resolve, reject) => {
             // console.log("Buscando vendedor por:", value);
@@ -351,10 +368,7 @@ class FrenteCaixa extends React.Component {
                         const vendedoresFiltrados = dados.retorno.contatos.filter(
                             (contato) =>
                                 contato?.contato?.tiposContato?.some(
-                                    (tipoContato) =>
-                                        tipoContato?.tipoContato?.descricao
-                                            ?.toLowerCase()
-                                            .includes("vendedor")
+                                    (tipoContato) => tipoContato?.tipoContato?.descricao?.toLowerCase().includes("vendedor")
                                 )
                         );
                         this.setState({
@@ -382,42 +396,40 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-
-    buscarDeposito = () => {
-        return new Promise((resolve, reject) => {
-            fetch("http://localhost:8083/api/v1/depositos")
-                .then((resposta) => {
-                    if (!resposta.ok) {
-                        throw new Error("Erro na chamada da API");
-                    }
-                    return resposta.json();
-                })
-                .then(dados => {
-                    if (dados.retorno.depositos) {
-                        this.setState({
-                            depositos: dados.retorno.depositos,
-                        });
-                    } else {
-                        this.setState({
-                            depositos: []
-                        });
-                    }
-                    this.setState({
-                        carregando: false
-                    });
-                    resolve(); // Resolva a Promise quando a chamada da API for concluída com sucesso
-                })
-                .catch((error) => {
-                    console.log("Erro ao buscar deposito:", error);
-                    this.setState({
-                        depositos: [],
-                        carregando: false
-                    });
-                    reject(error); // Rejeite a Promise se ocorrer um erro na chamada da API
-                });
-        });
-    };
-
+    // buscarDeposito = () => {
+    //     return new Promise((resolve, reject) => {
+    //         fetch("http://localhost:8083/api/v1/depositos")
+    //             .then((resposta) => {
+    //                 if (!resposta.ok) {
+    //                     throw new Error("Erro na chamada da API");
+    //                 }
+    //                 return resposta.json();
+    //             })
+    //             .then(dados => {
+    //                 if (dados.retorno.depositos) {
+    //                     this.setState({
+    //                         depositos: dados.retorno.depositos,
+    //                     });
+    //                 } else {
+    //                     this.setState({
+    //                         depositos: []
+    //                     });
+    //                 }
+    //                 this.setState({
+    //                     carregando: false
+    //                 });
+    //                 resolve(); // Resolva a Promise quando a chamada da API for concluída com sucesso
+    //             })
+    //             .catch((error) => {
+    //                 console.log("Erro ao buscar deposito:", error);
+    //                 this.setState({
+    //                     depositos: [],
+    //                     carregando: false
+    //                 });
+    //                 reject(error); // Rejeite a Promise se ocorrer um erro na chamada da API
+    //             });
+    //     });
+    // };
 
     buscarPedido = (value) => {
         return new Promise((resolve, reject) => {
@@ -459,8 +471,6 @@ class FrenteCaixa extends React.Component {
                 });
         });
     };
-
-
 
     buscarFormaDePagamento = () => {
         return new Promise((resolve, reject) => {
@@ -542,9 +552,6 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-
-
-
     cadastrarPedido = (xmlPedido) => {
         const parser = new DOMParser();
         const xml = parser.parseFromString(xmlPedido, 'text/xml');
@@ -572,6 +579,22 @@ class FrenteCaixa extends React.Component {
             }
         });
     };
+
+    checkCEP = (e) => {
+        const cep = e.target.value.replace(/\D/g, '');
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            .then(res => res.json())
+            .then(data => {
+                this.setState({
+                    endereco: data.logradouro,
+                    bairro: data.bairro,
+                    cidade: data.localidade,
+                    uf: data.uf,
+                })
+                console.log(data);
+                this.numeroRef.current.focus();
+            })
+    }
 
     //--------------------------------------------- FUNÇÕES DE TELA ---------------------------------------------
     // -------------------------------------------- FUNÇÕES VENDEDOR --------------------------------------------
@@ -627,6 +650,35 @@ class FrenteCaixa extends React.Component {
 
     // -------------------------------------------- FUNÇÕES CONTATO ---------------------------------------------
 
+    selecionarContato = (contato) => {
+        // console.log("selecionarContato (contatoSelecionado)", contatoSelecionado)
+        this.setState({
+            contatoSelecionado: contato,
+            nome: contato.contato.nome,
+            consumidorFinal: contato.contato.nome,
+            ie_rg: contato.contato.ie_rg,
+            contribuinte: contato.contato.contribuinte,
+            rg: contato.contato.rg,
+            cep: contato.contato.cep,
+            complemento: contato.contato.complemento,
+            email: contato.contato.email,
+            fone: contato.contato.fone,
+            celular: contato.contato.celular,
+            dataNascimento: contato.contato.dataNascimento,
+            tipo: contato.contato.tipo,
+            cnpj: contato.contato.cnpj,
+            codigo: contato.contato.codigo,
+            fantasia: contato.contato.fantasia,
+            endereco: contato.contato.endereco,
+            numero: contato.contato.numero,
+            bairro: contato.contato.bairro,
+            cidade: contato.contato.cidade,
+            uf: contato.contato.uf,
+            contatos: [],
+        });
+        this.atualizarBuscaContato({ target: { value: '' } });
+    };
+
     atualizarBuscaContato = (event) => {
         const buscaContato = event.target.value
         // console.log("atualizarBuscaContato (buscaContato): ", buscaContato)
@@ -642,19 +694,12 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-    atualizaTipo = (event) => {
-        // console.log("Tipo:", event.target.value);
+    atualizaTipoPessoa = (event) => {
+        // console.log("tipo:", event.target.value);
         this.setState({
             tipo: event.target.value
         });
-    };
-
-    atualizaCpfCnpj = (event) => {
-        // console.log("CPF/CNPJ:", event.target.value);
-        this.setState({
-            cnpj: event.target.value
-        });
-    };
+    }
 
     atualizaCodigo = (event) => {
         // console.log("Codigo:", event.target.value);
@@ -670,28 +715,109 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-
-    // -------------------------------------------- FUNÇÕES CONTATO ---------------------------------------------
-
-
-    selecionarContato = (contato) => {
-        // console.log("selecionarContato (contatoSelecionado)", contatoSelecionado)
+    atualizaCpfCnpj = (event) => {
+        // console.log("CPF/CNPJ:", event.target.value);
         this.setState({
-            contatoSelecionado: contato,
-            nome: contato.contato.nome,
-            consumidorFinal: contato.contato.nome,
-            tipo: contato.contato.tipo,
-            cnpj: contato.contato.cnpj,
-            codigo: contato.contato.codigo,
-            fantasia: contato.contato.fantasia,
-            endereco: contato.contato.endereco,
-            numero: contato.contato.numero,
-            bairro: contato.contato.bairro,
-            cidade: contato.contato.cidade,
-            uf: contato.contato.uf,
-            contatos: [],
+            cnpj: event.target.value
         });
-        this.atualizarBuscaContato({ target: { value: '' } });
+    };
+
+    atualizaRg = (event) => {
+        // console.log("rg: ", event.target.value);
+        this.setState({
+            rg: event.target.value
+        });
+    };
+
+    atualizaIe = (event) => {
+        // console.log("contribuinte: ", event.target.value);
+        this.setState({
+            ie: event.target.value
+        });
+    };
+
+    atualizaContribuinte = (event) => {
+        // console.log("contribuinte: ", event.target.value);
+        this.setState({
+            contribuinte: event.target.value
+        });
+    };
+
+    atualizaCidade = (event) => {
+        // console.log("contribuinte: ", event.target.value);
+        this.setState({
+            cidade: event.target.value
+        });
+    };
+
+    atualizaEndereco = (event) => {
+        // console.log("endereco: ", event.target.value);
+        this.setState({
+            endereco: event.target.value
+        });
+    };
+
+    atualizaNumero = (event) => {
+        // console.log("numero: ", event.target.value);
+        this.setState({
+            numero: event.target.value
+        });
+    };
+
+    atualizaBairro = (event) => {
+        // console.log("bairro: ", event.target.value);
+        this.setState({
+            bairro: event.target.value
+        });
+    };
+
+    atualizaComplemento = (event) => {
+        // console.log("complemento: ", event.target.value);
+        this.setState({
+            complemento: event.target.value
+        });
+    };
+
+    atualizaCep = (event) => {
+        // console.log("cep: ", event.target.value);
+        this.setState({
+            cep: event.target.value
+        });
+    };
+
+    atualizaUf = (event) => {
+        // console.log("uf: ", event.target.value);
+        this.setState({
+            uf: event.target.value
+        });
+    };
+
+    atualizaEmail = (event) => {
+        // console.log("email: ", event.target.value);
+        this.setState({
+            email: event.target.value
+        });
+    };
+
+    atualizaCelular = (event) => {
+        // console.log("celular: ", event.target.value);
+        this.setState({
+            celular: event.target.value
+        });
+    };
+
+    atualizaDataNascimento = (event) => {
+        // console.log("dataNascimento: ", event.target.value);
+        this.setState({
+            dataNascimento: event.target.value
+        });
+    };
+
+    atualizaFone = (event) => {
+        // console.log("fone:", event.target.value);
+        this.setState({
+            fone: event.target.value
+        });
     };
 
     // adicionarContatoSelecionado = (contatoSelecionado) => {
@@ -880,9 +1006,6 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-
-
-
     calcularTotalComDesconto = (desconto, subTotal) => {
         const subtotal = subTotal || this.calcularTotal();
         const valorDesconto = desconto || 0;
@@ -1028,14 +1151,14 @@ class FrenteCaixa extends React.Component {
         return parseFloat(subTotalGeral);
     };
 
-    atualizaDataPrevista = (novaDataPrevista) => {
-        // console.log(novaDataPrevista);
-        const dataPrevista = novaDataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        // console.log(dataPrevista);
-        this.setState({
-            dataPrevista: novaDataPrevista
-        });
-    };
+    // atualizaDataPrevista = (novaDataPrevista) => {
+    //     // console.log(novaDataPrevista);
+    //     const dataPrevista = novaDataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    //     // console.log(dataPrevista);
+    //     this.setState({
+    //         dataPrevista: novaDataPrevista
+    //     });
+    // };
 
 
     atualizaDepositoSelecionado = (event) => {
@@ -1236,11 +1359,15 @@ class FrenteCaixa extends React.Component {
             this.canvasFinalizarPedido()
         }
 
-        return { nome, cnpj, itens, vendedor, dataPrevista, dataPrevistaFormatted, observacoes, observacaointerna, valorDesconto, prazo };
+        return {
+            nome, cnpj, itens, vendedor, observacoes, observacaointerna, valorDesconto, prazo,
+            // dataPrevista, 
+            // dataPrevistaFormatted 
+        };
     };
 
     gerarXmlItensParaEnvio = () => {
-        const { itens, prazo, dataPrevistaFormatted } = this.finalizaVenda();
+        const { itens, prazo, dataPrevistaFormatted = '' } = this.finalizaVenda();
 
         const xml = `<?xml version="1.0"?>
           <pedido>
@@ -1252,8 +1379,24 @@ class FrenteCaixa extends React.Component {
             <vlr_frete>${this.state.frete}</vlr_frete>
             <loja>${this.state.idLoja}</loja>
             <cliente>
-              <nome>${this.state.nome}</nome>
-              <cnpj>${this.state.cnpj}</cnpj>
+                <nome>${this.state.nome}</nome>
+                <cnpj>${this.state.cnpj}</cnpj>
+                <tipoPessoa>${this.state.tipo}</tipoPessoa>
+                <ie>${this.state.ie}</ie>
+                <rg>${this.state.rg}</rg>
+                <contribuinte>${this.state.contribuinte}</contribuinte>
+                <endereco>${this.state.endereco}</endereco>
+                <numero>${this.state.numero}</numero>
+                <complemento>${this.state.complemento}</complemento>
+                <bairro>${this.state.bairro}</bairro>
+                <cep>${this.state.cep}</cep>
+                <cidade>${this.state.municipio}</cidade>
+                <uf>${this.state.uf}</uf>
+                <fone>${this.state.fone}</fone>
+                <celular>${this.state.celular}</celular>
+                <email>${this.state.email}</email>
+                <dataNascimento>${this.state.dataNascimento}</dataNascimento>
+
             </cliente>
             <itens>
               ${itens.map((item) => `
@@ -1582,7 +1725,6 @@ class FrenteCaixa extends React.Component {
         }
     };
 
-
     atualizaSubTotalLista = () => {
         const { quantidadeLista, valorUnitarioLista } = this.state;
 
@@ -1603,8 +1745,53 @@ class FrenteCaixa extends React.Component {
         }
     };
 
+    salvarProdutoLista = () => {
+        const {
+            produtoSelecionadoIndex,
+            quantidadeLista,
+            valorUnitarioLista,
+            descontoItemLista,
+            produtosSelecionados,
+        } = this.state;
 
+        if (produtoSelecionadoIndex !== null && produtoSelecionadoIndex >= 0) {
+            const produtosAtualizados = [...produtosSelecionados];
+            let novoPreco = valorUnitarioLista;
 
+            if (descontoItemLista !== '') {
+                const descontoPorcentagem = parseFloat(descontoItemLista.replace(',', '.'));
+
+                // Converter a porcentagem para decimal dividindo por 100
+                const descontoDecimal = descontoPorcentagem / 100;
+
+                // Calcular o novo valor unitário com o desconto percentual
+                novoPreco = (valorUnitarioLista * (1 - descontoDecimal)).toFixed(2);
+            }
+
+            const produtoAtualizado = {
+                ...produtosAtualizados[produtoSelecionadoIndex],
+                quantidade: quantidadeLista,
+                preco: novoPreco,
+                descontoItem: descontoItemLista,
+            };
+
+            produtosAtualizados[produtoSelecionadoIndex] = produtoAtualizado;
+
+            this.setState({
+                produtosSelecionados: produtosAtualizados,
+                modalEditarProduto: false,
+                valorLista: '',
+                quantidadeLista: '',
+                valorUnitarioLista: '',
+            });
+        }
+    };
+
+    fecharModalEditarProduto = () => {
+        this.setState({
+            modalEditarProduto: !this.state.modalEditarProduto,
+        })
+    }
 
     // atualizaDescontoItem = (event) => {
     //     const descontoItemLista = event.target.value;
@@ -1680,61 +1867,19 @@ class FrenteCaixa extends React.Component {
     //     });
     // };
 
-    fecharModalEditarProduto = () => {
-        this.setState({
-            modalEditarProduto: !this.state.modalEditarProduto,
-        })
-    }
-    salvarProdutoLista = () => {
-        const {
-            produtoSelecionadoIndex,
-            quantidadeLista,
-            valorUnitarioLista,
-            descontoItemLista,
-            produtosSelecionados,
-        } = this.state;
 
-        if (produtoSelecionadoIndex !== null && produtoSelecionadoIndex >= 0) {
-            const produtosAtualizados = [...produtosSelecionados];
-            let novoPreco = valorUnitarioLista;
-
-            if (descontoItemLista !== '') {
-                const descontoPorcentagem = parseFloat(descontoItemLista.replace(',', '.'));
-
-                // Converter a porcentagem para decimal dividindo por 100
-                const descontoDecimal = descontoPorcentagem / 100;
-
-                // Calcular o novo valor unitário com o desconto percentual
-                novoPreco = (valorUnitarioLista * (1 - descontoDecimal)).toFixed(2);
-            }
-
-            const produtoAtualizado = {
-                ...produtosAtualizados[produtoSelecionadoIndex],
-                quantidade: quantidadeLista,
-                preco: novoPreco,
-                descontoItem: descontoItemLista,
-            };
-
-            produtosAtualizados[produtoSelecionadoIndex] = produtoAtualizado;
-
-            this.setState({
-                produtosSelecionados: produtosAtualizados,
-                modalEditarProduto: false,
-                valorLista: '',
-                quantidadeLista: '',
-                valorUnitarioLista: '',
-            });
-        }
-    };
 
 
     render() {
 
-
-        const { produtos, produtoSelecionado, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto } = this.state;
-        const { contatos, contatoSelecionado, buscaContato, cnpj, nome, tipo, codigo, fantasia, endereco, numero, bairro, cidade, uf, dataPrevista, observacoes, observacaointerna, valorDesconto, dinheiroRecebido, troco, frete } = this.state;
-        const { subTotalGeral, condicao, consumidorFinal, prazo, depositoSelecionado, numeroPedido, descontoProduto, subTotal } = this.state;
-        const { carregado, erro, imagem } = this.state;
+        //Produto
+        const { produtos, produtoSelecionado, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, imagem } = this.state;
+        //Contatos
+        const { contatos, contatoSelecionado, buscaContato, nome, cnpj, rg, ie_rg, tipo, contribuinte, codigo, fantasia, cep, cidade, uf, endereco, numero, complemento, bairro, email, fone, celular, dataNascimento } = this.state;
+        //Calculos
+        const { subTotalGeral, observacoes, observacaointerna, valorDesconto, dinheiroRecebido, troco, frete, condicao, depositoSelecionado, subTotal, dataPrevista, consumidorFinal, prazo, numeroPedido, descontoProduto } = this.state;
+        //Modals
+        const { carregado, erro, } = this.state;
 
         let quantidadeTotal = 0;
         for (const produto of this.state.produtosSelecionados) {
@@ -1791,8 +1936,40 @@ class FrenteCaixa extends React.Component {
                                     <div>
                                         <div>
                                             <div className="d-grid gap-2">
+                                                <div>
+                                                    <div className="mb-3">
+                                                        <h5>Vendedor</h5>
+                                                    </div>
+                                                    <Row className="row align-items-center">
+                                                        <Col xs={4} className="h-100">
+                                                            <Form.Group className="mb-3 h-100">
+                                                                <Form.Label htmlFor="vendedor" className="texto-campos">Adicionar vendedor</Form.Label>
+                                                                <div className="d-flex align-items-center h-100">
+                                                                    <Form.Select className="" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado || ''} onChange={this.atualizaVendedorSelecionado}>
+                                                                        <option>Selecione um vendedor</option>
+                                                                        {this.state.vendedores.map((contato) => (
+                                                                            <option key={contato.contato.id} value={contato.contato.nome}>
+                                                                                {contato.contato.nome}
+                                                                            </option>
+                                                                        ))}
+                                                                    </Form.Select>
+                                                                </div>
+                                                            </Form.Group>
+                                                        </Col>
+                                                        <Col md="auto" className="col h-100">
+                                                            {this.state.vendedorSelecionado && (
+                                                                <span className="produto-selecionado">Vendedor selecionado: {this.state.vendedorSelecionado}</span>
+                                                            )}
+                                                        </Col>
+                                                    </Row>
+                                                </div>
+
+                                                <div className="divisa"></div>
+                                                <div className="mb-3">
+                                                    <h5>Produto</h5>
+                                                </div>
                                                 <Form.Label htmlFor="produto" className="texto-campos">Adicionar produto</Form.Label>
-                                                <Row>
+                                                <Row className="row">
                                                     <Col xs={8}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Control
@@ -2054,26 +2231,12 @@ class FrenteCaixa extends React.Component {
                                                     <Form.Control type="text" id="totaldavenda" className="" name="totaldavenda" placeholder="00.00" defaultValue={subTotalGeral || ''} disabled />
                                                 </Form.Group>
                                             </Col>
-                                            <Col className="col mb-3" xs={3}>
+                                            {/* <Col className="col mb-3" xs={3}>
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
                                                     <Form.Control type="text" className="" id="frete" name="frete" placeholder="00.00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
                                                 </Form.Group>
-                                            </Col>
-                                            <Row>
-                                                <Col className="col" xs={3}>
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="totaldinheiro" className="texto-campos">Total em dinheiro</Form.Label>
-                                                        <Form.Control type="text" id="totaldinheiro" className="" name="totaldinheiro" placeholder="00.00" value={dinheiroRecebido || ''} onChange={this.atualizaTroco} onBlur={this.formatarTroco} />
-                                                    </Form.Group>
-                                                </Col>
-                                                <Col className="col mb-3" xs={3}>
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="trocodinheiro" className="texto-campos">Troco em dinheiro</Form.Label>
-                                                        <Form.Control type="text" id="trocodinheiro" className="" name="trocodinheiro" placeholder="00.00" defaultValue={troco || ''} disabled />
-                                                    </Form.Group>
-                                                </Col>
-                                            </Row>
+                                            </Col> */}
                                         </Row>
 
                                     </div>
@@ -2083,32 +2246,11 @@ class FrenteCaixa extends React.Component {
                         <Col md={6}>
                             <div className="grid-2">
                                 {/* <div className="produto-header">Vendedor</div> */}
-                                <Row className="row align-items-center">
-                                    <Col xs={4} className="h-100">
-                                        <Form.Group className="mb-3 h-100">
-                                            <Form.Label htmlFor="vendedor" className="texto-campos">Vendedor</Form.Label>
-                                            <div className="d-flex align-items-center h-100">
-                                                <Form.Select className="" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado || ''} onChange={this.atualizaVendedorSelecionado}>
-                                                    <option>Selecione um vendedor</option>
-                                                    {this.state.vendedores.map((contato) => (
-                                                        <option key={contato.contato.id} value={contato.contato.nome}>
-                                                            {contato.contato.nome}
-                                                        </option>
-                                                    ))}
-                                                </Form.Select>
-                                            </div>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md="auto" className="col h-100">
-                                        {this.state.vendedorSelecionado && (
-                                            <span className="produto-selecionado">Vendedor selecionado: {this.state.vendedorSelecionado}</span>
-                                        )}
-                                    </Col>
-                                </Row>
                                 {/* <div className="produto-header">Cliente</div> */}
 
-
-                                <div className="divisa"></div>
+                                <div className="mb-3">
+                                    <h5>Cliente</h5>
+                                </div>
                                 <div>
                                     <div className="busca-cliente d-grid gap-2">
                                         <Form.Label htmlFor="produto" className="texto-campos">Cliente (Nome)</Form.Label>
@@ -2161,7 +2303,7 @@ class FrenteCaixa extends React.Component {
                                                 <Col className="col" xs={3}>
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="tipo" className="texto-campos">Tipo</Form.Label>
-                                                        <Form.Select as="select" id="tipo" className="form-control" name="tipo" value={tipo || ''} onChange={this.atualizaTipo}>
+                                                        <Form.Select as="select" id="tipo" className="form-control" name="tipo" value={tipo || ''} onChange={this.atualizaTipoPessoa}>
                                                             <option value="F">Pessoa Física</option>
                                                             <option value="J">Pessoa Jurídica</option>
                                                             <option value="E">Estrangeiro</option>
@@ -2169,22 +2311,171 @@ class FrenteCaixa extends React.Component {
                                                     </Form.Group>
                                                 </Col>
                                             </Row>
-                                            {/* <Row className="row">
-                                                <Col className="col" xs={4}>
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="codigo" className="texto-campos">Código</Form.Label>
-                                                        <Form.Control type="text" id="codigo" className="form-control" name="codigo" value={codigo || ''} onChange={this.atualizaCodigo} />
-                                                    </Form.Group>
-                                                </Col>
-                                                <Col className="col" xs={4}>
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="fantasia" className="texto-campos">Fantasia</Form.Label>
-                                                        <Form.Control type="text" id="fantasia" className="form-control" name="fantasia" value={fantasia || ''} onChange={this.atualizaFantasia} />
-                                                    </Form.Group>
-                                                </Col>
-                                            </Row> */}
+                                            <Row className="row">
+                                                <Button variant="link" onClick={this.ModalCadastrarCliente}>Opções avançadas</Button>
+                                            </Row>
                                         </div>
                                     )}
+                                    <Modal show={this.state.ModalCadastrarCliente} onHide={this.ModalCadastrarCliente} size="xl"
+                                        centered>
+                                        <Modal.Header closeButton className="bg-secondary text-white">
+                                            <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                                            <Modal.Title>Cadastrar cliente</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body style={{ padding: '20px' }}>
+                                            <div>
+                                                <Row className="row">
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="codigo" className="texto-campos">Código</Form.Label>
+                                                            <Form.Control type="text" id="codigo" className="form-control" name="codigo" value={codigo || ''} onChange={this.atualizaCodigo} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+                                                <Row className="row">
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="inscricaoEstadual" className="texto-campos">Inscrição estadual</Form.Label>
+                                                            <Form.Control type="text" id="inscricaoEstadual" className="form-control" name="inscricaoEstadual" value={ie_rg || ''} onChange={this.atualizaIe} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="contribuinte" className="texto-campos">Contribuinte</Form.Label>
+                                                            <Form.Select as="select" id="contribuinte" className="form-control" name="contribuinte" value={contribuinte || ''} onChange={this.atualizaContribuinte} >
+                                                                <option value="1">1 - Contribuinte ICMS</option>
+                                                                <option value="2">2 - Contribuinte isento de Inscrição no Cadastro de Contribuintes</option>
+                                                                <option value="9">9 - Não contribuinte, que pode ou não possuir Inscrição Estadual no Cadastro de Contribuintes</option>
+                                                            </Form.Select>
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="rg" className="texto-campos">RG</Form.Label>
+                                                            <Form.Control type="text" id="rg" className="form-control" name="rg" value={rg || ''} onChange={this.atualizaRg} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+                                                <Row className="row">
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="cep" className="texto-campos">CEP</Form.Label>
+                                                            <Form.Control type="text" id="cep" className="form-control" name="cep" value={cep || ''} onChange={this.atualizaCep} onBlur={this.checkCEP} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="cidade" className="texto-campos">Cidade</Form.Label>
+                                                            <Form.Control type="text" id="cidade" className="form-control" name="cidade" value={cidade || ''} onChange={this.atualizaCidade} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="uf" className="texto-campos">UF</Form.Label>
+                                                            <Form.Select as="select" id="uf" className="form-control" name="uf" value={this.state.uf} onChange={this.atualizaUf}>
+                                                                <option value="">Selecione</option>
+                                                                <option value="AC">Acre</option>
+                                                                <option value="AL">Alagoas</option>
+                                                                <option value="AP">Amapá</option>
+                                                                <option value="AM">Amazonas</option>
+                                                                <option value="BA">Bahia</option>
+                                                                <option value="CE">Ceará</option>
+                                                                <option value="DF">Distrito Federal</option>
+                                                                <option value="ES">Espírito Santo</option>
+                                                                <option value="GO">Goiás</option>
+                                                                <option value="MA">Maranhão</option>
+                                                                <option value="MT">Mato Grosso</option>
+                                                                <option value="MS">Mato Grosso do Sul</option>
+                                                                <option value="MG">Minas Gerais</option>
+                                                                <option value="PA">Pará</option>
+                                                                <option value="PB">Paraíba</option>
+                                                                <option value="PR">Paraná</option>
+                                                                <option value="PE">Pernambuco</option>
+                                                                <option value="PI">Piauí</option>
+                                                                <option value="RJ">Rio de Janeiro</option>
+                                                                <option value="RN">Rio Grande do Norte</option>
+                                                                <option value="RS">Rio Grande do Sul</option>
+                                                                <option value="RO">Rondônia</option>
+                                                                <option value="RR">Roraima</option>
+                                                                <option value="SC">Santa Catarina</option>
+                                                                <option value="SP">São Paulo</option>
+                                                                <option value="SE">Sergipe</option>
+                                                                <option value="TO">Tocantins</option>
+                                                            </Form.Select>
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+                                                <Row className="row">
+                                                    <Col className="col" xs={12} md={8}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="endereco" className="texto-campos">Endereço</Form.Label>
+                                                            <Form.Control type="text" id="endereco" className="form-control" name="endereco" value={endereco || ''} onChange={this.atualizaEndereco} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="numero" className="texto-campos">Número</Form.Label>
+                                                            <Form.Control type="text" id="numero" className="form-control" name="numero" value={numero || ''} onChange={this.atualizaNumero} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+                                                <Row className="row">
+                                                    <Col className="col" xs={12} md={8}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="complemento" className="texto-campos">Complemento</Form.Label>
+                                                            <Form.Control type="text" id="complemento" className="form-control" name="complemento" value={complemento || ''} onChange={this.atualizaComplemento} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="bairro" className="texto-campos">Bairro</Form.Label>
+                                                            <Form.Control type="text" id="bairro" className="form-control" name="bairro" value={bairro || ''} onChange={this.atualizaBairro} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+                                                <Row className="row">
+                                                    <Col className="col" xs={12} md={8}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="email" className="texto-campos">E-mail</Form.Label>
+                                                            <Form.Control type="text" id="email" className="form-control" name="email" value={email || ''} onChange={this.atualizaEmail} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="fone" className="texto-campos">Fone</Form.Label>
+                                                            <Form.Control type="text" id="fone" className="form-control" name="fone" value={fone || ''} onChange={this.atualizaFone} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+                                                <Row className="row">
+                                                    <Col className="col" xs={12} md={8}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="celular" className="texto-campos">Celular</Form.Label>
+                                                            <Form.Control type="text" id="celular" className="form-control" name="celular" value={celular || ''} onChange={this.atualizaCelular} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="dataNascimento" className="texto-campos">Data de nascimento</Form.Label>
+                                                            <Form.Control type="text" id="dataNascimento" className="form-control" name="dataNascimento" value={dataNascimento || ''} onChange={this.atualizaDataNascimento} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+                                                <Row className="row">
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="observacoes" className="texto-campos">Observações</Form.Label>
+                                                            <Form.Control type="textarea" id="observacoes" className="form-control" name="observacoes" value={observacoes || ''} onChange={this.atualizaObservacoes} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+                                            </div>
+                                        </Modal.Body>
+                                        <Modal.Footer>
+                                            <Button variant="outline-success" onClick={this.ModalCadastrarCliente}>Fechar</Button>
+                                            <Button variant="success" onClick={this.ModalCadastrarCliente}>Salvar</Button>
+                                        </Modal.Footer>
+                                    </Modal>
                                 </div>
 
 
@@ -2194,8 +2485,8 @@ class FrenteCaixa extends React.Component {
                                         <div>
                                             <h5>Outras informações</h5>
                                         </div>
-                                        <Row className="row">
-                                            {/* <Col className="col">
+                                        {/* <Row className="row">
+                                            <Col className="col">
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="vendedor" className="texto-campos">Vendedor</Form.Label>
                                                             <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado} onChange={this.atualizaVendedorSelecionado} >
@@ -2207,7 +2498,7 @@ class FrenteCaixa extends React.Component {
                                                                 ))}
                                                             </Form.Select>
                                                         </Form.Group>
-                                                    </Col> */}
+                                                    </Col>
                                             <Col className="col">
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="dataprevista" className="texto-campos">Data prevista</Form.Label>
@@ -2227,21 +2518,37 @@ class FrenteCaixa extends React.Component {
                                                     </Form.Select>
                                                 </Form.Group>
                                             </Col>
-                                        </Row>
-                                        {/* <Row className="row">
-                                            <Col className="col">
-                                                <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="observacoes" className="texto-campos">Observações</Form.Label>
-                                                    <textarea className="form-control" id="observacoes" rows="3" value={observacoes || ''} onChange={this.atualizaObservacoes} ></textarea>
-                                                </Form.Group>
-                                            </Col>
-                                            <Col className="col">
-                                                <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="observacaointerna" className="texto-campos">Observações internas</Form.Label>
-                                                    <textarea className="form-control" id="observacaointerna" rows="3" value={observacaointerna || ''} onChange={this.atualizaObservacaoInterna} ></textarea>
-                                                </Form.Group>
-                                            </Col>
                                         </Row> */}
+                                        <div>
+                                            <Row className="row">
+                                                <Col className="col mb-3" xs={3}>
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
+                                                        <Form.Control type="text" className="" id="frete" name="frete" placeholder="00.00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col className="col" xs={3}>
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label htmlFor="totaldavenda" className="texto-campos">Total da venda</Form.Label>
+                                                        <Form.Control type="text" id="totaldavenda" className="" name="totaldavenda" placeholder="00.00" defaultValue={subTotalGeral || ''} disabled />
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
+                                            <Row className="row">
+                                                <Col className="col">
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label htmlFor="observacoes" className="texto-campos">Observações</Form.Label>
+                                                        <textarea className="form-control" id="observacoes" rows="2" value={observacoes || ''} onChange={this.atualizaObservacoes} ></textarea>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col className="col">
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label htmlFor="observacaointerna" className="texto-campos">Observações internas</Form.Label>
+                                                        <textarea className="form-control" id="observacaointerna" rows="2" value={observacaointerna || ''} onChange={this.atualizaObservacaoInterna} ></textarea>
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
+                                        </div>
                                         {/* <div className="pagamento-header">Pagamento</div> */}
 
 
@@ -2249,6 +2556,20 @@ class FrenteCaixa extends React.Component {
                                         <div className="mb-3">
                                             <h5>Forma de pagamento</h5>
                                         </div>
+                                        <Row>
+                                            <Col className="col" xs={3}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label htmlFor="totaldinheiro" className="texto-campos">Total em dinheiro</Form.Label>
+                                                    <Form.Control type="text" id="totaldinheiro" className="" name="totaldinheiro" placeholder="00.00" value={dinheiroRecebido || ''} onChange={this.atualizaTroco} onBlur={this.formatarTroco} />
+                                                </Form.Group>
+                                            </Col>
+                                            <Col className="col mb-3" xs={3}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label htmlFor="trocodinheiro" className="texto-campos">Troco em dinheiro</Form.Label>
+                                                    <Form.Control type="text" id="trocodinheiro" className="" name="trocodinheiro" placeholder="00.00" defaultValue={troco || ''} disabled />
+                                                </Form.Group>
+                                            </Col>
+                                        </Row>
                                         <Row className="mb-3">
                                             <Col className="col mb-3" xs={3}>
                                                 <Form.Group className="mb-3" controlId="condicao">
@@ -2605,7 +2926,7 @@ class FrenteCaixa extends React.Component {
                             </Col>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="success" onClick={this.ModalSelecionarLoja}>Fechar</Button>
+                            <Button variant="success" onClick={this.ModalSelecionarLoja}>Salvar</Button>
                         </Modal.Footer>
                     </Modal>
                 </Container >

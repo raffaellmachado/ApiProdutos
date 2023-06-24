@@ -189,9 +189,9 @@ class Contato extends React.Component {
             .then(res => res.json())
             .then(data => {
                 this.setState({
-                    logradouro: data.logradouro,
+                    endereco: data.logradouro,
                     bairro: data.bairro,
-                    localidade: data.localidade,
+                    cidade: data.localidade,
                     uf: data.uf,
                 })
                 console.log(data);
