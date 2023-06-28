@@ -5,7 +5,7 @@ import { IonIcon } from '@ionic/react';
 import { trashOutline } from 'ionicons/icons';
 import { pencil } from 'ionicons/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faCalendarAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import ptBR from 'date-fns/locale/pt-BR';
 import DatePicker from 'react-datepicker';
@@ -19,8 +19,10 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
 import Table from "react-bootstrap/Table";
+import { Alert } from "react-bootstrap";
 import { Offcanvas } from 'react-bootstrap';
 import Image from 'react-bootstrap/Image'
+import { InputGroup } from "react-bootstrap";
 
 
 // import { Stack } from "react-bootstrap"
@@ -67,12 +69,12 @@ class FrenteCaixa extends React.Component {
             vendedoresSelecionados: [],
             vendedoresFiltrados: [],
             itensSelecionados: [],
-            produtoSelecionado: null,
-            contatoSelecionado: null,
-            vendedorSelecionado: null,
-            carregandoProduto: false,
-            carregandoContato: false,
-            carregandoVendedor: false,
+            produtoSelecionado: '',
+            contatoSelecionado: '',
+            vendedorSelecionado: '',
+            carregandoProduto: '',
+            carregandoContato: '',
+            carregandoVendedor: '',
             preco: 0,
             precoProdutoSelecionado: 0,
             quantidade: 1,
@@ -121,6 +123,8 @@ class FrenteCaixa extends React.Component {
             descontoTotal: 0,
             opcaoDescontoItem: 'desliga',
             opcaoDescontoLista: 'desliga',
+            validated: false,
+            setShow: true
         };
 
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
@@ -625,21 +629,44 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    // checkCEP = (e) => {
+    //     const cep = e.target.value.replace(/\D/g, '');
+    //     fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             this.setState({
+    //                 endereco: data.logradouro,
+    //                 bairro: data.bairro,
+    //                 cidade: data.localidade,
+    //                 uf: data.uf,
+    //             })
+    //             console.log(data);
+    //         })
+    // }
+
     checkCEP = (e) => {
         const cep = e.target.value.replace(/\D/g, '');
         fetch(`https://viacep.com.br/ws/${cep}/json/`)
             .then(res => res.json())
             .then(data => {
+                const { logradouro, bairro, localidade, uf } = data;
+
                 this.setState({
-                    endereco: data.logradouro,
-                    bairro: data.bairro,
-                    cidade: data.localidade,
-                    uf: data.uf,
-                })
-                console.log(data);
-                this.numeroRef.current.focus();
-            })
-    }
+                    endereco: logradouro,
+                    bairro: bairro,
+                    cidade: localidade,
+                    uf: uf,
+                });
+
+                this.atualizaCidade({ target: { value: localidade } });
+                this.atualizaUf({ target: { value: uf } });
+                this.atualizaEndereco({ target: { value: logradouro } });
+                this.atualizaBairro({ target: { value: bairro } })
+
+                console.log("CHECKCEP", data);
+            });
+    };
+
 
     //--------------------------------------------- FUNÇÕES DE TELA ---------------------------------------------
     // -------------------------------------------- FUNÇÕES VENDEDOR --------------------------------------------
@@ -702,8 +729,33 @@ class FrenteCaixa extends React.Component {
 
     selecionarContato = (contato) => {
         // console.log("selecionarContato (contatoSelecionado)", contatoSelecionado)
+        // console.log("selecionarContato (contato)", contato);
+        // console.log("selecionarContato (nome)", contato.contato.nome);
+        // console.log("selecionarContato (consumidorFinal)", contato.contato.nome);
+        // console.log("selecionarContato (ie_rg)", contato.contato.ie_rg);
+        // console.log("selecionarContato (contribuinte)", contato.contato.contribuinte);
+        // console.log("selecionarContato (rg)", contato.contato.rg);
+        // console.log("selecionarContato (cep)", contato.contato.cep);
+        // console.log("selecionarContato (complemento)", contato.contato.complemento);
+        // console.log("selecionarContato (email)", contato.contato.email);
+        // console.log("selecionarContato (fone)", contato.contato.fone);
+        // console.log("selecionarContato (celular)", contato.contato.celular);
+        // console.log("selecionarContato (dataNascimento)", contato.contato.dataNascimento);
+        // console.log("selecionarContato (tipo)", contato.contato.tipo);
+        // console.log("selecionarContato (cnpj)", contato.contato.cnpj);
+        // console.log("selecionarContato (codigo)", contato.contato.codigo);
+        // console.log("selecionarContato (fantasia)", contato.contato.fantasia);
+        // console.log("selecionarContato (endereco)", contato.contato.endereco);
+        // console.log("selecionarContato (numero)", contato.contato.numero);
+        // console.log("selecionarContato (bairro)", contato.contato.bairro);
+        // console.log("selecionarContato (cidade)", contato.contato.cidade);
+        // console.log("selecionarContato (uf)", contato.contato.uf);
+        // console.log("selecionarContato (contatos)", []);
+        const buscaContato = contato.contato.nome
+
         this.setState({
             contatoSelecionado: contato,
+            buscaContato: contato.contato.nome,
             nome: contato.contato.nome,
             consumidorFinal: contato.contato.nome,
             ie_rg: contato.contato.ie_rg,
@@ -726,11 +778,13 @@ class FrenteCaixa extends React.Component {
             uf: contato.contato.uf,
             contatos: [],
         });
-        this.atualizarBuscaContato({ target: { value: '' } });
+        console.log("atualizarBuscaContato (buscaContato):", buscaContato);
+
     };
 
     atualizarBuscaContato = (event) => {
         const buscaContato = event.target.value
+        console.log("atualizarBuscaContato (buscaContato):", buscaContato);
         // console.log("atualizarBuscaContato (buscaContato): ", buscaContato)
         this.setState({
             buscaContato
@@ -738,137 +792,138 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizaNome = (event) => {
-        // console.log("Nome:", event.target.value);
+        console.log("Nome:", event.target.value);
         this.setState({
             nome: event.target.value
         });
     };
 
     atualizaTipoPessoa = (event) => {
-        // console.log("tipo:", event.target.value);
+        console.log("tipo:", event.target.value);
         this.setState({
             tipo: event.target.value
         });
-    }
+    };
 
     atualizaCodigo = (event) => {
-        // console.log("Codigo:", event.target.value);
+        console.log("Codigo:", event.target.value);
         this.setState({
             codigo: event.target.value
         });
     };
 
     atualizaFantasia = (event) => {
-        // console.log("Fantasia:", event.target.value);
+        console.log("Fantasia:", event.target.value);
         this.setState({
             fantasia: event.target.value
         });
     };
 
     atualizaCpfCnpj = (event) => {
-        // console.log("CPF/CNPJ:", event.target.value);
+        console.log("CPF/CNPJ:", event.target.value);
         this.setState({
             cnpj: event.target.value
         });
     };
 
     atualizaRg = (event) => {
-        // console.log("rg: ", event.target.value);
+        console.log("rg: ", event.target.value);
         this.setState({
             rg: event.target.value
         });
     };
 
     atualizaIe = (event) => {
-        // console.log("contribuinte: ", event.target.value);
+        console.log("I.E: ", event.target.value);
         this.setState({
             ie: event.target.value
         });
     };
 
     atualizaContribuinte = (event) => {
-        // console.log("contribuinte: ", event.target.value);
+        console.log("contribuinte: ", event.target.value);
         this.setState({
             contribuinte: event.target.value
         });
     };
 
     atualizaCidade = (event) => {
-        // console.log("contribuinte: ", event.target.value);
+        console.log("cidade: ", event.target.value);
         this.setState({
             cidade: event.target.value
         });
     };
 
     atualizaEndereco = (event) => {
-        // console.log("endereco: ", event.target.value);
+        console.log("endereco: ", event.target.value);
         this.setState({
             endereco: event.target.value
         });
     };
 
     atualizaNumero = (event) => {
-        // console.log("numero: ", event.target.value);
+        console.log("numero: ", event.target.value);
         this.setState({
             numero: event.target.value
         });
     };
 
     atualizaBairro = (event) => {
-        // console.log("bairro: ", event.target.value);
+        console.log("bairro: ", event.target.value);
         this.setState({
             bairro: event.target.value
         });
     };
 
     atualizaComplemento = (event) => {
-        // console.log("complemento: ", event.target.value);
+        console.log("complemento: ", event.target.value);
         this.setState({
             complemento: event.target.value
         });
     };
 
     atualizaCep = (event) => {
-        // console.log("cep: ", event.target.value);
+        console.log("cep: ", event.target.value);
         this.setState({
             cep: event.target.value
         });
     };
 
     atualizaUf = (event) => {
-        // console.log("uf: ", event.target.value);
+        console.log("uf: ", event.target.value);
         this.setState({
             uf: event.target.value
         });
     };
 
     atualizaEmail = (event) => {
-        // console.log("email: ", event.target.value);
+        console.log("email: ", event.target.value);
         this.setState({
             email: event.target.value
         });
     };
 
     atualizaCelular = (event) => {
-        // console.log("celular: ", event.target.value);
+        console.log("celular: ", event.target.value);
         this.setState({
             celular: event.target.value
         });
     };
 
     atualizaDataNascimento = (event) => {
-        // console.log("dataNascimento: ", event.target.value);
+        console.log("dataNascimento: ", event.target.value);
         this.setState({
             dataNascimento: event.target.value
         });
     };
 
     atualizaFone = (event) => {
-        // console.log("fone:", event.target.value);
+        console.log("fone:", event.target.value);
         this.setState({
             fone: event.target.value
         });
     };
+
 
     // adicionarContatoSelecionado = (contatoSelecionado) => {
     //     const { contatosSelecionados, cnpj } = this.state;
@@ -1364,7 +1419,7 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-    finalizaVenda = () => {
+    finalizaVenda = (event) => {
         const nome = this.state.nome;
         const cnpj = this.state.cnpj;
         const vendedor = this.state.vendedor;
@@ -1430,7 +1485,7 @@ class FrenteCaixa extends React.Component {
             <loja>${this.state.idLoja}</loja>
             <cliente>
                 <nome>${this.state.nome}</nome>
-                <cnpj>${this.state.cnpj}</cnpj>
+                <cpf_cnpj>${this.state.cnpj}</cpf_cnpj>
                 <tipoPessoa>${this.state.tipo}</tipoPessoa>
                 <ie>${this.state.ie}</ie>
                 <rg>${this.state.rg}</rg>
@@ -1440,13 +1495,12 @@ class FrenteCaixa extends React.Component {
                 <complemento>${this.state.complemento}</complemento>
                 <bairro>${this.state.bairro}</bairro>
                 <cep>${this.state.cep}</cep>
-                <cidade>${this.state.municipio}</cidade>
+                <cidade>${this.state.cidade}</cidade>
                 <uf>${this.state.uf}</uf>
                 <fone>${this.state.fone}</fone>
                 <celular>${this.state.celular}</celular>
                 <email>${this.state.email}</email>
                 <dataNascimento>${this.state.dataNascimento}</dataNascimento>
-
             </cliente>
             <itens>
               ${itens.map((item) => `
@@ -1456,8 +1510,7 @@ class FrenteCaixa extends React.Component {
                   <qtde>${item.qtde}</qtde>
                   <vlr_unit>${item.vlr_unit}</vlr_unit>
                   <vlr_desconto>${item.descontoItemLista}</vlr_desconto>
-                </item>
-              `).join('')}
+                </item>`).join('')}
             </itens>
             <parcelas>
             ${prazo.map((parcelas) => `
@@ -1468,8 +1521,7 @@ class FrenteCaixa extends React.Component {
                     <forma_pagamento>
                         <id>${parcelas.forma}</id>
                     </forma_pagamento>
-               </parcela>
-                `).join('')}
+               </parcela>`).join('')}
             </parcelas>
           </pedido > `;
 
@@ -1929,7 +1981,7 @@ class FrenteCaixa extends React.Component {
         //Calculos
         const { subTotalGeral, observacoes, observacaointerna, valorDesconto, dinheiroRecebido, troco, frete, condicao, depositoSelecionado, subTotal, dataPrevista, consumidorFinal, prazo, numeroPedido, descontoProduto } = this.state;
         //Modals
-        const { carregado, erro, } = this.state;
+        const { carregado, erro, setShow } = this.state;
 
         let quantidadeTotal = 0;
         for (const produto of this.state.produtosSelecionados) {
@@ -1981,16 +2033,16 @@ class FrenteCaixa extends React.Component {
                 <Container fluid className="pb-5" >
                     <Row className="d-flex">
                         <Col md={6} className="">
-                            <Form>
+                            <Form noValidate validated={this.state.validated} onSubmit={this.finalizaVenda}>
                                 <div className="grid-1">
                                     <div className="mb-3">
                                         <h5>Vendedor</h5>
                                     </div>
-                                    <div>
-                                        <Row className="row">
-                                            <Form.Label htmlFor="vendedor" className="texto-campos">Adicionar vendedor</Form.Label>
-                                            <Col xs={4} className="h-100">
-                                                <Form.Group className="mb-3">
+                                    <Row className="row">
+                                        <Form.Label htmlFor="vendedor" className="texto-campos">Adicionar vendedor</Form.Label>
+                                        <Col xs={4} >
+                                            <Form.Group className="mb-3" >
+                                                <InputGroup>
                                                     <Form.Control
                                                         type="text"
                                                         id="vendedor"
@@ -2003,42 +2055,46 @@ class FrenteCaixa extends React.Component {
                                                                 this.buscarVendedor(buscaVendedor);
                                                             }
                                                         }}
+                                                        required
                                                     />
-                                                </Form.Group>
+                                                    <Button variant="secondary" onClick={() => this.buscarVendedor(buscaVendedor)}>
+                                                        <FontAwesomeIcon icon={faSearch} />
+                                                    </Button>
+                                                </InputGroup>
+                                                <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                        {vendedorSelecionado && (
+                                            <Col xs={7}>
+                                                <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: '5px', padding: '10px', marginBottom: '10px', display: 'inline-block', height: '38px' }}>
+                                                    <h2 style={{ fontSize: '18px', fontFamily: 'Arial, sans-serif' }}>
+                                                        <em>Vendedor selecionado:</em> <strong>{vendedorSelecionado.contato.nome}</strong>
+                                                    </h2>
+                                                </div>
                                             </Col>
-                                            <Col xs={1}>
-                                                <Button variant="secondary" onClick={() => this.buscarVendedor(buscaVendedor)}>
-                                                    Buscar
-                                                </Button>
-                                            </Col>
-                                            {vendedorSelecionado ? (
-                                                <Col xs={7}>
-                                                    <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: '5px', padding: '10px', marginBottom: '10px', display: 'inline-block', height: '38px' }}>
-                                                        <h2 style={{ fontSize: '18px', fontFamily: 'Arial, sans-serif' }}>
-                                                            <em>Vendedor selecionado:</em> <strong>{vendedorSelecionado.contato.nome}</strong>
-                                                        </h2>
-                                                    </div>
-                                                </Col>
-                                            ) : (
-                                                <ul className="lista-produtos">
-                                                    {this.state.vendedores.map((contato) => (
-                                                        <li
-                                                            key={contato.contato.id}
-                                                            onClick={() => this.selecionarVendedor(contato)}
-                                                            onKeyDown={(e) => {
-                                                                if (e.keyCode === 13) {
-                                                                    // Código 13 corresponde à tecla Enter
-                                                                    this.selecionarVendedor(contato);
-                                                                }
-                                                            }}
-                                                        >
-                                                            Cód: {contato.contato.codigo} Vendedor: {contato.contato.nome}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-                                        </Row>
-                                    </div>
+                                        )}
+                                    </Row>
+                                    <Col xs={4} >
+
+                                        {!vendedorSelecionado && (
+                                            <ul className="lista-produtos">
+                                                {this.state.vendedores.map((contato) => (
+                                                    <li
+                                                        key={contato.contato.id}
+                                                        onClick={() => this.selecionarVendedor(contato)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.keyCode === 13) {
+                                                                // Código 13 corresponde à tecla Enter
+                                                                this.selecionarVendedor(contato);
+                                                            }
+                                                        }}
+                                                    >
+                                                        Cód: {contato.contato.codigo} Vendedor: {contato.contato.nome}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </Col>
 
                                     <div className="divisa"></div>
 
@@ -2049,43 +2105,47 @@ class FrenteCaixa extends React.Component {
                                         <Form.Label htmlFor="produto" className="texto-campos">Adicionar produto</Form.Label>
                                         <Col xs={8}>
                                             <Form.Group className="mb-3">
-                                                <Form.Control
-                                                    type="text"
-                                                    id="produto"
-                                                    className="form-control"
-                                                    placeholder="Busque um produto pelo (Nome ou Código ou SKU ou EAN ou Descrição/Nome Fornecedor)"
-                                                    value={buscaProduto || ''}
-                                                    onChange={this.atualizarBuscaProduto}
-                                                    onKeyDown={(e) => {
-                                                        if (e.keyCode === 13) {
-                                                            // Código 13 corresponde à tecla Enter
-                                                            this.buscarProdutos(buscaProduto); // Chame a função de busca aqui
-                                                        }
-                                                    }}
-                                                />
+                                                <InputGroup>
+                                                    <Form.Control
+                                                        type="text"
+                                                        id="produto"
+                                                        className="form-control"
+                                                        placeholder="Busque um produto pelo (Nome ou Código ou SKU ou EAN ou Descrição/Nome Fornecedor)"
+                                                        value={buscaProduto || ''}
+                                                        onChange={this.atualizarBuscaProduto}
+                                                        onKeyDown={(e) => {
+                                                            if (e.keyCode === 13) {
+                                                                // Código 13 corresponde à tecla Enter
+                                                                this.buscarProdutos(buscaProduto); // Chame a função de busca aqui
+                                                            }
+                                                        }}
+                                                    />
+                                                    <Button variant="secondary" onClick={() => this.buscarProdutos(buscaProduto)}>
+                                                        <FontAwesomeIcon icon={faSearch} />
+                                                    </Button>
+                                                </InputGroup>
                                             </Form.Group>
-                                        </Col>
-                                        <Col xs={4}>
-                                            <Button variant="secondary" onClick={() => this.buscarProdutos(buscaProduto)}>Buscar</Button>
+
+
+                                            <ul className="lista-produtos">
+                                                {produtos.map((produto) => (
+                                                    <li
+                                                        key={produto.produto.id}
+                                                        onClick={() => this.selecionarProduto(produto)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === " ") {
+                                                                e.preventDefault();
+                                                                this.selecionarProduto(produto);
+                                                            }
+                                                        }}
+                                                        tabIndex={0}
+                                                    >
+                                                        Cód: {produto.produto.codigo} Produto: {produto.produto.descricao} - Preço R$ {produto.produto.preco = parseFloat(produto.produto.preco).toFixed(2)}
+                                                    </li>
+                                                ))}
+                                            </ul>
                                         </Col>
                                     </Row>
-                                    <ul className="lista-produtos">
-                                        {produtos.map((produto) => (
-                                            <li
-                                                key={produto.produto.id}
-                                                onClick={() => this.selecionarProduto(produto)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' || e.key === " ") {
-                                                        e.preventDefault();
-                                                        this.selecionarProduto(produto);
-                                                    }
-                                                }}
-                                                tabIndex={0}
-                                            >
-                                                Cód: {produto.produto.codigo} Produto: {produto.produto.descricao} - Preço R$ {produto.produto.preco = parseFloat(produto.produto.preco).toFixed(2)}
-                                            </li>
-                                        ))}
-                                    </ul>
                                     {produtoSelecionado && (
                                         <div className="produto-selecionado">
                                             <h2>Produto selecionado: {produtoSelecionado.produto.codigo} - {produtoSelecionado.produto.descricao}</h2>
@@ -2296,8 +2356,7 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="desconto" className="texto-campos">Desconto (Total)</Form.Label>
-                                                <Form.Control type="text" id="desconto" className="" name="desconto" placeholder="00.00" defaultValue="0"
-                                                    value={valorDesconto || ''} onChange={this.atualizaDesconto} onBlur={this.formatarDesconto} />
+                                                <Form.Control type="text" id="desconto" className="" name="desconto" placeholder="00.00" value={valorDesconto || ''} onChange={this.atualizaDesconto} onBlur={this.formatarDesconto} />
                                             </Form.Group>
                                         </Col>
                                         <Col className="col" xs={3}>
@@ -2325,41 +2384,84 @@ class FrenteCaixa extends React.Component {
                                     <h5>Cliente</h5>
                                 </div>
                                 <div>
-                                    <div className="busca-cliente d-grid gap-2">
-                                        <Form.Label htmlFor="produto" className="texto-campos">Cliente (Nome)</Form.Label>
-                                        <Row>
-                                            <Col xs={6}>
-                                                <Form.Control type="text" id="cliente" className="form-control" placeholder="Digite o nome do cliente" value={buscaContato || ''} onChange={this.atualizarBuscaContato} onKeyDown={(e) => {
-                                                    if (e.keyCode === 13) {
-                                                        // Código 13 corresponde à tecla Enter
-                                                        this.buscarContato(buscaContato, nome, cnpj); // Chame a função de busca aqui
-                                                    }
-                                                }} />
-                                            </Col>
-                                            <Col xs={4}>
-                                                <Button variant="secondary" onClick={() => this.buscarContato(buscaContato, nome, cnpj)}>Buscar</Button>
-                                            </Col>
+                                    <Row>
+                                        <Col className="col" xs={6}>
+                                            <div className="busca-cliente d-grid gap-2">
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label htmlFor="cliente" className="texto-campos">
+                                                        Cliente (Nome)
+                                                    </Form.Label>
+                                                    <InputGroup>
+                                                        <Form.Control
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Digite o nome do cliente"
+                                                            value={buscaContato || nome}
+                                                            onChange={this.atualizarBuscaContato}
+                                                            onKeyDown={(e) => {
+                                                                if (e.keyCode === 13) {
+                                                                    // Código 13 corresponde à tecla Enter
+                                                                    this.buscarContato(buscaContato, nome, cnpj); // Chame a função de busca aqui
+                                                                }
+                                                            }}
+                                                            required
+                                                        />
+                                                        <Button variant="secondary" onClick={() => this.buscarContato(buscaContato, nome, cnpj)}>
+                                                            <FontAwesomeIcon icon={faSearch} />
+                                                        </Button>
+                                                    </InputGroup>
+                                                    <Form.Control.Feedback type="invalid">
+                                                        Campo obrigatório.
+                                                    </Form.Control.Feedback>
+                                                </Form.Group>
+                                            </div>
+                                            {contatos.length === 0 ? (
+                                                <Alert variant="danger">
+                                                    <p>CONTATO NAO LOCALIZADO</p>
+                                                </Alert>
+                                            ) : (
+                                                <ul className="lista-contatos">
+                                                    {contatos.map((contato) => (
+                                                        <li
+                                                            key={contato.contato.id}
+                                                            onClick={() => this.selecionarContato(contato)}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                                    e.preventDefault();
+                                                                    this.selecionarContato(contato);
+                                                                }
+                                                            }}
+                                                            tabIndex={0}
+                                                        >
+                                                            Nome: {contato.contato.nome} - CPF/CNPJ: {contato.contato.cnpj}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </Col>
+                                        <Col className="col" xs={3}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label htmlFor="cpf" className="texto-campos">{tipo === 'J' ? 'CNPJ' : 'CPF'}</Form.Label>
+                                                <Form.Control type="text" id="cpf" className="form-control" name="cpf" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col className="col" xs={3}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label htmlFor="tipo" className="texto-campos">Tipo</Form.Label>
+                                                <Form.Select as="select" id="tipo" className="form-control" name="tipo" value={tipo || ''} onChange={this.atualizaTipoPessoa}>
+                                                    <option value="F">Pessoa Física</option>
+                                                    <option value="J">Pessoa Jurídica</option>
+                                                    <option value="E">Estrangeiro</option>
+                                                </Form.Select>
+                                            </Form.Group>
+                                        </Col>
+                                        <Row className="row">
+                                            <Button variant="link" onClick={this.ModalCadastrarCliente}>Opções avançadas</Button>
                                         </Row>
-                                    </div>
-                                    <ul className="lista-contatos">
-                                        {contatos.map((contato) => (
-                                            <li key={contato.contato.id}
-                                                onClick={() => this.selecionarContato(contato)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' || e.key === " ") {
-                                                        e.preventDefault();
-                                                        this.selecionarContato(contato);
-                                                    }
-                                                }}
-                                                tabIndex={0}
-                                            >
-                                                Nome: {contato.contato.nome} - CPF/CNPJ: {contato.contato.cnpj}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    {contatoSelecionado && (
+                                    </Row>
+
+                                    {/* {contatoSelecionado && (
                                         <div className="produto-selecionado">
-                                            {/* <h2>Cliente selecionado: {contatoSelecionado.contato.nome}</h2> */}
                                             <Row className="row">
                                                 <Col className="col" xs={4}>
                                                     <Form.Group className="mb-3">
@@ -2388,22 +2490,43 @@ class FrenteCaixa extends React.Component {
                                                 <Button variant="link" onClick={this.ModalCadastrarCliente}>Opções avançadas</Button>
                                             </Row>
                                         </div>
-                                    )}
-                                    <Modal show={this.state.ModalCadastrarCliente} onHide={this.ModalCadastrarCliente} size="xl"
-                                        centered>
+                                    )} */}
+                                    <Modal show={this.state.ModalCadastrarCliente} onHide={this.ModalCadastrarCliente} size="lg" centered>
                                         <Modal.Header closeButton className="bg-secondary text-white">
                                             <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
                                             <Modal.Title>Cadastrar cliente</Modal.Title>
                                         </Modal.Header>
-                                        <Modal.Body style={{ padding: '20px' }}>
+                                        <Modal.Body style={{ padding: '20px' }} >
                                             <div>
                                                 <Row className="row">
-                                                    <Col className="col" xs={12} md={4}>
+                                                    <Col className="col" xs={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="nome" className="texto-campos">Nome</Form.Label>
+                                                            <Form.Control type="text" id="nome" className="form-control" name="nome" value={nome || ''} onChange={this.atualizaNome} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col" xs={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="cpf" className="texto-campos">{tipo === 'J' ? 'CNPJ' : 'CPF'}</Form.Label>
+                                                            <Form.Control type="text" id="cpf" className="form-control" name="cpf" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className="col" xs={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="tipo" className="texto-campos">Tipo</Form.Label>
+                                                            <Form.Select as="select" id="tipo" className="form-control" name="tipo" value={tipo || ''} onChange={this.atualizaTipoPessoa}>
+                                                                <option value="F">Pessoa Física</option>
+                                                                <option value="J">Pessoa Jurídica</option>
+                                                                <option value="E">Estrangeiro</option>
+                                                            </Form.Select>
+                                                        </Form.Group>
+                                                    </Col>
+                                                    {/* <Col className="col" xs={12} md={4}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="codigo" className="texto-campos">Código</Form.Label>
                                                             <Form.Control type="text" id="codigo" className="form-control" name="codigo" value={codigo || ''} onChange={this.atualizaCodigo} />
                                                         </Form.Group>
-                                                    </Col>
+                                                    </Col> */}
                                                 </Row>
                                                 <Row className="row">
                                                     <Col className="col" xs={12} md={4}>
@@ -2645,7 +2768,7 @@ class FrenteCaixa extends React.Component {
                                         </Row>
                                         <Row className="mb-3">
                                             <Col className="col mb-3" xs={3}>
-                                                <Form.Group className="mb-3" controlId="condicao">
+                                                <Form.Group className="mb-3">
                                                     <Form.Label>Formas de pagamento</Form.Label>
                                                     <Form.Select type="number" placeholder="Digite a condição" value={condicao || ''} onChange={this.handleChange} >
                                                         <option>Selecione a forma</option>
