@@ -19,6 +19,8 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
 import Table from "react-bootstrap/Table";
+import { Toast } from 'react-bootstrap';
+
 import { Alert } from "react-bootstrap";
 import { Offcanvas } from 'react-bootstrap';
 import Image from 'react-bootstrap/Image'
@@ -49,9 +51,8 @@ class FrenteCaixa extends React.Component {
             cidade: '',
             uf: '',
             consumidorFinal: '',
-            ie_rg: '',
-            rg: '',
             ie: '',
+            rg: '',
             complemento: '',
             email: '',
             observacoes: '',
@@ -124,7 +125,6 @@ class FrenteCaixa extends React.Component {
             opcaoDescontoItem: 'desliga',
             opcaoDescontoLista: 'desliga',
             validated: false,
-            setShow: true
         };
 
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
@@ -270,7 +270,7 @@ class FrenteCaixa extends React.Component {
                             (produto.produto.nomeFornecedor && produto.produto.nomeFornecedor.toLowerCase().includes(value.toLowerCase())) ||
                             (produto.produto.idFabricante && produto.produto.idFabricante.toLowerCase().includes(value.toLowerCase()))
                     );
-                    console.log("Produto objeto retornado:", produtosFiltrados);
+                    // console.log("Produto objeto retornado:", produtosFiltrados);
                     this.setState({
                         produtos: produtosFiltrados,
                         produtoSelecionado: null,
@@ -284,7 +284,7 @@ class FrenteCaixa extends React.Component {
                 }
             })
             .catch((error) => {
-                console.log("Erro ao buscar produtos:", error);
+                // console.log("Erro ao buscar produtos:", error);
                 this.setState({
                     produtos: [],
                     carregando: false
@@ -294,7 +294,7 @@ class FrenteCaixa extends React.Component {
 
     buscarContato = (value) => {
         // console.log("Buscando contato por:", value);
-        this.setState({ buscaContato: value, carregando: false });
+        this.setState({ buscaContato: value, carregando: true });
         fetch(`http://localhost:8080/api/v1/contatos`)
             .then((resposta) => {
                 if (!resposta.ok) {
@@ -322,35 +322,43 @@ class FrenteCaixa extends React.Component {
                             (contato.contato.celular && contato.contato.celular.toLowerCase().includes(value.toLowerCase())) ||
                             (contato.contato.fone && contato.contato.fone.toLowerCase().includes(value.toLowerCase()))
                     );
-                    console.log("Contato objeto retornado:", contatosFiltrados);
 
-                    // const consumidorFinal = dados.retorno.contatos.find(
-                    //     (contato) =>
-                    //         (contato.contato.nome === "Consumidor Final" && contato.contato.nome.toLowerCase().includes(value.toLowerCase())));
-                    // console.log(consumidorFinal)
-                    // console.log(consumidorFinal.contato.nome);
-
-                    this.setState({
-                        contatos: contatosFiltrados,
-                        // consumidorFinal: consumidorFinal.contato.nome,
-                        contatoSelecionado: null,
-                        carregando: false,
-                    });
+                    if (contatosFiltrados.length === 0) {
+                        // Nenhum contato encontrado
+                        this.setState({
+                            contatos: [],
+                            contatoSelecionado: null,
+                            carregando: false,
+                            contatoNaoLocalizado: true // Adicione essa variável de estado para controlar se o contato não foi localizado
+                        });
+                    } else {
+                        // Contatos encontrados
+                        this.setState({
+                            contatos: contatosFiltrados,
+                            contatoSelecionado: null,
+                            carregando: false,
+                            contatoNaoLocalizado: false // Reinicie a variável para false caso tenha sido setada anteriormente
+                        });
+                    }
                 } else {
+                    // Nenhum contato encontrado
                     this.setState({
                         contatos: [],
-                        carregando: false
+                        carregando: false,
+                        contatoNaoLocalizado: true // Adicione essa variável de estado para controlar se o contato não foi localizado
                     });
                 }
             })
             .catch((error) => {
-                console.log("Erro ao buscar contatos:", error);
+                // console.log("Erro ao buscar contatos:", error);
                 this.setState({
                     contatos: [],
-                    carregando: false
+                    carregando: false,
+                    contatoNaoLocalizado: true // Adicione essa variável de estado para controlar se o contato não foi localizado
                 });
             });
     };
+
 
     buscarVendedor = (value) => {
         return new Promise((resolve, reject) => {
@@ -376,30 +384,46 @@ class FrenteCaixa extends React.Component {
                                 (contato?.contato?.nome?.toLowerCase().includes(value.toLowerCase()) ||
                                     contato?.contato?.codigo?.toLowerCase().includes(value.toLowerCase()))
                         );
-                        this.setState({
-                            vendedores: vendedoresFiltrados,
-                            vendedorSelecionado: null,
-                            carregando: false,
-                            vendedoresFiltrados: vendedoresFiltrados,
-                        });
+
+                        if (vendedoresFiltrados.length === 0) {
+                            // Nenhum vendedor encontrado
+                            this.setState({
+                                vendedores: [],
+                                vendedorSelecionado: null,
+                                carregando: false,
+                                vendedorNaoLocalizado: true // Adicione essa variável de estado para controlar se o vendedor não foi localizado
+                            });
+                        } else {
+                            // Vendedores encontrados
+                            this.setState({
+                                vendedores: vendedoresFiltrados,
+                                vendedorSelecionado: null,
+                                carregando: false,
+                                vendedorNaoLocalizado: false // Reinicie a variável para false caso tenha sido setada anteriormente
+                            });
+                        }
                     } else {
+                        // Nenhum vendedor encontrado
                         this.setState({
                             vendedores: [],
                             carregando: false,
+                            vendedorNaoLocalizado: true // Adicione essa variável de estado para controlar se o vendedor não foi localizado
                         });
                     }
                     resolve();
                 })
                 .catch((error) => {
-                    console.log("Erro ao buscar vendedor:", error);
+                    // console.log("Erro ao buscar vendedor:", error);
                     this.setState({
                         vendedores: [],
                         carregando: false,
+                        vendedorNaoLocalizado: true // Adicione essa variável de estado para controlar se o vendedor não foi localizado
                     });
                     reject(error);
                 });
         });
     };
+
 
     // buscarVendedor = (value) => {
     //     return new Promise((resolve, reject) => {
@@ -494,8 +518,8 @@ class FrenteCaixa extends React.Component {
                     if (dados.retorno.pedidos) {
                         const ultimoPedido = dados.retorno.pedidos[dados.retorno.pedidos.length - 1];
                         const numeroPedido = +ultimoPedido.pedido.numero + 1; // Adiciona 1 ao último pedido
-                        console.log("Numero do ultimo pedido:", ultimoPedido);
-                        console.log("Numero do proximo pedido:", numeroPedido);
+                        // console.log("Numero do ultimo pedido:", ultimoPedido);
+                        // console.log("Numero do proximo pedido:", numeroPedido);
                         this.setState({
                             numeroPedido: ultimoPedido.pedido.numero,
                             ultimoPedido: numeroPedido,
@@ -511,7 +535,7 @@ class FrenteCaixa extends React.Component {
                     resolve(); // Resolva a Promise quando a chamada da API for concluída com sucesso
                 })
                 .catch((error) => {
-                    console.log("Erro ao buscar pedido:", error);
+                    // console.log("Erro ao buscar pedido:", error);
                     this.setState({
                         pedidos: [],
                         carregando: false,
@@ -532,7 +556,7 @@ class FrenteCaixa extends React.Component {
                 })
                 .then((dados) => {
                     if (dados.retorno.formaspagamento) {
-                        console.log("Forma de pagamento objeto retornado:", dados);
+                        // console.log("Forma de pagamento objeto retornado:", dados);
                         this.setState({
                             formaspagamento: dados.retorno.formaspagamento,
                         });
@@ -547,7 +571,7 @@ class FrenteCaixa extends React.Component {
                     resolve(); // Resolva a Promise quando a chamada da API for concluída com sucesso
                 })
                 .catch((error) => {
-                    console.log("Erro ao buscar forma de pagamento:", error);
+                    // console.log("Erro ao buscar forma de pagamento:", error);
                     this.setState({
                         formaspagamento: [],
                         carregando: false,
@@ -568,10 +592,10 @@ class FrenteCaixa extends React.Component {
                 })
                 .then((dados) => {
                     if (dados) {
-                        console.log("Forma de pagamento objeto retornado:", dados);
+                        // console.log("Forma de pagamento objeto retornado:", dados);
                         const idLojas = dados.map((objeto) => objeto.idLoja);
                         const unidade = dados.map((objeto) => objeto.unidade);
-                        console.log("idLojas:", idLojas, "unidade: ", unidade);
+                        // console.log("idLojas:", idLojas, "unidade: ", unidade);
                         this.setState({
                             idLoja: idLojas,
                             unidadeLoja: unidade,
@@ -590,7 +614,7 @@ class FrenteCaixa extends React.Component {
                     resolve();
                 })
                 .catch((error) => {
-                    console.log("Erro ao buscar forma de pagamento:", error);
+                    // console.log("Erro ao buscar forma de pagamento:", error);
                     this.setState({
                         idLoja: [], // Defina os estados como arrays vazios em caso de erro
                         unidadeLoja: [],
@@ -629,22 +653,9 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-    // checkCEP = (e) => {
-    //     const cep = e.target.value.replace(/\D/g, '');
-    //     fetch(`https://viacep.com.br/ws/${cep}/json/`)
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             this.setState({
-    //                 endereco: data.logradouro,
-    //                 bairro: data.bairro,
-    //                 cidade: data.localidade,
-    //                 uf: data.uf,
-    //             })
-    //             console.log(data);
-    //         })
-    // }
+    //--------------------------------------------- API´s PUBLICAS  ---------------------------------------------
 
-    checkCEP = (e) => {
+    buscarCep = (e) => {
         const cep = e.target.value.replace(/\D/g, '');
         fetch(`https://viacep.com.br/ws/${cep}/json/`)
             .then(res => res.json())
@@ -663,7 +674,7 @@ class FrenteCaixa extends React.Component {
                 this.atualizaEndereco({ target: { value: logradouro } });
                 this.atualizaBairro({ target: { value: bairro } })
 
-                console.log("CHECKCEP", data);
+                // console.log("CHECKCEP", data);
             });
     };
 
@@ -674,16 +685,16 @@ class FrenteCaixa extends React.Component {
     atualizaBuscaVendedor = (event) => {
         // console.log("vendedor selecionado:", vendedorSelecionado);
         this.setState({
-            buscaVendedor: event.target.value,
+            buscaVendedor: event.target.value
         });
     };
 
     selecionarVendedor = (vendedor) => {
         this.setState({
             vendedorSelecionado: vendedor,
-            vendedor: vendedor.contato.nome // Atribua o valor desejado à variável vendedor
+            buscaVendedor: vendedor.contato.nome,
+            vendedor: vendedor.contato.nome
         });
-        this.atualizaBuscaVendedor({ target: { value: '' } });
     };
 
 
@@ -727,7 +738,43 @@ class FrenteCaixa extends React.Component {
 
     // -------------------------------------------- FUNÇÕES CONTATO ---------------------------------------------
 
+    atualizarBuscaContato = (event) => {
+        const buscaContato = event.target.value;
+        // console.log("atualizarBuscaContato (buscaContato):", buscaContato);
+        this.setState({
+            buscaContato: buscaContato,
+            nome: buscaContato
+        });
+    };
+
+
     selecionarContato = (contato) => {
+        this.setState({
+            buscaContato: contato.contato.nome,
+            contatoSelecionado: contato,
+            nome: contato.contato.nome,
+            consumidorFinal: contato.contato.nome,
+            ie_rg: contato.contato.ie_rg,
+            contribuinte: contato.contato.contribuinte,
+            rg: contato.contato.rg,
+            cep: contato.contato.cep,
+            complemento: contato.contato.complemento,
+            email: contato.contato.email,
+            fone: contato.contato.fone,
+            celular: contato.contato.celular,
+            dataNascimento: contato.contato.dataNascimento,
+            tipo: contato.contato.tipo,
+            cnpj: contato.contato.cnpj,
+            codigo: contato.contato.codigo,
+            fantasia: contato.contato.fantasia,
+            endereco: contato.contato.endereco,
+            numero: contato.contato.numero,
+            bairro: contato.contato.bairro,
+            cidade: contato.contato.cidade,
+            uf: contato.contato.uf,
+            contatos: [],
+        });
+        // console.log("atualizarBuscaContato (buscaContato):", buscaContato);
         // console.log("selecionarContato (contatoSelecionado)", contatoSelecionado)
         // console.log("selecionarContato (contato)", contato);
         // console.log("selecionarContato (nome)", contato.contato.nome);
@@ -751,178 +798,163 @@ class FrenteCaixa extends React.Component {
         // console.log("selecionarContato (cidade)", contato.contato.cidade);
         // console.log("selecionarContato (uf)", contato.contato.uf);
         // console.log("selecionarContato (contatos)", []);
-        const buscaContato = contato.contato.nome
-
-        this.setState({
-            contatoSelecionado: contato,
-            buscaContato: contato.contato.nome,
-            nome: contato.contato.nome,
-            consumidorFinal: contato.contato.nome,
-            ie_rg: contato.contato.ie_rg,
-            contribuinte: contato.contato.contribuinte,
-            rg: contato.contato.rg,
-            cep: contato.contato.cep,
-            complemento: contato.contato.complemento,
-            email: contato.contato.email,
-            fone: contato.contato.fone,
-            celular: contato.contato.celular,
-            dataNascimento: contato.contato.dataNascimento,
-            tipo: contato.contato.tipo,
-            cnpj: contato.contato.cnpj,
-            codigo: contato.contato.codigo,
-            fantasia: contato.contato.fantasia,
-            endereco: contato.contato.endereco,
-            numero: contato.contato.numero,
-            bairro: contato.contato.bairro,
-            cidade: contato.contato.cidade,
-            uf: contato.contato.uf,
-            contatos: [],
-        });
-        console.log("atualizarBuscaContato (buscaContato):", buscaContato);
-
-    };
-
-    atualizarBuscaContato = (event) => {
-        const buscaContato = event.target.value
-        console.log("atualizarBuscaContato (buscaContato):", buscaContato);
-        // console.log("atualizarBuscaContato (buscaContato): ", buscaContato)
-        this.setState({
-            buscaContato
-        });
     };
 
     atualizaNome = (event) => {
-        console.log("Nome:", event.target.value);
+        const nome = event.target.value;
+        // console.log("Nome:", nome);
         this.setState({
-            nome: event.target.value
+            nome: nome,
+            buscaContato: nome
         });
     };
 
+
     atualizaTipoPessoa = (event) => {
-        console.log("tipo:", event.target.value);
+        // console.log("tipo:", event.target.value);
         this.setState({
             tipo: event.target.value
         });
     };
 
     atualizaCodigo = (event) => {
-        console.log("Codigo:", event.target.value);
+        // console.log("Codigo:", event.target.value);
         this.setState({
             codigo: event.target.value
         });
     };
 
     atualizaFantasia = (event) => {
-        console.log("Fantasia:", event.target.value);
+        // console.log("Fantasia:", event.target.value);
         this.setState({
             fantasia: event.target.value
         });
     };
 
     atualizaCpfCnpj = (event) => {
-        console.log("CPF/CNPJ:", event.target.value);
-        this.setState({
-            cnpj: event.target.value
-        });
+        const cpfCnpj = event.target.value;
+
+        // Remove qualquer pontuação existente
+        const cpfCnpjSemPontuacao = cpfCnpj.replace(/[^\d]/g, "");
+
+        // Verifica se é um CPF válido
+        if (cpfCnpjSemPontuacao.length === 11) {
+            const cpfFormatado = cpfCnpjSemPontuacao.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            this.setState({ cnpj: cpfFormatado });
+        }
+        // Verifica se é um CNPJ válido
+        else if (cpfCnpjSemPontuacao.length === 14) {
+            const cnpjFormatado = cpfCnpjSemPontuacao.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+            this.setState({ cnpj: cnpjFormatado });
+        }
+        // Caso contrário, mantém o valor original
+        else {
+            this.setState({ cnpj: cpfCnpj });
+        }
     };
 
     atualizaRg = (event) => {
-        console.log("rg: ", event.target.value);
-        this.setState({
-            rg: event.target.value
-        });
+        const rg = event.target.value;
+        const rgSemPontuacao = rg.replace(/[^\d]/g, "");
+        const rgFormatado = rgSemPontuacao.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, "$1.$2.$3-$4");
+        this.setState({ rg: rgFormatado });
     };
 
     atualizaIe = (event) => {
-        console.log("I.E: ", event.target.value);
+        const ie_rg = event.target.value;
+        const ieSemPontuacao = ie_rg.replace(/[^\d]/g, "");
+        const ieFormatado = ieSemPontuacao.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, "$1.$2.$3.$4");
         this.setState({
-            ie: event.target.value
+            ie_rg: ieFormatado,
+            ie: ieFormatado
         });
     };
 
+
     atualizaContribuinte = (event) => {
-        console.log("contribuinte: ", event.target.value);
+        // console.log("contribuinte: ", event.target.value);
         this.setState({
             contribuinte: event.target.value
         });
     };
 
     atualizaCidade = (event) => {
-        console.log("cidade: ", event.target.value);
+        // console.log("cidade: ", event.target.value);
         this.setState({
             cidade: event.target.value
         });
     };
 
     atualizaEndereco = (event) => {
-        console.log("endereco: ", event.target.value);
+        // console.log("endereco: ", event.target.value);
         this.setState({
             endereco: event.target.value
         });
     };
 
     atualizaNumero = (event) => {
-        console.log("numero: ", event.target.value);
+        // console.log("numero: ", event.target.value);
         this.setState({
             numero: event.target.value
         });
     };
 
     atualizaBairro = (event) => {
-        console.log("bairro: ", event.target.value);
+        // console.log("bairro: ", event.target.value);
         this.setState({
             bairro: event.target.value
         });
     };
 
     atualizaComplemento = (event) => {
-        console.log("complemento: ", event.target.value);
+        // console.log("complemento: ", event.target.value);
         this.setState({
             complemento: event.target.value
         });
     };
 
     atualizaCep = (event) => {
-        console.log("cep: ", event.target.value);
-        this.setState({
-            cep: event.target.value
-        });
+        const cep = event.target.value;
+        const cepSemPontuacao = cep.replace(/[^\d]/g, "");
+        const cepFormatado = cepSemPontuacao.replace(/(\d{5})(\d{3})/, "$1-$2");
+        this.setState({ cep: cepFormatado });
     };
 
     atualizaUf = (event) => {
-        console.log("uf: ", event.target.value);
+        // console.log("uf: ", event.target.value);
         this.setState({
             uf: event.target.value
         });
     };
 
     atualizaEmail = (event) => {
-        console.log("email: ", event.target.value);
+        // console.log("email: ", event.target.value);
         this.setState({
             email: event.target.value
         });
     };
 
     atualizaCelular = (event) => {
-        console.log("celular: ", event.target.value);
-        this.setState({
-            celular: event.target.value
-        });
+        const celular = event.target.value;
+        const celularSemPontuacao = celular.replace(/[^\d]/g, "");
+        const celularFormatado = celularSemPontuacao.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+        this.setState({ celular: celularFormatado });
     };
 
     atualizaDataNascimento = (event) => {
-        console.log("dataNascimento: ", event.target.value);
-        this.setState({
-            dataNascimento: event.target.value
-        });
+        const dataNascimento = event.target.value;
+        const dataNascimentoSemPontuacao = dataNascimento.replace(/[^\d]/g, "");
+        const dataNascimentoFormatada = dataNascimentoSemPontuacao.replace(/(\d{2})(\d{2})(\d{4})/, "$1/$2/$3");
+        this.setState({ dataNascimento: dataNascimentoFormatada });
     };
 
     atualizaFone = (event) => {
-        console.log("fone:", event.target.value);
-        this.setState({
-            fone: event.target.value
-        });
+        const fone = event.target.value;
+        const foneSemPontuacao = fone.replace(/[^\d]/g, "");
+        const foneFormatado = foneSemPontuacao.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+        this.setState({ fone: foneFormatado });
     };
+
 
 
     // adicionarContatoSelecionado = (contatoSelecionado) => {
@@ -1053,20 +1085,6 @@ class FrenteCaixa extends React.Component {
             this.atualizarValorTotal);
     };
 
-    incrementarQuantidade = () => {
-        this.setState(prevState => ({
-            quantidade: prevState.quantidade + 1
-        }),
-            this.atualizarValorTotal);
-    };
-
-    decrementarQuantidade = () => {
-        this.setState(prevState => ({
-            quantidade: prevState.quantidade > 1 ? prevState.quantidade - 1 : 1
-        }),
-            this.atualizarValorTotal);
-    };
-
     atualizaPreco = (event) => {
         const preco = parseFloat(event.target.value);
         this.setState({
@@ -1119,13 +1137,8 @@ class FrenteCaixa extends React.Component {
         let formattedValorDesconto = 0;
         let formattedTotalComDesconto = 0;
 
-        if (typeof valorDesconto === "number") {
-            formattedValorDesconto = valorDesconto.toFixed(2);
-        }
-
-        if (typeof totalComDesconto === "number") {
-            formattedTotalComDesconto = totalComDesconto.toFixed(2);
-        }
+        formattedValorDesconto = valorDesconto
+        formattedTotalComDesconto = totalComDesconto
 
         // console.log("valorDesconto: ", formattedValorDesconto);
         // console.log("totalComDesconto: ", formattedTotalComDesconto);
@@ -1141,15 +1154,13 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizaDesconto(event) {
-        // console.log("Evento de digitação capturado!");
-
-        const descontoString = event.target.value; // Substitui a vírgula decimal por ponto
-        const descontoNumber = parseFloat(descontoString.replace(/[^\d.-]/g, '')); // remove caracteres não-numéricos
+        const descontoString = event.target.value.replace(',', '.'); // Replace commas with dots
+        const descontoNumber = parseFloat(descontoString.replace(/[^\d.-]/g, '')); // remove non-numeric characters
 
         if (isNaN(descontoNumber)) {
-            // Se não for um número válido, limpa o valor do campo e retorna
+            // If it's not a valid number, clear the field value and return
             this.setState({
-                valorDesconto: 0,
+                valorDesconto: '',
                 desconto: false,
                 totalComDesconto: '',
             });
@@ -1157,7 +1168,6 @@ class FrenteCaixa extends React.Component {
         }
 
         const resultado = this.calcularTotalComDesconto(descontoNumber);
-        // console.log(resultado)
         this.setState({
             valorDesconto: descontoString,
             desconto: descontoNumber,
@@ -1216,32 +1226,29 @@ class FrenteCaixa extends React.Component {
         }
     };
 
-
     atualizaTotalComFrete(event) {
-        const valor = event.target.value;
-        // console.log('valor:', valor);
-        let frete = 0;
-        if (typeof valor === 'string') {
-            frete = parseFloat(valor);
+        const valor = event.target.value.replace(',', '.'); // Substitui vírgula por ponto
+        let frete = parseFloat(valor);
+        if (isNaN(frete)) {
+            frete = 0;
         }
-        // console.log('frete:', frete);
         const subTotal = this.state.subTotal.toFixed(2);
         const totalComDesconto = this.state.totalComDesconto;
-        // console.log('subTotal:', subTotal);
-        // console.log('totalComDesconto:', totalComDesconto);
+
         let subTotalComFrete;
         if (totalComDesconto && totalComDesconto.length > 0) {
             subTotalComFrete = (parseFloat(totalComDesconto) + frete).toFixed(2);
         } else {
             subTotalComFrete = (parseFloat(subTotal) + frete).toFixed(2);
         }
-        // console.log('subTotalComFrete:', subTotalComFrete);
+
         this.setState({
-            subTotalComFrete: subTotalComFrete,
+            subTotalComFrete: subTotalComFrete.replace('.', ','),
             frete: frete,
             freteInserido: true
         });
-    };
+    }
+
 
     calcularSubTotalGeral = () => {
         const subTotal = this.calcularTotal().toFixed(2);
@@ -1255,6 +1262,46 @@ class FrenteCaixa extends React.Component {
 
         return parseFloat(subTotalGeral);
     };
+
+    // incrementarQuantidade = () => {
+    //     this.setState(prevState => ({
+    //         quantidade: prevState.quantidade + 1
+    //     }),
+    //         this.atualizarValorTotal);
+    // };
+
+    // decrementarQuantidade = () => {
+    //     this.setState(prevState => ({
+    //         quantidade: prevState.quantidade > 1 ? prevState.quantidade - 1 : 1
+    //     }),
+    //         this.atualizarValorTotal);
+    // };
+
+    // atualizaTotalComFrete(event) {
+    //     const valor = event.target.value;
+    //     // console.log('valor:', valor);
+    //     let frete = 0;
+    //     if (typeof valor === 'string') {
+    //         frete = parseFloat(valor);
+    //     }
+    //     // console.log('frete:', frete);
+    //     const subTotal = this.state.subTotal.toFixed(2);
+    //     const totalComDesconto = this.state.totalComDesconto;
+    //     // console.log('subTotal:', subTotal);
+    //     // console.log('totalComDesconto:', totalComDesconto);
+    //     let subTotalComFrete;
+    //     if (totalComDesconto && totalComDesconto.length > 0) {
+    //         subTotalComFrete = (parseFloat(totalComDesconto) + frete).toFixed(2);
+    //     } else {
+    //         subTotalComFrete = (parseFloat(subTotal) + frete).toFixed(2);
+    //     }
+    //     // console.log('subTotalComFrete:', subTotalComFrete);
+    //     this.setState({
+    //         subTotalComFrete: subTotalComFrete,
+    //         frete: frete,
+    //         freteInserido: true
+    //     });
+    // };
 
     // atualizaDataPrevista = (novaDataPrevista) => {
     //     // console.log(novaDataPrevista);
@@ -1359,6 +1406,22 @@ class FrenteCaixa extends React.Component {
             cnpj: '',
             codigo: '',
             fantasia: '',
+            buscaContato: '',
+            consumidorFinal: '',
+            ie_rg: '',
+            contribuinte: 9,
+            rg: '',
+            cep: '',
+            complemento: '',
+            email: '',
+            fone: '',
+            celular: '',
+            dataNascimento: '',
+            endereco: '',
+            numero: '',
+            bairro: '',
+            cidade: '',
+            uf: '',
             produtosSelecionados: [], // adiciona a limpeza da lista aqui
             produtoSelecionado: '',
             quantidade: 1,
@@ -1396,6 +1459,22 @@ class FrenteCaixa extends React.Component {
             cnpj: '',
             codigo: '',
             fantasia: '',
+            buscaContato: '',
+            consumidorFinal: '',
+            ie_rg: '',
+            contribuinte: 9,
+            rg: '',
+            cep: '',
+            complemento: '',
+            email: '',
+            fone: '',
+            celular: '',
+            dataNascimento: '',
+            endereco: '',
+            numero: '',
+            bairro: '',
+            cidade: '',
+            uf: '',
             produtosSelecionados: [], // adiciona a limpeza da lista aqui
             quantidade: 1,
             desconto: 0,
@@ -1419,14 +1498,14 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-    finalizaVenda = (event) => {
+    finalizaVenda = () => {
+        // const dataPrevista = new Date(this.state.dataPrevista); // converte para objeto Date
+        // const dataPrevistaFormatted = `${dataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${dataPrevista.toLocaleTimeString('pt-BR')}`;
+        // console.log(this.state.dataPrevista)
+        // console.log(dataPrevistaFormatted)
         const nome = this.state.nome;
         const cnpj = this.state.cnpj;
         const vendedor = this.state.vendedor;
-        const dataPrevista = new Date(this.state.dataPrevista); // converte para objeto Date
-        const dataPrevistaFormatted = `${dataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${dataPrevista.toLocaleTimeString('pt-BR')}`;
-        // console.log(this.state.dataPrevista)
-        // console.log(dataPrevistaFormatted)
         const observacoes = this.state.observacoes;
         const observacaointerna = this.state.observacaointerna;
         const valorDesconto = this.state.desconto;
@@ -2039,8 +2118,8 @@ class FrenteCaixa extends React.Component {
                                         <h5>Vendedor</h5>
                                     </div>
                                     <Row className="row">
-                                        <Form.Label htmlFor="vendedor" className="texto-campos">Adicionar vendedor</Form.Label>
                                         <Col xs={4} >
+                                            <Form.Label htmlFor="vendedor" className="texto-campos">Adicionar vendedor</Form.Label>
                                             <Form.Group className="mb-3" >
                                                 <InputGroup>
                                                     <Form.Control
@@ -2051,50 +2130,68 @@ class FrenteCaixa extends React.Component {
                                                         value={buscaVendedor || ''}
                                                         onChange={this.atualizaBuscaVendedor}
                                                         onKeyDown={(e) => {
-                                                            if (e.keyCode === 13) {
-                                                                this.buscarVendedor(buscaVendedor);
+                                                            if (e.key === 'Enter') {
+                                                                e.preventDefault(); // Evita o comportamento padrão de submit do formulário
+                                                                if (buscaVendedor) {
+                                                                    this.buscarVendedor(buscaVendedor);
+                                                                }
                                                             }
                                                         }}
                                                         required
                                                     />
-                                                    <Button variant="secondary" onClick={() => this.buscarVendedor(buscaVendedor)}>
+                                                    <Button variant="secondary" onClick={() => { if (buscaVendedor) { this.buscarVendedor(buscaVendedor) } }} >
                                                         <FontAwesomeIcon icon={faSearch} />
                                                     </Button>
                                                 </InputGroup>
                                                 <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                             </Form.Group>
                                         </Col>
+                                        {this.state.vendedorNaoLocalizado && (
+                                            <Row className="row">
+                                                <Col className="col" xs={4}>
+                                                    <Alert variant="danger">
+                                                        <p>Vendedor não localizado.</p>
+                                                    </Alert>
+                                                </Col>
+                                            </Row>
+                                        )}
                                         {vendedorSelecionado && (
-                                            <Col xs={7}>
-                                                <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: '5px', padding: '10px', marginBottom: '10px', display: 'inline-block', height: '38px' }}>
-                                                    <h2 style={{ fontSize: '18px', fontFamily: 'Arial, sans-serif' }}>
-                                                        <em>Vendedor selecionado:</em> <strong>{vendedorSelecionado.contato.nome}</strong>
-                                                    </h2>
-                                                </div>
+                                            <Col className="col" xs={3}>
+                                                <Form.Label htmlFor="vendedorSelecionado" className="text-center d-block">
+                                                    Vendedor selecionado
+                                                </Form.Label>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Control
+                                                        type="text"
+                                                        id="vendedorSelecionado"
+                                                        className="form-control text-center"
+                                                        name="vendedorSelecionado"
+                                                        value={vendedorSelecionado.contato.nome || ""}
+                                                        disabled
+                                                    />
+                                                </Form.Group>
                                             </Col>
                                         )}
                                     </Row>
-                                    <Col xs={4} >
-
-                                        {!vendedorSelecionado && (
-                                            <ul className="lista-produtos">
-                                                {this.state.vendedores.map((contato) => (
-                                                    <li
-                                                        key={contato.contato.id}
-                                                        onClick={() => this.selecionarVendedor(contato)}
-                                                        onKeyDown={(e) => {
-                                                            if (e.keyCode === 13) {
-                                                                // Código 13 corresponde à tecla Enter
-                                                                this.selecionarVendedor(contato);
-                                                            }
-                                                        }}
-                                                    >
-                                                        Cód: {contato.contato.codigo} Vendedor: {contato.contato.nome}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </Col>
+                                    {!vendedorSelecionado && (
+                                        <ul className="lista-produtos">
+                                            {this.state.vendedores.map((contato) => (
+                                                <li
+                                                    key={contato.contato.id}
+                                                    onClick={() => this.selecionarVendedor(contato)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === " ") {
+                                                            e.preventDefault();
+                                                            this.selecionarVendedor(contato)
+                                                        }
+                                                    }}
+                                                    tabIndex={0}
+                                                >
+                                                    Cód: {contato.contato.codigo} Vendedor: {contato.contato.nome}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
 
                                     <div className="divisa"></div>
 
@@ -2102,8 +2199,8 @@ class FrenteCaixa extends React.Component {
                                         <h5>Produto</h5>
                                     </div>
                                     <Row className="row">
-                                        <Form.Label htmlFor="produto" className="texto-campos">Adicionar produto</Form.Label>
                                         <Col xs={8}>
+                                            <Form.Label htmlFor="produto" className="texto-campos">Adicionar produto</Form.Label>
                                             <Form.Group className="mb-3">
                                                 <InputGroup>
                                                     <Form.Control
@@ -2114,38 +2211,38 @@ class FrenteCaixa extends React.Component {
                                                         value={buscaProduto || ''}
                                                         onChange={this.atualizarBuscaProduto}
                                                         onKeyDown={(e) => {
-                                                            if (e.keyCode === 13) {
-                                                                // Código 13 corresponde à tecla Enter
-                                                                this.buscarProdutos(buscaProduto); // Chame a função de busca aqui
+                                                            if (e.key === 'Enter') {
+                                                                e.preventDefault(); // Evita o comportamento padrão de submit do formulário
+                                                                if (buscaProduto) {
+                                                                    this.buscarProdutos(buscaProduto); // Chame a função de busca aqui
+                                                                }
                                                             }
                                                         }}
                                                     />
-                                                    <Button variant="secondary" onClick={() => this.buscarProdutos(buscaProduto)}>
+                                                    <Button variant="secondary" onClick={() => { if (buscaProduto) { this.buscarProdutos(buscaProduto) } }}>
                                                         <FontAwesomeIcon icon={faSearch} />
                                                     </Button>
                                                 </InputGroup>
                                             </Form.Group>
-
-
-                                            <ul className="lista-produtos">
-                                                {produtos.map((produto) => (
-                                                    <li
-                                                        key={produto.produto.id}
-                                                        onClick={() => this.selecionarProduto(produto)}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter' || e.key === " ") {
-                                                                e.preventDefault();
-                                                                this.selecionarProduto(produto);
-                                                            }
-                                                        }}
-                                                        tabIndex={0}
-                                                    >
-                                                        Cód: {produto.produto.codigo} Produto: {produto.produto.descricao} - Preço R$ {produto.produto.preco = parseFloat(produto.produto.preco).toFixed(2)}
-                                                    </li>
-                                                ))}
-                                            </ul>
                                         </Col>
                                     </Row>
+                                    <ul className="lista-produtos">
+                                        {produtos.map((produto) => (
+                                            <li
+                                                key={produto.produto.id}
+                                                onClick={() => this.selecionarProduto(produto)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === " ") {
+                                                        e.preventDefault();
+                                                        this.selecionarProduto(produto);
+                                                    }
+                                                }}
+                                                tabIndex={0}
+                                            >
+                                                Cód: {produto.produto.codigo} Produto: {produto.produto.descricao} - Preço R$ {produto.produto.preco = parseFloat(produto.produto.preco).toFixed(2)}
+                                            </li>
+                                        ))}
+                                    </ul>
                                     {produtoSelecionado && (
                                         <div className="produto-selecionado">
                                             <h2>Produto selecionado: {produtoSelecionado.produto.codigo} - {produtoSelecionado.produto.descricao}</h2>
@@ -2341,7 +2438,6 @@ class FrenteCaixa extends React.Component {
                                         </Modal.Footer>
                                     </Modal>
 
-
                                     <div className="divisa"></div>
 
                                     <h5>Totais</h5>
@@ -2399,14 +2495,16 @@ class FrenteCaixa extends React.Component {
                                                             value={buscaContato || nome}
                                                             onChange={this.atualizarBuscaContato}
                                                             onKeyDown={(e) => {
-                                                                if (e.keyCode === 13) {
-                                                                    // Código 13 corresponde à tecla Enter
-                                                                    this.buscarContato(buscaContato, nome, cnpj); // Chame a função de busca aqui
+                                                                if (e.key === 'Enter') {
+                                                                    e.preventDefault(); // Evita o comportamento padrão de submit do formulário
+                                                                    if (buscaContato) {
+                                                                        this.buscarContato(buscaContato, nome, cnpj); // Chame a função de busca aqui
+                                                                    }
                                                                 }
                                                             }}
                                                             required
                                                         />
-                                                        <Button variant="secondary" onClick={() => this.buscarContato(buscaContato, nome, cnpj)}>
+                                                        <Button variant="secondary" onClick={() => { if (buscaContato) { this.buscarContato(buscaContato, nome, cnpj) } }}>
                                                             <FontAwesomeIcon icon={faSearch} />
                                                         </Button>
                                                     </InputGroup>
@@ -2415,30 +2513,8 @@ class FrenteCaixa extends React.Component {
                                                     </Form.Control.Feedback>
                                                 </Form.Group>
                                             </div>
-                                            {contatos.length === 0 ? (
-                                                <Alert variant="danger">
-                                                    <p>CONTATO NAO LOCALIZADO</p>
-                                                </Alert>
-                                            ) : (
-                                                <ul className="lista-contatos">
-                                                    {contatos.map((contato) => (
-                                                        <li
-                                                            key={contato.contato.id}
-                                                            onClick={() => this.selecionarContato(contato)}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                                    e.preventDefault();
-                                                                    this.selecionarContato(contato);
-                                                                }
-                                                            }}
-                                                            tabIndex={0}
-                                                        >
-                                                            Nome: {contato.contato.nome} - CPF/CNPJ: {contato.contato.cnpj}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
                                         </Col>
+
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="cpf" className="texto-campos">{tipo === 'J' ? 'CNPJ' : 'CPF'}</Form.Label>
@@ -2455,10 +2531,40 @@ class FrenteCaixa extends React.Component {
                                                 </Form.Select>
                                             </Form.Group>
                                         </Col>
-                                        <Row className="row">
-                                            <Button variant="link" onClick={this.ModalCadastrarCliente}>Opções avançadas</Button>
-                                        </Row>
                                     </Row>
+                                    {this.state.contatoNaoLocalizado && (
+                                        <Row>
+                                            <Col xs={4}>
+                                                <Alert variant="danger" >
+                                                    <p>Contato não localizado.</p>
+                                                </Alert>
+                                            </Col>
+                                        </Row>
+                                    )}
+
+                                    <ul className="lista-contatos">
+                                        {/* Renderize os contatos encontrados */}
+                                        {this.state.contatos.map((contato) => (
+                                            <li
+                                                key={contato.contato.id}
+                                                onClick={() => this.selecionarContato(contato)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        this.selecionarContato(contato);
+                                                    }
+                                                }}
+                                                tabIndex={0}
+                                            >
+                                                Nome: {contato.contato.nome} - CPF/CNPJ: {contato.contato.cnpj}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <Row className="row">
+                                        <Button variant="link" onClick={this.ModalCadastrarCliente}>Opções avançadas</Button>
+                                    </Row>
+
 
                                     {/* {contatoSelecionado && (
                                         <div className="produto-selecionado">
@@ -2491,7 +2597,7 @@ class FrenteCaixa extends React.Component {
                                             </Row>
                                         </div>
                                     )} */}
-                                    <Modal show={this.state.ModalCadastrarCliente} onHide={this.ModalCadastrarCliente} size="lg" centered>
+                                    <Modal show={this.state.ModalCadastrarCliente} onHide={this.ModalCadastrarCliente} size="xl" centered>
                                         <Modal.Header closeButton className="bg-secondary text-white">
                                             <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
                                             <Modal.Title>Cadastrar cliente</Modal.Title>
@@ -2507,7 +2613,9 @@ class FrenteCaixa extends React.Component {
                                                     </Col>
                                                     <Col className="col" xs={4}>
                                                         <Form.Group className="mb-3">
-                                                            <Form.Label htmlFor="cpf" className="texto-campos">{tipo === 'J' ? 'CNPJ' : 'CPF'}</Form.Label>
+                                                            <Form.Label htmlFor="cpf" className="texto-campos">
+                                                                {cnpj.replace(/[^\d]/g, '').length === 14 ? 'CNPJ' : 'CPF'}
+                                                            </Form.Label>
                                                             <Form.Control type="text" id="cpf" className="form-control" name="cpf" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
                                                         </Form.Group>
                                                     </Col>
@@ -2556,7 +2664,7 @@ class FrenteCaixa extends React.Component {
                                                     <Col className="col" xs={12} md={4}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="cep" className="texto-campos">CEP</Form.Label>
-                                                            <Form.Control type="text" id="cep" className="form-control" name="cep" value={cep || ''} onChange={this.atualizaCep} onBlur={this.checkCEP} />
+                                                            <Form.Control type="text" id="cep" className="form-control" name="cep" value={cep || ''} onChange={this.atualizaCep} onBlur={this.buscarCep} />
                                                         </Form.Group>
                                                     </Col>
                                                     <Col className="col" xs={12} md={4}>
@@ -2720,7 +2828,7 @@ class FrenteCaixa extends React.Component {
                                                 <Col className="col mb-3" xs={3}>
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
-                                                        <Form.Control type="text" className="" id="frete" name="frete" placeholder="00.00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
+                                                        <Form.Control type="number" className="" id="frete" name="frete" placeholder="00.00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
                                                     </Form.Group>
                                                 </Col>
                                                 <Col className="col" xs={3}>
@@ -2826,7 +2934,6 @@ class FrenteCaixa extends React.Component {
                                                                             className="text-center"
                                                                         />
                                                                     </Col>
-
                                                                 </td>
                                                                 <td>
                                                                     <Col>
@@ -2905,7 +3012,7 @@ class FrenteCaixa extends React.Component {
                                 </div>
                             </div>
                         </Col>
-                    </Row>
+                    </Row >
                     <Row className="fixed-bottom">
                         <Col>
                             <div className="rodape">
