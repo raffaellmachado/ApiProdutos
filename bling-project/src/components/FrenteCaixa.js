@@ -2474,7 +2474,7 @@ class FrenteCaixa extends React.Component {
 
                                     <div>
                                         <Row>
-                                            <Col className="col" xs={6}>
+                                            <Col className="col" xs={12} md={5}>
                                                 <div className="busca-cliente d-grid gap-2">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="cliente" className="texto-campos">Cliente (Nome)</Form.Label>
@@ -2506,13 +2506,13 @@ class FrenteCaixa extends React.Component {
                                                 </div>
                                             </Col>
 
-                                            <Col className="col" xs={3}>
+                                            <Col className="col" xs={12} md={3}>
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="cpf" className="texto-campos">{tipo === 'J' ? 'CNPJ' : 'CPF'}</Form.Label>
                                                     <Form.Control type="text" id="cpf" className="form-control" name="cpf" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
                                                 </Form.Group>
                                             </Col>
-                                            <Col className="col" xs={3}>
+                                            {/* <Col className="col" xs={3}>
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="tipo" className="texto-campos">Tipo</Form.Label>
                                                     <Form.Select as="select" id="tipo" className="form-control" name="tipo" value={tipo || ''} onChange={this.atualizaTipoPessoa}>
@@ -2520,6 +2520,12 @@ class FrenteCaixa extends React.Component {
                                                         <option value="J">Pessoa Jurídica</option>
                                                         <option value="E">Estrangeiro</option>
                                                     </Form.Select>
+                                                </Form.Group>
+                                            </Col> */}
+                                            <Col className="col" xs={12} md={4}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label htmlFor="endereco" className="texto-campos">Endereço</Form.Label>
+                                                    <Form.Control type="text" id="endereco" className="form-control" name="endereco" value={endereco || ''} onChange={this.atualizaEndereco} />
                                                 </Form.Group>
                                             </Col>
                                         </Row>
