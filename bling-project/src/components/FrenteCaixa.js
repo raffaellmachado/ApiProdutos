@@ -55,6 +55,7 @@ class FrenteCaixa extends React.Component {
             rg: '',
             complemento: '',
             email: '',
+            contribuinte: 9,
             observacoes: '',
             observacaointerna: '',
             comentario: '',
@@ -125,6 +126,9 @@ class FrenteCaixa extends React.Component {
             opcaoDescontoItem: 'desliga',
             opcaoDescontoLista: 'desliga',
             validated: false,
+            produtoNaoLocalizado: false,
+            contatoNaoLocalizado: false,
+            vendedorNaoLocalizado: false,
         };
 
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
@@ -209,9 +213,9 @@ class FrenteCaixa extends React.Component {
     }
 
     componentDidMount() {
-        // this.buscarLoja()
-        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
-        //     .then(() => this.buscarFormaDePagamento())
+        this.buscarFormaDePagamento()
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => this.buscarLoja())
         //     .catch(() => { throw new Error("Erro ao conectar a API"); })
         //     .then(() => this.buscarPedido())
         //     .catch(() => { throw new Error("Erro ao conectar a API"); })
@@ -221,7 +225,7 @@ class FrenteCaixa extends React.Component {
         //     .catch((error) => {
         //         this.setState({ erro: error.message });
         //     });
-        // this.ModalSelecionarLoja()
+        // // this.ModalSelecionarLoja()
 
         this.setState({ carregado: true }); //APAGAR (GAMBIARRA)
     }
@@ -236,7 +240,9 @@ class FrenteCaixa extends React.Component {
         if (prevState.produtosSelecionados !== this.state.produtosSelecionados ||
             prevState.subTotal !== this.state.subTotal ||
             prevState.valorDesconto !== this.state.valorDesconto ||
-            prevState.subTotalComFrete !== this.state.subTotalComFrete) {
+            prevState.subTotalComFrete !== this.state.subTotalComFrete //||
+            // prevState.dinheiroRecebido !== this.state.dinheiroRecebido // Adicionado o dinheiroRecebido como dependência
+        ) {
             const subtotalGeral = this.calcularSubTotalGeral().toFixed(2);
             // console.log("Subtotal Geral:", subtotalGeral);
             this.setState({
@@ -247,50 +253,111 @@ class FrenteCaixa extends React.Component {
 
     //----------------------------------------- CHAMADAS DE API´S ----------------------------------------------------------
 
-
     buscarProdutos = (value) => {
-        // console.log("Buscando produto por:", value);
-        this.setState({ buscaProduto: value, carregando: false });
-        fetch(`http://localhost:8081/api/v1/produtos`)
-            .then((resposta) => {
-                if (!resposta.ok) {
-                    throw new Error('Erro na chamada da API');
-                }
-                return resposta.json();
-            })
-            .then((dados) => {
-                if (dados.retorno.produtos) {
-                    const produtosFiltrados = dados.retorno.produtos.filter(
-                        (produto) =>
-                            (produto.produto.descricao && produto.produto.descricao.toLowerCase().includes(value.toLowerCase())) ||
-                            (produto.produto.codigo && produto.produto.codigo.toLowerCase().includes(value.toLowerCase())) ||
-                            (produto.produto.gtin && produto.produto.gtin.toLowerCase().includes(value.toLowerCase())) ||
-                            (produto.produto.gtinEmbalagem && produto.produto.gtinEmbalagem.toLowerCase().includes(value.toLowerCase())) ||
-                            (produto.produto.descricaoFornecedor && produto.produto.descricaoFornecedor.toLowerCase().includes(value.toLowerCase())) ||
-                            (produto.produto.nomeFornecedor && produto.produto.nomeFornecedor.toLowerCase().includes(value.toLowerCase())) ||
-                            (produto.produto.idFabricante && produto.produto.idFabricante.toLowerCase().includes(value.toLowerCase()))
-                    );
-                    // console.log("Produto objeto retornado:", produtosFiltrados);
-                    this.setState({
-                        produtos: produtosFiltrados,
-                        produtoSelecionado: null,
-                        carregando: false,
-                    });
-                } else {
+        return new Promise((resolve, reject) => {
+            this.setState({ buscaProduto: value, carregando: false });
+
+            fetch(`http://localhost:8081/api/v1/produtos`)
+                .then((resposta) => {
+                    if (!resposta.ok) {
+                        throw new Error('Erro na chamada da API');
+                    }
+                    return resposta.json();
+                })
+                .then((dados) => {
+                    if (dados.retorno.produtos) {
+                        const produtosFiltrados = dados.retorno.produtos.filter(
+                            (produto) =>
+                                (produto.produto.descricao && produto.produto.descricao.toLowerCase().includes(value.toLowerCase())) ||
+                                (produto.produto.codigo && produto.produto.codigo.toLowerCase().includes(value.toLowerCase())) ||
+                                (produto.produto.gtin && produto.produto.gtin.toLowerCase().includes(value.toLowerCase())) ||
+                                (produto.produto.gtinEmbalagem && produto.produto.gtinEmbalagem.toLowerCase().includes(value.toLowerCase())) ||
+                                (produto.produto.descricaoFornecedor && produto.produto.descricaoFornecedor.toLowerCase().includes(value.toLowerCase())) ||
+                                (produto.produto.nomeFornecedor && produto.produto.nomeFornecedor.toLowerCase().includes(value.toLowerCase())) ||
+                                (produto.produto.idFabricante && produto.produto.idFabricante.toLowerCase().includes(value.toLowerCase()))
+                        );
+
+                        if (produtosFiltrados.length === 0) {
+                            // Nenhum produto encontrado
+                            this.setState({
+                                produtos: [],
+                                produtoSelecionado: null,
+                                carregando: false,
+                                produtoNaoLocalizado: true // Adicione essa variável de estado para controlar se o produto não foi localizado
+                            });
+                        } else {
+                            // Produtos encontrados
+                            this.setState({
+                                produtos: produtosFiltrados,
+                                produtoSelecionado: null,
+                                carregando: false,
+                                produtoNaoLocalizado: false // Reinicie a variável para false caso tenha sido setada anteriormente
+                            });
+                        }
+                    } else {
+                        // Nenhum produto encontrado
+                        this.setState({
+                            produtos: [],
+                            carregando: false,
+                            produtoNaoLocalizado: true // Adicione essa variável de estado para controlar se o produto não foi localizado
+                        });
+                    }
+                    resolve();
+                })
+                .catch((error) => {
                     this.setState({
                         produtos: [],
-                        carregando: false
+                        carregando: false,
+                        produtoNaoLocalizado: true // Adicione essa variável de estado para controlar se o produto não foi localizado
                     });
-                }
-            })
-            .catch((error) => {
-                // console.log("Erro ao buscar produtos:", error);
-                this.setState({
-                    produtos: [],
-                    carregando: false
+                    reject(error);
                 });
-            });
+        });
     };
+
+    // buscarProdutos = (value) => {
+    //     // console.log("Buscando produto por:", value);
+    //     this.setState({ buscaProduto: value, carregando: false });
+    //     fetch(`http://localhost:8081/api/v1/produtos`)
+    //         .then((resposta) => {
+    //             if (!resposta.ok) {
+    //                 throw new Error('Erro na chamada da API');
+    //             }
+    //             return resposta.json();
+    //         })
+    //         .then((dados) => {
+    //             if (dados.retorno.produtos) {
+    //                 const produtosFiltrados = dados.retorno.produtos.filter(
+    //                     (produto) =>
+    //                         (produto.produto.descricao && produto.produto.descricao.toLowerCase().includes(value.toLowerCase())) ||
+    //                         (produto.produto.codigo && produto.produto.codigo.toLowerCase().includes(value.toLowerCase())) ||
+    //                         (produto.produto.gtin && produto.produto.gtin.toLowerCase().includes(value.toLowerCase())) ||
+    //                         (produto.produto.gtinEmbalagem && produto.produto.gtinEmbalagem.toLowerCase().includes(value.toLowerCase())) ||
+    //                         (produto.produto.descricaoFornecedor && produto.produto.descricaoFornecedor.toLowerCase().includes(value.toLowerCase())) ||
+    //                         (produto.produto.nomeFornecedor && produto.produto.nomeFornecedor.toLowerCase().includes(value.toLowerCase())) ||
+    //                         (produto.produto.idFabricante && produto.produto.idFabricante.toLowerCase().includes(value.toLowerCase()))
+    //                 );
+    //                 // console.log("Produto objeto retornado:", produtosFiltrados);
+    //                 this.setState({
+    //                     produtos: produtosFiltrados,
+    //                     produtoSelecionado: null,
+    //                     carregando: false,
+    //                 });
+    //             } else {
+    //                 this.setState({
+    //                     produtos: [],
+    //                     carregando: false
+    //                 });
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             // console.log("Erro ao buscar produtos:", error);
+    //             this.setState({
+    //                 produtos: [],
+    //                 carregando: false
+    //             });
+    //         });
+    // };
 
     buscarContato = (value) => {
         // console.log("Buscando contato por:", value);
@@ -742,8 +809,8 @@ class FrenteCaixa extends React.Component {
         const buscaContato = event.target.value;
         // console.log("atualizarBuscaContato (buscaContato):", buscaContato);
         this.setState({
-            buscaContato: buscaContato,
-            nome: buscaContato
+            buscaContato: buscaContato || "Consumidor Final",
+            nome: buscaContato || "Consumidor Final"
         });
     };
 
@@ -868,15 +935,29 @@ class FrenteCaixa extends React.Component {
             ie_rg: ieFormatado,
             ie: ieFormatado
         });
-    };
 
+        if (this.state.contribuinte === "2") {
+            this.setState({
+                ie_rg: "ISENTO",
+                ie: "ISENTO"
+            });
+        }
+    };
 
     atualizaContribuinte = (event) => {
-        // console.log("contribuinte: ", event.target.value);
+        const contribuinte = event.target.value;
         this.setState({
-            contribuinte: event.target.value
+            contribuinte: contribuinte
         });
+
+        if (contribuinte === "2") {
+            this.setState({
+                ie_rg: "ISENTO",
+                ie: "ISENTO"
+            });
+        }
     };
+    qw
 
     atualizaCidade = (event) => {
         // console.log("cidade: ", event.target.value);
@@ -1046,7 +1127,7 @@ class FrenteCaixa extends React.Component {
         const produtoExcluido = produtosSelecionados.splice(index, 1)[0];
         const quantidadeExcluida = produtoExcluido.quantidade;
         const produto = produtoExcluido.produto;
-        const subTotalAnterior = this.state.subTotal.toFixed(2);
+        const subTotalAnterior = this.state.subTotal;
         const subTotal = (parseFloat(subTotalAnterior) - this.calcularSubTotal(produto, quantidadeExcluida)).toFixed(2);
         // console.log("Novo Subtotal:", subTotal);
         this.setState({
@@ -1064,14 +1145,15 @@ class FrenteCaixa extends React.Component {
         this.state.produtosSelecionados.forEach((produto) => {
             total += this.calcularSubTotal(produto.produto, produto.quantidade, produto.preco);
         });
-        const subTotal = total;
+        const subTotal = total.toFixed(2); // Ajuste: Aplicando duas casas decimais
         // console.log("Subtotal:", subTotal);
 
         if (this.state.subTotal !== subTotal) {
             this.setState({ subTotal });
         }
-        return parseFloat(subTotal.toFixed(2));
+        return Number(subTotal);
     }
+
 
     calcularSubTotal = (produto, quantidade, preco) => {
         return preco * quantidade;
@@ -1086,7 +1168,7 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizaPreco = (event) => {
-        const preco = parseFloat(event.target.value);
+        const preco = Number(event.target.value.replace('.', ',')).toFixed(2);
         this.setState({
             preco
         },
@@ -1097,17 +1179,19 @@ class FrenteCaixa extends React.Component {
         const descontoInicialProduto = event.target.value;
         this.setState({
             descontoInicialProduto
+        }, () => {
+            clearTimeout(this.valorTotalTimeout);
+            this.valorTotalTimeout = setTimeout(this.atualizarValorTotal, 500); // Atraso de 500ms antes de chamar a função
         });
     };
 
-
     atualizarValorTotal = () => {
         const { quantidade, preco, descontoInicialProduto } = this.state;
-        let novoPrecoDesconto = parseFloat(preco);
+        let novoPrecoDesconto = Number(preco);
         let descontoTotal = 0;
 
         if (descontoInicialProduto !== '') {
-            const descontoPorcentagem = parseFloat(descontoInicialProduto.replace(',', '.'));
+            const descontoPorcentagem = Number(descontoInicialProduto.replace('.', ','));
 
             // Converter a porcentagem para decimal dividindo por 100
             const descontoDecimal = descontoPorcentagem / 100;
@@ -1125,9 +1209,11 @@ class FrenteCaixa extends React.Component {
 
         this.setState({
             preco: novoPrecoDesconto.toFixed(2),
-            valorTotal,
+            valorTotal: valorTotal.toFixed(2), // Formata o valorTotal com duas casas decimais
         });
     };
+
+
 
     calcularTotalComDesconto = (desconto, subTotal) => {
         const subtotal = subTotal || this.calcularTotal();
@@ -1137,8 +1223,8 @@ class FrenteCaixa extends React.Component {
         let formattedValorDesconto = 0;
         let formattedTotalComDesconto = 0;
 
-        formattedValorDesconto = valorDesconto
-        formattedTotalComDesconto = totalComDesconto
+        formattedValorDesconto = valorDesconto;
+        formattedTotalComDesconto = totalComDesconto;
 
         // console.log("valorDesconto: ", formattedValorDesconto);
         // console.log("totalComDesconto: ", formattedTotalComDesconto);
@@ -1154,8 +1240,8 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizaDesconto(event) {
-        const descontoString = event.target.value.replace(',', '.'); // Replace commas with dots
-        const descontoNumber = parseFloat(descontoString.replace(/[^\d.-]/g, '')); // remove non-numeric characters
+        const descontoString = event.target.value.replace('.', ','); // Replace commas with dots
+        const descontoNumber = Number(descontoString.replace(/[^\d.-]/g, '')); // remove non-numeric characters
 
         if (isNaN(descontoNumber)) {
             // If it's not a valid number, clear the field value and return
@@ -1170,13 +1256,13 @@ class FrenteCaixa extends React.Component {
         const resultado = this.calcularTotalComDesconto(descontoNumber);
         this.setState({
             valorDesconto: descontoString,
-            desconto: descontoNumber,
+            desconto: descontoNumber.toFixed(2),
             totalComDesconto: resultado.totalComDesconto,
         });
     };
 
     calcularTotalComDinheiro = (dinheiro) => {
-        const totalRecebidoEmDinheiro = parseFloat(dinheiro) || 0;
+        const totalRecebidoEmDinheiro = Number(dinheiro) || 0;
         const subTotalGeral = this.state.subTotalGeral;
 
         if (isNaN(totalRecebidoEmDinheiro)) {
@@ -1221,25 +1307,25 @@ class FrenteCaixa extends React.Component {
 
             this.setState({
                 dinheiroRecebido,
-                troco: Math.abs(troco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                troco: troco
             });
         }
     };
 
     atualizaTotalComFrete(event) {
-        const valor = event.target.value.replace(',', '.'); // Substitui vírgula por ponto
-        let frete = parseFloat(valor);
+        const valor = event.target.value.replace('.', ','); // Substitui vírgula por ponto
+        let frete = Number(valor);
         if (isNaN(frete)) {
             frete = 0;
         }
-        const subTotal = this.state.subTotal.toFixed(2);
+        const subTotal = this.state.subTotal;
         const totalComDesconto = this.state.totalComDesconto;
 
         let subTotalComFrete;
         if (totalComDesconto && totalComDesconto.length > 0) {
-            subTotalComFrete = (parseFloat(totalComDesconto) + frete).toFixed(2);
+            subTotalComFrete = (Number(totalComDesconto) + frete).toFixed(2);
         } else {
-            subTotalComFrete = (parseFloat(subTotal) + frete).toFixed(2);
+            subTotalComFrete = (Number(subTotal) + frete).toFixed(2);
         }
 
         this.setState({
@@ -1249,19 +1335,24 @@ class FrenteCaixa extends React.Component {
         });
     }
 
-
     calcularSubTotalGeral = () => {
         const subTotal = this.calcularTotal().toFixed(2);
         const desconto = this.state.valorDesconto;
         const totalComDesconto = this.calcularTotalComDesconto(desconto, subTotal).totalComDesconto;
         const frete = this.state.frete;
-        const subTotalComFrete = parseFloat(totalComDesconto) + parseFloat(frete);
-        const subTotalGeral = subTotalComFrete.toFixed(2);
+        const subTotalComFrete = Number(totalComDesconto) + Number(frete);
+        let subTotalGeral = subTotalComFrete.toFixed(2);
+
+        // const dinheiroRecebido = parseFloat(this.state.dinheiroRecebido) || 0;
+        // const subTotalGeralAbatido = parseFloat(subTotalGeral) - dinheiroRecebido;
+        // subTotalGeral = subTotalGeralAbatido.toFixed(2);
 
         // console.log("Subtotal Geral:", subTotalGeral);
 
-        return parseFloat(subTotalGeral);
+        return Number(subTotalGeral);
     };
+
+
 
     // incrementarQuantidade = () => {
     //     this.setState(prevState => ({
@@ -1498,6 +1589,18 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    validaVenda = (event) => {
+        const form = event.currentTarget;
+        console.log("TESTE:", form.checkValidity())
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.finalizaVenda()
+        }
+        this.finalizaVenda()
+        this.setState({ validated: true });
+    };
+
     finalizaVenda = () => {
         // const dataPrevista = new Date(this.state.dataPrevista); // converte para objeto Date
         // const dataPrevistaFormatted = `${dataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${dataPrevista.toLocaleTimeString('pt-BR')}`;
@@ -1511,6 +1614,8 @@ class FrenteCaixa extends React.Component {
         const valorDesconto = this.state.desconto;
         const itens = [];
         const prazo = [];
+
+
 
         this.state.produtosSelecionados.forEach((produto) => {
             const item = {
@@ -1885,7 +1990,7 @@ class FrenteCaixa extends React.Component {
         const { descontoItemLista, valorUnitarioLista, quantidadeLista } = this.state;
 
         if (descontoItemLista !== '') {
-            const descontoPorcentagem = parseFloat(descontoItemLista.replace(',', '.'));
+            const descontoPorcentagem = parseFloat(descontoItemLista.replace('.', ','));
 
             // Converter a porcentagem para decimal dividindo por 100
             const descontoDecimal = descontoPorcentagem / 100;
@@ -1940,7 +2045,7 @@ class FrenteCaixa extends React.Component {
             let novoPreco = valorUnitarioLista;
 
             if (descontoItemLista !== '') {
-                const descontoPorcentagem = parseFloat(descontoItemLista.replace(',', '.'));
+                const descontoPorcentagem = parseFloat(descontoItemLista.replace('.', ','));
 
                 // Converter a porcentagem para decimal dividindo por 100
                 const descontoDecimal = descontoPorcentagem / 100;
@@ -2054,13 +2159,13 @@ class FrenteCaixa extends React.Component {
     render() {
 
         //Produto
-        const { produtos, produtoSelecionado, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, imagem } = this.state;
+        const { produtos, produtoNaoLocalizado, produtoSelecionado, buscaProduto, carregandoProduto, preco, valorTotal, quantidade, desconto, imagem } = this.state;
         //Contatos
-        const { contatos, contatoSelecionado, buscaContato, buscaVendedor, vendedorSelecionado, nome, cnpj, rg, ie_rg, tipo, contribuinte, codigo, fantasia, cep, cidade, uf, endereco, numero, complemento, bairro, email, fone, celular, dataNascimento } = this.state;
+        const { contatos, contatoNaoLocalizado, vendedorNaoLocalizado, contatoSelecionado, buscaContato, buscaVendedor, vendedorSelecionado, nome, cnpj, rg, ie_rg, tipo, contribuinte, codigo, fantasia, cep, cidade, uf, endereco, numero, complemento, bairro, email, fone, celular, dataNascimento } = this.state;
         //Calculos
         const { subTotalGeral, observacoes, observacaointerna, valorDesconto, dinheiroRecebido, troco, frete, condicao, depositoSelecionado, subTotal, dataPrevista, consumidorFinal, prazo, numeroPedido, descontoProduto } = this.state;
         //Modals
-        const { carregado, erro, setShow } = this.state;
+        const { carregado, erro, validated } = this.state;
 
         let quantidadeTotal = 0;
         for (const produto of this.state.produtosSelecionados) {
@@ -2110,14 +2215,14 @@ class FrenteCaixa extends React.Component {
             return (
 
                 <Container fluid className="pb-5" >
-                    <Form noValidate validated={this.state.validated} onSubmit={this.finalizaVenda}>
+                    <Form noValidate validated={validated} onSubmit={this.validaVenda}>
                         <Row className="d-flex">
                             <Col md={6} className="">
                                 <div className="grid-1">
                                     <div className="mb-3">
                                         <h5>Vendedor</h5>
                                     </div>
-                                    <Row className="row">
+                                    <Row className="row align-items-center">
                                         <Col xs={4} >
                                             <Form.Label htmlFor="vendedor" className="texto-campos">Adicionar vendedor</Form.Label>
                                             <Form.Group className="mb-3" >
@@ -2142,12 +2247,12 @@ class FrenteCaixa extends React.Component {
                                                     <Button variant="secondary" onClick={() => { if (buscaVendedor) { this.buscarVendedor(buscaVendedor) } }} >
                                                         <FontAwesomeIcon icon={faSearch} />
                                                     </Button>
+                                                    <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                                 </InputGroup>
-                                                <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                             </Form.Group>
                                         </Col>
-                                        {this.state.vendedorNaoLocalizado && (
-                                            <Row className="row">
+                                        {vendedorNaoLocalizado && (
+                                            <Row className="row align-items-center">
                                                 <Col className="col" xs={4}>
                                                     <Alert variant="danger">
                                                         <p>Vendedor não localizado.</p>
@@ -2165,23 +2270,25 @@ class FrenteCaixa extends React.Component {
                                         )}
                                     </Row>
                                     {!vendedorSelecionado && (
-                                        <ul className="lista-produtos">
-                                            {this.state.vendedores.map((contato) => (
-                                                <li
-                                                    key={contato.contato.id}
-                                                    onClick={() => this.selecionarVendedor(contato)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === " ") {
-                                                            e.preventDefault();
-                                                            this.selecionarVendedor(contato)
-                                                        }
-                                                    }}
-                                                    tabIndex={0}
-                                                >
-                                                    Cód: {contato.contato.codigo} Vendedor: {contato.contato.nome}
-                                                </li>
-                                            ))}
-                                        </ul>
+                                        <Row className="row align-items-center">
+                                            <ul className="lista-produtos">
+                                                {this.state.vendedores.map((contato) => (
+                                                    <li
+                                                        key={contato.contato.id}
+                                                        onClick={() => this.selecionarVendedor(contato)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === " ") {
+                                                                e.preventDefault();
+                                                                this.selecionarVendedor(contato)
+                                                            }
+                                                        }}
+                                                        tabIndex={0}
+                                                    >
+                                                        Cód: {contato.contato.codigo} Vendedor: {contato.contato.nome}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </Row>
                                     )}
 
                                     {/* <div className="divisa"></div> */}
@@ -2190,7 +2297,7 @@ class FrenteCaixa extends React.Component {
                                     <div className="mb-3">
                                         <h5>Produto</h5>
                                     </div>
-                                    <Row className="row">
+                                    <Row className="row align-items-center">
                                         <Col xs={8}>
                                             <Form.Label htmlFor="produto" className="texto-campos">Adicionar produto</Form.Label>
                                             <Form.Group className="mb-3">
@@ -2218,23 +2325,34 @@ class FrenteCaixa extends React.Component {
                                             </Form.Group>
                                         </Col>
                                     </Row>
-                                    <ul className="lista-produtos">
-                                        {produtos.map((produto) => (
-                                            <li
-                                                key={produto.produto.id}
-                                                onClick={() => this.selecionarProduto(produto)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' || e.key === " ") {
-                                                        e.preventDefault();
-                                                        this.selecionarProduto(produto);
-                                                    }
-                                                }}
-                                                tabIndex={0}
-                                            >
-                                                Cód: {produto.produto.codigo} Produto: {produto.produto.descricao} - Preço R$ {produto.produto.preco = parseFloat(produto.produto.preco).toFixed(2)}
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    {produtos.map((produto) => (
+                                        <Row className="row align-items-center">
+                                            <ul className="lista-produtos">
+                                                <li
+                                                    key={produto.produto.id}
+                                                    onClick={() => this.selecionarProduto(produto)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === " ") {
+                                                            e.preventDefault();
+                                                            this.selecionarProduto(produto);
+                                                        }
+                                                    }}
+                                                    tabIndex={0}
+                                                >
+                                                    Cód: {produto.produto.codigo} Produto: {produto.produto.descricao} - Preço R$ {produto.produto.preco = parseFloat(produto.produto.preco).toFixed(2)}
+                                                </li>
+                                            </ul>
+                                        </Row>
+                                    ))}
+                                    {produtoNaoLocalizado && (
+                                        <Row className="row align-items-center">
+                                            <Col className="col" xs={4}>
+                                                <Alert variant="danger">
+                                                    <p>Produto não localizado.</p>
+                                                </Alert>
+                                            </Col>
+                                        </Row>
+                                    )}
                                     {produtoSelecionado && (
                                         <div className="produto-selecionado">
                                             <h2>Produto selecionado: {produtoSelecionado.produto.codigo} - {produtoSelecionado.produto.descricao}</h2>
@@ -2279,7 +2397,6 @@ class FrenteCaixa extends React.Component {
                                                             placeholder="0.00"
                                                             value={this.state.descontoInicialProduto || ''}
                                                             onChange={this.atualizaDescontoProduto}
-                                                            onBlur={this.atualizarValorTotal}
                                                             disabled={this.state.opcaoDescontoItem === 'desliga'}
                                                         />
                                                         <Form.Check
@@ -2398,7 +2515,7 @@ class FrenteCaixa extends React.Component {
                                                         </Col>
 
                                                     </Row>
-                                                    <Row className="row">
+                                                    <Row className="row align-items-center">
                                                         <Col className="col" xs={4}>
                                                             <Form.Group className="mb-3">
                                                                 <Form.Label htmlFor="valorUnitario" className="texto-campos">Valor unitário</Form.Label>
@@ -2408,8 +2525,8 @@ class FrenteCaixa extends React.Component {
 
                                                         <Col className="col" xs={4}>
                                                             <Form.Group className="mb-3">
-                                                                <Form.Label htmlFor="subTotal" className="texto-campos">Sub total</Form.Label>
-                                                                <Form.Control type="text" id="subTotal" className="form-control" name="subTotal" value={this.state.valorTotalLista || ''} disabled />
+                                                                <Form.Label htmlFor="subTotalLista" className="texto-campos">Sub total</Form.Label>
+                                                                <Form.Control type="text" id="subTotalLista" className="form-control" name="subTotalLista" value={this.state.valorTotalLista || ''} disabled />
                                                             </Form.Group>
                                                         </Col>
                                                     </Row>
@@ -2434,7 +2551,7 @@ class FrenteCaixa extends React.Component {
                                     <div>
                                         <h5>Totais</h5>
                                     </div>
-                                    <Row className="row">
+                                    <Row className="row align-items-center">
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="subtotal" className="texto-campos">Sub total</Form.Label>
@@ -2473,7 +2590,7 @@ class FrenteCaixa extends React.Component {
                                     </div>
 
                                     <div>
-                                        <Row>
+                                        <Row className="row align-items-center">
                                             <Col className="col" xs={12} md={5}>
                                                 <div className="busca-cliente d-grid gap-2">
                                                     <Form.Group className="mb-3">
@@ -2498,10 +2615,8 @@ class FrenteCaixa extends React.Component {
                                                             <Button variant="secondary" onClick={() => { if (buscaContato) { this.buscarContato(buscaContato, nome, cnpj) } }}>
                                                                 <FontAwesomeIcon icon={faSearch} />
                                                             </Button>
+                                                            <Form.Control.Feedback type="invalid">Campo obrigatório.</Form.Control.Feedback>
                                                         </InputGroup>
-                                                        <Form.Control.Feedback type="invalid">
-                                                            Campo obrigatório.
-                                                        </Form.Control.Feedback>
                                                     </Form.Group>
                                                 </div>
                                             </Col>
@@ -2529,8 +2644,8 @@ class FrenteCaixa extends React.Component {
                                                 </Form.Group>
                                             </Col>
                                         </Row>
-                                        {this.state.contatoNaoLocalizado && (
-                                            <Row>
+                                        {contatoNaoLocalizado && (
+                                            <Row className="row align-items-center">
                                                 <Col xs={4}>
                                                     <Alert variant="danger" >
                                                         <p>Cliente não localizado.</p>
@@ -2538,10 +2653,8 @@ class FrenteCaixa extends React.Component {
                                                 </Col>
                                             </Row>
                                         )}
-
-                                        <ul className="lista-contatos">
-                                            {/* Renderize os contatos encontrados */}
-                                            {this.state.contatos.map((contato) => (
+                                        {contatos.map((contato) => (
+                                            <ul className="lista-contatos">
                                                 <li
                                                     key={contato.contato.id}
                                                     onClick={() => this.selecionarContato(contato)}
@@ -2555,8 +2668,8 @@ class FrenteCaixa extends React.Component {
                                                 >
                                                     Nome: {contato.contato.nome} - CPF/CNPJ: {contato.contato.cnpj}
                                                 </li>
-                                            ))}
-                                        </ul>
+                                            </ul>
+                                        ))}
                                         <Row className="row">
                                             <Button variant="link" onClick={this.ModalCadastrarCliente}>Opções avançadas</Button>
                                         </Row>
@@ -2598,7 +2711,7 @@ class FrenteCaixa extends React.Component {
                                                 <Modal.Title>Cadastrar cliente</Modal.Title>
                                             </Modal.Header>
                                             <Modal.Body style={{ padding: '20px' }} >
-                                                <Row className="row">
+                                                <Row className="row align-items-center">
                                                     <Col className="col" xs={4}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="nome" className="texto-campos">Nome</Form.Label>
@@ -2630,23 +2743,39 @@ class FrenteCaixa extends React.Component {
                                                         </Form.Group>
                                                     </Col> */}
                                                 </Row>
-                                                <Row className="row">
+                                                <Row className="row align-items-center">
                                                     <Col className="col" xs={12} md={4}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="inscricaoEstadual" className="texto-campos">Inscrição estadual</Form.Label>
-                                                            <Form.Control type="text" id="inscricaoEstadual" className="form-control" name="inscricaoEstadual" value={ie_rg || ''} onChange={this.atualizaIe} />
+                                                            <Form.Control
+                                                                type="text"
+                                                                id="inscricaoEstadual"
+                                                                className="form-control"
+                                                                name="inscricaoEstadual"
+                                                                value={contribuinte === "2" ? "ISENTO" : ie_rg || ""}
+                                                                onChange={this.atualizaIe}
+                                                                disabled={contribuinte === "2"}
+                                                            />
                                                         </Form.Group>
                                                     </Col>
                                                     <Col className="col" xs={12} md={4}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="contribuinte" className="texto-campos">Contribuinte</Form.Label>
-                                                            <Form.Select as="select" id="contribuinte" className="form-control" name="contribuinte" value={contribuinte || ''} onChange={this.atualizaContribuinte} >
+                                                            <Form.Select
+                                                                as="select"
+                                                                id="contribuinte"
+                                                                className="form-control"
+                                                                name="contribuinte"
+                                                                value={contribuinte || ""}
+                                                                onChange={this.atualizaContribuinte}
+                                                            >
                                                                 <option value="1">1 - Contribuinte ICMS</option>
                                                                 <option value="2">2 - Contribuinte isento de Inscrição no Cadastro de Contribuintes</option>
                                                                 <option value="9">9 - Não contribuinte, que pode ou não possuir Inscrição Estadual no Cadastro de Contribuintes</option>
                                                             </Form.Select>
                                                         </Form.Group>
                                                     </Col>
+
                                                     <Col className="col" xs={12} md={4}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="rg" className="texto-campos">RG</Form.Label>
@@ -2654,7 +2783,7 @@ class FrenteCaixa extends React.Component {
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
-                                                <Row className="row">
+                                                <Row className="row align-items-center">
                                                     <Col className="col" xs={12} md={4}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="cep" className="texto-campos">CEP</Form.Label>
@@ -2703,7 +2832,7 @@ class FrenteCaixa extends React.Component {
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
-                                                <Row className="row">
+                                                <Row className="row align-items-center">
                                                     <Col className="col" xs={12} md={8}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="endereco" className="texto-campos">Endereço</Form.Label>
@@ -2717,7 +2846,7 @@ class FrenteCaixa extends React.Component {
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
-                                                <Row className="row">
+                                                <Row className="row align-items-center">
                                                     <Col className="col" xs={12} md={8}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="complemento" className="texto-campos">Complemento</Form.Label>
@@ -2731,7 +2860,7 @@ class FrenteCaixa extends React.Component {
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
-                                                <Row className="row">
+                                                <Row className="row align-items-center">
                                                     <Col className="col" xs={12} md={4}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="email" className="texto-campos">E-mail</Form.Label>
@@ -2775,7 +2904,6 @@ class FrenteCaixa extends React.Component {
                                         </Modal>
                                     </div>
 
-
                                     <div className="divisa"></div>
 
                                     <div className="mb-3">
@@ -2816,8 +2944,8 @@ class FrenteCaixa extends React.Component {
                                             </Col>
                                         </Row> */}
                                     <div>
-                                        <Row className="row">
-                                            <Col className="col mb-3" xs={3}>
+                                        <Row className="row align-items-center">
+                                            <Col className="col" xs={3}>
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
                                                     <Form.Control type="number" className="" id="frete" name="frete" placeholder="00.00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
@@ -2830,7 +2958,7 @@ class FrenteCaixa extends React.Component {
                                                 </Form.Group>
                                             </Col>
                                         </Row>
-                                        <Row className="row">
+                                        <Row className="row align-items-center">
                                             <Col className="col">
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="observacoes" className="texto-campos">Observações</Form.Label>
@@ -2853,21 +2981,21 @@ class FrenteCaixa extends React.Component {
                                     <div className="mb-3">
                                         <h5>Forma de pagamento</h5>
                                     </div>
-                                    <Row>
+                                    <Row className="row align-items-center">
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="totaldinheiro" className="texto-campos">Total em dinheiro</Form.Label>
                                                 <Form.Control type="text" id="totaldinheiro" className="" name="totaldinheiro" placeholder="00.00" value={dinheiroRecebido || ''} onChange={this.atualizaTroco} onBlur={this.formatarTroco} />
                                             </Form.Group>
                                         </Col>
-                                        <Col className="col mb-3" xs={3}>
+                                        <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="trocodinheiro" className="texto-campos">Troco em dinheiro</Form.Label>
                                                 <Form.Control type="text" id="trocodinheiro" className="" name="trocodinheiro" placeholder="00.00" defaultValue={troco || ''} disabled />
                                             </Form.Group>
                                         </Col>
                                     </Row>
-                                    <Row className="mb-3">
+                                    <Row className="row align-items-center">
                                         <Col className="col mb-3" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Formas de pagamento</Form.Label>
@@ -2890,17 +3018,21 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col mb-3" >
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="gerarparcelas" className="texto-campos" style={{ marginRight: '20px' }}></Form.Label>
-                                                <Button variant="outline-success" className="" onClick={() => {
-                                                    if (this.state.subTotalGeral === undefined) {
-                                                        this.modalInserirParcela();
-                                                    } else {
-                                                        this.adicionarParcela();
-                                                    }
-                                                }}
+                                                <Button
+                                                    variant="outline-success"
+                                                    className=""
+                                                    onClick={() => {
+                                                        if (this.state.subTotalGeral === '0.00') {
+                                                            this.modalInserirParcela();
+                                                        } else {
+                                                            this.adicionarParcela();
+                                                        }
+                                                    }}
                                                     style={{ width: "200px", marginTop: "33px" }}
                                                 >
                                                     Gerar parcelas
                                                 </Button>
+
                                             </Form.Group>
                                         </Col>
                                         <div>
@@ -3004,30 +3136,31 @@ class FrenteCaixa extends React.Component {
                                 </div>
                             </Col>
                         </Row >
-                    </Form>
 
-                    <Row className="fixed-bottom">
-                        <Col>
-                            <div className="rodape">
-                                <div>
-                                    <div className="botao-excluirvenda">
-                                        <div>
-                                            <Button variant="success" onClick={this.ModalExcluirPedido}>Excluir pedido</Button>
+                        <Row className="fixed-bottom align-items-center">
+                            <Col>
+                                <div className="rodape">
+                                    <div>
+                                        <div className="botao-excluirvenda">
+                                            <div>
+                                                <Button variant="success" onClick={this.ModalExcluirPedido}>Excluir pedido</Button>
+                                            </div>
+                                        </div>
+                                        <div className="botao-finalizarvenda">
+                                            <Button variant="success" onClick={this.finalizaVenda} type="submit" >Finalizar Venda</Button>
                                         </div>
                                     </div>
-                                    <div className="botao-finalizarvenda">
-                                        <Button variant="success" onClick={this.finalizaVenda} >Finalizar Venda</Button>
+                                    <div className="div_total_venda">
+                                        <div>
+                                            <span className="span-total">Total:</span>
+                                            <span className="span-valor">{this.calcularSubTotalGeral().toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="div_total_venda">
-                                    <div>
-                                        <span className="span-total">Total:</span>
-                                        <span className="span-valor">R$ {this.calcularSubTotalGeral().toFixed(2)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
+                            </Col>
+                        </Row>
+                    </Form>
+
 
                     <Modal show={this.state.ModalFinalizarVendaSemItem} onHide={this.ModalFinalizarVendaSemItem} centered>
                         <Modal.Header closeButton className="bg-success text-white">
@@ -3118,17 +3251,17 @@ class FrenteCaixa extends React.Component {
                                 <tfoot>
                                     {desconto !== '' && desconto !== 0 && (
                                         <tr>
-                                            <td colSpan="3" className="text-right">
+                                            <td colSpan="3" className="text-end">
                                                 <strong>Desconto:</strong>
                                             </td>
                                             <td>
-                                                <strong>R$ {desconto},00</strong>
+                                                <strong>R$ {desconto}</strong>
                                             </td>
                                         </tr>
                                     )}
                                     {frete !== '' && frete !== 0 && (
                                         <tr>
-                                            <td colSpan="3" className="text-right">
+                                            <td colSpan="3" className="text-end">
                                                 <strong>Frete:</strong>
                                             </td>
                                             <td>
@@ -3136,17 +3269,44 @@ class FrenteCaixa extends React.Component {
                                             </td>
                                         </tr>
                                     )}
+                                    {dinheiroRecebido !== '' && dinheiroRecebido !== 0 && (
+                                        <tr>
+                                            <td colSpan="3" className="text-end">
+                                                <strong>Total Recebido:</strong>
+                                            </td>
+                                            <td>
+                                                <strong>R$ {dinheiroRecebido}</strong>
+                                            </td>
+                                        </tr>
+                                    )}
+                                    {troco !== '' && troco !== 0 && (
+                                        <tr>
+                                            <td colSpan="3" className="text-end">
+                                                <strong>Troco:</strong>
+                                            </td>
+                                            <td>
+                                                <strong>R$ {troco}</strong>
+                                            </td>
+                                        </tr>
+                                    )}
                                     <tr>
-                                        <td colSpan="3" className="text-right"><strong>Quantidade total:</strong></td>
-                                        <td><strong>{quantidadeTotal}</strong></td>
+                                        <td colSpan="3" className="text-end">
+                                            <strong>Quantidade total:</strong>
+                                        </td>
+                                        <td>
+                                            <strong>{quantidadeTotal}</strong>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td colSpan="3" className="text-right"><strong>Total:</strong></td>
-                                        <td><strong>R$ {this.calcularSubTotalGeral().toFixed(2)}</strong></td>
+                                        <td colSpan="3" className="text-end">
+                                            <strong>Total:</strong>
+                                        </td>
+                                        <td>
+                                            <strong>R$ {this.calcularSubTotalGeral().toFixed(2).replace('.', ',')}</strong>
+                                        </td>
                                     </tr>
                                 </tfoot>
                             </Table>
-
 
                             <div className="divisa"></div>
                             <div className="d-flex flex-column  mb-4">

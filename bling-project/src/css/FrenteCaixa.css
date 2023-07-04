@@ -300,6 +300,22 @@ h5 {
   text-align: center;
   padding-top: 10px;
 }
+.custom-header {
+  width: 100px; /* Defina o tamanho desejado para o header */
+}
+
+.custom-td {
+  width: 100px; /* Defina o tamanho desejado para o campo */
+}
+
+.custom-button {
+  width: 50px; /* Defina o tamanho desejado para o botão */
+}
+
+.table tfoot tr td {
+  background-color: #ffffffb6;
+  color: #000000;
+}
 
 /* 
 .busca-contatos {
