@@ -43,19 +43,24 @@ class FrenteCaixa extends React.Component {
             buscaProduto: '',
             buscaContato: '',
             buscaVendedor: '',
+            vendedor: '',
             nome: '',
+            consumidorFinal: '',
             cnpj: '',
+            ie: '',
+            rg: '',
+            tipo: '',
+            contribuinte: 9,
+            cep: '',
             endereco: '',
             numero: '',
+            complemento: '',
             bairro: '',
             cidade: '',
             uf: '',
-            consumidorFinal: '',
-            ie: '',
-            rg: '',
-            complemento: '',
             email: '',
-            contribuinte: 9,
+            fone: '',
+            celular: '',
             observacoes: '',
             observacaointerna: '',
             comentario: '',
@@ -102,6 +107,7 @@ class FrenteCaixa extends React.Component {
             canvasFinalizarPedido: false,
             ModalSelecionarLoja: false,
             ModalCadastrarCliente: false,
+            ModalFormaPagamento: false,
             subtotalComFrete: 0,
             frete: 0,
             freteInserido: false,
@@ -130,7 +136,9 @@ class FrenteCaixa extends React.Component {
             contatoNaoLocalizado: false,
             vendedorNaoLocalizado: false,
             primeiroProdutoDesconto: false,
-
+            nomeLoja: '',
+            idLoja: '',
+            unidadeLoja: '',
         };
 
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
@@ -138,7 +146,6 @@ class FrenteCaixa extends React.Component {
         this.adicionarParcela = this.adicionarParcela.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleChangePrazo = this.handleChangePrazo.bind(this);
-
     }
 
     ModalCadastrarCliente = () => {
@@ -158,6 +165,13 @@ class FrenteCaixa extends React.Component {
             ModalFinalizarVendaSemItem: !this.state.ModalFinalizarVendaSemItem
         });
     }
+
+    ModalFormaPagamento = () => {
+        this.setState({
+            ModalFormaPagamento: !this.state.ModalFormaPagamento
+        });
+    }
+
 
     ModalExcluirPedido = () => {
         this.setState({
@@ -187,7 +201,7 @@ class FrenteCaixa extends React.Component {
             valorLista: preco || '',
             quantidadeLista: produto.quantidade || '',
             descontoItemLista: produto.descontoItem || '',
-            valorUnitarioLista: preco || '',
+            valorUnitarioLista: produto.precoUnitario || '',
             valorTotalLista: produto.subTotal || '',
             observacaointerna: produto.observacaointerna || '',
             valorUnitarioOriginal: preco, // Salva o valor original do campo PRECO UNITARIO
@@ -195,7 +209,6 @@ class FrenteCaixa extends React.Component {
             this.atualizaSubTotalLista();
         });
     };
-
 
     modalSalvarPedido = () => {
         this.setState({
@@ -242,6 +255,9 @@ class FrenteCaixa extends React.Component {
         }
         if (prevState.descontoItemLista !== this.state.descontoItemLista) {
             this.atualizaSubTotalLista({ target: { value: this.state.descontoItemLista } })
+        }
+        if (prevState.consumidorFinal !== this.state.consumidorFinal) {
+            this.atualizaConsumidorFinal(prevState);
         }
         if (prevState.produtosSelecionados !== this.state.produtosSelecionados ||
             prevState.subTotal !== this.state.subTotal ||
@@ -432,7 +448,6 @@ class FrenteCaixa extends React.Component {
             });
     };
 
-
     buscarVendedor = (value) => {
         return new Promise((resolve, reject) => {
             this.setState({ buscaVendedor: value, carregando: true });
@@ -496,7 +511,6 @@ class FrenteCaixa extends React.Component {
                 });
         });
     };
-
 
     // buscarVendedor = (value) => {
     //     return new Promise((resolve, reject) => {
@@ -667,8 +681,8 @@ class FrenteCaixa extends React.Component {
                     if (dados) {
                         // console.log("Forma de pagamento objeto retornado:", dados);
                         const idLojas = dados.map((objeto) => objeto.idLoja);
-                        const unidade = dados.map((objeto) => objeto.unidade);
-                        // console.log("idLojas:", idLojas, "unidade: ", unidade);
+                        const unidade = dados.map((objeto) => objeto.unidadeLoja);
+                        console.log("idLojas:", idLojas, "unidade: ", unidade);
                         this.setState({
                             idLoja: idLojas,
                             unidadeLoja: unidade,
@@ -770,7 +784,6 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-
     // atualizarBuscaVendedor = (event) => {
     //     this.setState({
     //         buscaVendedor: event.target.value
@@ -809,17 +822,22 @@ class FrenteCaixa extends React.Component {
     //     });
     // };
 
-    // -------------------------------------------- FUNÇÕES CONTATO ---------------------------------------------
+    // -------------------------------------------- FUNÇÕES / CADASTRO DE CONTATO ---------------------------------------------
 
     atualizarBuscaContato = (event) => {
         const buscaContato = event.target.value;
         // console.log("atualizarBuscaContato (buscaContato):", buscaContato);
         this.setState({
             buscaContato: buscaContato || "Consumidor Final",
-            nome: buscaContato || "Consumidor Final"
+            nome: buscaContato || "Consumidor Final",
         });
     };
 
+    atualizaConsumidorFinal = (prevState) => {
+        this.setState({
+            consumidorFinal: "Consumidor Final"
+        });
+    }
 
     selecionarContato = (contato) => {
         this.setState({
@@ -881,7 +899,6 @@ class FrenteCaixa extends React.Component {
             buscaContato: nome
         });
     };
-
 
     atualizaTipoPessoa = (event) => {
         // console.log("tipo:", event.target.value);
@@ -963,7 +980,6 @@ class FrenteCaixa extends React.Component {
             });
         }
     };
-    qw
 
     atualizaCidade = (event) => {
         // console.log("cidade: ", event.target.value);
@@ -1042,8 +1058,6 @@ class FrenteCaixa extends React.Component {
         this.setState({ fone: foneFormatado });
     };
 
-
-
     // adicionarContatoSelecionado = (contatoSelecionado) => {
     //     const { contatosSelecionados, cnpj } = this.state;
     //     const contatoExistente = contatosSelecionados.find((contato) => contato.contato.id === contatoSelecionado.contato.id);
@@ -1066,8 +1080,7 @@ class FrenteCaixa extends React.Component {
     //     });
     // };
 
-    // -------------------------------------------- FUNÇÕES PRODUTO ---------------------------------------------
-
+    // -------------------------------------------- FUNÇÕES PRODUTO / LISTA DE PRODUTO ---------------------------------------------
 
     atualizarBuscaProduto = (event) => {
         this.setState({
@@ -1094,40 +1107,27 @@ class FrenteCaixa extends React.Component {
 
     adicionarProdutoSelecionado = (produtoSelecionado) => {
         if (!produtoSelecionado) {
-            this.modalInserirProduto();
+            this.modalInserirProduto()
             return;
         }
 
-        const { produtosSelecionados, quantidade, preco } = this.state;
+        const { produtosSelecionados, quantidade, preco, precoUnitario } = this.state;
         const produtoExistenteIndex = produtosSelecionados.findIndex((produto) => produto.produto.id === produtoSelecionado.produto.id);
 
         if (produtoExistenteIndex !== -1) {
             produtosSelecionados[produtoExistenteIndex].quantidade += quantidade;
         } else {
-            const temDesconto = parseFloat(preco) < parseFloat(produtoSelecionado.produto.preco);
-
             produtosSelecionados.push({
                 produto: produtoSelecionado.produto,
                 quantidade: quantidade,
                 preco: preco,
-                temDesconto: temDesconto
+                precoUnitario: preco,
+                valorUnitarioLista: preco // Defina o valor do campo "Valor unitário" como o preço do produto adicionado
             });
         }
 
-        const produtosComDesconto = produtosSelecionados.map((produto) => {
-            const temDesconto = parseFloat(produto.preco) < parseFloat(produto.produto.preco);
+        console.log(produtosSelecionados)
 
-            return {
-                ...produto,
-                temDesconto: temDesconto
-            };
-        });
-
-        console.log('PRODUTOS COM DESCONTO:', produtosComDesconto);
-
-        this.setState({
-            produtosSelecionados: produtosComDesconto
-        });
 
         this.setState({
             produtosSelecionados: produtosSelecionados,
@@ -1159,9 +1159,7 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-
     // -------------------------------------------- FUNÇÕES CALCULOS ---------------------------------------------
-
 
     calcularTotal() {
         let total = 0;
@@ -1193,6 +1191,8 @@ class FrenteCaixa extends React.Component {
             preco: preco
         });
     };
+
+    // -------------------------------------------- FUNÇÕES CAMPO PREÇO (%) --------------------------------------------
 
     atualizaDescontoProduto = (event) => {
         const descontoInicialProduto = event.target.value;
@@ -1226,6 +1226,9 @@ class FrenteCaixa extends React.Component {
             valorTotal: valorTotal.toFixed(2)
         });
     };
+
+    // -------------------------------------------- FUNÇÕES CAMPO DESCONTO (TOTAL) --------------------------------------------
+
 
     calcularTotalComDesconto = (desconto, subTotal) => {
         const subtotal = subTotal || this.calcularTotal();
@@ -1268,6 +1271,9 @@ class FrenteCaixa extends React.Component {
             totalComDesconto: resultado.totalComDesconto,
         });
     };
+
+    // -------------------------------------------- FUNÇÕES CAMPOS TOTAL EM DINHEIRO E TROCO --------------------------------------------
+
 
     calcularTotalComDinheiro = (dinheiro) => {
         const totalRecebidoEmDinheiro = parseFloat(dinheiro) || 0;
@@ -1314,6 +1320,9 @@ class FrenteCaixa extends React.Component {
         }
     };
 
+    // -------------------------------------------- FUNÇÕES CAMPO FRETE --------------------------------------------
+
+
     atualizaTotalComFrete(event) {
         const valor = event.target.value.replace(',', '.');
         let frete = parseFloat(valor);
@@ -1335,7 +1344,7 @@ class FrenteCaixa extends React.Component {
             frete: frete,
             freteInserido: true,
         });
-    }
+    };
 
     calcularSubTotalGeral = () => {
         const subTotal = this.calcularTotal().toFixed(2);
@@ -1397,14 +1406,26 @@ class FrenteCaixa extends React.Component {
     //     });
     // };
 
+    // -------------------------------------------- FUNÇÕES TELA SELEÇÃO DE LOJA E UNIDADE --------------------------------------------
 
-    atualizaDepositoSelecionado = (event) => {
-        const depositoSelecionado = event.target.value;
-        // console.log(depositoSelecionado); //Esta retornando ID
+
+    atualizaNomeLoja = (event) => {
+        const idLoja = event.target.options[event.target.selectedIndex].value;
+        console.log("idLoja: ", idLoja)
+        const unidadeLojaSelecionada = this.state.objeto.find((objeto) => objeto.idLoja === idLoja)?.unidadeLoja || '';
         this.setState({
-            depositoSelecionado
+            idLoja: idLoja,
+            unidadeLoja: unidadeLojaSelecionada
         });
     };
+
+    atualizaUnidadeNegocio = (event) => {
+        const unidadeLojaSelecionada = event.target.value;
+        this.setState({
+            unidadeLoja: unidadeLojaSelecionada
+        });
+    };
+
 
     atualizaObservacoes = (event) => {
         const observacoes = event.target.value;
@@ -1477,9 +1498,7 @@ class FrenteCaixa extends React.Component {
     // }
 
 
-
     // -------------------------------------------- FUNÇÕES BOTÕES ---------------------------------------------
-
 
     excluirPedido = () => {
         this.setState({
@@ -1607,6 +1626,7 @@ class FrenteCaixa extends React.Component {
         // const dataPrevistaFormatted = `${dataPrevista.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${dataPrevista.toLocaleTimeString('pt-BR')}`;
         // console.log(this.state.dataPrevista)
         // console.log(dataPrevistaFormatted)
+        const condicao = this.state.condicao;
         const nome = this.state.nome;
         const cnpj = this.state.cnpj;
         const vendedor = this.state.vendedor;
@@ -1615,7 +1635,6 @@ class FrenteCaixa extends React.Component {
         const valorDesconto = this.state.desconto;
         const itens = [];
         const prazo = [];
-
 
 
         this.state.produtosSelecionados.forEach((produto) => {
@@ -1645,8 +1664,11 @@ class FrenteCaixa extends React.Component {
         if (itens.length === 0) {
             this.ModalFinalizarVendaSemItem();
             return;
+        } else if (!condicao || condicao === 'Selecione a forma') {
+            this.ModalFormaPagamento();
+            return;
         } else {
-            this.canvasFinalizarPedido()
+            this.canvasFinalizarPedido();
         }
 
         return {
@@ -1986,19 +2008,13 @@ class FrenteCaixa extends React.Component {
     };
 
     aplicaDescontoItem = () => {
-        const {
-            descontoItemLista,
-            valorUnitarioOriginal,
-            quantidadeLista
-        } = this.state;
+        const { descontoItemLista, valorUnitarioOriginal, quantidadeLista } = this.state;
 
         if (descontoItemLista !== '') {
+
             const descontoPorcentagem = parseFloat(descontoItemLista.replace(',', '.'));
-
             const descontoDecimal = descontoPorcentagem / 100;
-
             const novoValorUnitario = valorUnitarioOriginal - (valorUnitarioOriginal * descontoDecimal);
-
             const valorTotalLista = (quantidadeLista * novoValorUnitario).toFixed(2);
 
             this.setState({
@@ -2040,13 +2056,7 @@ class FrenteCaixa extends React.Component {
     };
 
     salvarProdutoLista = () => {
-        const {
-            produtoSelecionadoIndex,
-            quantidadeLista,
-            valorUnitarioLista,
-            descontoItemLista,
-            produtosSelecionados
-        } = this.state;
+        const { produtoSelecionadoIndex, quantidadeLista, valorUnitarioLista, descontoItemLista, produtosSelecionados } = this.state;
 
         if (produtoSelecionadoIndex !== null && produtoSelecionadoIndex >= 0) {
             const produtosAtualizados = [...produtosSelecionados];
@@ -2070,7 +2080,6 @@ class FrenteCaixa extends React.Component {
             });
         }
     };
-
 
     fecharModalEditarProduto = () => {
         this.setState({
@@ -2164,7 +2173,7 @@ class FrenteCaixa extends React.Component {
         //Calculos
         const { subTotalGeral, observacoes, observacaointerna, valorDesconto, dinheiroRecebido, troco, frete, condicao, depositoSelecionado, subTotal, dataPrevista, consumidorFinal, prazo, numeroPedido, descontoProduto } = this.state;
         //Modals
-        const { carregado, erro, validated, primeiroProdutoDesconto } = this.state;
+        const { carregado, erro, validated, primeiroProdutoDesconto, nomeLoja, idLoja, unidadeLoja } = this.state;
 
         let quantidadeTotal = 0;
         for (const produto of this.state.produtosSelecionados) {
@@ -2525,7 +2534,7 @@ class FrenteCaixa extends React.Component {
                                                                     id="valorUnitario"
                                                                     className="form-control"
                                                                     name="valorUnitario"
-                                                                    value={this.state.descontoItemLista !== '' ? (this.state.valorUnitarioOriginal * (1 - parseFloat(this.state.descontoItemLista.replace(',', '.')) / 100)).toFixed(2) : this.state.valorUnitarioOriginal || ''}
+                                                                    value={this.state.descontoItemLista !== '' ? (this.state.valorUnitarioOriginal * (1 - parseFloat(this.state.descontoItemLista.replace(',', '.')) / 100)).toFixed(2) : this.state.valorUnitarioLista || ''}
                                                                     onChange={this.atualizaValorUnitario}
                                                                     readOnly
                                                                 />
@@ -2602,7 +2611,7 @@ class FrenteCaixa extends React.Component {
                                                                 type="text"
                                                                 className="form-control"
                                                                 placeholder="Digite o nome do cliente"
-                                                                value={buscaContato || nome}
+                                                                value={this.state.consumidorFinal || buscaContato || nome}
                                                                 onChange={this.atualizarBuscaContato}
                                                                 onKeyDown={(e) => {
                                                                     if (e.key === 'Enter') {
@@ -3179,6 +3188,21 @@ class FrenteCaixa extends React.Component {
                         </Modal.Footer>
                     </Modal>
 
+                    <Modal show={this.state.ModalFormaPagamento} onHide={this.ModalFormaPagamento} centered>
+                        <Modal.Header closeButton className="bg-success text-white">
+                            <Modal.Title>
+                                <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                                Atenção
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{ padding: '20px' }}>
+                            Insira a forma de pagamento antes de finalizar a compra.
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="success" onClick={this.ModalFormaPagamento}>Fechar</Button>
+                        </Modal.Footer>
+                    </Modal>
+
                     <Modal show={this.state.ModalExcluirPedido} onHide={this.ModalExcluirPedido} centered>
                         <Modal.Header closeButton className="bg-success text-white">
                             <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
@@ -3348,7 +3372,7 @@ class FrenteCaixa extends React.Component {
                         </Modal.Body>
                     </Modal>
 
-                    <Modal show={this.state.ModalSelecionarLoja} onHide={this.ModalSelecionarLoja} centered>
+                    <Modal show={this.state.ModalSelecionarLoja} onHide={this.ModalSelecionarLoja} backdrop="static" centered>
                         <Modal.Header closeButton className="bg-secondary text-white">
                             <Modal.Title>Seleciona uma Loja</Modal.Title>
                         </Modal.Header>
@@ -3358,8 +3382,8 @@ class FrenteCaixa extends React.Component {
                             </div>
                             <Col className="col">
                                 <Form.Group className="mb-3">
-                                    <Form.Label htmlFor="depositolancamento" className="texto-campos">Depósito para lançamento</Form.Label>
-                                    <Form.Select className="form-control" id="depositolancamento" name="depositolancamento" value={depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
+                                    <Form.Label htmlFor="depositolancamento" className="texto-campos">Selecione a loja</Form.Label>
+                                    <Form.Select className="form-control" id="depositolancamento" name="depositolancamento" value={idLoja || ''} onChange={this.atualizaNomeLoja}>
                                         <option>Selecione a loja</option>
                                         {this.state.objeto && this.state.objeto.map((objeto) => (
                                             <option key={objeto.idLoja} value={objeto.idLoja}>
@@ -3371,11 +3395,11 @@ class FrenteCaixa extends React.Component {
                             </Col>
                             <Col className="col">
                                 <Form.Group className="mb-3">
-                                    <Form.Label htmlFor="depositolancamento" className="texto-campos">Depósito para lançamento</Form.Label>
-                                    <Form.Select className="form-control" id="depositolancamento" name="depositolancamento" value={depositoSelecionado || ''} onChange={this.atualizaDepositoSelecionado} >
+                                    <Form.Label htmlFor="unidadenegocio" className="texto-campos">Selecione a unidade de negócio</Form.Label>
+                                    <Form.Select className="form-control" id="unidadenegocio" name="unidadenegocio" value={unidadeLoja || ''} onChange={this.atualizaUnidadeNegocio} readOnly>
                                         <option>Selecione a unidade de negócio</option>
                                         {this.state.objeto && this.state.objeto.map((objeto) => (
-                                            <option key={objeto.idLoja} value={objeto.idLoja}>
+                                            <option key={objeto.idLoja} value={objeto.unidadeLoja}>
                                                 {objeto.unidadeLoja}
                                             </option>
                                         ))}
@@ -3387,7 +3411,6 @@ class FrenteCaixa extends React.Component {
                             <Button variant="success" onClick={this.ModalSelecionarLoja}>Salvar</Button>
                         </Modal.Footer>
                     </Modal>
-
                 </Container >
             );
         }
