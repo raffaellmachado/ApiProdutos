@@ -19,7 +19,6 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
 import Table from "react-bootstrap/Table";
-import { Toast } from 'react-bootstrap';
 
 import { Alert } from "react-bootstrap";
 import { Offcanvas } from 'react-bootstrap';
@@ -124,7 +123,7 @@ class FrenteCaixa extends React.Component {
             valor: '',
             observacao: '',
             prazo: 0,
-            carregado: false, // novo estado
+            carregado: false,
             erro: null,
             imagem: '',
             descontoProduto: 0,
@@ -139,6 +138,7 @@ class FrenteCaixa extends React.Component {
             nomeLoja: '',
             idLoja: '',
             unidadeLoja: '',
+            isChecked: false
         };
 
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
@@ -146,69 +146,68 @@ class FrenteCaixa extends React.Component {
         this.adicionarParcela = this.adicionarParcela.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleChangePrazo = this.handleChangePrazo.bind(this);
-    }
+    };
 
     ModalCadastrarCliente = () => {
         this.setState({
             ModalCadastrarCliente: !this.state.ModalCadastrarCliente
         });
-    }
+    };
 
     ModalSelecionarLoja = () => {
         this.setState({
             ModalSelecionarLoja: !this.state.ModalSelecionarLoja
         });
-    }
+    };
 
     ModalFinalizarVendaSemItem = () => {
         this.setState({
             ModalFinalizarVendaSemItem: !this.state.ModalFinalizarVendaSemItem
         });
-    }
+    };
 
     ModalFormaPagamento = () => {
         this.setState({
             ModalFormaPagamento: !this.state.ModalFormaPagamento
         });
-    }
-
+    };
 
     ModalExcluirPedido = () => {
         this.setState({
             ModalExcluirPedido: !this.state.ModalExcluirPedido
         });
-    }
+    };
 
     modalInserirProduto = () => {
         this.setState({
             modalInserirProduto: !this.state.modalInserirProduto
         });
-    }
+    };
 
     modalInserirParcela = () => {
         this.setState({
             modalInserirParcela: !this.state.modalInserirParcela
         });
-    }
-
-    modalEditarProduto = (produto) => {
-        const index = this.state.produtosSelecionados.findIndex((p) => p.produto.id === produto.produto.id);
-        const { preco } = produto.produto
-        this.setState({
-            modalEditarProduto: true,
-            produtoSelecionadoIndex: index,
-            produtoSelecionadoLista: produto,
-            valorLista: preco || '',
-            quantidadeLista: produto.quantidade || '',
-            descontoItemLista: produto.descontoItem || '',
-            valorUnitarioLista: produto.precoUnitario || '',
-            valorTotalLista: produto.subTotal || '',
-            observacaointerna: produto.observacaointerna || '',
-            valorUnitarioOriginal: preco, // Salva o valor original do campo PRECO UNITARIO
-        }, () => {
-            this.atualizaSubTotalLista();
-        });
     };
+
+    // modalEditarProduto = (produto) => {
+    //     const index = this.state.produtosSelecionados.findIndex((p) => p.produto.id === produto.produto.id);
+    //     const { preco } = produto.produto
+    //     this.setState({
+    //         modalEditarProduto: true,
+    //         produtoSelecionadoIndex: index,
+    //         produtoSelecionadoLista: produto,
+    //         valorLista: preco || '',
+    //         quantidadeLista: produto.quantidade || '',
+    //         descontoItemLista: produto.descontoItem || '',
+    //         valorUnitarioLista: produto.precoUnitario || '',
+    //         valorTotalLista: produto.subTotal || '',
+    //         observacaointerna: produto.observacaointerna || '',
+    //         valorUnitarioOriginal: preco, // Salva o valor original do campo PRECO UNITARIO
+    //     }, () => {
+    //         this.atualizaSubTotalLista();
+    //     });
+    // };
 
     modalSalvarPedido = () => {
         this.setState({
@@ -220,13 +219,13 @@ class FrenteCaixa extends React.Component {
                 })
             }, 3000);
         });
-    }
+    };
 
     canvasFinalizarPedido = () => {
         this.setState({
             canvasFinalizarPedido: !this.state.canvasFinalizarPedido
         });
-    }
+    };
 
     componentDidMount() {
         this.buscarFormaDePagamento()
@@ -244,21 +243,19 @@ class FrenteCaixa extends React.Component {
         this.ModalSelecionarLoja()
 
         this.setState({ carregado: true }); //APAGAR (GAMBIARRA)
-    }
+    };
 
     componentDidUpdate(prevProps, prevState) {
         if (prevState.nome !== this.state.nome) {
             this.atualizaNome({ target: { value: this.state.nome } });
-        }
+        };
         if (prevState.cnpj !== this.state.cnpj) {
             this.atualizaCpfCnpj({ target: { value: this.state.cnpj } });
-        }
+        };
         if (prevState.descontoItemLista !== this.state.descontoItemLista) {
             this.atualizaSubTotalLista({ target: { value: this.state.descontoItemLista } })
-        }
-        if (prevState.consumidorFinal !== this.state.consumidorFinal) {
-            this.atualizaConsumidorFinal(prevState);
-        }
+        };
+
         if (prevState.produtosSelecionados !== this.state.produtosSelecionados ||
             prevState.subTotal !== this.state.subTotal ||
             prevState.valorDesconto !== this.state.valorDesconto ||
@@ -270,8 +267,8 @@ class FrenteCaixa extends React.Component {
             this.setState({
                 subTotalGeral: subtotalGeral
             });
-        }
-    }
+        };
+    };
 
     //----------------------------------------- CHAMADAS DE API´S ----------------------------------------------------------
 
@@ -765,7 +762,6 @@ class FrenteCaixa extends React.Component {
             });
     };
 
-
     //--------------------------------------------- FUNÇÕES DE TELA ---------------------------------------------
     // -------------------------------------------- FUNÇÕES VENDEDOR --------------------------------------------
 
@@ -828,16 +824,10 @@ class FrenteCaixa extends React.Component {
         const buscaContato = event.target.value;
         // console.log("atualizarBuscaContato (buscaContato):", buscaContato);
         this.setState({
-            buscaContato: buscaContato || "Consumidor Final",
-            nome: buscaContato || "Consumidor Final",
+            buscaContato: buscaContato,
+            nome: buscaContato,
         });
     };
-
-    atualizaConsumidorFinal = (prevState) => {
-        this.setState({
-            consumidorFinal: "Consumidor Final"
-        });
-    }
 
     selecionarContato = (contato) => {
         this.setState({
@@ -1107,12 +1097,14 @@ class FrenteCaixa extends React.Component {
 
     adicionarProdutoSelecionado = (produtoSelecionado) => {
         if (!produtoSelecionado) {
-            this.modalInserirProduto()
+            this.modalInserirProduto();
             return;
         }
 
         const { produtosSelecionados, quantidade, preco, precoUnitario } = this.state;
-        const produtoExistenteIndex = produtosSelecionados.findIndex((produto) => produto.produto.id === produtoSelecionado.produto.id);
+        const produtoExistenteIndex = produtosSelecionados.findIndex(
+            (produto) => produto.produto.id === produtoSelecionado.produto.id
+        );
 
         if (produtoExistenteIndex !== -1) {
             produtosSelecionados[produtoExistenteIndex].quantidade += quantidade;
@@ -1124,26 +1116,68 @@ class FrenteCaixa extends React.Component {
                 precoUnitario: preco,
                 valorUnitarioLista: preco // Defina o valor do campo "Valor unitário" como o preço do produto adicionado
             });
-        }
+        };
 
-        console.log(produtosSelecionados)
+        console.log(produtosSelecionados);
 
-
-        this.setState({
-            produtosSelecionados: produtosSelecionados,
-            produtoSelecionado: null,
-            buscaProduto: '',
-            produtos: [],
-            quantidade: 1,
-            valorTotal: '',
-            preco: '',
-            desconto: 0,
-            comentario: '',
-            descontoInicialProduto: ''
-        }, () => {
-            this.calcularTotal();
-        });
+        this.setState(
+            {
+                produtosSelecionados: produtosSelecionados,
+                produtoSelecionado: null,
+                buscaProduto: '',
+                produtos: [],
+                quantidade: 1,
+                valorTotal: '',
+                preco: '',
+                desconto: 0,
+                comentario: '',
+                descontoInicialProduto: ''
+            },
+            () => {
+                this.calcularTotal();
+            }
+        );
     };
+
+    // adicionarProdutoSelecionado = (produtoSelecionado) => {
+    //     if (!produtoSelecionado) {
+    //         this.modalInserirProduto()
+    //         return;
+    //     }
+
+    //     const { produtosSelecionados, quantidade, preco, precoUnitario } = this.state;
+    //     const produtoExistenteIndex = produtosSelecionados.findIndex((produto) => produto.produto.id === produtoSelecionado.produto.id);
+
+    //     if (produtoExistenteIndex !== -1) {
+    //         produtosSelecionados[produtoExistenteIndex].quantidade += quantidade;
+    //     } else {
+    //         produtosSelecionados.push({
+    //             produto: produtoSelecionado.produto,
+    //             quantidade: quantidade,
+    //             preco: preco,
+    //             precoUnitario: preco,
+    //             valorUnitarioLista: preco // Defina o valor do campo "Valor unitário" como o preço do produto adicionado
+    //         });
+    //     }
+
+    //     console.log(produtosSelecionados)
+
+
+    //     this.setState({
+    //         produtosSelecionados: produtosSelecionados,
+    //         produtoSelecionado: null,
+    //         buscaProduto: '',
+    //         produtos: [],
+    //         quantidade: 1,
+    //         valorTotal: '',
+    //         preco: '',
+    //         desconto: 0,
+    //         comentario: '',
+    //         descontoInicialProduto: ''
+    //     }, () => {
+    //         this.calcularTotal();
+    //     });
+    // };
 
     excluirProdutoSelecionado = (index) => {
         const produtosSelecionados = [...this.state.produtosSelecionados];
@@ -1170,9 +1204,9 @@ class FrenteCaixa extends React.Component {
 
         if (this.state.subTotal !== subTotal) {
             this.setState({ subTotal });
-        }
+        };
         return parseFloat(subTotal);
-    }
+    };
 
     calcularSubTotal = (produto, quantidade, preco) => {
         return preco * quantidade
@@ -1229,7 +1263,6 @@ class FrenteCaixa extends React.Component {
 
     // -------------------------------------------- FUNÇÕES CAMPO DESCONTO (TOTAL) --------------------------------------------
 
-
     calcularTotalComDesconto = (desconto, subTotal) => {
         const subtotal = subTotal || this.calcularTotal();
         const valorDesconto = desconto || 0;
@@ -1262,7 +1295,7 @@ class FrenteCaixa extends React.Component {
                 totalComDesconto: '',
             });
             return;
-        }
+        };
 
         const resultado = this.calcularTotalComDesconto(descontoNumber);
         this.setState({
@@ -1274,7 +1307,6 @@ class FrenteCaixa extends React.Component {
 
     // -------------------------------------------- FUNÇÕES CAMPOS TOTAL EM DINHEIRO E TROCO --------------------------------------------
 
-
     calcularTotalComDinheiro = (dinheiro) => {
         const totalRecebidoEmDinheiro = parseFloat(dinheiro) || 0;
         const subTotalGeral = this.state.subTotalGeral;
@@ -1284,13 +1316,13 @@ class FrenteCaixa extends React.Component {
                 dinheiroRecebido: 0,
                 troco: 0,
             };
-        }
+        };
 
         let troco = totalRecebidoEmDinheiro - subTotalGeral;
 
         if (troco < 0) {
             troco = 0;
-        }
+        };
 
         return {
             dinheiroRecebido: dinheiro,
@@ -1307,7 +1339,7 @@ class FrenteCaixa extends React.Component {
                 troco: 0,
             });
             return;
-        }
+        };
 
         if (!isNaN(parseFloat(valorRecebido)) && parseFloat(valorRecebido) > 0) {
             const { totalComDesconto } = this.state;
@@ -1317,18 +1349,17 @@ class FrenteCaixa extends React.Component {
                 dinheiroRecebido,
                 troco: troco,
             });
-        }
+        };
     };
 
     // -------------------------------------------- FUNÇÕES CAMPO FRETE --------------------------------------------
-
 
     atualizaTotalComFrete(event) {
         const valor = event.target.value.replace(',', '.');
         let frete = parseFloat(valor);
         if (isNaN(frete)) {
             frete = 0;
-        }
+        };
         const subTotal = this.state.subTotal;
         const totalComDesconto = this.state.totalComDesconto;
 
@@ -1337,7 +1368,7 @@ class FrenteCaixa extends React.Component {
             subTotalComFrete = (parseFloat(totalComDesconto) + frete).toFixed(2);
         } else {
             subTotalComFrete = (parseFloat(subTotal) + frete).toFixed(2);
-        }
+        };
 
         this.setState({
             subTotalComFrete: subTotalComFrete.replace('.', ','),
@@ -1551,10 +1582,9 @@ class FrenteCaixa extends React.Component {
             validated: false,
             buscaVendedor: '',
             vendedores: []
-
         });
-        this.ModalExcluirPedido()
-        this.modalSalvarPedido()
+        this.ModalExcluirPedido();
+        this.modalSalvarPedido();
     };
 
     limparPedido = () => {
@@ -1618,7 +1648,7 @@ class FrenteCaixa extends React.Component {
             this.setState({ validated: true }); // Atualiza o estado para mostrar as mensagens de validação
         } else {
             this.finalizaVenda();
-        }
+        };
     };
 
     finalizaVenda = () => {
@@ -1635,7 +1665,6 @@ class FrenteCaixa extends React.Component {
         const valorDesconto = this.state.desconto;
         const itens = [];
         const prazo = [];
-
 
         this.state.produtosSelecionados.forEach((produto) => {
             const item = {
@@ -1669,7 +1698,7 @@ class FrenteCaixa extends React.Component {
             return;
         } else {
             this.canvasFinalizarPedido();
-        }
+        };
 
         return {
             nome, cnpj, itens, vendedor, observacoes, observacaointerna, valorDesconto, prazo,
@@ -1797,9 +1826,11 @@ class FrenteCaixa extends React.Component {
 
         let parcelas = [...this.state.parcelas];
         const index = parcelas.findIndex((parcela) => parcela.dias === 0);
+
         if (index !== -1) {
             parcelas.splice(index, 1);
-        }
+        };
+
         parcelas = [...parcelas, novaParcela];
 
         // Divide o valor total entre as parcelas
@@ -1843,11 +1874,13 @@ class FrenteCaixa extends React.Component {
             if (i !== index) {
                 const novoValor = parseFloat(parcela.valor || 0) + diferenca;
                 return { ...parcela, valor: novoValor.toFixed(2) };
-            }
+            };
             return parcela;
         });
 
-        this.setState({ parcelas: newParcelas });
+        this.setState({
+            parcelas: newParcelas
+        });
     };
 
 
@@ -1895,7 +1928,7 @@ class FrenteCaixa extends React.Component {
                     valor: valorRestanteParcela.toFixed(2)
                 };
             });
-        }
+        };
 
         this.setState({
             parcelas: [...newParcelas, ...parcelasRestantes],
@@ -1948,7 +1981,6 @@ class FrenteCaixa extends React.Component {
 
     // --------------------------------------- FUNÇÕES ACRESCENTA .00 CAMPOS ----------------------------------------
 
-
     formatarDesconto = (event) => {
         let valor = event.target.value.trim();
         let desconto = valor !== '' && !isNaN(valor) ? parseFloat(valor).toFixed(2) : 0;
@@ -1977,6 +2009,30 @@ class FrenteCaixa extends React.Component {
 
     // --------------------------------------- FUNÇÕES EDITAR LISTA DE PRODUTOS ----------------------------------------
 
+    modalEditarProduto = (produto) => {
+        const index = this.state.produtosSelecionados.findIndex((p) => p.produto.id === produto.produto.id);
+        const { preco } = produto.produto;
+        const valorUnitario = produto.precoUnitario || (preco ? preco.toString() : '');
+
+        this.setState(
+            {
+                modalEditarProduto: true,
+                produtoSelecionadoIndex: index,
+                produtoSelecionadoLista: produto,
+                valorLista: preco || '',
+                quantidadeLista: produto.quantidade || '',
+                descontoItemLista: produto.descontoItem || '',
+                valorUnitarioLista: this.state.valorUnitarioAtualizado || valorUnitario, // Utiliza o valorUnitarioAtualizado se estiver definido, caso contrário, utiliza o valor original
+                valorTotalLista: produto.subTotal || '',
+                observacaointerna: produto.observacaointerna || '',
+                valorUnitarioOriginal: preco, // Salva o valor original do campo PRECO UNITARIO
+                valorUnitarioAtualizado: null // Limpa o valorUnitarioAtualizado ao abrir o modal
+            },
+            () => {
+                this.atualizaSubTotalLista();
+            }
+        );
+    };
 
     atualizaValorLista = (event) => {
         this.setState({
@@ -1985,74 +2041,52 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizaQuantidadeLista = (event) => {
-        const quantidadeLista = Number(event.target.value);
+        const quantidade = event.target.value;
         this.setState({
-            quantidadeLista
-        },
-            this.atualizaSubTotalLista
-        );
-    };
-
-    atualizaDescontoItem = (event) => {
-        const descontoItemLista = event.target.value;
-        this.setState({
-            descontoItemLista
+            quantidadeLista: quantidade
+        }, () => {
+            this.atualizaSubTotalLista();
         });
     };
 
-    atualizaValorUnitario = (event) => {
-        const valorUnitarioLista = event.target.value;
+    atualizaDescontoItem = (event) => {
+        const descontoItem = event.target.value;
         this.setState({
-            valorUnitarioLista
+            descontoItemLista: descontoItem
+        }, () => {
+            this.aplicaDescontoItem();
+            this.atualizaSubTotalLista();
         });
     };
 
     aplicaDescontoItem = () => {
-        const { descontoItemLista, valorUnitarioOriginal, quantidadeLista } = this.state;
+        const { descontoItemLista, valorUnitarioOriginal } = this.state;
 
         if (descontoItemLista !== '') {
-
-            const descontoPorcentagem = parseFloat(descontoItemLista.replace(',', '.'));
-            const descontoDecimal = descontoPorcentagem / 100;
-            const novoValorUnitario = valorUnitarioOriginal - (valorUnitarioOriginal * descontoDecimal);
-            const valorTotalLista = (quantidadeLista * novoValorUnitario).toFixed(2);
-
+            const desconto = parseFloat(descontoItemLista.replace(',', '.')) / 100;
+            const valorUnitario = (valorUnitarioOriginal * (1 - desconto)).toFixed(2);
             this.setState({
-                valorUnitarioLista: novoValorUnitario.toFixed(2),
-                valorTotalLista: valorTotalLista
+                valorUnitarioLista: valorUnitario
             }, () => {
-                console.log('Novo valor unitário:', this.state.valorUnitarioLista);
-                console.log('Subtotal:', this.state.valorTotalLista);
+                this.atualizaSubTotalLista();
             });
-        } else {
-            this.setState({
-                valorUnitarioLista: valorUnitarioOriginal,
-                valorTotalLista: (quantidadeLista * valorUnitarioOriginal).toFixed(2)
-            }, () => {
-                console.log('Valor unitário original restaurado:', this.state.valorUnitarioLista);
-                console.log('Subtotal:', this.state.valorTotalLista);
-            });
-        }
+        };
     };
 
-    atualizaSubTotalLista = () => {
-        const { quantidadeLista, valorUnitarioLista } = this.state;
+    atualizaValorUnitarioLista = (event) => {
+        const valorUnitario = event.target.value.replace(',', '.');
+        this.setState({
+            valorUnitarioLista: valorUnitario
+        });
+    };
 
-        if (valorUnitarioLista !== '' && !isNaN(parseFloat(valorUnitarioLista))) {
-            const valorTotalLista = (quantidadeLista * parseFloat(valorUnitarioLista)).toFixed(2);
-
-            this.setState({
-                valorTotalLista: valorTotalLista
-            }, () => {
-                console.log('Subtotal:', this.state.valorTotalLista);
-            });
-        } else {
-            this.setState({
-                valorTotalLista: '0.00'
-            }, () => {
-                console.log('Subtotal:', this.state.valorTotalLista);
-            });
-        }
+    atualizaValorUnitario = (event) => {
+        const valorUnitario = event.target.value.replace(',', '.');
+        this.setState({
+            valorUnitarioLista: valorUnitario
+        }, () => {
+            this.atualizaSubTotalLista();
+        });
     };
 
     salvarProdutoLista = () => {
@@ -2066,26 +2100,137 @@ class FrenteCaixa extends React.Component {
                 ...produtosAtualizados[produtoSelecionadoIndex],
                 quantidade: quantidadeLista,
                 preco: novoPreco,
-                descontoItem: descontoItemLista
+                descontoItem: descontoItemLista,
+                precoUnitario: novoPreco // Atribui o novo valor do campo valorUnitarioLista à variável precoUnitario
             };
 
             produtosAtualizados[produtoSelecionadoIndex] = produtoAtualizado;
-
             this.setState({
                 produtosSelecionados: produtosAtualizados,
                 modalEditarProduto: false,
                 valorLista: '',
                 quantidadeLista: '',
-                valorUnitarioLista: '',
+                valorUnitarioLista: valorUnitarioLista,
+                valorUnitarioAtualizado: valorUnitarioLista
             });
-        }
+        };
+    };
+
+    atualizaSubTotalLista = () => {
+        const { quantidadeLista, valorUnitarioLista } = this.state;
+        const subTotal = (quantidadeLista * valorUnitarioLista).toFixed(2);
+        this.setState({
+            subTotalLista: subTotal
+        });
     };
 
     fecharModalEditarProduto = () => {
         this.setState({
             modalEditarProduto: false,
         })
-    }
+    };
+
+    // atualizaValorLista = (event) => {
+    //     this.setState({
+    //         valorLista: event.target.value
+    //     });
+    // };
+
+    // atualizaQuantidadeLista = (event) => {
+    //     const quantidadeLista = Number(event.target.value);
+    //     this.setState({
+    //         quantidadeLista
+    //     },
+    //         this.atualizaSubTotalLista
+    //     );
+    // };
+
+    // atualizaDescontoItem = (event) => {
+    //     const descontoItemLista = event.target.value;
+    //     this.setState({
+    //         descontoItemLista
+    //     });
+    // };
+
+    // atualizaValorUnitario = (event) => {
+    //     const valorUnitarioLista = event.target.value;
+    //     this.setState({
+    //         valorUnitarioLista
+    //     });
+    // };
+
+    // aplicaDescontoItem = () => {
+    //     const { descontoItemLista, valorUnitarioOriginal, quantidadeLista } = this.state;
+
+    //     if (descontoItemLista !== '') {
+
+    //         const descontoPorcentagem = parseFloat(descontoItemLista.replace(',', '.'));
+    //         const descontoDecimal = descontoPorcentagem / 100;
+    //         const novoValorUnitario = valorUnitarioOriginal - (valorUnitarioOriginal * descontoDecimal);
+    //         const valorTotalLista = (quantidadeLista * novoValorUnitario).toFixed(2);
+
+    //         this.setState({
+    //             valorUnitarioLista: novoValorUnitario.toFixed(2),
+    //             valorTotalLista: valorTotalLista
+    //         }, () => {
+    //             console.log('Novo valor unitário:', this.state.valorUnitarioLista);
+    //             console.log('Subtotal:', this.state.valorTotalLista);
+    //         });
+    //     } else {
+    //         this.setState({
+    //             valorUnitarioLista: valorUnitarioOriginal,
+    //             valorTotalLista: (quantidadeLista * valorUnitarioOriginal).toFixed(2)
+    //         }, () => {
+    //             console.log('Valor unitário original restaurado:', this.state.valorUnitarioLista);
+    //             console.log('Subtotal:', this.state.valorTotalLista);
+    //         });
+    //     }
+    // };
+
+    // atualizaSubTotalLista = () => {
+    //     const { quantidadeLista, valorUnitarioLista } = this.state;
+
+    //     if (valorUnitarioLista !== '' && !isNaN(parseFloat(valorUnitarioLista))) {
+    //         const valorTotalLista = (quantidadeLista * parseFloat(valorUnitarioLista)).toFixed(2);
+
+    //         this.setState({
+    //             valorTotalLista: valorTotalLista
+    //         }, () => {
+    //             console.log('Subtotal:', this.state.valorTotalLista);
+    //         });
+    //     } else {
+    //         this.setState({
+    //             valorTotalLista: '0.00'
+    //         }, () => {
+    //             console.log('Subtotal:', this.state.valorTotalLista);
+    //         });
+    //     }
+    // };
+
+    // salvarProdutoLista = () => {
+    //     const { produtoSelecionadoIndex, quantidadeLista, valorUnitarioLista, descontoItemLista, produtosSelecionados } = this.state;
+
+    //     if (produtoSelecionadoIndex !== null && produtoSelecionadoIndex >= 0) {
+    //         const produtosAtualizados = [...produtosSelecionados];
+    //         let novoPreco = parseFloat(valorUnitarioLista);
+
+    //         const produtoAtualizado = {
+    //             ...produtosAtualizados[produtoSelecionadoIndex],
+    //             quantidade: quantidadeLista,
+    //             preco: novoPreco,
+    //             descontoItem: descontoItemLista
+    //         };
+
+    //         produtosAtualizados[produtoSelecionadoIndex] = produtoAtualizado;
+    //         this.setState({
+    //             produtosSelecionados: produtosAtualizados,
+    //             modalEditarProduto: false,
+    //             valorLista: '',
+    //             quantidadeLista: '',
+    //             valorUnitarioLista: '',
+    //         });
+    //     }
+    // };
 
     // atualizaDescontoItem = (event) => {
     //     const descontoItemLista = event.target.value;
@@ -2161,6 +2306,11 @@ class FrenteCaixa extends React.Component {
     //     });
     // };
 
+    handleSwitchChange = () => {
+        this.setState((prevState) => ({
+            isChecked: !prevState.isChecked
+        }));
+    };
 
 
 
@@ -2328,6 +2478,18 @@ class FrenteCaixa extends React.Component {
                                                     </Button>
                                                 </InputGroup>
                                             </Form.Group>
+                                        </Col>
+                                        <Col xs={4}>
+                                            <Form>
+                                                <Form.Label htmlFor="codigoBarras" className="texto-campos">Leitor de código de barras</Form.Label>
+                                                <Form.Check
+                                                    type="switch"
+                                                    id="custom-switch"
+                                                    label={this.state.isChecked ? "Ativado" : "Desativado"}
+                                                    checked={this.state.isChecked}
+                                                    onChange={this.handleSwitchChange}
+                                                />
+                                            </Form>
                                         </Col>
                                     </Row>
                                     {produtos.map((produto) => (
@@ -2520,7 +2682,6 @@ class FrenteCaixa extends React.Component {
                                                                     value={this.state.descontoItemLista || ''}
                                                                     onChange={this.atualizaDescontoItem}
                                                                     onBlur={this.aplicaDescontoItem}
-                                                                // disabled={this.state.produtosSelecionados.some((produto) => produto.temDesconto)}
                                                                 />
                                                             </Form.Group>
                                                         </Col>
@@ -2534,28 +2695,27 @@ class FrenteCaixa extends React.Component {
                                                                     id="valorUnitario"
                                                                     className="form-control"
                                                                     name="valorUnitario"
-                                                                    value={this.state.descontoItemLista !== '' ? (this.state.valorUnitarioOriginal * (1 - parseFloat(this.state.descontoItemLista.replace(',', '.')) / 100)).toFixed(2) : this.state.valorUnitarioLista || ''}
+                                                                    value={this.state.valorUnitarioLista || ''}
                                                                     onChange={this.atualizaValorUnitario}
-                                                                    readOnly
                                                                 />
                                                             </Form.Group>
                                                         </Col>
                                                         <Col className="col" xs={4}>
                                                             <Form.Group className="mb-3">
                                                                 <Form.Label htmlFor="subTotalLista" className="texto-campos">Sub total</Form.Label>
-                                                                <Form.Control type="text" id="subTotalLista" className="form-control" name="subTotalLista" value={this.state.valorTotalLista || ''} disabled />
+                                                                <Form.Control type="text" id="subTotalLista" className="form-control" name="subTotalLista" value={this.state.subTotalLista || ''} disabled />
                                                             </Form.Group>
                                                         </Col>
                                                     </Row>
                                                 </div>
                                             )}
-
                                         </Modal.Body>
                                         <Modal.Footer>
                                             <Button variant="outline-success" className="mr-2" onClick={this.fecharModalEditarProduto} style={{ marginRight: '10px' }}>Cancelar</Button>
-                                            <Button variant="secondary" className="mr-2" onClick={this.salvarProdutoLista}>Salvar</Button>
+                                            <Button variant="secondary" className="mr-2" onClick={() => this.salvarProdutoLista()}>Salvar</Button>
                                         </Modal.Footer>
                                     </Modal>
+
 
                                     {/* <div className="divisa"></div> */}
                                     <div>
@@ -3396,8 +3556,7 @@ class FrenteCaixa extends React.Component {
                             <Col className="col">
                                 <Form.Group className="mb-3">
                                     <Form.Label htmlFor="unidadenegocio" className="texto-campos">Selecione a unidade de negócio</Form.Label>
-                                    <Form.Select className="form-control" id="unidadenegocio" name="unidadenegocio" value={unidadeLoja || ''} onChange={this.atualizaUnidadeNegocio} readOnly>
-                                        <option>Selecione a unidade de negócio</option>
+                                    <Form.Select className="form-control" id="unidadenegocio" name="unidadenegocio" value={unidadeLoja || ''} onChange={this.atualizaUnidadeNegocio} disabled>
                                         {this.state.objeto && this.state.objeto.map((objeto) => (
                                             <option key={objeto.idLoja} value={objeto.unidadeLoja}>
                                                 {objeto.unidadeLoja}
