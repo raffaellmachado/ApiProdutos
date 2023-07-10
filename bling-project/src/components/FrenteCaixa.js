@@ -787,6 +787,8 @@ class FrenteCaixa extends React.Component {
             ie: ieFormatado
         });
 
+        console.log("IE/RG:", ieFormatado);
+
         if (this.state.contribuinte === "2") {
             this.setState({
                 ie_rg: "ISENTO",
@@ -797,17 +799,24 @@ class FrenteCaixa extends React.Component {
 
     atualizaContribuinte = (event) => {
         const contribuinte = event.target.value;
-        this.setState({
-            contribuinte: contribuinte
-        });
+        let ie_rg = this.state.ie_rg;
+        let ie = this.state.ie;
 
         if (contribuinte === "2") {
-            this.setState({
-                ie_rg: "ISENTO",
-                ie: "ISENTO"
-            });
+            ie_rg = "ISENTO";
+            ie = "ISENTO";
         }
+
+        this.setState({
+            contribuinte: contribuinte,
+            ie_rg: ie_rg,
+            ie: ie
+        });
+
+        console.log("Contribuinte:", contribuinte);
+        console.log("IE/RG:", ie_rg);
     };
+
 
     atualizaCidade = (event) => {
         // console.log("cidade: ", event.target.value);
@@ -2217,9 +2226,18 @@ class FrenteCaixa extends React.Component {
                                                                     value={this.state.descontoItemLista === '0' ? '' : this.state.descontoItemLista}
                                                                     onChange={this.atualizaDescontoItem}
                                                                     onBlur={this.aplicaDescontoItem}
-                                                                // disabled={this.state.produtoSelecionadoLista.possuiDesconto === true}
+                                                                    disabled={this.state.opcaoDescontoLista === 'desliga'}
                                                                 />
-                                                                {/* {this.state.produtoSelecionadoLista.possuiDesconto === true && (
+                                                                <Form.Check
+                                                                    type="switch"
+                                                                    id="ligaSwitch"
+                                                                    label={this.state.opcaoDescontoLista === 'liga' ? 'Habilitado' : 'Desabilitado'}
+                                                                    checked={this.state.opcaoDescontoLista === 'liga'}
+                                                                    onChange={(e) => this.setState({ opcaoDescontoLista: e.target.checked ? 'liga' : 'desliga' })}
+                                                                />
+                                                                {// disabled={this.state.produtoSelecionadoLista.possuiDesconto === true}
+                                                                // />
+                                                                /* {this.state.produtoSelecionadoLista.possuiDesconto === true && (
                                                                     <p className="text-muted text-center texto-desconto">O Produto possui desconto</p>
                                                                 )} */}
                                                             </Form.Group>
@@ -2290,7 +2308,7 @@ class FrenteCaixa extends React.Component {
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="cliente" className="texto-campos">Cliente (Nome)</Form.Label>
                                                         <InputGroup>
-                                                            <Form.Control required type="text" className="form-control" placeholder="Digite o nome do cliente" value={this.state.consumidorFinal || buscaContato || nome} onChange={this.atualizarBuscaContato}
+                                                            <Form.Control required type="text" className="form-control" placeholder="Digite o nome do cliente" value={buscaContato || nome} onChange={this.atualizarBuscaContato}
                                                                 onKeyDown={(e) => {
                                                                     if (e.key === 'Enter') {
                                                                         e.preventDefault(); // Evita o comportamento padrão de submit do formulário
@@ -3058,10 +3076,10 @@ class FrenteCaixa extends React.Component {
                             </Col>
                             <Col className="col">
                                 <Form.Group className="mb-3">
-                                    <Form.Label htmlFor="unidadenegocio" className="texto-campos">Selecione a unidade de negócio</Form.Label>
+                                    <Form.Label htmlFor="unidadenegocio" className="texto-campos">Unidade de negócio</Form.Label>
                                     <Form.Select className="form-control" id="unidadenegocio" name="unidadenegocio" value={unidadeLoja || ''} onChange={this.atualizaUnidadeNegocio} disabled>
                                         {this.state.objeto && this.state.objeto.map((objeto) => (
-                                            <option key={objeto.idLoja} value={objeto.unidadeLoja}>
+                                            <option key={objeto.idLoja} value={objeto.idLoja}>
                                                 {objeto.unidadeLoja}
                                             </option>
                                         ))}
