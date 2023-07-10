@@ -1,13 +1,11 @@
 import React from "react";
 import '../css/FrenteCaixa.css';
 
-import { IonIcon } from '@ionic/react';
-import { trashOutline } from 'ionicons/icons';
-import { pencil } from 'ionicons/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle, faCalendarAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import 'react-datepicker/dist/react-datepicker.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Spinner from 'react-bootstrap/Spinner';
 import Button from 'react-bootstrap/Button';
@@ -17,6 +15,14 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
 import Table from "react-bootstrap/Table";
+
+import { BsShieldFillExclamation } from 'react-icons/bs';
+import { BsPersonAdd } from 'react-icons/bs';
+import { BsClipboardCheck } from 'react-icons/bs';
+import { BsListCheck } from 'react-icons/bs';
+import { BsXCircle } from 'react-icons/bs';
+import { BsTrashFill } from 'react-icons/bs';
+import { BsPencilSquare } from 'react-icons/bs';
 
 import { Alert } from "react-bootstrap";
 import { Offcanvas } from 'react-bootstrap';
@@ -30,6 +36,10 @@ import { InputGroup } from "react-bootstrap";
 // import { format } from 'date-fns';
 // import { parse } from 'js2xmlparser';
 // import Autosuggest from 'react-autosuggest';
+
+// import { IonIcon } from '@ionic/react';
+// import { trashOutline } from 'ionicons/icons';
+// import { pencil } from 'ionicons/icons';
 
 
 class FrenteCaixa extends React.Component {
@@ -150,7 +160,8 @@ class FrenteCaixa extends React.Component {
 
     ModalCadastrarCliente = () => {
         this.setState({
-            ModalCadastrarCliente: !this.state.ModalCadastrarCliente
+            ModalCadastrarCliente: !this.state.ModalCadastrarCliente,
+            contatoNaoLocalizado: false
         });
     };
 
@@ -258,10 +269,11 @@ class FrenteCaixa extends React.Component {
     };
 
     //----------------------------------------- CHAMADAS DE API´S ----------------------------------------------------------
+    //----------------------------------------- API BUSCA PRODUTOS ----------------------------------------------------------
 
     buscarProdutos = (value) => {
         return new Promise((resolve, reject) => {
-            this.setState({ buscaProduto: value, carregando: false });
+            this.setState({ buscaProduto: value, carregando: false, produtoNaoLocalizado: false });
 
             fetch(`http://localhost:8081/api/v1/produtos`)
                 .then((resposta) => {
@@ -272,16 +284,27 @@ class FrenteCaixa extends React.Component {
                 })
                 .then((dados) => {
                     if (dados.retorno.produtos) {
-                        const produtosFiltrados = dados.retorno.produtos.filter(
-                            (produto) =>
-                                (produto.produto.descricao && produto.produto.descricao.toLowerCase().includes(value.toLowerCase())) ||
-                                (produto.produto.codigo && produto.produto.codigo.toLowerCase().includes(value.toLowerCase())) ||
-                                (produto.produto.gtin && produto.produto.gtin.toLowerCase().includes(value.toLowerCase())) ||
-                                (produto.produto.gtinEmbalagem && produto.produto.gtinEmbalagem.toLowerCase().includes(value.toLowerCase())) ||
-                                (produto.produto.descricaoFornecedor && produto.produto.descricaoFornecedor.toLowerCase().includes(value.toLowerCase())) ||
-                                (produto.produto.nomeFornecedor && produto.produto.nomeFornecedor.toLowerCase().includes(value.toLowerCase())) ||
-                                (produto.produto.idFabricante && produto.produto.idFabricante.toLowerCase().includes(value.toLowerCase()))
-                        );
+                        const palavrasBusca = value.toLowerCase().split(' ');
+
+                        const produtosFiltrados = dados.retorno.produtos.filter((produto) => {
+                            const descricao = this.normalizeString(produto.produto.descricao || '').toLowerCase();
+                            const codigo = this.normalizeString(produto.produto.codigo || '').toLowerCase();
+                            const gtin = this.normalizeString(produto.produto.gtin || '').toLowerCase();
+                            const gtinEmbalagem = this.normalizeString(produto.produto.gtinEmbalagem || '').toLowerCase();
+                            const descricaoFornecedor = this.normalizeString(produto.produto.descricaoFornecedor || '').toLowerCase();
+                            const nomeFornecedor = this.normalizeString(produto.produto.nomeFornecedor || '').toLowerCase();
+                            const codigoFabricante = this.normalizeString(produto.produto.codigoFabricante || '').toLowerCase();
+
+                            return palavrasBusca.every((palavra) =>
+                                descricao.includes(palavra) ||
+                                codigo.includes(palavra) ||
+                                gtin.includes(palavra) ||
+                                gtinEmbalagem.includes(palavra) ||
+                                descricaoFornecedor.includes(palavra) ||
+                                nomeFornecedor.includes(palavra) ||
+                                codigoFabricante.includes(palavra)
+                            );
+                        });
 
                         if (produtosFiltrados.length === 0) {
                             // Nenhum produto encontrado
@@ -321,9 +344,16 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    normalizeString = (str) => {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    };
+
+    //----------------------------------------- API BUSCA CONTATO  ----------------------------------------------------------
+
     buscarContato = (value) => {
-        // console.log("Buscando contato por:", value);
-        this.setState({ buscaContato: value, carregando: true });
+        const sanitizedValue = this.sanitizeString(value).toLowerCase();
+
+        this.setState({ buscaContato: value, carregando: true, contatoNaoLocalizado: false });
         fetch(`http://localhost:8080/api/v1/contatos`)
             .then((resposta) => {
                 if (!resposta.ok) {
@@ -333,24 +363,41 @@ class FrenteCaixa extends React.Component {
             })
             .then((dados) => {
                 if (dados.retorno.contatos) {
-                    const contatosFiltrados = dados.retorno.contatos.filter(
-                        (contato) =>
-                            (contato.contato.nome && contato.contato.nome.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.cnpj && contato.contato.cnpj.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.rg && contato.contato.rg.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.ie_rg && contato.contato.ie_rg.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.contribuinte && contato.contato.contribuinte.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.cidade && contato.contato.cidade.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.endereco && contato.contato.endereco.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.numero && contato.contato.numero.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.bairro && contato.contato.bairro.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.complemento && contato.contato.complemento.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.cep && contato.contato.cep.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.uf && contato.contato.uf.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.email && contato.contato.email.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.celular && contato.contato.celular.toLowerCase().includes(value.toLowerCase())) ||
-                            (contato.contato.fone && contato.contato.fone.toLowerCase().includes(value.toLowerCase()))
-                    );
+                    const contatosFiltrados = dados.retorno.contatos.filter((contato) => {
+                        const nome = this.sanitizeString(contato.contato.nome || '');
+                        const cnpj = this.sanitizeString(contato.contato.cnpj || '');
+                        const rg = this.sanitizeString(contato.contato.rg || '');
+                        const ie_rg = this.sanitizeString(contato.contato.ie_rg || '');
+                        const contribuinte = this.sanitizeString(contato.contato.contribuinte || '');
+                        const cidade = this.sanitizeString(contato.contato.cidade || '');
+                        const endereco = this.sanitizeString(contato.contato.endereco || '');
+                        const numero = this.sanitizeString(contato.contato.numero || '');
+                        const bairro = this.sanitizeString(contato.contato.bairro || '');
+                        const complemento = this.sanitizeString(contato.contato.complemento || '');
+                        const cep = this.sanitizeString(contato.contato.cep || '');
+                        const uf = this.sanitizeString(contato.contato.uf || '');
+                        const email = this.sanitizeString(contato.contato.email || '');
+                        const celular = this.sanitizeString(contato.contato.celular || '');
+                        const fone = this.sanitizeString(contato.contato.fone || '');
+
+                        return (
+                            nome.toLowerCase().includes(sanitizedValue) ||
+                            cnpj.toLowerCase().includes(sanitizedValue) ||
+                            rg.toLowerCase().includes(sanitizedValue) ||
+                            ie_rg.toLowerCase().includes(sanitizedValue) ||
+                            contribuinte.toLowerCase().includes(sanitizedValue) ||
+                            cidade.toLowerCase().includes(sanitizedValue) ||
+                            endereco.toLowerCase().includes(sanitizedValue) ||
+                            numero.toLowerCase().includes(sanitizedValue) ||
+                            bairro.toLowerCase().includes(sanitizedValue) ||
+                            complemento.toLowerCase().includes(sanitizedValue) ||
+                            cep.toLowerCase().includes(sanitizedValue) ||
+                            uf.toLowerCase().includes(sanitizedValue) ||
+                            email.toLowerCase().includes(sanitizedValue) ||
+                            celular.toLowerCase().includes(sanitizedValue) ||
+                            fone.toLowerCase().includes(sanitizedValue)
+                        );
+                    });
 
                     if (contatosFiltrados.length === 0) {
                         // Nenhum contato encontrado
@@ -388,9 +435,15 @@ class FrenteCaixa extends React.Component {
             });
     };
 
+    sanitizeString = (str) => {
+        return str.replace(/[\.\,\;\-\/]/g, '');
+    };
+
+    //----------------------------------------- API BUSCA VENDEDOR ----------------------------------------------------------
+
     buscarVendedor = (value) => {
         return new Promise((resolve, reject) => {
-            this.setState({ buscaVendedor: value, carregando: true });
+            this.setState({ buscaVendedor: value, carregando: true, vendedorNaoLocalizado: false });
 
             fetch(`http://localhost:8080/api/v1/contatos`)
                 .then((resposta) => {
@@ -452,6 +505,8 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    //----------------------------------------- API BUSCA DEPOSITO ----------------------------------------------------------
+
     // buscarDeposito = () => {
     //     return new Promise((resolve, reject) => {
     //         fetch("http://localhost:8083/api/v1/depositos")
@@ -486,6 +541,8 @@ class FrenteCaixa extends React.Component {
     //             });
     //     });
     // };
+
+    //----------------------------------------- API BUSCA PEDIDO ----------------------------------------------------------
 
     buscarPedido = (value) => {
         return new Promise((resolve, reject) => {
@@ -528,6 +585,8 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    //----------------------------------------- API BUSCA FORMA DE PAGAMENTO ----------------------------------------------------------
+
     buscarFormaDePagamento = () => {
         return new Promise((resolve, reject) => {
             fetch("http://localhost:8086/api/v1/formaspagamento")
@@ -563,6 +622,8 @@ class FrenteCaixa extends React.Component {
                 });
         });
     };
+
+    //----------------------------------------- API BUSCA LOJA ----------------------------------------------------------
 
     buscarLoja = () => {
         return new Promise((resolve, reject) => {
@@ -608,6 +669,8 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+    //----------------------------------------- API CADASTRAR PEDIDO ----------------------------------------------------------
+
     cadastrarPedido = (xmlPedido) => {
         const parser = new DOMParser();
         const xml = parser.parseFromString(xmlPedido, 'text/xml');
@@ -621,6 +684,8 @@ class FrenteCaixa extends React.Component {
             }
         });
     };
+
+    //----------------------------------------- API CADASTRAR FORMA DE PAGAMENTO ----------------------------------------------------------
 
     cadastrarFormaDePagamento = (xmlFormaPagamento) => {
         const parser = new DOMParser();
@@ -636,7 +701,7 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-    //--------------------------------------------- API´s PUBLICAS  ---------------------------------------------
+    //----------------------------------------- API´s PUBLICAS (CEP) ----------------------------------------------------------
 
     buscarCep = (e) => {
         const cep = e.target.value.replace(/\D/g, '');
@@ -661,9 +726,9 @@ class FrenteCaixa extends React.Component {
             });
     };
 
-    //--------------------------------------------- FUNÇÕES DE AÇÕES (EVENTOS) TELA ---------------------------------------------
+    //----------------------------------------- FUNÇÕES DE AÇÕES (EVENTOS) TELA ---------------------------------------------
 
-    // -------------------------------------------- FUNÇÕES VENDEDOR --------------------------------------------
+    //----------------------------------------- FUNÇÕES VENDEDOR --------------------------------------------
 
     atualizaBuscaVendedor = (event) => {
         // console.log("vendedor selecionado:", vendedorSelecionado);
@@ -817,7 +882,6 @@ class FrenteCaixa extends React.Component {
         console.log("IE/RG:", ie_rg);
     };
 
-
     atualizaCidade = (event) => {
         // console.log("cidade: ", event.target.value);
         this.setState({
@@ -937,8 +1001,6 @@ class FrenteCaixa extends React.Component {
             (produto) => produto.produto.id === produtoSelecionado.produto.id
         );
 
-
-
         if (produtoExistenteIndex !== -1) {
             const produtosAtualizados = [...produtosSelecionados];
             produtosAtualizados[produtoExistenteIndex].quantidade += quantidade;
@@ -981,7 +1043,6 @@ class FrenteCaixa extends React.Component {
             });
 
             console.log("PS: ", produtosSelecionados)
-
 
             this.setState(
                 {
@@ -1053,7 +1114,7 @@ class FrenteCaixa extends React.Component {
     atualizaPreco = (event) => {
         const preco = event.target.value.replace(',', '.');
         this.setState({
-            preco
+            preco: preco
         }, () => {
             this.atualizarValorTotal();
         });
@@ -1455,7 +1516,6 @@ class FrenteCaixa extends React.Component {
             prazo.push(parcelas);
         });
 
-
         if (itens.length === 0) {
             this.ModalFinalizarVendaSemItem();
             return;
@@ -1649,13 +1709,13 @@ class FrenteCaixa extends React.Component {
         });
     };
 
-    // handleFormaChange = (index, event) => {
-    //     const parcelas = [...this.state.parcelas];
-    //     parcelas[index].forma = event.target.value;
-    //     this.setState({
-    //         parcelas
-    //     });
-    // };
+    handleFormaChange = (index, event) => {
+        const parcelas = [...this.state.parcelas];
+        parcelas[index].forma = event.target.value;
+        this.setState({
+            parcelas
+        });
+    };
 
     handleObservacaoChange = (index, event) => {
         const parcelas = [...this.state.parcelas];
@@ -1923,10 +1983,8 @@ class FrenteCaixa extends React.Component {
             return (
                 <Modal show={true} onHide={() => window.location.reload()} centered>
                     <Modal.Header closeButton className="bg-danger text-white">
-                        <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
-                        <Modal.Title>
-                            ERRO
-                        </Modal.Title>
+                        <BsShieldFillExclamation className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                        <Modal.Title>ERRO </Modal.Title>
                     </Modal.Header>
                     <Modal.Body style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <div style={{ textAlign: "center" }}>
@@ -1990,7 +2048,8 @@ class FrenteCaixa extends React.Component {
                                             <Row className="row align-items-center">
                                                 <Col className="col" xs={4}>
                                                     <Alert variant="danger">
-                                                        <p>Vendedor não localizado.</p>
+                                                        <p><BsXCircle style={{ marginRight: '0.5rem', marginBottom: '-1px' }} />
+                                                            Vendedor não localizado.</p>
                                                     </Alert>
                                                 </Col>
                                             </Row>
@@ -2023,7 +2082,6 @@ class FrenteCaixa extends React.Component {
                                             ))}
                                         </ul>
                                     )}
-                                    {/* <div className="divisa"></div> */}
                                     <div className="mb-3">
                                         <h5>Produto</h5>
                                     </div>
@@ -2048,12 +2106,12 @@ class FrenteCaixa extends React.Component {
                                                 </InputGroup>
                                             </Form.Group>
                                         </Col>
-                                        <Col xs={4}>
+                                        {/* <Col xs={4}>
                                             <Form>
                                                 <Form.Label htmlFor="codigoBarras" className="texto-campos">Leitor de código de barras</Form.Label>
                                                 <Form.Check type="switch" id="custom-switch" label={this.state.isChecked ? "Ativado" : "Desativado"} checked={this.state.isChecked} onChange={this.handleSwitchChange} />
                                             </Form>
-                                        </Col>
+                                        </Col> */}
                                     </Row>
                                     {produtos.map((produto) => (
                                         <ul className="lista-produtos">
@@ -2076,7 +2134,8 @@ class FrenteCaixa extends React.Component {
                                         <Row className="row align-items-center">
                                             <Col className="col" xs={4}>
                                                 <Alert variant="danger">
-                                                    <p>Produto não localizado.</p>
+                                                    <p><BsXCircle style={{ marginRight: '0.5rem', marginBottom: '-1px' }} />
+                                                        Produto não localizado.</p>
                                                 </Alert>
                                             </Col>
                                         </Row>
@@ -2139,7 +2198,7 @@ class FrenteCaixa extends React.Component {
                                                 <Col className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="preco" className="texto-campos">Preço unitário</Form.Label>
-                                                        <Form.Control type="text" id="preco" className="form-control" name="preco" placeholder="00.00" value={preco || ''} onChange={this.atualizaPreco} onBlur={this.formatarPreco} />
+                                                        <Form.Control type="number" id="preco" className="form-control" name="preco" placeholder="00.00" value={preco || ''} onChange={this.atualizaPreco} onBlur={this.formatarPreco} />
                                                     </Form.Group>
                                                 </Col>
                                                 <Col className="col">
@@ -2150,15 +2209,13 @@ class FrenteCaixa extends React.Component {
                                                 </Col>
                                             </Row>
                                             <div className="text-end">
-                                                <Button variant="outline-success" onClick={() => this.adicionarProdutoSelecionado(produtoSelecionado)}>Inserir produto</Button>
+                                                <Button variant="secondary" onClick={() => this.adicionarProdutoSelecionado(produtoSelecionado)}>
+                                                    <BsListCheck style={{ marginRight: '0.5rem' }} />
+                                                    Inserir produto
+                                                </Button>
                                             </div>
-                                            {/* <div className="container">
-                                                        <Form.Label htmlFor="valorTotal" className="texto-campos">Comentário</Form.Label>
-                                                        <Form.Control as="textarea" id="observacao" value={this.state.comentario || ''} onChange={this.atualizarComentario} disabled={!produtoSelecionado} style={{ height: '75px', width: '600px' }} />
-                                                    </div> */}
                                         </div>
                                     )}
-
 
                                     <div className="divisa"></div>
                                     <Table responsive="lg" className="table table-sm table-transparent" >
@@ -2184,10 +2241,10 @@ class FrenteCaixa extends React.Component {
                                                         <Button variant="light" title="Editar produto" className="transparent-button" onClick={() => {
                                                             this.modalEditarProduto(produto)
                                                         }}>
-                                                            <IonIcon icon={pencil} className="blue-icon" size="medium" />
+                                                            <BsPencilSquare className="blue-icon" />
                                                         </Button>
                                                         <Button variant="light" title="Excluir produto" className="transparent-button" onClick={this.modalExcluirProduto}>
-                                                            <IonIcon icon={trashOutline} className="red-icon" size="medium" />
+                                                            <BsTrashFill className="red-icon" />
                                                         </Button></td>
                                                 </tr>
                                             ))}
@@ -2234,10 +2291,9 @@ class FrenteCaixa extends React.Component {
                                                                     label={this.state.opcaoDescontoLista === 'liga' ? 'Habilitado' : 'Desabilitado'}
                                                                     checked={this.state.opcaoDescontoLista === 'liga'}
                                                                     onChange={(e) => this.setState({ opcaoDescontoLista: e.target.checked ? 'liga' : 'desliga' })}
+                                                                // disabled={this.state.produtoSelecionadoLista.possuiDesconto === true}
                                                                 />
-                                                                {// disabled={this.state.produtoSelecionadoLista.possuiDesconto === true}
-                                                                // />
-                                                                /* {this.state.produtoSelecionadoLista.possuiDesconto === true && (
+                                                                {/* {this.state.produtoSelecionadoLista.possuiDesconto === true && (
                                                                     <p className="text-muted text-center texto-desconto">O Produto possui desconto</p>
                                                                 )} */}
                                                             </Form.Group>
@@ -2261,7 +2317,7 @@ class FrenteCaixa extends React.Component {
                                             )}
                                         </Modal.Body>
                                         <Modal.Footer>
-                                            <Button variant="outline-success" className="mr-2" onClick={this.fecharModalEditarProduto} style={{ marginRight: '10px' }}>Cancelar</Button>
+                                            <Button variant="outline-secondary" className="mr-2" onClick={this.fecharModalEditarProduto} style={{ marginRight: '10px' }}>Cancelar</Button>
                                             <Button variant="secondary" className="mr-2" onClick={() => this.salvarProdutoLista()}>Salvar</Button>
                                         </Modal.Footer>
                                     </Modal>
@@ -2287,12 +2343,6 @@ class FrenteCaixa extends React.Component {
                                                 <Form.Control type="text" id="totaldavenda" className="form-control" name="totaldavenda" placeholder="00.00" defaultValue={subTotalGeral || ''} disabled />
                                             </Form.Group>
                                         </Col>
-                                        {/* <Col className="col mb-3" xs={3}>
-                                                <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
-                                                    <Form.Control type="text" className="" id="frete" name="frete" placeholder="00.00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
-                                                </Form.Group>
-                                            </Col> */}
                                     </Row>
                                 </div>
                             </Col>
@@ -2308,7 +2358,7 @@ class FrenteCaixa extends React.Component {
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="cliente" className="texto-campos">Cliente (Nome)</Form.Label>
                                                         <InputGroup>
-                                                            <Form.Control required type="text" className="form-control" placeholder="Digite o nome do cliente" value={buscaContato || nome} onChange={this.atualizarBuscaContato}
+                                                            <Form.Control required type="text" className="form-control" placeholder="Digite o nome do cliente" value={buscaContato || nome || 'Consumidor Final'} onChange={this.atualizarBuscaContato}
                                                                 onKeyDown={(e) => {
                                                                     if (e.key === 'Enter') {
                                                                         e.preventDefault(); // Evita o comportamento padrão de submit do formulário
@@ -2332,16 +2382,6 @@ class FrenteCaixa extends React.Component {
                                                     <Form.Control type="text" className="form-control" name="cpf" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
                                                 </Form.Group>
                                             </Col>
-                                            {/* <Col className="col" xs={3}>
-                                                <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="tipo" className="texto-campos">Tipo</Form.Label>
-                                                    <Form.Select as="select" id="tipo" className="form-control" name="tipo" value={tipo || ''} onChange={this.atualizaTipoPessoa}>
-                                                        <option value="F">Pessoa Física</option>
-                                                        <option value="J">Pessoa Jurídica</option>
-                                                        <option value="E">Estrangeiro</option>
-                                                    </Form.Select>
-                                                </Form.Group>
-                                            </Col> */}
                                             <Col className="col" xs={12} md={4}>
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="endereco" className="texto-campos">Endereço</Form.Label>
@@ -2349,15 +2389,6 @@ class FrenteCaixa extends React.Component {
                                                 </Form.Group>
                                             </Col>
                                         </Row>
-                                        {contatoNaoLocalizado && (
-                                            <Row className="row align-items-center">
-                                                <Col xs={4}>
-                                                    <Alert variant="danger" >
-                                                        <p>Cliente não localizado.</p>
-                                                    </Alert>
-                                                </Col>
-                                            </Row>
-                                        )}
                                         {contatos.map((contato) => (
                                             <ul className="lista-contatos">
                                                 <li
@@ -2375,43 +2406,29 @@ class FrenteCaixa extends React.Component {
                                                 </li>
                                             </ul>
                                         ))}
-                                        <Row className="row">
-                                            <Button variant="link" onClick={this.ModalCadastrarCliente}>Opções avançadas</Button>
+                                        <Row>
+                                            <Col className="col" xs={12} md={4}>
+                                                <Button variant="secondary" onClick={this.ModalCadastrarCliente} style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center' }}>
+                                                    <BsPersonAdd style={{ marginRight: '0.5rem' }} />
+                                                    Cadastrar cliente
+                                                </Button>
+                                            </Col>
+                                            <Col>
+                                                {contatoNaoLocalizado && (
+                                                    <Col xs={4}>
+                                                        <Alert variant="danger" >
+                                                            <p><BsXCircle style={{ marginRight: '0.5rem', marginBottom: '-1px' }} />
+                                                                Cliente não localizado.</p>
+                                                        </Alert>
+                                                    </Col>
+                                                )}
+                                            </Col>
                                         </Row>
-                                        {/* {contatoSelecionado && (
-                                        <div className="produto-selecionado">
-                                            <Row className="row">
-                                                <Col className="col" xs={4}>
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="nome" className="texto-campos">Nome</Form.Label>
-                                                        <Form.Control type="text" id="nome" className="form-control" name="nome" value={nome || ''} onChange={this.atualizaNome} />
-                                                    </Form.Group>
-                                                </Col>
-                                                <Col className="col" xs={4}>
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="cpf" className="texto-campos">{tipo === 'J' ? 'CNPJ' : 'CPF'}</Form.Label>
-                                                        <Form.Control type="text" id="cpf" className="form-control" name="cpf" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
-                                                    </Form.Group>
-                                                </Col>
-                                                <Col className="col" xs={3}>
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="tipo" className="texto-campos">Tipo</Form.Label>
-                                                        <Form.Select as="select" id="tipo" className="form-control" name="tipo" value={tipo || ''} onChange={this.atualizaTipoPessoa}>
-                                                            <option value="F">Pessoa Física</option>
-                                                            <option value="J">Pessoa Jurídica</option>
-                                                            <option value="E">Estrangeiro</option>
-                                                        </Form.Select>
-                                                    </Form.Group>
-                                                </Col>
-                                            </Row>
-                                            <Row className="row">
-                                                <Button variant="link" onClick={this.ModalCadastrarCliente}>Opções avançadas</Button>
-                                            </Row>
-                                        </div>
-                                    )} */}
+
+
                                         <Modal show={this.state.ModalCadastrarCliente} onHide={this.ModalCadastrarCliente} size="xl" centered>
                                             <Modal.Header closeButton className="bg-secondary text-white">
-                                                <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                                                <BsPersonAdd className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
                                                 <Modal.Title>Cadastrar cliente</Modal.Title>
                                             </Modal.Header>
                                             <Modal.Body style={{ padding: '20px' }} >
@@ -2440,12 +2457,6 @@ class FrenteCaixa extends React.Component {
                                                             </Form.Select>
                                                         </Form.Group>
                                                     </Col>
-                                                    {/* <Col className="col" xs={12} md={4}>
-                                                        <Form.Group className="mb-3">
-                                                            <Form.Label htmlFor="codigo" className="texto-campos">Código</Form.Label>
-                                                            <Form.Control type="text" id="codigo" className="form-control" name="codigo" value={codigo || ''} onChange={this.atualizaCodigo} />
-                                                        </Form.Group>
-                                                    </Col> */}
                                                 </Row>
                                                 <Row className="row align-items-center">
                                                     <Col className="col" xs={12} md={4}>
@@ -2568,26 +2579,10 @@ class FrenteCaixa extends React.Component {
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
-                                                {/* <Row className="row">
-                                                    <Col className="col" xs={12} md={4}>
-                                                        <Form.Group className="mb-3">
-                                                            <Form.Label htmlFor="dataNascimento" className="texto-campos">Data de nascimento</Form.Label>
-                                                            <Form.Control type="text" id="dataNascimento" className="form-control" name="dataNascimento" value={dataNascimento || ''} onChange={this.atualizaDataNascimento} />
-                                                        </Form.Group>
-                                                    </Col>
-                                                </Row>
-                                                <Row className="row">
-                                                    <Col className="col" xs={12} md={12}>
-                                                        <Form.Group className="mb-3">
-                                                            <Form.Label htmlFor="observacoes" className="texto-campos">Observações</Form.Label>
-                                                            <textarea id="observacoes" className="form-control" rows={4} name="observacoes" value={observacoes || ''} onChange={this.atualizaObservacoes} />
-                                                        </Form.Group>
-                                                    </Col>
-                                                </Row>*/}
                                             </Modal.Body>
                                             <Modal.Footer>
-                                                <Button variant="outline-success" onClick={this.ModalCadastrarCliente}>Fechar</Button>
-                                                <Button variant="success" onClick={this.ModalCadastrarCliente}>Salvar</Button>
+                                                <Button variant="outline-secondary" onClick={this.ModalCadastrarCliente}>Fechar</Button>
+                                                <Button variant="secondary" onClick={this.ModalCadastrarCliente}>Salvar</Button>
                                             </Modal.Footer>
                                         </Modal>
                                     </div>
@@ -2596,19 +2591,6 @@ class FrenteCaixa extends React.Component {
                                         <h5>Outras informações</h5>
                                     </div>
                                     {/* <Row className="row">
-                                            <Col className="col">
-                                                        <Form.Group className="mb-3">
-                                                            <Form.Label htmlFor="vendedor" className="texto-campos">Vendedor</Form.Label>
-                                                            <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado} onChange={this.atualizaVendedorSelecionado} >
-                                                                <option value="">Selecione um vendedor</option>
-                                                                {this.state.vendedor.map((contato) => (
-                                                                    <option key={contato.contato.id} value={contato.contato.id}>
-                                                                        {contato.contato.nome}
-                                                                    </option>
-                                                                ))}
-                                                            </Form.Select>
-                                                        </Form.Group>
-                                                    </Col>
                                             <Col className="col">
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="dataprevista" className="texto-campos">Data prevista</Form.Label>
@@ -2700,7 +2682,7 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col mb-3" >
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="gerarparcelas" className="texto-campos" style={{ marginRight: '20px' }}></Form.Label>
-                                                <Button variant="outline-success" className="form-control"
+                                                <Button variant="secondary" className="form-control"
                                                     onClick={() => {
                                                         if (this.state.subTotalGeral === '0.00') {
                                                             this.modalInserirParcela();
@@ -2710,6 +2692,7 @@ class FrenteCaixa extends React.Component {
                                                     }}
                                                     style={{ width: "200px", marginTop: "33px" }}
                                                 >
+                                                    <BsClipboardCheck style={{ marginRight: '0.5rem', marginBottom: '4px' }} />
                                                     Gerar parcelas
                                                 </Button>
                                             </Form.Group>
@@ -2721,7 +2704,7 @@ class FrenteCaixa extends React.Component {
                                                         <th>Dias</th>
                                                         <th>Data</th>
                                                         <th>Valor</th>
-                                                        {/* <th>Forma</th> */}
+                                                        <th>Forma</th>
                                                         <th>Observação</th>
                                                         <th>Ação</th>
                                                     </tr>
@@ -2758,17 +2741,17 @@ class FrenteCaixa extends React.Component {
                                                                         className="form-control text-center" />
                                                                 </Col>
                                                             </td>
-                                                            {/* <td>
-                                                                            <Form.Select
-                                                                                value={parcela.forma || ''}
-                                                                                onChange={(e) => this.handleFormaChange(index, e)}>
-                                                                                {this.state.formaspagamento.map((formapagamento) => (
-                                                                                    <option key={formapagamento.formapagamento.id} value={formapagamento.formapagamento.id}>
-                                                                                        {formapagamento.formapagamento.descricao}
-                                                                                    </option>
-                                                                                ))}
-                                                                            </Form.Select>
-                                                                        </td> */}
+                                                            <td>
+                                                                <Form.Select
+                                                                    value={parcela.forma || ''}
+                                                                    onChange={(e) => this.handleFormaChange(index, e)}>
+                                                                    {this.state.formaspagamento.map((formapagamento) => (
+                                                                        <option key={formapagamento.formapagamento.id} value={formapagamento.formapagamento.id}>
+                                                                            {formapagamento.formapagamento.descricao}
+                                                                        </option>
+                                                                    ))}
+                                                                </Form.Select>
+                                                            </td>
                                                             <td>
                                                                 <Col>
                                                                     <Form.Control
@@ -2781,36 +2764,14 @@ class FrenteCaixa extends React.Component {
                                                             </td>
                                                             <td>
                                                                 <Button variant="light" onClick={() => this.handleDeleteParcela(index)}>
-                                                                    <IonIcon icon={trashOutline} className="red-icon" size="medium" />
+                                                                    <BsTrashFill className="red-icon" />
                                                                 </Button>
                                                             </td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
                                             </Table>
-                                            {/* <div className="col d-flex justify-content-end">
-                                                            <Button variant="light" onClick={() => {
-                                                                if (this.state.subTotalGeral === 0) {
-                                                                    this.modalInserirParcela();
-                                                                } else {
-                                                                    this.adicionarParcela();
-                                                                }
-                                                            }} defaultValue="0">+ Adicionar outra parcela</Button>
-                                                        </div> */}
                                         </div>
-                                        {/* <Col className="col">
-                                                    <Form.Group className="mb-3">
-                                                        <Form.Label htmlFor="vendedor" className="texto-campos">Categoria</Form.Label>
-                                                        <Form.Select className="campos-pagamento" id="vendedor" name="vendedor" value={this.state.vendedorSelecionado || ''} onChange={this.atualizaVendedorSelecionado} >
-                                                            <option>Selecione uma</option>
-                                                            {this.state.vendedores.map((contato) => (
-                                                                <option key={contato.contato.id} value={contato.contato.nome}>
-                                                                    {contato.contato.nome}
-                                                                </option>
-                                                            ))}
-                                                        </Form.Select>
-                                                    </Form.Group>
-                                                </Col> */}
                                     </Row>
                                 </div>
                             </Col>
@@ -2842,38 +2803,34 @@ class FrenteCaixa extends React.Component {
                     {/* ---------------------------------------------------------- MODALS ---------------------------------------------------------- */}
 
                     <Modal show={this.state.ModalFinalizarVendaSemItem} onHide={this.ModalFinalizarVendaSemItem} centered>
-                        <Modal.Header closeButton className="bg-success text-white">
-                            <Modal.Title>
-                                <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
-                                Atenção
-                            </Modal.Title>
+                        <Modal.Header closeButton className="bg-warning text-white">
+                            <BsShieldFillExclamation className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                            <Modal.Title>Atenção </Modal.Title>
                         </Modal.Header>
                         <Modal.Body style={{ padding: '20px' }}>
                             Este pedido não possui itens ou cliente, insira-os para realizar essa operação.
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="success" onClick={this.ModalFinalizarVendaSemItem}>Fechar</Button>
+                            <Button variant="secondary" onClick={this.ModalFinalizarVendaSemItem}>Fechar</Button>
                         </Modal.Footer>
                     </Modal>
 
                     <Modal show={this.state.ModalFormaPagamento} onHide={this.ModalFormaPagamento} centered>
-                        <Modal.Header closeButton className="bg-success text-white">
-                            <Modal.Title>
-                                <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
-                                Atenção
-                            </Modal.Title>
+                        <Modal.Header closeButton className="bg-warning text-white">
+                            <BsShieldFillExclamation className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                            <Modal.Title>Atenção </Modal.Title>
                         </Modal.Header>
                         <Modal.Body style={{ padding: '20px' }}>
                             Insira a forma de pagamento antes de finalizar a compra.
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="success" onClick={this.ModalFormaPagamento}>Fechar</Button>
+                            <Button variant="secondary" onClick={this.ModalFormaPagamento}>Fechar</Button>
                         </Modal.Footer>
                     </Modal>
 
                     <Modal show={this.state.ModalExcluirPedido} onHide={this.ModalExcluirPedido} centered>
-                        <Modal.Header closeButton className="bg-success text-white">
-                            <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                        <Modal.Header closeButton className="bg-warning text-white">
+                            <BsShieldFillExclamation className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
                             <Modal.Title>Atenção </Modal.Title>
                         </Modal.Header>
                         <Modal.Body style={{ padding: '20px' }}>
@@ -2881,43 +2838,43 @@ class FrenteCaixa extends React.Component {
                             <div>Essa ação não poderá ser desfeita.</div>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="outline-success" onClick={this.ModalExcluirPedido}>Não</Button>
-                            <Button variant="success" onClick={this.excluirPedido}>Sim</Button>
+                            <Button variant="outline-secondary" onClick={this.ModalExcluirPedido}>Não</Button>
+                            <Button variant="secondary" onClick={this.excluirPedido}>Sim</Button>
                         </Modal.Footer>
                     </Modal>
 
                     <Modal show={this.state.modalInserirProduto} onHide={this.modalInserirProduto} centered>
-                        <Modal.Header closeButton className="bg-success text-white">
-                            <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                        <Modal.Header closeButton className="bg-warning text-white">
+                            <BsShieldFillExclamation className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
                             <Modal.Title>Atenção </Modal.Title>
                         </Modal.Header>
                         <Modal.Body style={{ padding: '20px' }}>
                             Nenhum produto selecionado!
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button className="botao-finalizarvenda" variant="success" onClick={this.modalInserirProduto}>Fechar</Button>
+                            <Button className="botao-finalizarvenda" variant="secondary" onClick={this.modalInserirProduto}>Fechar</Button>
                         </Modal.Footer>
                     </Modal>
 
                     <Modal show={this.state.ModalExcluirProduto} onHide={this.modalExcluirProduto} centered>
-                        <Modal.Header closeButton className="bg-success text-white">
-                            <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                        <Modal.Header closeButton className="bg-warning text-white">
+                            <BsShieldFillExclamation className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
                             <Modal.Title>Atenção </Modal.Title>
                         </Modal.Header>
                         <Modal.Body style={{ padding: '20px' }}>
                             Deseja excluir o item? Essa ação não poderá ser desfeita.
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button className="botao-finalizarvenda" variant="success" onClick={this.modalExcluirProduto}>Não</Button>
-                            <Button variant="success" onClick={this.excluirProdutoSelecionado}>Sim</Button>
+                            <Button className="botao-finalizarvenda" variant="outline-secondary" onClick={this.modalExcluirProduto}>Não</Button>
+                            <Button variant="secondary" onClick={this.excluirProdutoSelecionado}>Sim</Button>
                         </Modal.Footer>
 
                     </Modal>
 
                     <Offcanvas show={this.state.canvasFinalizarPedido} onHide={this.canvasFinalizarPedido} size="lg" placement="end" style={{ width: '35%' }}>
-                        <Offcanvas.Header closeButton className="bg-success text-white">
-                            <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
-                            <Offcanvas.Title>Atenção </Offcanvas.Title>
+                        <Offcanvas.Header closeButton className="bg-secondary text-white">
+                            <BsShieldFillExclamation className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                            <Offcanvas.Title>Resumo do pedido</Offcanvas.Title>
                         </Offcanvas.Header>
                         <Offcanvas.Body style={{ padding: '20px' }}>
                             <div className="d-flex flex-column  mb-4">
@@ -3028,22 +2985,22 @@ class FrenteCaixa extends React.Component {
                                 <Button variant="outline-secondary" className="gerar-nota">Imprimir comprovante não fiscal</Button>
                             </div>
                             <div className="d-flex justify-content-end fixed-bottom mb-4" style={{ height: '40px' }}>
-                                <Button variant="outline-success" className="mr-2" onClick={this.canvasFinalizarPedido} style={{ marginRight: '10px' }}>Cancelar</Button>
-                                <Button variant="success" onClick={this.gerarXmlItensParaEnvio} style={{ marginRight: '10px' }}>Fechar pedido</Button>
+                                <Button variant="outline-secondary" className="mr-2" onClick={this.canvasFinalizarPedido} style={{ marginRight: '10px' }}>Cancelar</Button>
+                                <Button variant="secondary" onClick={this.gerarXmlItensParaEnvio} style={{ marginRight: '10px' }}>Fechar pedido</Button>
                             </div>
                         </Offcanvas.Body>
                     </Offcanvas>
 
                     <Modal show={this.state.modalInserirParcela} onHide={this.modalInserirParcela} centered>
-                        <Modal.Header closeButton className="bg-success text-white">
-                            <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                        <Modal.Header closeButton className="bg-warning text-white">
+                            <BsShieldFillExclamation className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
                             <Modal.Title>Atenção </Modal.Title>
                         </Modal.Header>
                         <Modal.Body style={{ padding: '20px' }}>
                             Não foi possível gerar as parcelas, pois o valor faturado está zerado.
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="success" onClick={this.modalInserirParcela}>Fechar</Button>
+                            <Button variant="secondary" onClick={this.modalInserirParcela}>Fechar</Button>
                         </Modal.Footer>
                     </Modal>
                     <Modal show={this.state.modalSalvarPedido} onHide={this.modalSalvarPedido} centered>
@@ -3055,7 +3012,8 @@ class FrenteCaixa extends React.Component {
 
                     <Modal show={this.state.ModalSelecionarLoja} onHide={this.ModalSelecionarLoja} backdrop="static" centered>
                         <Modal.Header closeButton className="bg-secondary text-white">
-                            <Modal.Title>Seleciona uma Loja</Modal.Title>
+                            <BsShieldFillExclamation className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                            <Modal.Title>Selecione uma loja </Modal.Title>
                         </Modal.Header>
                         <Modal.Body style={{ padding: '20px' }}>
                             <div className="text-center" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', color: '#6c757d' }}>
@@ -3065,7 +3023,7 @@ class FrenteCaixa extends React.Component {
                                 <Form.Group className="mb-3">
                                     <Form.Label htmlFor="depositolancamento" className="texto-campos">Selecione a loja</Form.Label>
                                     <Form.Select className="form-control" id="depositolancamento" name="depositolancamento" value={idLoja || ''} onChange={this.atualizaNomeLoja}>
-                                        <option>Selecione a loja</option>
+                                        <option key={0} value={0}>Selecione a loja</option>
                                         {this.state.objeto && this.state.objeto.map((objeto) => (
                                             <option key={objeto.idLoja} value={objeto.idLoja}>
                                                 {objeto.nomeLoja}
@@ -3088,7 +3046,7 @@ class FrenteCaixa extends React.Component {
                             </Col>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="success" onClick={this.ModalSelecionarLoja}>Salvar</Button>
+                            <Button variant="secondary" onClick={this.ModalSelecionarLoja}>Salvar</Button>
                         </Modal.Footer>
                     </Modal>
                 </Container >
