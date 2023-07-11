@@ -323,6 +323,19 @@ h5 {
   text-align: center;
 }
 
+.no-spinners::-webkit-inner-spin-button,
+.no-spinners::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinners {
+  -moz-appearance: textfield;
+}
+
+.is-invalid {
+  border-color: red !important;
+}
+
 /* 
 .busca-contatos {
   margin-bottom: 1rem;

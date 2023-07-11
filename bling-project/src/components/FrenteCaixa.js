@@ -2,19 +2,23 @@ import React from "react";
 import '../css/FrenteCaixa.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle, faCalendarAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Spinner from 'react-bootstrap/Spinner';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Container from 'react-bootstrap/Container'
-import Col from 'react-bootstrap/Col'
-import Row from 'react-bootstrap/Row'
-import Form from 'react-bootstrap/Form'
-import Table from "react-bootstrap/Table";
+import { Spinner } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import { Container } from 'react-bootstrap'
+import { Col } from 'react-bootstrap'
+import { Row } from 'react-bootstrap'
+import { Form } from 'react-bootstrap'
+import { Table } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
+import { Offcanvas } from 'react-bootstrap';
+import { Image } from 'react-bootstrap';
+import { InputGroup } from "react-bootstrap";
 
 import { BsShieldFillExclamation } from 'react-icons/bs';
 import { BsPersonAdd } from 'react-icons/bs';
@@ -24,10 +28,9 @@ import { BsXCircle } from 'react-icons/bs';
 import { BsTrashFill } from 'react-icons/bs';
 import { BsPencilSquare } from 'react-icons/bs';
 
-import { Alert } from "react-bootstrap";
-import { Offcanvas } from 'react-bootstrap';
-import Image from 'react-bootstrap/Image'
-import { InputGroup } from "react-bootstrap";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 // import ptBR from 'date-fns/locale/pt-BR';
 // import DatePicker from 'react-datepicker';
@@ -117,6 +120,7 @@ class FrenteCaixa extends React.Component {
             ModalCadastrarCliente: false,
             ModalFormaPagamento: false,
             ModalExcluirProduto: false,
+            ModalCpfValido: false,
             subtotalComFrete: 0,
             frete: 0,
             freteInserido: false,
@@ -148,7 +152,9 @@ class FrenteCaixa extends React.Component {
             nomeLoja: '',
             idLoja: '',
             unidadeLoja: '',
-            isChecked: false
+            isChecked: false,
+            cpfValido: false,
+            cnpjValido: false
         };
 
         this.atualizaDesconto = this.atualizaDesconto.bind(this);
@@ -163,6 +169,12 @@ class FrenteCaixa extends React.Component {
             ModalCadastrarCliente: !this.state.ModalCadastrarCliente,
             contatoNaoLocalizado: false
         });
+    };
+
+    ModalCpfValido = () => {
+        this.setState((prevState) => ({
+            ModalCpfValido: !prevState.ModalCpfValido,
+        }));
     };
 
     ModalSelecionarLoja = () => {
@@ -816,31 +828,152 @@ class FrenteCaixa extends React.Component {
 
     atualizaCpfCnpj = (event) => {
         const cpfCnpj = event.target.value;
-
-        // Remove qualquer pontuação existente
         const cpfCnpjSemPontuacao = cpfCnpj.replace(/[^\d]/g, "");
 
         // Verifica se é um CPF válido
         if (cpfCnpjSemPontuacao.length === 11) {
+            if (!this.validarCPF(cpfCnpjSemPontuacao)) {
+                this.setState({
+                    cnpj: cpfCnpj,
+                    cpfValido: false, // Define a flag de CPF válido como false
+                    cnpjValido: false // Define a flag de CNPJ válido como false
+                });
+                return; // Retorna antecipadamente para evitar ações adicionais
+            }
+
             const cpfFormatado = cpfCnpjSemPontuacao.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-            this.setState({ cnpj: cpfFormatado });
+            this.setState({
+                cnpj: cpfFormatado,
+                cpfValido: true, // Define a flag de CPF válido como true
+                cnpjValido: false // Define a flag de CNPJ válido como false
+            });
         }
         // Verifica se é um CNPJ válido
         else if (cpfCnpjSemPontuacao.length === 14) {
+            if (!this.validarCNPJ(cpfCnpjSemPontuacao)) {
+                this.setState({
+                    cnpj: cpfCnpj,
+                    cpfValido: false, // Define a flag de CPF válido como false
+                    cnpjValido: false // Define a flag de CNPJ válido como false
+                });
+                return; // Retorna antecipadamente para evitar ações adicionais
+            }
+
             const cnpjFormatado = cpfCnpjSemPontuacao.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
-            this.setState({ cnpj: cnpjFormatado });
+            this.setState({
+                cnpj: cnpjFormatado,
+                cpfValido: false, // Define a flag de CPF válido como false
+                cnpjValido: true // Define a flag de CNPJ válido como true
+            });
         }
-        // Caso contrário, mantém o valor original
+        // Caso contrário, mantém o valor original e define as flags de validação como false
         else {
-            this.setState({ cnpj: cpfCnpj });
+            this.setState({
+                cnpj: cpfCnpj,
+                cpfValido: false,
+                cnpjValido: false
+            });
         }
     };
+
+    validarCPF(cpf) {
+        cpf = cpf.replace(/[^\d]/g, ""); // Remove caracteres não numéricos
+
+        if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) {
+            return false; // CPF inválido se não tiver 11 dígitos ou se todos os dígitos forem iguais
+        }
+
+        let soma = 0;
+        let resto;
+
+        for (let i = 1; i <= 9; i++) {
+            soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+        }
+
+        resto = (soma * 10) % 11;
+
+        if (resto === 10 || resto === 11) {
+            resto = 0;
+        }
+
+        if (resto !== parseInt(cpf.substring(9, 10))) {
+            return false; // CPF inválido se o dígito verificador não bater
+        }
+
+        soma = 0;
+
+        for (let i = 1; i <= 10; i++) {
+            soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+        }
+
+        resto = (soma * 10) % 11;
+
+        if (resto === 10 || resto === 11) {
+            resto = 0;
+        }
+
+        if (resto !== parseInt(cpf.substring(10, 11))) {
+            return false; // CPF inválido se o dígito verificador não bater
+        }
+
+        return true; // CPF válido
+    }
+
+    validarCNPJ(cnpj) {
+        cnpj = cnpj.replace(/[^\d]/g, ""); // Remove caracteres não numéricos
+
+        if (cnpj.length !== 14) {
+            return false; // CNPJ inválido se não tiver 14 dígitos
+        }
+
+        let tamanho = cnpj.length - 2;
+        let numeros = cnpj.substring(0, tamanho);
+        const digitos = cnpj.substring(tamanho);
+        let soma = 0;
+        let pos = tamanho - 7;
+
+        for (let i = tamanho; i >= 1; i--) {
+            soma += parseInt(numeros.charAt(tamanho - i), 10) * pos--;
+            if (pos < 2) {
+                pos = 9;
+            }
+        }
+
+        let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+
+        if (resultado !== parseInt(digitos.charAt(0), 10)) {
+            return false; // CNPJ inválido se o primeiro dígito verificador não bater
+        }
+
+        tamanho += 1;
+        numeros = cnpj.substring(0, tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+
+        for (let i = tamanho; i >= 1; i--) {
+            soma += parseInt(numeros.charAt(tamanho - i), 10) * pos--;
+            if (pos < 2) {
+                pos = 9;
+            }
+        }
+
+        resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+
+        if (resultado !== parseInt(digitos.charAt(1), 10)) {
+            return false; // CNPJ inválido se o segundo dígito verificador não bater
+        }
+
+        return true; // CNPJ válido
+    }
+
 
     atualizaRg = (event) => {
         const rg = event.target.value;
         const rgSemPontuacao = rg.replace(/[^\d]/g, "");
         const rgFormatado = rgSemPontuacao.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, "$1.$2.$3-$4");
-        this.setState({ rg: rgFormatado });
+        this.setState({
+            rg: rgFormatado
+        });
     };
 
     atualizaIe = (event) => {
@@ -921,7 +1054,9 @@ class FrenteCaixa extends React.Component {
         const cep = event.target.value;
         const cepSemPontuacao = cep.replace(/[^\d]/g, "");
         const cepFormatado = cepSemPontuacao.replace(/(\d{5})(\d{3})/, "$1-$2");
-        this.setState({ cep: cepFormatado });
+        this.setState({
+            cep: cepFormatado
+        });
     };
 
     atualizaUf = (event) => {
@@ -942,21 +1077,27 @@ class FrenteCaixa extends React.Component {
         const celular = event.target.value;
         const celularSemPontuacao = celular.replace(/[^\d]/g, "");
         const celularFormatado = celularSemPontuacao.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
-        this.setState({ celular: celularFormatado });
+        this.setState({
+            celular: celularFormatado
+        });
     };
 
     atualizaDataNascimento = (event) => {
         const dataNascimento = event.target.value;
         const dataNascimentoSemPontuacao = dataNascimento.replace(/[^\d]/g, "");
         const dataNascimentoFormatada = dataNascimentoSemPontuacao.replace(/(\d{2})(\d{2})(\d{4})/, "$1/$2/$3");
-        this.setState({ dataNascimento: dataNascimentoFormatada });
+        this.setState({
+            dataNascimento: dataNascimentoFormatada
+        });
     };
 
     atualizaFone = (event) => {
         const fone = event.target.value;
         const foneSemPontuacao = fone.replace(/[^\d]/g, "");
         const foneFormatado = foneSemPontuacao.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
-        this.setState({ fone: foneFormatado });
+        this.setState({
+            fone: foneFormatado
+        });
     };
 
     // -------------------------------------------- FUNÇÕES PRODUTO / LISTA DE PRODUTO ---------------------------------------------
@@ -985,18 +1126,14 @@ class FrenteCaixa extends React.Component {
     };
 
     adicionarProdutoSelecionado = (produtoSelecionado) => {
+
+        const { produtosSelecionados, quantidade, preco, precoUnitario, descontoInicialProduto } = this.state;
+
         if (!produtoSelecionado) {
             this.modalInserirProduto();
             return;
         }
 
-        const {
-            produtosSelecionados,
-            quantidade,
-            preco,
-            precoUnitario,
-            descontoInicialProduto
-        } = this.state;
         const produtoExistenteIndex = produtosSelecionados.findIndex(
             (produto) => produto.produto.id === produtoSelecionado.produto.id
         );
@@ -1095,7 +1232,9 @@ class FrenteCaixa extends React.Component {
         const subTotal = total.toFixed(2);
 
         if (this.state.subTotal !== subTotal) {
-            this.setState({ subTotal });
+            this.setState({
+                subTotal
+            });
         };
         return parseFloat(subTotal);
     };
@@ -1105,11 +1244,16 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizaQuantidade = (event) => {
-        const quantidade = parseFloat(event.target.value);
+        let quantidade = parseFloat(event.target.value);
+        quantidade = isNaN(quantidade) || quantidade <= 0 ? 1 : quantidade;
+
         this.setState({
-            quantidade
-        }, this.atualizarValorTotal);
+            quantidade: quantidade
+        }, () => {
+            this.atualizarValorTotal();
+        });
     };
+
 
     atualizaPreco = (event) => {
         const preco = event.target.value.replace(',', '.');
@@ -1135,6 +1279,7 @@ class FrenteCaixa extends React.Component {
 
     atualizarValorTotal = () => {
         const { quantidade, preco, descontoInicialProduto } = this.state;
+
         let novoPrecoDesconto = parseFloat(preco);
         let descontoTotal = 0;
 
@@ -1182,7 +1327,7 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizaDesconto(event) {
-        const descontoString = event.target.value.replace(',', '.');
+        const descontoString = event.target.value;
         const descontoNumber = parseFloat(descontoString.replace(/[^\d.-]/g, ''));
 
         console.log(descontoString, descontoNumber)
@@ -1203,7 +1348,6 @@ class FrenteCaixa extends React.Component {
             totalComDesconto: resultado.totalComDesconto,
         });
     };
-
 
     // -------------------------------------------- FUNÇÕES CAMPOS TOTAL EM DINHEIRO E TROCO --------------------------------------------
 
@@ -1294,6 +1438,7 @@ class FrenteCaixa extends React.Component {
         const idLoja = event.target.options[event.target.selectedIndex].value;
         console.log("idLoja: ", idLoja)
         const unidadeLojaSelecionada = this.state.objeto.find((objeto) => objeto.idLoja === idLoja)?.unidadeLoja || '';
+        console.log("UnidadeNegocio: ", unidadeLojaSelecionada)
         this.setState({
             idLoja: idLoja,
             unidadeLoja: unidadeLojaSelecionada
@@ -1302,6 +1447,7 @@ class FrenteCaixa extends React.Component {
 
     atualizaUnidadeNegocio = (event) => {
         const unidadeLojaSelecionada = event.target.value;
+        // console.log("UnidadeNegocio: ", unidadeLojaSelecionada)
         this.setState({
             unidadeLoja: unidadeLojaSelecionada
         });
@@ -1442,15 +1588,20 @@ class FrenteCaixa extends React.Component {
     };
 
     validaVenda = (event) => {
-        event.preventDefault(); // Evita a atualização da página
+        event.preventDefault();
         const form = event.currentTarget;
-        console.log("TESTE:", form.checkValidity())
+
         if (form.checkValidity() === false) {
             event.stopPropagation();
-            this.setState({ validated: true }); // Atualiza o estado para mostrar as mensagens de validação
+            this.setState({ validated: true });
         } else {
-            this.finalizaVenda();
-        };
+            // Verifica se o CPF é válido
+            if (this.validarCPF(this.state.cnpj) || this.validarCNPJ(this.state.cnpj)) {
+                this.finalizaVenda();
+            } else {
+                this.ModalCpfValido();
+            }
+        }
     };
 
     finalizaVenda = () => {
@@ -1617,10 +1768,14 @@ class FrenteCaixa extends React.Component {
     handleChangeDias = (index, value) => {
         const { parcelas } = this.state;
         const newParcelas = [...parcelas];
+
         newParcelas[index].dias = value;
+
         // Atualize o valor da data com base nos dias alterados
         newParcelas[index].data = this.calcularData(value);
-        this.setState({ parcelas: newParcelas });
+        this.setState({
+            parcelas: newParcelas
+        });
     };
 
 
@@ -1825,13 +1980,13 @@ class FrenteCaixa extends React.Component {
                 modalEditarProduto: true,
                 produtoSelecionadoIndex: index,
                 produtoSelecionadoLista: produto,
-                valorLista: preco || '',
+                valorLista: preco ? parseFloat(preco).toFixed(2) : '',
                 quantidadeLista: produto.quantidade || '',
                 descontoItemLista: produto.descontoItem || produto.descontoInicialProduto,
                 valorUnitarioLista: this.state.valorUnitarioAtualizado || valorUnitario, // Utiliza o valorUnitarioAtualizado se estiver definido, caso contrário, utiliza o valor original
                 valorTotalLista: produto.subTotal || '',
                 observacaointerna: produto.observacaointerna || '',
-                valorUnitarioOriginal: preco, // Salva o valor original do campo PRECO UNITARIO
+                valorUnitarioOriginal: preco ? parseFloat(preco).toFixed(2) : '', // Salva o valor original do campo PRECO UNITARIO
                 valorUnitarioAtualizado: null // Limpa o valorUnitarioAtualizado ao abrir o modal
             },
             () => {
@@ -1841,8 +1996,9 @@ class FrenteCaixa extends React.Component {
     };
 
     atualizaValorLista = (event) => {
+        const valorLista = event.target.value
         this.setState({
-            valorLista: event.target.value
+            valorLista: valorLista
         });
     };
 
@@ -1896,14 +2052,7 @@ class FrenteCaixa extends React.Component {
     };
 
     salvarProdutoLista = () => {
-        const {
-            produtoSelecionadoIndex,
-            quantidadeLista,
-            valorUnitarioLista,
-            descontoItemLista,
-            produtosSelecionados,
-            preco
-        } = this.state;
+        const { produtoSelecionadoIndex, quantidadeLista, valorUnitarioLista, descontoItemLista, produtosSelecionados, preco } = this.state;
 
         if (produtoSelecionadoIndex !== null && produtoSelecionadoIndex >= 0) {
             const produtosAtualizados = [...produtosSelecionados];
@@ -1972,7 +2121,7 @@ class FrenteCaixa extends React.Component {
         //Calculos
         const { subTotalGeral, observacoes, observacaointerna, valorDesconto, dinheiroRecebido, troco, frete, condicao, depositoSelecionado, subTotal, dataPrevista, consumidorFinal, prazo, numeroPedido, descontoProduto } = this.state;
         //Modals
-        const { carregado, erro, validated, primeiroProdutoDesconto, nomeLoja, idLoja, unidadeLoja } = this.state;
+        const { carregado, erro, validated, primeiroProdutoDesconto, nomeLoja, idLoja, unidadeLoja, cpfValido, cnpjValido } = this.state;
 
         let quantidadeTotal = 0;
         for (const produto of this.state.produtosSelecionados) {
@@ -2113,23 +2262,28 @@ class FrenteCaixa extends React.Component {
                                             </Form>
                                         </Col> */}
                                     </Row>
-                                    {produtos.map((produto) => (
-                                        <ul className="lista-produtos">
-                                            <li
-                                                key={produto.produto.id}
-                                                onClick={() => this.selecionarProduto(produto)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' || e.key === " ") {
-                                                        e.preventDefault();
-                                                        this.selecionarProduto(produto);
-                                                    }
-                                                }}
-                                                tabIndex={0}
-                                            >
-                                                Cód: {produto.produto.codigo} Produto: {produto.produto.descricao} - Preço R$ {produto.produto.preco = parseFloat(produto.produto.preco).toFixed(2)}
-                                            </li>
-                                        </ul>
-                                    ))}
+                                    {produtos.map((produto) => {
+                                        const precoFormatado = parseFloat(produto.produto.preco).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+                                        return (
+                                            <ul className="lista-produtos">
+                                                <li
+                                                    key={produto.produto.id}
+                                                    onClick={() => this.selecionarProduto(produto)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                            e.preventDefault();
+                                                            this.selecionarProduto(produto);
+                                                        }
+                                                    }}
+                                                    tabIndex={0}
+                                                >
+                                                    Cód: {produto.produto.codigo} Produto: {produto.produto.descricao} - Preço R$ {precoFormatado}
+                                                </li>
+                                            </ul>
+                                        );
+                                    })}
+
                                     {produtoNaoLocalizado && (
                                         <Row className="row align-items-center">
                                             <Col className="col" xs={4}>
@@ -2198,13 +2352,13 @@ class FrenteCaixa extends React.Component {
                                                 <Col className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="preco" className="texto-campos">Preço unitário</Form.Label>
-                                                        <Form.Control type="number" id="preco" className="form-control" name="preco" placeholder="00.00" value={preco || ''} onChange={this.atualizaPreco} onBlur={this.formatarPreco} />
+                                                        <Form.Control type="number" id="preco" className="form-control no-spinners" name="preco" placeholder="00,00" value={preco || ''} onChange={this.atualizaPreco} onBlur={this.formatarPreco} />
                                                     </Form.Group>
                                                 </Col>
                                                 <Col className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="valorTotal" className="texto-campos">Sub total</Form.Label>
-                                                        <Form.Control type="text" id="valorTotal" className="form-control" name="valorTotal" placeholder="00.00" value={valorTotal || ''} onChange={this.atualizarValorTotal} readOnly />
+                                                        <Form.Control type="text" id="valorTotal" className="form-control" name="valorTotal" placeholder="00,00" value={valorTotal ? valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ',') : ''} onChange={this.atualizarValorTotal} readOnly />
                                                     </Form.Group>
                                                 </Col>
                                             </Row>
@@ -2234,9 +2388,9 @@ class FrenteCaixa extends React.Component {
                                                     <td>{produto.produto.codigo} - {produto.produto.descricao}</td>
                                                     <td>{produto.quantidade}</td>
                                                     <td>R$ {typeof produto.preco === "number"
-                                                        ? produto.preco.toFixed(2)
-                                                        : parseFloat(produto.preco).toFixed(2)}</td>
-                                                    <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade, produto.preco).toFixed(2)}</td>
+                                                        ? produto.preco.toFixed(2).replace('.', ',')
+                                                        : parseFloat(produto.preco).toFixed(2).replace('.', ',')}</td>
+                                                    <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade, produto.preco).toFixed(2).replace('.', ',')}</td>
                                                     <td>
                                                         <Button variant="light" title="Editar produto" className="transparent-button" onClick={() => {
                                                             this.modalEditarProduto(produto)
@@ -2245,7 +2399,8 @@ class FrenteCaixa extends React.Component {
                                                         </Button>
                                                         <Button variant="light" title="Excluir produto" className="transparent-button" onClick={this.modalExcluirProduto}>
                                                             <BsTrashFill className="red-icon" />
-                                                        </Button></td>
+                                                        </Button>
+                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -2262,24 +2417,24 @@ class FrenteCaixa extends React.Component {
                                                         <Col className="col" xs={4}>
                                                             <Form.Group className="mb-3">
                                                                 <Form.Label htmlFor="valorLista" className="texto-campos">Valor de lista</Form.Label>
-                                                                <Form.Control type="text" id="valorLista" className="form-control" name="valorLista" value={this.state.valorLista || ''} disabled />
+                                                                <Form.Control type="number" id="valorLista" className="form-control no-spinners" name="valorLista" value={this.state.valorLista || ''} disabled />
                                                             </Form.Group>
                                                         </Col>
                                                         <Col className="col" xs={4}>
                                                             <Form.Group className="mb-3">
                                                                 <Form.Label htmlFor="quantidade" className="texto-campos">Quantidade</Form.Label>
-                                                                <Form.Control type="text" id="quantidade" className="form-control" name="quantidade" value={this.state.quantidadeLista || ''} onChange={this.atualizaQuantidadeLista} />
+                                                                <Form.Control type="number" id="quantidade" className="form-control no-spinners" name="quantidade" value={this.state.quantidadeLista || ''} onChange={this.atualizaQuantidadeLista} />
                                                             </Form.Group>
                                                         </Col>
                                                         <Col className="col" xs={4}>
                                                             <Form.Group className="mb-3">
                                                                 <Form.Label htmlFor="descontoItem" className="texto-campos">Desconto item lista (%)</Form.Label>
                                                                 <Form.Control
-                                                                    type="text"
+                                                                    type="number"
                                                                     id="descontoItem"
-                                                                    className="form-control"
+                                                                    className="form-control no-spinners"
                                                                     name="descontoItem"
-                                                                    placeholder="00.00"
+                                                                    placeholder="00,00"
                                                                     value={this.state.descontoItemLista === '0' ? '' : this.state.descontoItemLista}
                                                                     onChange={this.atualizaDescontoItem}
                                                                     onBlur={this.aplicaDescontoItem}
@@ -2303,13 +2458,13 @@ class FrenteCaixa extends React.Component {
                                                         <Col className="col" xs={4}>
                                                             <Form.Group className="mb-3">
                                                                 <Form.Label htmlFor="valorUnitario" className="texto-campos">Valor unitário</Form.Label>
-                                                                <Form.Control type="text" id="valorUnitario" className="form-control" name="valorUnitario" value={this.state.valorUnitarioLista || ''} onChange={this.atualizaValorUnitario} onBlur={this.formatarPrecoLista} />
+                                                                <Form.Control type="number" id="valorUnitario" className="form-control no-spinners" name="valorUnitario" value={this.state.valorUnitarioLista || ''} onChange={this.atualizaValorUnitario} onBlur={this.formatarPrecoLista} />
                                                             </Form.Group>
                                                         </Col>
                                                         <Col className="col" xs={4}>
                                                             <Form.Group className="mb-3">
                                                                 <Form.Label htmlFor="subTotalLista" className="texto-campos">Sub total</Form.Label>
-                                                                <Form.Control type="text" id="subTotalLista" className="form-control" name="subTotalLista" value={this.state.subTotalLista || ''} disabled />
+                                                                <Form.Control type="number" id="subTotalLista" className="form-control no-spinners" name="subTotalLista" value={this.state.subTotalLista || ''} disabled />
                                                             </Form.Group>
                                                         </Col>
                                                     </Row>
@@ -2328,19 +2483,19 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="subtotal" className="texto-campos">Sub total</Form.Label>
-                                                <Form.Control type="text" id="subtotal" className="form-control" name="subtotal" placeholder="00.00" value={subTotal || ''} disabled />
+                                                <Form.Control type="text" id="subtotal" className="form-control" name="subtotal" placeholder="00,00" value={subTotal ? subTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ',') : ''} disabled />
                                             </Form.Group>
                                         </Col>
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="desconto" className="texto-campos">Desconto (Total)</Form.Label>
-                                                <Form.Control type="text" className="form-control" name="desconto" placeholder="00.00" value={valorDesconto || ''} onChange={this.atualizaDesconto} onBlur={this.formatarDesconto} />
+                                                <Form.Control type="text" className="form-control" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizaDesconto} onBlur={this.formatarDesconto} />
                                             </Form.Group>
                                         </Col>
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="totaldavenda" className="texto-campos">Total da venda</Form.Label>
-                                                <Form.Control type="text" id="totaldavenda" className="form-control" name="totaldavenda" placeholder="00.00" defaultValue={subTotalGeral || ''} disabled />
+                                                <Form.Control type="text" id="totaldavenda" className="form-control" name="totaldavenda" placeholder="00,00" defaultValue={subTotalGeral ? subTotalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ',') : ''} disabled />
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -2378,8 +2533,18 @@ class FrenteCaixa extends React.Component {
                                             </Col>
                                             <Col className="col" xs={12} md={3}>
                                                 <Form.Group className="mb-3">
-                                                    <Form.Label htmlFor="cpf" className="texto-campos">{tipo === 'J' ? 'CNPJ' : 'CPF'}</Form.Label>
-                                                    <Form.Control type="text" className="form-control" name="cpf" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
+                                                    <Form.Label htmlFor="cpf" className="texto-campos">
+                                                        {tipo === 'J' ? 'CNPJ' : 'CPF'}
+                                                    </Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        className={`form-control ${!cpfValido && cnpj.length === 11 && !cnpjValido ? 'is-invalid' : ''}`}
+                                                        name="cpf"
+                                                        value={cnpj || ''}
+                                                        onChange={this.atualizaCpfCnpj}
+                                                        onBlur={this.validarCpf}
+                                                        required={!cpfValido && !cnpjValido} // Define a propriedade required com base nos estados de cpfValido e cnpjValido
+                                                    />
                                                 </Form.Group>
                                             </Col>
                                             <Col className="col" xs={12} md={4}>
@@ -2439,12 +2604,28 @@ class FrenteCaixa extends React.Component {
                                                             <Form.Control type="text" id="nome" className="form-control" name="nome" value={nome || ''} onChange={this.atualizaNome} />
                                                         </Form.Group>
                                                     </Col>
-                                                    <Col className="col" xs={4}>
+                                                    {/* <Col className="col" xs={4}>
                                                         <Form.Group className="mb-3">
                                                             <Form.Label htmlFor="cpf" className="texto-campos">
                                                                 {cnpj.replace(/[^\d]/g, '').length === 14 ? 'CNPJ' : 'CPF'}
                                                             </Form.Label>
                                                             <Form.Control type="text" id="cpf" className="form-control" name="cpf" value={cnpj || ''} onChange={this.atualizaCpfCnpj} />
+                                                        </Form.Group>
+                                                    </Col> */}
+                                                    <Col className="col" xs={12} md={4}>
+                                                        <Form.Group className="mb-3">
+                                                            <Form.Label htmlFor="cpf" className="texto-campos">
+                                                                {tipo === 'J' ? 'CNPJ' : 'CPF'}
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                type="text"
+                                                                className={`form-control ${!cpfValido && cnpj.length === 11 && !cnpjValido ? 'is-invalid' : ''}`}
+                                                                name="cpf"
+                                                                value={cnpj || ''}
+                                                                onChange={this.atualizaCpfCnpj}
+                                                                onBlur={this.validarCpf}
+                                                                required={!cpfValido && !cnpjValido} // Define a propriedade required com base nos estados de cpfValido e cnpjValido
+                                                            />
                                                         </Form.Group>
                                                     </Col>
                                                     <Col className="col" xs={4}>
@@ -2616,13 +2797,13 @@ class FrenteCaixa extends React.Component {
                                             <Col className="col" xs={3}>
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="frete" className="texto-campos">Frete</Form.Label>
-                                                    <Form.Control type="number" className="form-control" name="frete" placeholder="00.00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
+                                                    <Form.Control type="number" className="form-control no-spinners" name="frete" placeholder="00,00" value={frete || ''} onChange={this.atualizaTotalComFrete} onBlur={this.formatarFrete} />
                                                 </Form.Group>
                                             </Col>
                                             <Col className="col" xs={3}>
                                                 <Form.Group className="mb-3">
                                                     <Form.Label htmlFor="totaldavenda" className="texto-campos">Total da venda</Form.Label>
-                                                    <Form.Control type="text" id="totaldavenda" className="form-control" name="totaldavenda" placeholder="00.00" defaultValue={subTotalGeral || ''} disabled />
+                                                    <Form.Control type="text" id="totaldavenda" className="form-control" name="totaldavenda" placeholder="00,00" defaultValue={subTotalGeral ? subTotalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ',') : ''} disabled />
                                                 </Form.Group>
                                             </Col>
                                         </Row>
@@ -2649,13 +2830,13 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="totaldinheiro" className="texto-campos">Total em dinheiro</Form.Label>
-                                                <Form.Control type="text" className="form-control" name="totaldinheiro" placeholder="00.00" value={dinheiroRecebido || ''} onChange={this.atualizaTroco} onBlur={this.formatarTroco} />
+                                                <Form.Control type="text" className="form-control" name="totaldinheiro" placeholder="00,00" value={dinheiroRecebido || ''} onChange={this.atualizaTroco} onBlur={this.formatarTroco} />
                                             </Form.Group>
                                         </Col>
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="trocodinheiro" className="texto-campos">Troco em dinheiro</Form.Label>
-                                                <Form.Control type="text" id="trocodinheiro" className="form-control" name="trocodinheiro" placeholder="00.00" defaultValue={troco || ''} disabled />
+                                                <Form.Control type="text" id="trocodinheiro" className="form-control" name="trocodinheiro" placeholder="00,00" defaultValue={troco || ''} disabled />
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -2663,7 +2844,7 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col mb-3" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Formas de pagamento</Form.Label>
-                                                <Form.Select type="number" placeholder="Digite a condição" value={condicao || ''} onChange={this.handleChange} >
+                                                <Form.Select as="select" type="number" placeholder="Digite a condição" value={condicao || ''} onChange={this.handleChange} >
                                                     <option>Selecione a forma</option>
                                                     {this.state.formaspagamento.map((formapagamento) => (
                                                         <option key={formapagamento.formapagamento.id} value={formapagamento.formapagamento.id}>
@@ -2676,7 +2857,7 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col mb-3" xs={2}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Condição</Form.Label>
-                                                <Form.Control type="text" className="form-control" name="trocodinheiro" value={this.state.prazo || ''} onChange={this.handleChangePrazo} />
+                                                <Form.Control type="text" className="form-control" name="trocodinheiro" value={this.state.prazo || '0'} onChange={this.handleChangePrazo} />
                                             </Form.Group>
                                         </Col>
                                         <Col className="col mb-3" >
@@ -2718,7 +2899,7 @@ class FrenteCaixa extends React.Component {
                                                                         type="number"
                                                                         value={parcela.dias}
                                                                         onChange={(event) => this.handleChangeDias(index, event.target.value)}
-                                                                        className="form-control text-center"
+                                                                        className="form-control text-center no-spinners"
                                                                     />
                                                                 </Col>
                                                             </td>
@@ -2735,14 +2916,16 @@ class FrenteCaixa extends React.Component {
                                                             <td>
                                                                 <Col>
                                                                     <Form.Control
+                                                                        placeholder="00,00"
                                                                         type="number"
                                                                         value={parcela.valor}
                                                                         onChange={(event) => this.handleValorChangeParcela(index, 'valor', event.target.value)}
-                                                                        className="form-control text-center" />
+                                                                        className="form-control text-center no-spinners" />
                                                                 </Col>
                                                             </td>
                                                             <td>
                                                                 <Form.Select
+                                                                    as="select"
                                                                     value={parcela.forma || ''}
                                                                     onChange={(e) => this.handleFormaChange(index, e)}>
                                                                     {this.state.formaspagamento.map((formapagamento) => (
@@ -2868,7 +3051,19 @@ class FrenteCaixa extends React.Component {
                             <Button className="botao-finalizarvenda" variant="outline-secondary" onClick={this.modalExcluirProduto}>Não</Button>
                             <Button variant="secondary" onClick={this.excluirProdutoSelecionado}>Sim</Button>
                         </Modal.Footer>
+                    </Modal>
 
+                    <Modal show={this.state.ModalCpfValido} onHide={this.ModalCpfValido} centered>
+                        <Modal.Header closeButton className="bg-danger text-white">
+                            <BsShieldFillExclamation className="mr-2 fa-2x" style={{ marginRight: '10px' }} />
+                            <Modal.Title>Atenção</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{ padding: '20px' }}>
+                            CPF | CNPJ inválido. Corrija o campo antes de finalizar a venda.
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button className="botao-finalizarvenda" variant="secondary" onClick={this.ModalCpfValido}>Fechar</Button>
+                        </Modal.Footer>
                     </Modal>
 
                     <Offcanvas show={this.state.canvasFinalizarPedido} onHide={this.canvasFinalizarPedido} size="lg" placement="end" style={{ width: '35%' }}>
@@ -2908,8 +3103,8 @@ class FrenteCaixa extends React.Component {
                                             <td>{produto.quantidade}</td>
                                             <td>R$ {typeof produto.preco === "number"
                                                 ? produto.preco.toFixed(2)
-                                                : parseFloat(produto.preco).toFixed(2)}</td>
-                                            <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade, produto.preco).toFixed(2)}</td>
+                                                : parseFloat(produto.preco).toFixed(2).replace(".", ",")}</td>
+                                            <td>R$ {this.calcularSubTotal(produto.produto, produto.quantidade, produto.preco).toFixed(2).replace(".", ",")}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -3022,7 +3217,7 @@ class FrenteCaixa extends React.Component {
                             <Col className="col">
                                 <Form.Group className="mb-3">
                                     <Form.Label htmlFor="depositolancamento" className="texto-campos">Selecione a loja</Form.Label>
-                                    <Form.Select className="form-control" id="depositolancamento" name="depositolancamento" value={idLoja || ''} onChange={this.atualizaNomeLoja}>
+                                    <Form.Select as="select" className="form-control" id="depositolancamento" name="depositolancamento" value={idLoja || ''} onChange={this.atualizaNomeLoja}>
                                         <option key={0} value={0}>Selecione a loja</option>
                                         {this.state.objeto && this.state.objeto.map((objeto) => (
                                             <option key={objeto.idLoja} value={objeto.idLoja}>
@@ -3035,7 +3230,7 @@ class FrenteCaixa extends React.Component {
                             <Col className="col">
                                 <Form.Group className="mb-3">
                                     <Form.Label htmlFor="unidadenegocio" className="texto-campos">Unidade de negócio</Form.Label>
-                                    <Form.Select className="form-control" id="unidadenegocio" name="unidadenegocio" value={unidadeLoja || ''} onChange={this.atualizaUnidadeNegocio} disabled>
+                                    <Form.Select as="select" className="form-control" id="unidadenegocio" name="unidadenegocio" value={unidadeLoja || ''} onChange={this.atualizaUnidadeNegocio} disabled>
                                         {this.state.objeto && this.state.objeto.map((objeto) => (
                                             <option key={objeto.idLoja} value={objeto.idLoja}>
                                                 {objeto.unidadeLoja}

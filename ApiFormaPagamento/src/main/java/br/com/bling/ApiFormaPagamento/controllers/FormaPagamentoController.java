@@ -37,7 +37,7 @@ public class FormaPagamentoController {
 
             System.out.println("GET: " + request);
 
-            return ResponseEntit,y.ok(request);
+            return ResponseEntity.ok(request);
 
         } catch (Exception e) {
             throw new ApiFormaPagamentoException("Houve algum erro sistemico, tente novamente", e);
