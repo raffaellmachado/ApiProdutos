@@ -240,17 +240,17 @@ class FrenteCaixa extends React.Component {
     componentDidMount() {
         this.buscarFormaDePagamento()
             .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarLoja())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarPedido())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => {
-                this.setState({ carregado: true });
-            })
-            .catch((error) => {
-                this.setState({ erro: error.message });
-            });
-        this.ModalSelecionarLoja()
+        //     .then(() => this.buscarLoja())
+        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+        //     .then(() => this.buscarPedido())
+        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+        //     .then(() => {
+        //         this.setState({ carregado: true });
+        //     })
+        //     .catch((error) => {
+        //         this.setState({ erro: error.message });
+        //     });
+        // this.ModalSelecionarLoja()
 
         this.setState({ carregado: true }); //APAGAR (GAMBIARRA)
     };
@@ -269,8 +269,7 @@ class FrenteCaixa extends React.Component {
         if (prevState.produtosSelecionados !== this.state.produtosSelecionados ||
             prevState.subTotal !== this.state.subTotal ||
             prevState.valorDesconto !== this.state.valorDesconto ||
-            prevState.subTotalComFrete !== this.state.subTotalComFrete //||
-            // prevState.dinheiroRecebido !== this.state.dinheiroRecebido // Adicionado o dinheiroRecebido como dependência
+            prevState.subTotalComFrete !== this.state.subTotalComFrete
         ) {
             const subtotalGeral = this.calcularSubTotalGeral().toFixed(2);
             // console.log("Subtotal Geral:", subtotalGeral);
@@ -1275,6 +1274,14 @@ class FrenteCaixa extends React.Component {
             clearTimeout(this.valorTotalTimeout);
             this.valorTotalTimeout = setTimeout(this.atualizarValorTotal, 500);
         });
+
+        if (descontoInicialProduto === '' || descontoInicialProduto === '0') {
+            const { produtoSelecionado } = this.state;
+            const precoOriginal = parseFloat(produtoSelecionado.produto.preco).toFixed(2);
+            this.setState({
+                preco: precoOriginal
+            });
+        }
     };
 
     atualizarValorTotal = () => {
@@ -1349,6 +1356,7 @@ class FrenteCaixa extends React.Component {
         });
     };
 
+
     // -------------------------------------------- FUNÇÕES CAMPOS TOTAL EM DINHEIRO E TROCO --------------------------------------------
 
     calcularTotalComDinheiro = (dinheiro) => {
@@ -1377,15 +1385,15 @@ class FrenteCaixa extends React.Component {
     atualizaTroco = (event) => {
         const valorRecebido = event.target.value;
 
-        if (!valorRecebido) {
+        if (!valorRecebido && valorRecebido !== '0') {
             this.setState({
-                dinheiroRecebido: 0,
+                dinheiroRecebido: '',
                 troco: 0,
             });
             return;
-        };
+        }
 
-        if (!isNaN(parseFloat(valorRecebido)) && parseFloat(valorRecebido) > 0) {
+        if (!isNaN(parseFloat(valorRecebido)) && parseFloat(valorRecebido) >= 0) {
             const { totalComDesconto } = this.state;
             const { dinheiroRecebido, troco } = this.calcularTotalComDinheiro(valorRecebido, totalComDesconto);
 
@@ -1393,8 +1401,9 @@ class FrenteCaixa extends React.Component {
                 dinheiroRecebido,
                 troco: troco,
             });
-        };
+        }
     };
+
 
     // -------------------------------------------- FUNÇÕES CAMPO FRETE --------------------------------------------
 
@@ -1961,12 +1970,13 @@ class FrenteCaixa extends React.Component {
 
     formatarTroco = (event) => {
         const dinheiroRecebido = event.target.value.trim();
-        const dinheiro = dinheiroRecebido !== '' && !isNaN(dinheiroRecebido) ? parseFloat(dinheiroRecebido).toFixed(2) : 0;
-        // console.log(dinheiroRecebido, dinheiro)
+        const dinheiro = dinheiroRecebido !== '' ? parseFloat(dinheiroRecebido).toFixed(2) : '';
         this.setState({
             dinheiroRecebido: dinheiro
         });
     };
+
+
 
     // --------------------------------------- FUNÇÕES EDITAR LISTA DE PRODUTOS (MODAL) ----------------------------------------
 
@@ -2352,7 +2362,8 @@ class FrenteCaixa extends React.Component {
                                                 <Col className="col">
                                                     <Form.Group className="mb-3">
                                                         <Form.Label htmlFor="preco" className="texto-campos">Preço unitário</Form.Label>
-                                                        <Form.Control type="number" id="preco" className="form-control no-spinners" name="preco" placeholder="00,00" value={preco || ''} onChange={this.atualizaPreco} onBlur={this.formatarPreco} />
+                                                        <Form.Control type="number" id="preco" className="form-control no-spinners" name="preco" placeholder="00,00" value={preco || ''} onChange={this.atualizaPreco} onBlur={this.formatarPreco} readOnly={this.state.descontoInicialProduto !== ''}
+                                                        />
                                                     </Form.Group>
                                                 </Col>
                                                 <Col className="col">
@@ -2489,7 +2500,7 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="desconto" className="texto-campos">Desconto (Total)</Form.Label>
-                                                <Form.Control type="text" className="form-control" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizaDesconto} onBlur={this.formatarDesconto} />
+                                                <Form.Control type="number" className="form-control no-spinners" name="desconto" placeholder="00,00" value={valorDesconto || ''} onChange={this.atualizaDesconto} onBlur={this.formatarDesconto} step="0.01" />
                                             </Form.Group>
                                         </Col>
                                         <Col className="col" xs={3}>
@@ -2830,13 +2841,13 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="totaldinheiro" className="texto-campos">Total em dinheiro</Form.Label>
-                                                <Form.Control type="text" className="form-control" name="totaldinheiro" placeholder="00,00" value={dinheiroRecebido || ''} onChange={this.atualizaTroco} onBlur={this.formatarTroco} />
+                                                <Form.Control type="text" className="form-control" name="totaldinheiro" placeholder="00,00" value={dinheiroRecebido ? dinheiroRecebido.toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ',') : ''} onChange={this.atualizaTroco} onBlur={this.formatarTroco} />
                                             </Form.Group>
                                         </Col>
                                         <Col className="col" xs={3}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label htmlFor="trocodinheiro" className="texto-campos">Troco em dinheiro</Form.Label>
-                                                <Form.Control type="text" id="trocodinheiro" className="form-control" name="trocodinheiro" placeholder="00,00" defaultValue={troco || ''} disabled />
+                                                <Form.Control type="text" id="trocodinheiro" className="form-control" name="trocodinheiro" placeholder="00,00" defaultValue={troco ? troco.toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ',') : ''} disabled />
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -2857,7 +2868,7 @@ class FrenteCaixa extends React.Component {
                                         <Col className="col mb-3" xs={2}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Condição</Form.Label>
-                                                <Form.Control type="text" className="form-control" name="trocodinheiro" value={this.state.prazo || '0'} onChange={this.handleChangePrazo} />
+                                                <Form.Control type="text" className="form-control" name="trocodinheiro" value={this.state.prazo || ''} onChange={this.handleChangePrazo} />
                                             </Form.Group>
                                         </Col>
                                         <Col className="col mb-3" >
