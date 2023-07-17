@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class SelecionaLoja {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     public Long id;
 
     public String idLoja;

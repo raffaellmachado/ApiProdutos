@@ -3,6 +3,7 @@ import Contato from './components/Contato';
 import Produto from "./components/Produto";
 import Categoria from "./components/Categoria";
 import FrenteCaixa from "./components/FrenteCaixa";
+import CadastroLoja from './components/CadastroLoja';
 
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -51,6 +52,8 @@ function App() {
 
                   <NavDropdown title="Vendas" id="nav-dropdown-dark-example" menuVariant="dark">
                     <NavDropdown.Item as={Link} to="/FrenteCaixa" >Frente de Caixa</NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/CadastroLoja" >Cadastro Loja</NavDropdown.Item>
+
                   </NavDropdown>
 
                   <NavDropdown title="Finanças" id="nav-dropdown-dark-example" menuVariant="dark">
@@ -76,6 +79,7 @@ function App() {
             <Route path="/Produto" element={<Produto />}></Route>
             <Route path="/Categoria" element={<Categoria />}></Route>
             <Route path="/FrenteCaixa" element={<FrenteCaixa />}></Route>
+            <Route path="/CadastroLoja" element={<CadastroLoja />}></Route>
           </Routes>
 
         </BrowserRouter >

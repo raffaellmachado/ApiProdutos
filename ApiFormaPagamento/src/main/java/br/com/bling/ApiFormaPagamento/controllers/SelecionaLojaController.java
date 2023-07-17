@@ -6,14 +6,18 @@ import br.com.bling.ApiFormaPagamento.service.FormaPagamentoService;
 import br.com.bling.ApiFormaPagamento.service.SelecionaLojaService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/v1")          //Padrão para os métodos /api/...
-@Api(value = "API REST FORMA PAGAMENTO")    //Swagger
+@Api(value = "API REST SELECIONA LOJA")    //Swagger
 @CrossOrigin(origins = "*")                 // Liberar os dominios da API
 @Validated
 public class SelecionaLojaController {
@@ -21,24 +25,40 @@ public class SelecionaLojaController {
     @Autowired
     public SelecionaLojaService selecionaLojaService;
 
-    @GetMapping("/selecionaLojas")
+    @GetMapping("/selecionarLojas")
     public List<SelecionaLoja> getAllLojas() {
         return selecionaLojaService.getAllLojas();
     }
 
-//    @GetMapping("/selecionaLoja/{idLoja}")
-//    public SelecionaLoja getLojaById(@PathVariable String idLoja) {
-//        return selecionaLojaService.getLojaById(idLoja);
-//    }
+    @GetMapping("/selecionarLoja/{idLoja}")
+    public ResponseEntity<SelecionaLoja> getLojaById(@PathVariable String idLoja) {
+        Optional<SelecionaLoja> lojaOptional = selecionaLojaService.getLojaById(idLoja);
+        if (lojaOptional.isPresent()) {
+            return ResponseEntity.ok(lojaOptional.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
-//    @GetMapping("/selecionaLoja")
-//    public SelecionaLoja saveLoja(@RequestBody SelecionaLoja selecionaLoja) {
-//        return selecionaLojaService.saveLoja(selecionaLoja);
-//    }
+    @DeleteMapping("/deletarLoja/{idLoja}")
+    public ResponseEntity<Void> deleteLojaById(@PathVariable String idLoja) {
+        try {
+            selecionaLojaService.deleteLojaById(idLoja);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
-//    @PutMapping("/{idLoja}")
-//    public SelecionaLoja updateLoja(@PathVariable String idLoja, @RequestBody SelecionaLoja selecionaLoja) {
-//        selecionaLoja.setId(idLoja);
-//        return selecionaLojaService.updateLoja(selecionaLoja);
-//    }
+    @PostMapping(value = "/adicionarLoja", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SelecionaLoja> saveLoja(@RequestBody SelecionaLoja selecionaLoja) {
+        try {
+            SelecionaLoja savedLoja = selecionaLojaService.saveLoja(selecionaLoja);
+            return ResponseEntity.ok(savedLoja);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
 }
