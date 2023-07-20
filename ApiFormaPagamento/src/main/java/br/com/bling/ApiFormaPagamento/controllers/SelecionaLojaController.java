@@ -59,6 +59,5 @@ public class SelecionaLojaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
+    
 }

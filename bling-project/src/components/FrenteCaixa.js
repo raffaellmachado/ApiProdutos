@@ -240,17 +240,17 @@ class FrenteCaixa extends React.Component {
     componentDidMount() {
         this.buscarFormaDePagamento()
             .catch(() => { throw new Error("Erro ao conectar a API"); })
-        //     .then(() => this.buscarLoja())
-        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
-        //     .then(() => this.buscarPedido())
-        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
-        //     .then(() => {
-        //         this.setState({ carregado: true });
-        //     })
-        //     .catch((error) => {
-        //         this.setState({ erro: error.message });
-        //     });
-        // this.ModalSelecionarLoja()
+            .then(() => this.buscarLoja())
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => this.buscarPedido())
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => {
+                this.setState({ carregado: true });
+            })
+            .catch((error) => {
+                this.setState({ erro: error.message });
+            });
+        this.ModalSelecionarLoja()
 
         this.setState({ carregado: true }); //APAGAR (GAMBIARRA)
     };
@@ -638,7 +638,7 @@ class FrenteCaixa extends React.Component {
 
     buscarLoja = () => {
         return new Promise((resolve, reject) => {
-            fetch("http://localhost:8086/api/v1/selecionaLojas")
+            fetch("http://localhost:8086/api/v1/selecionarLojas")
                 .then((resposta) => {
                     if (!resposta.ok) {
                         throw new Error("Erro na chamada da API");
@@ -1442,12 +1442,11 @@ class FrenteCaixa extends React.Component {
     };
 
     // -------------------------------------------- FUNÇÕES TELA SELEÇÃO DE LOJA E UNIDADE --------------------------------------------
-
     atualizaNomeLoja = (event) => {
-        const idLoja = event.target.options[event.target.selectedIndex].value;
-        console.log("idLoja: ", idLoja)
-        const unidadeLojaSelecionada = this.state.objeto.find((objeto) => objeto.idLoja === idLoja)?.unidadeLoja || '';
-        console.log("UnidadeNegocio: ", unidadeLojaSelecionada)
+        const idLoja = event.target.value;
+        console.log("idLoja: ", idLoja);
+        const unidadeLojaSelecionada = this.state.objeto.find((objeto) => objeto.idLoja === idLoja)?.unidadeLoja || ''; console.log("lojaSelecionada: ", unidadeLojaSelecionada);
+
         this.setState({
             idLoja: idLoja,
             unidadeLoja: unidadeLojaSelecionada
@@ -1975,8 +1974,6 @@ class FrenteCaixa extends React.Component {
             dinheiroRecebido: dinheiro
         });
     };
-
-
 
     // --------------------------------------- FUNÇÕES EDITAR LISTA DE PRODUTOS (MODAL) ----------------------------------------
 
@@ -3241,9 +3238,9 @@ class FrenteCaixa extends React.Component {
                             <Col className="col">
                                 <Form.Group className="mb-3">
                                     <Form.Label htmlFor="unidadenegocio" className="texto-campos">Unidade de negócio</Form.Label>
-                                    <Form.Select as="select" className="form-control" id="unidadenegocio" name="unidadenegocio" value={unidadeLoja || ''} onChange={this.atualizaUnidadeNegocio} disabled>
+                                    <Form.Select as="select" className="form-control" id="unidadenegocio" name="unidadenegocio" value={this.state.unidadeLoja} onChange={this.atualizaUnidadeNegocio} disabled>
                                         {this.state.objeto && this.state.objeto.map((objeto) => (
-                                            <option key={objeto.idLoja} value={objeto.idLoja}>
+                                            <option key={objeto.idLoja} value={objeto.unidadeLoja}>
                                                 {objeto.unidadeLoja}
                                             </option>
                                         ))}

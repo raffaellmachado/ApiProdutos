@@ -1,0 +1,22 @@
+.container {
+  position: sticky;
+  top: 60px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  max-width: auto;
+  opacity: 0;
+  transform: translateY(50%);
+  animation: bolha 0.9s ease forwards;
+  z-index: 1;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+}
+
+.container-btn {
+  max-width: auto;
+  opacity: 0;
+  transform: translateY(50%);
+  animation: bolha 0.9s ease forwards;
+  z-index: 1;
+}
