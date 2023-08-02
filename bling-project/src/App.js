@@ -44,23 +44,23 @@ function App() {
                     <NavDropdown.Item as={Link} to="/Categoria">Categorias</NavDropdown.Item>
                   </NavDropdown>
 
-                  <NavDropdown title="Suprimentos" id="nav-dropdown-dark-example" menuVariant="dark">
+                  {/* <NavDropdown title="Suprimentos" id="nav-dropdown-dark-example" menuVariant="dark">
                     <NavDropdown.Item as={Link} to="/Contato">Clientes e Fornecedores</NavDropdown.Item>
                     <NavDropdown.Item as={Link} to="/Produto" >Produtos</NavDropdown.Item>
                     <NavDropdown.Item href="#action/3.3" >Something</NavDropdown.Item>
-                  </NavDropdown>
+                  </NavDropdown> */}
 
                   <NavDropdown title="Vendas" id="nav-dropdown-dark-example" menuVariant="dark">
                     <NavDropdown.Item as={Link} to="/FrenteCaixa" >Frente de Caixa</NavDropdown.Item>
                     <NavDropdown.Item as={Link} to="/CadastroLoja" >Cadastro Loja</NavDropdown.Item>
 
                   </NavDropdown>
-
+                  {/* 
                   <NavDropdown title="Finanças" id="nav-dropdown-dark-example" menuVariant="dark">
                     <NavDropdown.Item as={Link} to="/Contato" >Clientes e Fornecedores</NavDropdown.Item>
                     <NavDropdown.Item as={Link} to="/Produto" >Produtos</NavDropdown.Item>
                     <NavDropdown.Item href="#action/3.3" >Something</NavDropdown.Item>
-                  </NavDropdown>
+                  </NavDropdown> */}
                 </Nav>
                 <Form className="d-flex">
                   <Form.Control

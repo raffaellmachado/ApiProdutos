@@ -238,19 +238,19 @@ class FrenteCaixa extends React.Component {
     };
 
     componentDidMount() {
-        this.buscarFormaDePagamento()
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarLoja())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => this.buscarPedido())
-            .catch(() => { throw new Error("Erro ao conectar a API"); })
-            .then(() => {
-                this.setState({ carregado: true });
-            })
-            .catch((error) => {
-                this.setState({ erro: error.message });
-            });
-        this.ModalSelecionarLoja()
+        // this.buscarFormaDePagamento()
+        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+        //     .then(() => this.buscarLoja())
+        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+        //     .then(() => this.buscarPedido())
+        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+        //     .then(() => {
+        //         this.setState({ carregado: true });
+        //     })
+        //     .catch((error) => {
+        //         this.setState({ erro: error.message });
+        //     });
+        // this.ModalSelecionarLoja()
 
         this.setState({ carregado: true }); //APAGAR (GAMBIARRA)
     };
