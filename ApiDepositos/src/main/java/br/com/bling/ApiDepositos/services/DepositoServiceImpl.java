@@ -350,44 +350,44 @@ public class DepositoServiceImpl implements DepositoService {
      *
      * @throws ApiDepositoException Caso ocorra algum erro na comunicação com a API externa o banco de dados fica disponível para a consulta.
      */
-    @Scheduled(fixedDelayString = "${api.check.delay}")
-    public void scheduledPostDeposit() {
-        try {
-            System.out.println("Chamei o Scheduled POST");
-//            String url = "http://www.teste.com/";
-            String url = apiBaseUrl + "/depositos/json/" + apikeyparam + apiKey;
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                List<DepositoRequest> depositos = depositoRequestRepository.findAll();
-                List<String> descricaoDepositos = depositoResponseRepository.findAllDescricao();
-
-                for (DepositoRequest deposito : depositos) {
-                    if (deposito.getFlag() != null && deposito.getFlag().equals("POST")) {
-                        if (!descricaoDepositos.contains(deposito.getDescricao())) {
-                            System.out.println("Deposito não encontrado na API, adicionando...");
-                            String xmlDeposito = "<depositos>";
-                            xmlDeposito += "<deposito>";
-                            xmlDeposito += "<descricao>" + deposito.getDescricao() + "</descricao>";
-                            xmlDeposito += "<situacao>" + deposito.getSituacao() + "</situacao>";
-                            xmlDeposito += "<depositoPadrao>" + deposito.depositoPadrao + "</depositoPadrao>";
-                            xmlDeposito += "<desconsiderarSaldo>" + deposito.desconsiderarSaldo + "</desconsiderarSaldo>";
-                            xmlDeposito += "</deposito>";
-                            xmlDeposito += "</depositos>";
-
-                            createDeposit(xmlDeposito);
-                            depositoRequestRepository.delete(deposito);
-                        } else {
-                            System.out.println("Depositos já existe na API, deletando...");
-                            depositoRequestRepository.delete(deposito);
-                        }
-                    }
-                }
-            }
-        } catch (RestClientException e) {
-            System.out.println("API está offline, nada a fazer");
-        }
-    }
+//    @Scheduled(fixedDelayString = "${api.check.delay}")
+//    public void scheduledPostDeposit() {
+//        try {
+//            System.out.println("Chamei o Scheduled POST");
+////            String url = "http://www.teste.com/";
+//            String url = apiBaseUrl + "/depositos/json/" + apikeyparam + apiKey;
+//            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+//
+//            if (response.getStatusCode() == HttpStatus.OK) {
+//                List<DepositoRequest> depositos = depositoRequestRepository.findAll();
+//                List<String> descricaoDepositos = depositoResponseRepository.findAllDescricao();
+//
+//                for (DepositoRequest deposito : depositos) {
+//                    if (deposito.getFlag() != null && deposito.getFlag().equals("POST")) {
+//                        if (!descricaoDepositos.contains(deposito.getDescricao())) {
+//                            System.out.println("Deposito não encontrado na API, adicionando...");
+//                            String xmlDeposito = "<depositos>";
+//                            xmlDeposito += "<deposito>";
+//                            xmlDeposito += "<descricao>" + deposito.getDescricao() + "</descricao>";
+//                            xmlDeposito += "<situacao>" + deposito.getSituacao() + "</situacao>";
+//                            xmlDeposito += "<depositoPadrao>" + deposito.depositoPadrao + "</depositoPadrao>";
+//                            xmlDeposito += "<desconsiderarSaldo>" + deposito.desconsiderarSaldo + "</desconsiderarSaldo>";
+//                            xmlDeposito += "</deposito>";
+//                            xmlDeposito += "</depositos>";
+//
+//                            createDeposit(xmlDeposito);
+//                            depositoRequestRepository.delete(deposito);
+//                        } else {
+//                            System.out.println("Depositos já existe na API, deletando...");
+//                            depositoRequestRepository.delete(deposito);
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (RestClientException e) {
+//            System.out.println("API está offline, nada a fazer");
+//        }
+//    }
 
     /**
      * Verifica o status da API externa e atualiza o banco de dados local com os depositos cadastradas na API.
@@ -397,41 +397,41 @@ public class DepositoServiceImpl implements DepositoService {
      *
      * @throws ApiDepositoException Caso ocorra algum erro na comunicação com a API externa o banco de dados fica disponível para a consulta.
      */
-    @Scheduled(fixedDelayString = "${api.check.delay}")
-    public void scheduledUpdateDeposit() {
-        try {
-            System.out.println("Chamei o Scheduled PUT");
-//            String url = "http://www.teste.com/";
-            String url = apiBaseUrl + "/depositos/json/" + apikeyparam + apiKey;
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                List<DepositoRequest> depositoRequests = depositoRequestRepository.findAll();
-
-                for (DepositoRequest depositoRequest : depositoRequests) {
-                    if ("PUT".equals(depositoRequest.getFlag())) { // verifica se a flag é "PUT"
-                        String xmlDeposito = "<depositos>";
-                        xmlDeposito += "<deposito>";
-                        xmlDeposito += "<descricao>" + depositoRequest.getDescricao() + "</descricao>";
-                        xmlDeposito += "<situacao>" + depositoRequest.getSituacao() + "</situacao>";
-                        xmlDeposito += "<depositoPadrao>" + depositoRequest.depositoPadrao + "</depositoPadrao>";
-                        xmlDeposito += "<desconsiderarSaldo>" + depositoRequest.desconsiderarSaldo + "</desconsiderarSaldo>";
-                        xmlDeposito += "</deposito>";
-                        xmlDeposito += "</depositos>";
-
-                        String idDeposito = String.valueOf(depositoRequest.getId());
-
-                        updateDeposit(xmlDeposito, idDeposito);
-
-                        System.out.println("Depositos já existe na API, deletando...");
-                        depositoRequestRepository.delete(depositoRequest);
-                    }
-                }
-            }
-        } catch (RestClientException e) {
-            System.out.println("API está offline, nada a fazer");
-        }
-    }
+//    @Scheduled(fixedDelayString = "${api.check.delay}")
+//    public void scheduledUpdateDeposit() {
+//        try {
+//            System.out.println("Chamei o Scheduled PUT");
+////            String url = "http://www.teste.com/";
+//            String url = apiBaseUrl + "/depositos/json/" + apikeyparam + apiKey;
+//            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+//
+//            if (response.getStatusCode() == HttpStatus.OK) {
+//                List<DepositoRequest> depositoRequests = depositoRequestRepository.findAll();
+//
+//                for (DepositoRequest depositoRequest : depositoRequests) {
+//                    if ("PUT".equals(depositoRequest.getFlag())) { // verifica se a flag é "PUT"
+//                        String xmlDeposito = "<depositos>";
+//                        xmlDeposito += "<deposito>";
+//                        xmlDeposito += "<descricao>" + depositoRequest.getDescricao() + "</descricao>";
+//                        xmlDeposito += "<situacao>" + depositoRequest.getSituacao() + "</situacao>";
+//                        xmlDeposito += "<depositoPadrao>" + depositoRequest.depositoPadrao + "</depositoPadrao>";
+//                        xmlDeposito += "<desconsiderarSaldo>" + depositoRequest.desconsiderarSaldo + "</desconsiderarSaldo>";
+//                        xmlDeposito += "</deposito>";
+//                        xmlDeposito += "</depositos>";
+//
+//                        String idDeposito = String.valueOf(depositoRequest.getId());
+//
+//                        updateDeposit(xmlDeposito, idDeposito);
+//
+//                        System.out.println("Depositos já existe na API, deletando...");
+//                        depositoRequestRepository.delete(depositoRequest);
+//                    }
+//                }
+//            }
+//        } catch (RestClientException e) {
+//            System.out.println("API está offline, nada a fazer");
+//        }
+//    }
 
     /*
      * ---------------------------------------------------- VERSÃO 1 - SEM CONEXÃO AO BANCO DE DADOS. ----------------------------------------------------------

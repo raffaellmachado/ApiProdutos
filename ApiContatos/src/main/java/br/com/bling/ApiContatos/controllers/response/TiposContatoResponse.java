@@ -11,23 +11,23 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "TB_TIPOS_CONTATO_RESPONSE")
+//@Entity
+//@Table(name = "TB_TIPOS_CONTATO_RESPONSE")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TiposContatoResponse implements Serializable {
 
-    @Id
+//    @Id
     @JsonIgnore
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contato_response_id", referencedColumnName = "id")
-    @JsonBackReference // Anotação para indicar que esta é a ponta "de volta" da relação
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "contato_response_id", referencedColumnName = "id")
+//    @JsonBackReference // Anotação para indicar que esta é a ponta "de volta" da relação
     public ContatoResponse contatoResponse;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tipo_contato_id")
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "tipo_contato_id")
     public TipoContatoResponse tipoContato;
 }
 

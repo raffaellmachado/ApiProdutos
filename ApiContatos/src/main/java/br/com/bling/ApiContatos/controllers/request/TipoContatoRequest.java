@@ -11,16 +11,16 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 @Data
-@Entity
-@Table(name = "TB_TIPO_CONTATO_REQUEST")
+//@Entity
+//@Table(name = "TB_TIPO_CONTATO_REQUEST")
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
 public class TipoContatoRequest {
 
-    @Id
+//    @Id
     @JsonIgnore
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     @Size(max = 50, message = "Nome do tipo do contato")

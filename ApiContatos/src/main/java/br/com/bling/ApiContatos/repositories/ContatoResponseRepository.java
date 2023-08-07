@@ -8,13 +8,13 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface ContatoResponseRepository extends JpaRepository<ContatoResponse, Long> {
-
-    Optional<ContatoResponse> findById(Long id);
-
-    @Query("SELECT c.cnpj FROM ContatoResponse c")
-    List<String> findAllDescricao();
-
-}
-
+//@Repository
+//public interface ContatoResponseRepository extends JpaRepository<ContatoResponse, Long> {
+//
+//    Optional<ContatoResponse> findById(Long id);
+//
+//    @Query("SELECT c.cnpj FROM ContatoResponse c")
+//    List<String> findAllDescricao();
+//
+//}
+//

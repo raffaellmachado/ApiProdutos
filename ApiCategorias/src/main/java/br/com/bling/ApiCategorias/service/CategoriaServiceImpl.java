@@ -339,42 +339,42 @@ public class CategoriaServiceImpl implements CategoriaService {
      *
      * @throws ApiCategoriaException Caso ocorra algum erro na comunicação com a API externa o banco de dados fica disponível para a consulta.
      */
-    @Scheduled(fixedDelayString = "${api.check.delay}")
-    public void scheduledPostCategory() {
-        try {
-            System.out.println("Chamei o Scheduled POST");
-//            String url = "http://www.teste.com/";
-            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                List<CategoriaRequest> categorias = categoriaRequestRepository.findAll();
-                List<String> descricaoCategorias = categoriaResponseRepository.findAllDescricao();
-
-                for (CategoriaRequest categoria : categorias) {
-                    if (categoria.getFlag() != null && categoria.getFlag().equals("POST")) {
-                        if (!descricaoCategorias.contains(categoria.getDescricao())) {
-                            System.out.println("Categoria não encontrada na API, adicionando...");
-                            String xmlCategoria = "<categorias>";
-                            xmlCategoria += "<categoria>";
-                            xmlCategoria += "<descricao>" + categoria.getDescricao() + "</descricao>";
-                            xmlCategoria += "<idCategoriaPai>" + categoria.getIdCategoriaPai() + "</idCategoriaPai>";
-                            xmlCategoria += "</categoria>";
-                            xmlCategoria += "</categorias>";
-
-                            createCategory(xmlCategoria);
-                            categoriaRequestRepository.delete(categoria);
-                        } else {
-                            System.out.println("Categoria já existe na API, deletando...");
-                            categoriaRequestRepository.delete(categoria);
-                        }
-                    }
-                }
-            }
-        } catch (RestClientException e) {
-            System.out.println("API está offline, nada a fazer");
-        }
-    }
+//    @Scheduled(fixedDelayString = "${api.check.delay}")
+//    public void scheduledPostCategory() {
+//        try {
+//            System.out.println("Chamei o Scheduled POST");
+////            String url = "http://www.teste.com/";
+//            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
+//            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+//
+//            if (response.getStatusCode() == HttpStatus.OK) {
+//                List<CategoriaRequest> categorias = categoriaRequestRepository.findAll();
+//                List<String> descricaoCategorias = categoriaResponseRepository.findAllDescricao();
+//
+//                for (CategoriaRequest categoria : categorias) {
+//                    if (categoria.getFlag() != null && categoria.getFlag().equals("POST")) {
+//                        if (!descricaoCategorias.contains(categoria.getDescricao())) {
+//                            System.out.println("Categoria não encontrada na API, adicionando...");
+//                            String xmlCategoria = "<categorias>";
+//                            xmlCategoria += "<categoria>";
+//                            xmlCategoria += "<descricao>" + categoria.getDescricao() + "</descricao>";
+//                            xmlCategoria += "<idCategoriaPai>" + categoria.getIdCategoriaPai() + "</idCategoriaPai>";
+//                            xmlCategoria += "</categoria>";
+//                            xmlCategoria += "</categorias>";
+//
+//                            createCategory(xmlCategoria);
+//                            categoriaRequestRepository.delete(categoria);
+//                        } else {
+//                            System.out.println("Categoria já existe na API, deletando...");
+//                            categoriaRequestRepository.delete(categoria);
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (RestClientException e) {
+//            System.out.println("API está offline, nada a fazer");
+//        }
+//    }
 
     /**
      * Verifica o status da API externa e atualiza o banco de dados local com as categorias cadastradas na API.
@@ -384,38 +384,38 @@ public class CategoriaServiceImpl implements CategoriaService {
      *
      * @throws ApiCategoriaException Caso ocorra algum erro na comunicação com a API externa o banco de dados fica disponível para a consulta.
      */
-    @Scheduled(fixedDelayString = "${api.check.delay}")
-    public void scheduledUpdateCategory() {
-        try {
-            System.out.println("Chamei o Scheduled PUT");
-//            String url = "http://www.teste.com/";
-            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                List<CategoriaRequest> categoriaRequests = categoriaRequestRepository.findAll();
-
-                for (CategoriaRequest categoriaRequest : categoriaRequests) {
-                    if ("PUT".equals(categoriaRequest.getFlag())) { // verifica se a flag é "PUT"
-                        String xmlCategoria = "<categorias>";
-                        xmlCategoria += "<categoria>";
-                        xmlCategoria += "<descricao>" + categoriaRequest.getDescricao() + "</descricao>";
-                        xmlCategoria += "<idCategoriaPai>" + categoriaRequest.getIdCategoriaPai() + "</idCategoriaPai>";
-                        xmlCategoria += "</categoria>";
-                        xmlCategoria += "</categorias>";
-
-                        String idCategoria = String.valueOf(categoriaRequest.getId());
-
-                        updateCategory(xmlCategoria, idCategoria);
-
-                        categoriaRequestRepository.delete(categoriaRequest);
-                    }
-                }
-            }
-        } catch (RestClientException e) {
-            System.out.println("API está offline, nada a fazer");
-        }
-    }
+//    @Scheduled(fixedDelayString = "${api.check.delay}")
+//    public void scheduledUpdateCategory() {
+//        try {
+//            System.out.println("Chamei o Scheduled PUT");
+////            String url = "http://www.teste.com/";
+//            String url = apiBaseUrl + "/categorias/json/" + apikeyparam + apiKey;
+//            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+//
+//            if (response.getStatusCode() == HttpStatus.OK) {
+//                List<CategoriaRequest> categoriaRequests = categoriaRequestRepository.findAll();
+//
+//                for (CategoriaRequest categoriaRequest : categoriaRequests) {
+//                    if ("PUT".equals(categoriaRequest.getFlag())) { // verifica se a flag é "PUT"
+//                        String xmlCategoria = "<categorias>";
+//                        xmlCategoria += "<categoria>";
+//                        xmlCategoria += "<descricao>" + categoriaRequest.getDescricao() + "</descricao>";
+//                        xmlCategoria += "<idCategoriaPai>" + categoriaRequest.getIdCategoriaPai() + "</idCategoriaPai>";
+//                        xmlCategoria += "</categoria>";
+//                        xmlCategoria += "</categorias>";
+//
+//                        String idCategoria = String.valueOf(categoriaRequest.getId());
+//
+//                        updateCategory(xmlCategoria, idCategoria);
+//
+//                        categoriaRequestRepository.delete(categoriaRequest);
+//                    }
+//                }
+//            }
+//        } catch (RestClientException e) {
+//            System.out.println("API está offline, nada a fazer");
+//        }
+//    }
 
     /*
       --------------------------------------------- VERSÃO 1 - SEM CONEXÃO E ACESSO AO BANCO DE DADOS. ----------------------------------------------------------

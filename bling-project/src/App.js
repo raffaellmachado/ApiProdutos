@@ -28,8 +28,8 @@ function App() {
         <BrowserRouter>
           <Navbar bg="dark" expand="lg" variant="dark" fixed="top" label="Toggle navigation" >
             <Container fluid>
-              <img alt="" src="/assets/min-logo.png" width="80" height="30" className="d-inline-block align-top" style={{ marginRight: '10px' }} />{' '}
-              <Navbar.Brand href="/">Aplicação ERP</Navbar.Brand>
+              <img alt="" src="/assets/logo.png" width="130" height="30" className="d-inline-block align-top" style={{ marginRight: '10px' }} />{' '}
+              <Navbar.Brand href="/">ERP</Navbar.Brand>
               <Navbar.Toggle aria-controls="navbar-dark-example" />
               <Navbar.Collapse id="navbar-dark-example">
                 <Nav
@@ -62,11 +62,11 @@ function App() {
                     <NavDropdown.Item href="#action/3.3" >Something</NavDropdown.Item>
                   </NavDropdown> */}
                 </Nav>
-                <Form className="d-flex">
+                {/* <Form className="d-flex">
                   <Form.Control
                     type="search" placeholder="Search" className="me-2" aria-label="Search" />
                   <Button variant="light">Busca</Button>
-                </Form>
+                </Form> */}
               </Navbar.Collapse>
             </Container>
           </Navbar>

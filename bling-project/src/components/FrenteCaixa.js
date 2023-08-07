@@ -238,8 +238,8 @@ class FrenteCaixa extends React.Component {
     };
 
     componentDidMount() {
-        // this.buscarFormaDePagamento()
-        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+        this.buscarFormaDePagamento()
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
         //     .then(() => this.buscarLoja())
         //     .catch(() => { throw new Error("Erro ao conectar a API"); })
         //     .then(() => this.buscarPedido())
@@ -285,8 +285,8 @@ class FrenteCaixa extends React.Component {
     buscarProdutos = (value) => {
         return new Promise((resolve, reject) => {
             this.setState({ buscaProduto: value, carregando: false, produtoNaoLocalizado: false });
-
-            fetch(`http://localhost:8081/api/v1/produtos`)
+            // fetch("http://localhost:8081/api/v1/produtos")
+            fetch(`https://api-produtos.azurewebsites.net/api/v1/produtos`)
                 .then((resposta) => {
                     if (!resposta.ok) {
                         throw new Error('Erro na chamada da API');
@@ -365,7 +365,8 @@ class FrenteCaixa extends React.Component {
         const sanitizedValue = this.sanitizeString(value).toLowerCase();
 
         this.setState({ buscaContato: value, carregando: true, contatoNaoLocalizado: false });
-        fetch(`http://localhost:8080/api/v1/contatos`)
+        // fetch(`http://localhost:8080/api/v1/contatos`)
+        fetch(`https://api-contato.azurewebsites.net/api/v1/contatos`)
             .then((resposta) => {
                 if (!resposta.ok) {
                     throw new Error('Erro na chamada da API');
@@ -455,8 +456,8 @@ class FrenteCaixa extends React.Component {
     buscarVendedor = (value) => {
         return new Promise((resolve, reject) => {
             this.setState({ buscaVendedor: value, carregando: true, vendedorNaoLocalizado: false });
-
-            fetch(`http://localhost:8080/api/v1/contatos`)
+            // fetch(`http://localhost:8080/api/v1/contatos`)
+            fetch(`https://api-contato.azurewebsites.net/api/v1/contatos`)
                 .then((resposta) => {
                     if (!resposta.ok) {
                         throw new Error("Erro na chamada da API");
@@ -600,7 +601,9 @@ class FrenteCaixa extends React.Component {
 
     buscarFormaDePagamento = () => {
         return new Promise((resolve, reject) => {
-            fetch("http://localhost:8086/api/v1/formaspagamento")
+            // fetch("http://localhost:8086/api/v1/formaspagamento")
+            fetch("https://api-forma-pagamento.azurewebsites.net/api/v1/formaspagamento")
+
                 .then((resposta) => {
                     if (!resposta.ok) {
                         throw new Error("Erro na chamada da API");

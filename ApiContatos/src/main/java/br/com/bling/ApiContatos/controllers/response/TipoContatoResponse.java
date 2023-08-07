@@ -10,16 +10,16 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Data
-@Entity
-@Table(name = "TB_TIPO_CONTATO_RESPONSE")
+//@Entity
+//@Table(name = "TB_TIPO_CONTATO_RESPONSE")
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
 public class TipoContatoResponse {
 
-    @Id
+//    @Id
     @JsonIgnore
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     @JsonProperty("descricao")

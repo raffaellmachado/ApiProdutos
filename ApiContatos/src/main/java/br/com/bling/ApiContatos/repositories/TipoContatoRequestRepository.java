@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
-public interface TipoContatoRequestRepository extends JpaRepository<TipoContatoRequest, Long> {
-
-    Optional<TipoContatoRequest> findById(Long id);
-
-    Optional<TipoContatoRequest> findByDescricao(String descricao);
-
-}
+//@Repository
+//public interface TipoContatoRequestRepository extends JpaRepository<TipoContatoRequest, Long> {
+//
+//    Optional<TipoContatoRequest> findById(Long id);
+//
+//    Optional<TipoContatoRequest> findByDescricao(String descricao);
+//
+//}

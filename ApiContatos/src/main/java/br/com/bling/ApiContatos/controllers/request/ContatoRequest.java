@@ -14,19 +14,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@ToString
+//@ToString
 @NoArgsConstructor
-@Entity
-@Table(name = "TB_CONTATO_REQUEST")
+//@Entity
+//@Table(name = "TB_CONTATO_REQUEST")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ContatoRequest {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
-    public Long idBd;
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @JsonIgnore
+//    public Long idBd;
 
-    @Id
+//    @Id
     @JsonProperty("id")
     public Long id;
 
@@ -117,7 +117,7 @@ public class ContatoRequest {
     @Digits(integer = 11, fraction = 2, message = "O limite de crédito deve ter no máximo 11 dígitos inteiros e 2 decimais")
     @DecimalMax(value = "9999999.99", message = "O limite de crédito deve ser no máximo 9999999.99")
     @DecimalMin(value = "0.00", message = "O limite de crédito deve ser no mínimo 0.00")
-    @Column(precision = 11, scale = 2)
+//    @Column(precision = 11, scale = 2)
     @JsonProperty("limiteCredito")
     public BigDecimal limiteCredito;
 
@@ -136,10 +136,10 @@ public class ContatoRequest {
     @JsonProperty("obs")
     public String obs;
 
-    @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contatoRequest")
+//    @ToString.Exclude
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contatoRequest")
     @JsonProperty("tiposContato")
-    @JsonManagedReference // Anotação para indicar que esta é a ponta "gerenciada" da relação
+//    @JsonManagedReference // Anotação para indicar que esta é a ponta "gerenciada" da relação
     public List<TiposContatoRequest> tiposContato = new ArrayList<>();
 
     @JsonIgnore

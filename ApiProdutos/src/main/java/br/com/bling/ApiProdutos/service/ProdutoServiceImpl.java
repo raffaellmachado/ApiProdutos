@@ -2,11 +2,7 @@ package br.com.bling.ApiProdutos.service;
 
 import br.com.bling.ApiProdutos.controllers.request.JsonRequest;
 import br.com.bling.ApiProdutos.controllers.response.JsonResponse;
-import br.com.bling.ApiProdutos.controllers.response.ProdutoResponse;
-import br.com.bling.ApiProdutos.controllers.response.RetornoResponse;
 import br.com.bling.ApiProdutos.exceptions.ApiProdutoException;
-import br.com.bling.ApiProdutos.repositories.ProdutoRequestRepository;
-import br.com.bling.ApiProdutos.repositories.ProdutoResponseRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +13,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -41,11 +33,11 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Autowired
     public RestTemplate restTemplate;
 
-    @Autowired
-    private ProdutoResponseRepository produtoResponseRepository;
-
-    @Autowired
-    private ProdutoRequestRepository produtoRequestRepository;
+//    @Autowired
+//    private ProdutoResponseRepository produtoResponseRepository;
+//
+//    @Autowired
+//    private ProdutoRequestRepository produtoRequestRepository;
 
 
     /**
@@ -70,70 +62,72 @@ public class ProdutoServiceImpl implements ProdutoService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonResponse jsonResponse = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
-            // Cria uma lista de Produtos com os valores da API Bling
-            List<ProdutoResponse> produtos = new ArrayList<>();
-            for (RetornoResponse.Produtos produto : jsonResponse.getRetorno().getProdutos()) {
-                produtos.add(produto.getProduto());
-            }
-            // Cria uma lista de Produtos de resposta para enviar de volta
-            ArrayList<RetornoResponse.Produtos> produtosResponse = new ArrayList<>();
-            // Percorre todos os produtos da lista
-            for (ProdutoResponse produto : produtos) {
-                // Verifica se o produto existe no banco de dados
-                Optional<ProdutoResponse> produtoExistente = produtoResponseRepository.findById(produto.getId());
-                if (produtoExistente.isPresent()) {
-                    // Se o produto já existir, atualiza seus campos * NECESSARIO ADICIONAR TODOS OS PRODUTOS AINDA *.
-                    ProdutoResponse produtoAtualizado = produtoExistente.get();
-                    produtoAtualizado.setId(produto.getId());
-                    produtoAtualizado.setAlturaProduto(produto.getAlturaProduto());
-                    produtoAtualizado.setCondicao(produto.getCondicao());
-                    produtoResponseRepository.save(produtoAtualizado);
-                } else {
-                    // Se o produto não existir, insere o novo produto no banco de dados
-                    produtoResponseRepository.save(produto);
-                }
-                // Adiciona o produto de resposta à lista de produtos de resposta
-                RetornoResponse.Produtos produtoResponse = new RetornoResponse.Produtos();
-                produtoResponse.setProduto(produto);
-                produtosResponse.add(produtoResponse);
-            }
-            // Cria o objeto de resposta final
-            RetornoResponse retornoResponse = new RetornoResponse();
-            retornoResponse.setProdutos(produtosResponse);
-
-            JsonResponse jsonRetornoResponse = new JsonResponse();
-            jsonRetornoResponse.setRetorno(retornoResponse);
+//            // Cria uma lista de Produtos com os valores da API Bling
+//            List<ProdutoResponse> produtos = new ArrayList<>();
+//            for (RetornoResponse.Produtos produto : jsonResponse.getRetorno().getProdutos()) {
+//                produtos.add(produto.getProduto());
+//            }
+//            // Cria uma lista de Produtos de resposta para enviar de volta
+//            ArrayList<RetornoResponse.Produtos> produtosResponse = new ArrayList<>();
+//            // Percorre todos os produtos da lista
+//            for (ProdutoResponse produto : produtos) {
+//                // Verifica se o produto existe no banco de dados
+//                Optional<ProdutoResponse> produtoExistente = produtoResponseRepository.findById(produto.getId());
+//                if (produtoExistente.isPresent()) {
+//                    // Se o produto já existir, atualiza seus campos * NECESSARIO ADICIONAR TODOS OS PRODUTOS AINDA *.
+//                    ProdutoResponse produtoAtualizado = produtoExistente.get();
+//                    produtoAtualizado.setId(produto.getId());
+//                    produtoAtualizado.setAlturaProduto(produto.getAlturaProduto());
+//                    produtoAtualizado.setCondicao(produto.getCondicao());
+//                    produtoResponseRepository.save(produtoAtualizado);
+//                } else {
+//                    // Se o produto não existir, insere o novo produto no banco de dados
+//                    produtoResponseRepository.save(produto);
+//                }
+//                // Adiciona o produto de resposta à lista de produtos de resposta
+//                RetornoResponse.Produtos produtoResponse = new RetornoResponse.Produtos();
+//                produtoResponse.setProduto(produto);
+//                produtosResponse.add(produtoResponse);
+//            }
+//            // Cria o objeto de resposta final
+//            RetornoResponse retornoResponse = new RetornoResponse();
+//            retornoResponse.setProdutos(produtosResponse);
+//
+//            JsonResponse jsonRetornoResponse = new JsonResponse();
+//            jsonRetornoResponse.setRetorno(retornoResponse);
 
             // Retorna a resposta final em formato JSON
-            return jsonRetornoResponse;
+//            return jsonRetornoResponse;
+
+            return jsonResponse;
 
         } catch (JsonProcessingException e) {
             throw new ApiProdutoException("Erro ao processar JSON: ", e);
-        } catch (RestClientException e) {
-            // Busca todos os produtos salvos no banco de dados
-            List<ProdutoResponse> produtos = produtoResponseRepository.findAll();
-            // Verifica se a lista de produtos está vazia, ou seja, se não há nenhum produto cadastrado no banco de dados
-            if (produtos.isEmpty()) {
-                // Se a lista de produtos estiver vazia, lança uma exceção ApiProdutoException com uma mensagem de erro e a exceção original
-                throw new ApiProdutoException("Banco de dados está vazio: ", e);
-            } else {
-                // Se houver produtos cadastrados no banco de dados, cria uma nova lista de produtos para o retorno da API
-                RetornoResponse retornoResponse = new RetornoResponse();
-                ArrayList<RetornoResponse.Produtos> produtosResponse = new ArrayList<>();
-                // Para cada produto salvo no banco de dados, cria um novo objeto RetornoResponse.Produtos com o produto correspondente e adiciona na lista de produtos do retorno
-                for (ProdutoResponse produto : produtos) {
-                    RetornoResponse.Produtos produtoResponse = new RetornoResponse.Produtos();
-                    produtoResponse.setProduto(produto);
-                    produtosResponse.add(produtoResponse);
-                }
-                // Define a lista de produtos do retorno e cria um objeto JsonResponse com esse retorno
-                retornoResponse.setProdutos(produtosResponse);
-                JsonResponse jsonResponse = new JsonResponse();
-                jsonResponse.setRetorno(retornoResponse);
-                // Retorna o objeto JsonResponse
-                return jsonResponse;
-            }
-        }
+        } //catch (RestClientException e) {
+//            // Busca todos os produtos salvos no banco de dados
+//            List<ProdutoResponse> produtos = produtoResponseRepository.findAll();
+//            // Verifica se a lista de produtos está vazia, ou seja, se não há nenhum produto cadastrado no banco de dados
+//            if (produtos.isEmpty()) {
+//                // Se a lista de produtos estiver vazia, lança uma exceção ApiProdutoException com uma mensagem de erro e a exceção original
+//                throw new ApiProdutoException("Banco de dados está vazio: ", e);
+//            } else {
+//                // Se houver produtos cadastrados no banco de dados, cria uma nova lista de produtos para o retorno da API
+//                RetornoResponse retornoResponse = new RetornoResponse();
+//                ArrayList<RetornoResponse.Produtos> produtosResponse = new ArrayList<>();
+//                // Para cada produto salvo no banco de dados, cria um novo objeto RetornoResponse.Produtos com o produto correspondente e adiciona na lista de produtos do retorno
+//                for (ProdutoResponse produto : produtos) {
+//                    RetornoResponse.Produtos produtoResponse = new RetornoResponse.Produtos();
+//                    produtoResponse.setProduto(produto);
+//                    produtosResponse.add(produtoResponse);
+//                }
+//                // Define a lista de produtos do retorno e cria um objeto JsonResponse com esse retorno
+//                retornoResponse.setProdutos(produtosResponse);
+//                JsonResponse jsonResponse = new JsonResponse();
+//                jsonResponse.setRetorno(retornoResponse);
+//                // Retorna o objeto JsonResponse
+//                return jsonResponse;
+//            }
+//        }
     }
 
     /**
@@ -163,23 +157,23 @@ public class ProdutoServiceImpl implements ProdutoService {
 
         } catch (JsonProcessingException e) {
             throw new ApiProdutoException("Erro ao processar JSON: ", e);
-        } catch (RestClientException e) {
-            // Busca o produto com o código informado no banco de dados
-            Optional<ProdutoResponse> produtoExistente = produtoResponseRepository.findByCodigo(String.valueOf(codigo));
-            // Se o produto existir no banco de dados, cria um objeto RetornoResponse.Produtos com o produto encontrado e retorna como resposta
-            if (produtoExistente.isPresent()) {
-                RetornoResponse.Produtos produto = new RetornoResponse.Produtos();
-                produto.setProduto(produtoExistente.get());
-                JsonResponse jsonResponse = new JsonResponse();
-                jsonResponse.setRetorno(new RetornoResponse());
-                jsonResponse.getRetorno().setProdutos(new ArrayList<>());
-                jsonResponse.getRetorno().getProdutos().add(produto);
-                return jsonResponse;
-            // Se o produto não existir no banco de dados, lança uma exceção ApiProdutoException com a mensagem informando que a API está indisponível e a categoria não foi encontrada no banco de dados.
-            } else {
-                throw new ApiProdutoException("A API está indisponível e os produtos não foram encontrados no banco de dados.", e);
-            }
-        }
+        } //catch (RestClientException e) {
+//            // Busca o produto com o código informado no banco de dados
+//            Optional<ProdutoResponse> produtoExistente = produtoResponseRepository.findByCodigo(String.valueOf(codigo));
+//            // Se o produto existir no banco de dados, cria um objeto RetornoResponse.Produtos com o produto encontrado e retorna como resposta
+//            if (produtoExistente.isPresent()) {
+//                RetornoResponse.Produtos produto = new RetornoResponse.Produtos();
+//                produto.setProduto(produtoExistente.get());
+//                JsonResponse jsonResponse = new JsonResponse();
+//                jsonResponse.setRetorno(new RetornoResponse());
+//                jsonResponse.getRetorno().setProdutos(new ArrayList<>());
+//                jsonResponse.getRetorno().getProdutos().add(produto);
+//                return jsonResponse;
+//            // Se o produto não existir no banco de dados, lança uma exceção ApiProdutoException com a mensagem informando que a API está indisponível e a categoria não foi encontrada no banco de dados.
+//            } else {
+//                throw new ApiProdutoException("A API está indisponível e os produtos não foram encontrados no banco de dados.", e);
+//            }
+//        }
     }
 
     /**
@@ -232,18 +226,18 @@ public class ProdutoServiceImpl implements ProdutoService {
             // Faz a requisição HTTP DELETE para a API externa, passando a URL, o cabeçalho e o tipo de retorno esperado
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
 
-            // Verifica se a requisição na API externa foi bem sucedida
-            if (response.getStatusCode() == HttpStatus.OK) {
-                // Se sim, busca o produto no banco de dados local a partir do seu código
-                Optional<ProdutoResponse> produtoExistente = produtoResponseRepository.findByCodigo(String.valueOf(codigo));
-                if (produtoExistente.isPresent()) {
-                    // Se o produto existe no banco de dados local, exclui-o
-                    produtoResponseRepository.delete(produtoExistente.get());
-                }
-            } else {
-                // Se a requisição na API externa falhou, lança uma exceção informando o erro
-                throw new ApiProdutoException("Erro ao excluir produto da API externa", null);
-            }
+//            // Verifica se a requisição na API externa foi bem sucedida
+//            if (response.getStatusCode() == HttpStatus.OK) {
+//                // Se sim, busca o produto no banco de dados local a partir do seu código
+//                Optional<ProdutoResponse> produtoExistente = produtoResponseRepository.findByCodigo(String.valueOf(codigo));
+//                if (produtoExistente.isPresent()) {
+//                    // Se o produto existe no banco de dados local, exclui-o
+//                    produtoResponseRepository.delete(produtoExistente.get());
+//                }
+//            } else {
+//                // Se a requisição na API externa falhou, lança uma exceção informando o erro
+//                throw new ApiProdutoException("Erro ao excluir produto da API externa", null);
+//            }
         } catch (RestClientException e) {
             // Caso ocorra algum erro na comunicação com a API externa, lança uma exceção informando o erro
             throw new ApiProdutoException("Erro ao chamar API", e);

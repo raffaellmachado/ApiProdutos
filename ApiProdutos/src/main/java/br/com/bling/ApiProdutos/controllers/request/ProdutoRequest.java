@@ -7,21 +7,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "TB_PRODUTO_REQUEST")
+//@Entity
+//@Table(name = "TB_PRODUTO_REQUEST")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProdutoRequest {
 
-    @Id
+//    @Id
     @JsonProperty("id")
     public String id;
 

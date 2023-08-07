@@ -26,6 +26,11 @@ public class PedidoController {
     public PedidoService pedidoService;
 
 
+    @GetMapping("/message")
+    public String message(){
+        return "teste";
+    }
+
     /**
      * GET "BUSCA A LISTA DE CATEGORIAS".
      */

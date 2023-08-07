@@ -51,7 +51,7 @@ class ContatoControllerTest {
         contato1.contato.setFantasia("RMS");
         contato1.contato.setTipo("F");
         contato1.contato.setCnpj("00.000.000/0000-00");
-        contato1.contato.setCpf_cnpj("000.000.000-00");
+//        contato1.contato.setCpf_cnpj("000.000.000-00");
         contato1.contato.setIe_rg("00.000.000-0");
         contato1.contato.setEndereco("Rua das Oliveirass");
         contato1.contato.setNumero("1200");
@@ -89,7 +89,7 @@ class ContatoControllerTest {
         contato2.contato.setFantasia("RMS");
         contato2.contato.setTipo("F");
         contato2.contato.setCnpj("00.000.000/0000-00");
-        contato2.contato.setCpf_cnpj("000.000.000-00");
+//        contato2.contato.setCpf_cnpj("000.000.000-00");
         contato2.contato.setIe_rg("00.000.000-0");
         contato2.contato.setEndereco("Rua das Oliveirass");
         contato2.contato.setNumero("1200");
@@ -175,7 +175,7 @@ class ContatoControllerTest {
         contato.contato.setFantasia("RMS");
         contato.contato.setTipo("F");
         contato.contato.setCnpj("00.000.000/0000-00");
-        contato.contato.setCpf_cnpj("000.000.000-00");
+//        contato.contato.setCpf_cnpj("000.000.000-00");
         contato.contato.setIe_rg("00.000.000-0");
         contato.contato.setEndereco("Rua das Oliveirass");
         contato.contato.setNumero("1200");
@@ -277,7 +277,7 @@ class ContatoControllerTest {
         contato.contato.setFantasia("RMS");
         contato.contato.setTipoPessoa("F");
         contato.contato.setContribuinte(9);
-        contato.contato.setCnpj("00.000.000/0000-00");
+//        contato.contato.setCnpj("00.000.000/0000-00");
         contato.contato.setCpf_cnpj("000.000.000-00");
         contato.contato.setIe_rg("00.000.000-0");
         contato.contato.setEndereco("Rua das Oliveirass");
@@ -401,7 +401,7 @@ class ContatoControllerTest {
         contato.contato.setFantasia("RMS");
         contato.contato.setTipoPessoa("F");
         contato.contato.setContribuinte(9);
-        contato.contato.setCnpj("00.000.000/0000-00");
+//        contato.contato.setCnpj("00.000.000/0000-00");
         contato.contato.setCpf_cnpj(cpf_cnpj);
         contato.contato.setIe_rg("00.000.000-0");
         contato.contato.setEndereco("Rua das Oliveirass");

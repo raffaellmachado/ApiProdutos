@@ -25,6 +25,10 @@ public class FormaPagamentoController {
     @Autowired
     public FormaPagamentoService formaPagamentoService;
 
+    @GetMapping("/message")
+    public String message(){
+        return "teste";
+    }
 
     /**
      * GET "BUSCA A LISTA DE CATEGORIAS".

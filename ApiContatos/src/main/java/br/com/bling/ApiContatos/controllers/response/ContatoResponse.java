@@ -15,13 +15,13 @@ import java.util.List;
 @Data
 @ToString
 @NoArgsConstructor
-@Entity
-@Table(name = "TB_CONTATO_RESPONSE")
+//@Entity
+//@Table(name = "TB_CONTATO_RESPONSE")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ContatoResponse {
 
-	@Id
+//	@Id
 	@JsonProperty("id")
 	public Long id;
 
@@ -106,10 +106,10 @@ public class ContatoResponse {
 	@JsonProperty("informacoesContato")
 	public String informacoesContato;
 
-	@ToString.Exclude
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contatoResponse")
+//	@ToString.Exclude
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contatoResponse")
 	@JsonProperty("tiposContato")
-	@JsonManagedReference // Anotação para indicar que esta é a ponta "gerenciada" da relação
+//	@JsonManagedReference // Anotação para indicar que esta é a ponta "gerenciada" da relação
 	public List<TiposContatoResponse> tiposContato = new ArrayList<>();
 
 }

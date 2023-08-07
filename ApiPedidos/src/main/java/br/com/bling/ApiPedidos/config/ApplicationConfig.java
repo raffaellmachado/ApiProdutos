@@ -1,4 +1,4 @@
-package config;//package br.com.bling.ApiCategorias.config;
+package br.com.bling.ApiPedidos.config;//package br.com.bling.ApiCategorias.config;
 //
 //import org.springframework.boot.autoconfigure.domain.EntityScan;
 //import org.springframework.boot.web.client.RestTemplateBuilder;
