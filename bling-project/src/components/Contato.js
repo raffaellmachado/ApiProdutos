@@ -495,12 +495,10 @@ class Contato extends React.Component {
             return (
                 <div className="spinner-container">
                     <div className="d-flex align-items-center justify-content-center">
-                        <Spinner variant="secondary" animation="border" role="status">
-                            <span className="visually-hidden">Carregando contatos...</span>
-                        </Spinner>
+                        <Spinner variant="warning" animation="grow" role="status" style={{ border: '1px solid black' }} />
                     </div>
-                    <div>
-                        <p>Carregando contatos...</p>
+                    <div >
+                        <div style={{ fontWeight: 'bold', color: 'white' }}>Carregando contatos...</div>
                     </div>
                 </div>
             )

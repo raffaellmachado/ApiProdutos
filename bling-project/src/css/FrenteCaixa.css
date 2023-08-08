@@ -199,12 +199,12 @@ h5 {
 
 .botao-excluirvenda button {
   font-family: "Roboto", sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   line-height: normal;
   text-align: center;
   letter-spacing: normal;
-  color: #34ad61;
-  background-color: #ffffff;
+  color: #ffffff;
+  background-color: #ffa600;
   box-shadow: none;
   border-radius: 8px;
   width: 240px;
@@ -214,12 +214,12 @@ h5 {
 
 .botao-finalizarvenda button {
   font-family: "Roboto", sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   line-height: normal;
   text-align: center;
   letter-spacing: normal;
   color: #ffffff;
-  background-color: #757575;
+  background-color: #0f5a00;
   box-shadow: none;
   border-radius: 8px;
   width: 360px;

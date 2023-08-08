@@ -1,0 +1,49 @@
+/* Home.css */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.custom-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+  animation: bolha 0.9s ease forwards;
+}
+
+.custom-card img {
+  width: 170px; /* Defina o tamanho desejado */
+  height: 153px; /* Defina o tamanho desejado */
+  object-fit: cover;
+  margin: 0 auto; /* Centralizar a imagem horizontalmente */
+}
+
+@keyframes bolha {
+  0% {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+.card-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.card-text {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 20px;
+}

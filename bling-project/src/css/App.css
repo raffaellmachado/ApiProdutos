@@ -1,3 +1,25 @@
+body,
+html {
+  margin: 0;
+  padding: 60;
+  height: 100%;
+}
+
 body {
-  background-color: #dadada;
+  background: linear-gradient(to bottom, #252525, #ffffff);
+}
+
+.navbar-brand {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* Substitua "NomeDaFonte" pela fonte desejada */
+  font-weight: bold; /* Defina o peso da fonte, se necessário */
+}
+
+.nav-link,
+.nav-dropdown-item {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* Substitua "NomeDaFonte" pela fonte desejada */
+  font-weight: 500; /* Certifique-se de definir o peso da fonte como normal para desfazer qualquer alteração anterior */
 }

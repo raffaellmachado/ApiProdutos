@@ -778,12 +778,10 @@ class Produto extends React.Component {
             return (
                 <div className="spinner-container" >
                     <div className="d-flex align-items-center justify-content-center">
-                        <Spinner variant="secondary" animation="border" role="status">
-                            <span className="visually-hidden">Carregando produtos...</span>
-                        </Spinner>
+                        <Spinner variant="warning" animation="grow" role="status" style={{ border: '1px solid black' }} />
                     </div>
                     <div>
-                        <p>Carregando produtos...</p>
+                        <div style={{ fontWeight: 'bold', color: 'white' }}>Carregando produtos...</div>
                     </div>
                 </div>
             )
