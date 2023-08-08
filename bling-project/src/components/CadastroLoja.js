@@ -7,6 +7,10 @@ import { Col } from 'react-bootstrap'
 import { Row } from 'react-bootstrap'
 import { Form } from 'react-bootstrap'
 import { Table } from "react-bootstrap";
+
+import { BsPersonAdd } from 'react-icons/bs';
+
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/CadastroLoja.css';
 
@@ -41,7 +45,7 @@ class CadastroLoja extends React.Component {
   }
 
   buscaLojas = () => {
-    fetch('http://localhost:8086/api/v1/selecionarLojas')
+    fetch('https://dev-api-forma-pagamento.azurewebsites.net/api/v1/selecionarLojas')
       .then(response => response.json())
       .then(data => {
         this.setState({ lojas: data });
@@ -52,7 +56,7 @@ class CadastroLoja extends React.Component {
   };
 
   buscarIdLoja = (idLoja) => {
-    fetch(`http://localhost:8086/api/v1/selecionarLoja/${idLoja}`)
+    fetch(`https://dev-api-forma-pagamento.azurewebsites.net/api/v1/${idLoja}`)
       .then(response => response.json())
       .then(data => {
         console.log('Resposta da API:', data);
@@ -73,7 +77,7 @@ class CadastroLoja extends React.Component {
   };
 
   deletarLoja = (idLoja) => {
-    fetch(`http://localhost:8086/api/v1/deletarLoja/${idLoja}`, {
+    fetch(`https://dev-api-forma-pagamento.azurewebsites.net/api/v1/${idLoja}`, {
       method: 'DELETE',
     })
       .then(response => {
@@ -89,7 +93,7 @@ class CadastroLoja extends React.Component {
   };
 
   adicionarLoja = (selecionaLoja) => {
-    fetch('http://localhost:8086/api/v1/adicionarLoja/', {
+    fetch('https://dev-api-forma-pagamento.azurewebsites.net/api/v1/adicionarLoja/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -191,11 +195,6 @@ class CadastroLoja extends React.Component {
 
     return (
       <div>
-        <div className="container-btn d-flex justify-content-center">
-          <Row xs={12} className="justify-content-center mt-3">
-            <Button onClick={this.handleCadastrarClick} className="btn btn-secondary btn-lg btn-block">Cadastrar</Button>
-          </Row>
-        </div>
         <Container>
           <Table className="table">
             <thead>
@@ -229,7 +228,14 @@ class CadastroLoja extends React.Component {
             </tbody>
           </Table>
         </Container>
-
+        <div className="container-btn d-flex justify-content-center">
+          <Row xs={12} className="justify-content-center mt-3">
+            <Button onClick={this.handleCadastrarClick} className="btn btn-warning btn-lg btn-block">
+              <BsPersonAdd style={{ marginRight: '0.5rem' }} />
+              Cadastrar
+            </Button>
+          </Row>
+        </div>
 
         {/* Modal */}
         <Modal show={modalEditarLoja} onHide={this.fecharModalEditarLoja} size="lg" centered>

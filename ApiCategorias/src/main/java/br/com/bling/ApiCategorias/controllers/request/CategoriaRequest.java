@@ -14,14 +14,14 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "TB_CATEGORIA_REQUEST")
+//@Entity
+//@Table(name = "TB_CATEGORIA_REQUEST")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CategoriaRequest {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     public Long idBd;
 

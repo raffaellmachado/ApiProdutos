@@ -1,4 +1,5 @@
 {
   "appService.defaultWebAppToDeploy": "/subscriptions/5518b327-5484-4af4-879a-542896374309/resourceGroups/rg-pdv/providers/Microsoft.Web/sites/pdv-front",
-  "appService.deploySubpath": "build"
+  "appService.deploySubpath": "build",
+  "appService.zipIgnorePattern": ["node_modules{,/**}", ".vscode{,/**}"]
 }

@@ -6,8 +6,8 @@ import br.com.bling.ApiCategorias.controllers.response.CategoriaResponse;
 import br.com.bling.ApiCategorias.controllers.response.JsonResponse;
 import br.com.bling.ApiCategorias.controllers.response.RetornoResponse;
 import br.com.bling.ApiCategorias.exceptions.ApiCategoriaException;
-import br.com.bling.ApiCategorias.repositories.CategoriaRequestRepository;
-import br.com.bling.ApiCategorias.repositories.CategoriaResponseRepository;
+//import br.com.bling.ApiCategorias.repositories.CategoriaRequestRepository;
+//import br.com.bling.ApiCategorias.repositories.CategoriaResponseRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,10 +55,10 @@ public class CategoriaServiceImpl implements CategoriaService {
     public CategoriaService categoriaService;
 
     @Autowired
-    public CategoriaResponseRepository categoriaResponseRepository;
-
-    @Autowired
-    public CategoriaRequestRepository categoriaRequestRepository;
+//    public CategoriaResponseRepository categoriaResponseRepository;
+//
+//    @Autowired
+//    public CategoriaRequestRepository categoriaRequestRepository;
 
     /**
      * GET "BUSCAR A LISTA DE CATEGORIA CADASTRADOS NO BLING".
@@ -81,70 +81,70 @@ public class CategoriaServiceImpl implements CategoriaService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonResponse jsonResponse = objectMapper.readValue(response.getBody(), JsonResponse.class);
 
-            // Cria uma lista de Categorias com os valores da API Bling.
-            List<CategoriaResponse> categorias = new ArrayList<>();
-            for (RetornoResponse.Categorias categoria : jsonResponse.getRetorno().getCategorias()) {
-                categorias.add(categoria.getCategoria());
-            }
-            // Cria uma lista de Categorias de resposta para enviar de volta
-            ArrayList<RetornoResponse.Categorias> categoriasResponse = new ArrayList<>();
-            // Percorre todas as categorias da lista
-            for (CategoriaResponse categoria : categorias) {
-                // Verifica se a categoria existe no banco de dados
-                Optional<CategoriaResponse> categoriaExistente = categoriaResponseRepository.findById(categoria.getId());
-                if (categoriaExistente.isPresent()) {
-                    // Se a categoria já existir, atualiza seus campos.
-                    CategoriaResponse categoriaAtualizada = categoriaExistente.get();
-                    categoriaAtualizada.setId(categoria.getId());
-//                    categoriaAtualizada.setDescricao(categoria.getDescricao());
-//                    categoriaAtualizada.setIdCategoriaPai(categoria.getIdCategoriaPai());
-                    categoriaResponseRepository.save(categoriaAtualizada);
-                } else {
-                    // Sea categoria não existir, insere uma nova cattegoria no banco de dados
-                    categoriaResponseRepository.save(categoria);
-                }
-                // Adiciona a categoria de resposta à lista de categorias de resposta
-                RetornoResponse.Categorias categoriaResponse = new RetornoResponse.Categorias();
-                categoriaResponse.setCategoria(categoria);
-                categoriasResponse.add(categoriaResponse);
-            }
-            // Cria o objeto de resposta final
-            RetornoResponse retornoResponse = new RetornoResponse();
-            retornoResponse.setCategorias(categoriasResponse);
-
-            JsonResponse jsonRetornoResponse = new JsonResponse();
-            jsonRetornoResponse.setRetorno(retornoResponse);
+//            // Cria uma lista de Categorias com os valores da API Bling.
+//            List<CategoriaResponse> categorias = new ArrayList<>();
+//            for (RetornoResponse.Categorias categoria : jsonResponse.getRetorno().getCategorias()) {
+//                categorias.add(categoria.getCategoria());
+//            }
+//            // Cria uma lista de Categorias de resposta para enviar de volta
+//            ArrayList<RetornoResponse.Categorias> categoriasResponse = new ArrayList<>();
+//            // Percorre todas as categorias da lista
+//            for (CategoriaResponse categoria : categorias) {
+//                // Verifica se a categoria existe no banco de dados
+//                Optional<CategoriaResponse> categoriaExistente = categoriaResponseRepository.findById(categoria.getId());
+//                if (categoriaExistente.isPresent()) {
+//                    // Se a categoria já existir, atualiza seus campos.
+//                    CategoriaResponse categoriaAtualizada = categoriaExistente.get();
+//                    categoriaAtualizada.setId(categoria.getId());
+////                    categoriaAtualizada.setDescricao(categoria.getDescricao());
+////                    categoriaAtualizada.setIdCategoriaPai(categoria.getIdCategoriaPai());
+//                    categoriaResponseRepository.save(categoriaAtualizada);
+//                } else {
+//                    // Sea categoria não existir, insere uma nova cattegoria no banco de dados
+//                    categoriaResponseRepository.save(categoria);
+//                }
+//                // Adiciona a categoria de resposta à lista de categorias de resposta
+//                RetornoResponse.Categorias categoriaResponse = new RetornoResponse.Categorias();
+//                categoriaResponse.setCategoria(categoria);
+//                categoriasResponse.add(categoriaResponse);
+//            }
+//            // Cria o objeto de resposta final
+//            RetornoResponse retornoResponse = new RetornoResponse();
+//            retornoResponse.setCategorias(categoriasResponse);
+//
+//            JsonResponse jsonRetornoResponse = new JsonResponse();
+//            jsonRetornoResponse.setRetorno(retornoResponse);
 
             // Retorna a resposta final em formato JSON
-            return jsonRetornoResponse;
-
+//            return jsonRetornoResponse;
+            return jsonResponse;
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON: ", e);
-        } catch (RestClientException e) {
-            // Busca todas as categorias salvas no banco de dados
-            List<CategoriaResponse> categorias = categoriaResponseRepository.findAll();
-            // Verifica se a lista de categorias está vazia, ou seja, se não há nenhuma categoria cadastrada no banco de dados
-            if (categorias.isEmpty()) {
-                // Se a lista de categoria estiver vazia, lança uma exceção ApiCategoriaException com uma mensagem de erro e a exceção original
-                throw new ApiCategoriaException("Erro ao chamar API: ", e);
-            } else {
-                // Se houver categorias cadastradas no banco de dados, cria uma nova lista de categorias para o retorno da API
-                RetornoResponse retornoResponse = new RetornoResponse();
-                ArrayList<RetornoResponse.Categorias> categoriasResponse = new ArrayList<>();
-                // Para cada categoria salva no banco de dados, cria um novo objeto RetornoResponse.Categorias com a categoria correspondente e adiciona na lista de categorias do retorno
-                for (CategoriaResponse categoria : categorias) {
-                    RetornoResponse.Categorias categoriaResponse = new RetornoResponse.Categorias();
-                    categoriaResponse.setCategoria(categoria);
-                    categoriasResponse.add(categoriaResponse);
-                }
-                // Define a lista de categorias do retorno e cria um objeto JsonResponse com esse retorno
-                retornoResponse.setCategorias(categoriasResponse);
-                JsonResponse jsonResponse = new JsonResponse();
-                jsonResponse.setRetorno(retornoResponse);
-                // Retorna o objeto JsonResponse
-                return jsonResponse;
-            }
-        }
+        } // catch (RestClientException e) {
+//            // Busca todas as categorias salvas no banco de dados
+//            List<CategoriaResponse> categorias = categoriaResponseRepository.findAll();
+//            // Verifica se a lista de categorias está vazia, ou seja, se não há nenhuma categoria cadastrada no banco de dados
+//            if (categorias.isEmpty()) {
+//                // Se a lista de categoria estiver vazia, lança uma exceção ApiCategoriaException com uma mensagem de erro e a exceção original
+//                throw new ApiCategoriaException("Erro ao chamar API: ", e);
+//            } else {
+//                // Se houver categorias cadastradas no banco de dados, cria uma nova lista de categorias para o retorno da API
+//                RetornoResponse retornoResponse = new RetornoResponse();
+//                ArrayList<RetornoResponse.Categorias> categoriasResponse = new ArrayList<>();
+//                // Para cada categoria salva no banco de dados, cria um novo objeto RetornoResponse.Categorias com a categoria correspondente e adiciona na lista de categorias do retorno
+//                for (CategoriaResponse categoria : categorias) {
+//                    RetornoResponse.Categorias categoriaResponse = new RetornoResponse.Categorias();
+//                    categoriaResponse.setCategoria(categoria);
+//                    categoriasResponse.add(categoriaResponse);
+//                }
+//                // Define a lista de categorias do retorno e cria um objeto JsonResponse com esse retorno
+//                retornoResponse.setCategorias(categoriasResponse);
+//                JsonResponse jsonResponse = new JsonResponse();
+//                jsonResponse.setRetorno(retornoResponse);
+//                // Retorna o objeto JsonResponse
+//                return jsonResponse;
+//            }
+//        }
     }
 
     /**
@@ -172,25 +172,25 @@ public class CategoriaServiceImpl implements CategoriaService {
 
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON: ", e);
-        } catch (RestClientException e) {
-            // Busca a categoria com o código informado no banco de dados
-            Optional<CategoriaResponse> categoriaExistente = categoriaResponseRepository.findById(Long.valueOf(idCategoria));
-            // Se a categoria existir no banco de dados, cria um objeto CategoriaResponse com a categoria encontrada e retorna como resposta
-            if (categoriaExistente.isPresent()) {
-                RetornoResponse.Categorias categoria = new RetornoResponse.Categorias();
-                categoria.setCategoria(categoriaExistente.get());
-
-                JsonResponse jsonResponse = new JsonResponse();
-                jsonResponse.setRetorno(new RetornoResponse());
-
-                jsonResponse.getRetorno().setCategorias(new ArrayList<>());
-                jsonResponse.getRetorno().getCategorias().add(categoria);
-                return jsonResponse;
-                // Se o produto não existir no banco de dados, lança uma exceção ApiProdutoException com a mensagem informando que a API está indisponível e a categoria não foi encontrada no banco de dados.
-            } else {
-                throw new ApiCategoriaException("A API está indisponível e a categoria não foi encontrada no banco de dados.", e);
-            }
-        }
+        } //catch (RestClientException e) {
+//            // Busca a categoria com o código informado no banco de dados
+//            Optional<CategoriaResponse> categoriaExistente = categoriaResponseRepository.findById(Long.valueOf(idCategoria));
+//            // Se a categoria existir no banco de dados, cria um objeto CategoriaResponse com a categoria encontrada e retorna como resposta
+//            if (categoriaExistente.isPresent()) {
+//                RetornoResponse.Categorias categoria = new RetornoResponse.Categorias();
+//                categoria.setCategoria(categoriaExistente.get());
+//
+//                JsonResponse jsonResponse = new JsonResponse();
+//                jsonResponse.setRetorno(new RetornoResponse());
+//
+//                jsonResponse.getRetorno().setCategorias(new ArrayList<>());
+//                jsonResponse.getRetorno().getCategorias().add(categoria);
+//                return jsonResponse;
+//                // Se o produto não existir no banco de dados, lança uma exceção ApiProdutoException com a mensagem informando que a API está indisponível e a categoria não foi encontrada no banco de dados.
+//            } else {
+//                throw new ApiCategoriaException("A API está indisponível e a categoria não foi encontrada no banco de dados.", e);
+//            }
+//        }
     }
 
     /**
@@ -220,35 +220,35 @@ public class CategoriaServiceImpl implements CategoriaService {
             return jsonRequest;
 
         } catch (RestClientException e) {
-            // Em caso de erro ao chamar a API, salva os dados no banco de dados
-            CategoriaRequest categoriaRequest = new CategoriaRequest();
-            // Preenche os dados de categoriaRequest com os valores passados em xmlCategoria
-            try {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                InputSource is = new InputSource(new StringReader(xmlCategoria));
-                Document doc = builder.parse(is);
-
-                // Preenchimento dos campos da categoria
-                Node nodeCategoria = doc.getElementsByTagName("categorias").item(0);
-                Element elementoCategoria = (Element) nodeCategoria;
-
-                categoriaRequest.setDescricao(elementoCategoria.getElementsByTagName("descricao").item(0).getTextContent());
-                String idCategoriaPai = elementoCategoria.getElementsByTagName("idCategoriaPai").item(0).getTextContent();
-                categoriaRequest.setIdCategoriaPai(Long.parseLong(idCategoriaPai));
-                categoriaRequest.setFlag("POST");
-
-                String nomeCategoria = elementoCategoria.getElementsByTagName("descricao").item(0).getTextContent();
-                List<CategoriaRequest> categoriaExistente = categoriaRequestRepository.findByDescricao(nomeCategoria);
-
-                boolean categoriaJaExiste = !categoriaExistente.isEmpty();
-
-                if (!categoriaJaExiste) {
-                    categoriaRequestRepository.save(categoriaRequest);
-                }
-            } catch (ParserConfigurationException | SAXException | IOException ex) {
-                throw new ApiCategoriaException("Erro ao processar XML: ", ex);
-            }
+//            // Em caso de erro ao chamar a API, salva os dados no banco de dados
+//            CategoriaRequest categoriaRequest = new CategoriaRequest();
+//            // Preenche os dados de categoriaRequest com os valores passados em xmlCategoria
+//            try {
+//                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//                DocumentBuilder builder = factory.newDocumentBuilder();
+//                InputSource is = new InputSource(new StringReader(xmlCategoria));
+//                Document doc = builder.parse(is);
+//
+//                // Preenchimento dos campos da categoria
+//                Node nodeCategoria = doc.getElementsByTagName("categorias").item(0);
+//                Element elementoCategoria = (Element) nodeCategoria;
+//
+//                categoriaRequest.setDescricao(elementoCategoria.getElementsByTagName("descricao").item(0).getTextContent());
+//                String idCategoriaPai = elementoCategoria.getElementsByTagName("idCategoriaPai").item(0).getTextContent();
+//                categoriaRequest.setIdCategoriaPai(Long.parseLong(idCategoriaPai));
+//                categoriaRequest.setFlag("POST");
+//
+//                String nomeCategoria = elementoCategoria.getElementsByTagName("descricao").item(0).getTextContent();
+//                List<CategoriaRequest> categoriaExistente = categoriaRequestRepository.findByDescricao(nomeCategoria);
+//
+//                boolean categoriaJaExiste = !categoriaExistente.isEmpty();
+//
+//                if (!categoriaJaExiste) {
+//                    categoriaRequestRepository.save(categoriaRequest);
+//                }
+//            } catch (ParserConfigurationException | SAXException | IOException ex) {
+//                throw new ApiCategoriaException("Erro ao processar XML: ", ex);
+//            }
             throw new ApiCategoriaException("Erro ao chamar API", e);
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON: ", e);
@@ -284,51 +284,51 @@ public class CategoriaServiceImpl implements CategoriaService {
 
         } catch (JsonProcessingException e) {
             throw new ApiCategoriaException("Erro ao processar JSON", e);
-        } catch (RestClientException e) {
-            // Caso haja algum erro de conexão ou a API esteja indisponível, tenta atualizar os dados no banco local
-            System.out.println("API externa indisponível. Tentando atualizar os dados no banco local...");
-
-            Optional<CategoriaResponse> optionalCategoria = categoriaResponseRepository.findById(Long.valueOf(idCategoria));
-            if (optionalCategoria.isPresent()) {
-                CategoriaResponse categoria = optionalCategoria.get();
-
-                try {
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder builder = factory.newDocumentBuilder();
-                    InputSource is = new InputSource(new StringReader(xmlCategoria));
-                    Document doc = builder.parse(is);
-
-                    NodeList descricaoNodes = doc.getElementsByTagName("descricao");
-                    String descricao = descricaoNodes.item(0).getTextContent();
-                    NodeList idCategoriaPaiNodes = doc.getElementsByTagName("idcategoriapai");
-                    String idCategoriaPai = idCategoriaPaiNodes.item(0).getTextContent();
-
-                    //Adiciona na tabela tb_categoria_request a categoria atualizada e adiciona uma flaf PUT para posterior ser atualizado.
-                    CategoriaRequest categoriaRequest = new CategoriaRequest();
-                    categoriaRequest.setId(Long.valueOf(idCategoria));
-                    categoriaRequest.setDescricao(descricao);
-                    categoriaRequest.setIdCategoriaPai(Long.valueOf(idCategoriaPai));
-                    categoriaRequest.setFlag("PUT");
-                    categoriaRequestRepository.save(categoriaRequest);
-
-                    //Atualiza na tabela tb_categoria_response a categoria atualizada para acesso imediato.
-                    CategoriaResponse categoriaResponse = new CategoriaResponse();
-                    categoriaResponse.setId(Long.valueOf(idCategoria));
-                    categoriaResponse.setDescricao(descricao);
-                    categoriaResponse.setIdCategoriaPai(idCategoriaPai);
-                    categoriaResponseRepository.save(categoriaResponse);
-
-                    System.out.println("Dados atualizados no banco local.");
-
-                    // Retorna um objeto vazio como indicação de que a operação foi concluída com sucesso
-                    return new JsonRequest();
-                } catch (NumberFormatException | ParserConfigurationException | IOException | SAXException ex) {
-                    throw new ApiCategoriaException("Erro ao processar XML", ex);
-                }
-            } else {
-                throw new ApiCategoriaException("Categoria não encontrada no banco de dados", e);
-            }
-        }
+        } // catch (RestClientException e) {
+//            // Caso haja algum erro de conexão ou a API esteja indisponível, tenta atualizar os dados no banco local
+//            System.out.println("API externa indisponível. Tentando atualizar os dados no banco local...");
+//
+//            Optional<CategoriaResponse> optionalCategoria = categoriaResponseRepository.findById(Long.valueOf(idCategoria));
+//            if (optionalCategoria.isPresent()) {
+//                CategoriaResponse categoria = optionalCategoria.get();
+//
+//                try {
+//                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//                    DocumentBuilder builder = factory.newDocumentBuilder();
+//                    InputSource is = new InputSource(new StringReader(xmlCategoria));
+//                    Document doc = builder.parse(is);
+//
+//                    NodeList descricaoNodes = doc.getElementsByTagName("descricao");
+//                    String descricao = descricaoNodes.item(0).getTextContent();
+//                    NodeList idCategoriaPaiNodes = doc.getElementsByTagName("idcategoriapai");
+//                    String idCategoriaPai = idCategoriaPaiNodes.item(0).getTextContent();
+//
+//                    //Adiciona na tabela tb_categoria_request a categoria atualizada e adiciona uma flaf PUT para posterior ser atualizado.
+//                    CategoriaRequest categoriaRequest = new CategoriaRequest();
+//                    categoriaRequest.setId(Long.valueOf(idCategoria));
+//                    categoriaRequest.setDescricao(descricao);
+//                    categoriaRequest.setIdCategoriaPai(Long.valueOf(idCategoriaPai));
+//                    categoriaRequest.setFlag("PUT");
+//                    categoriaRequestRepository.save(categoriaRequest);
+//
+//                    //Atualiza na tabela tb_categoria_response a categoria atualizada para acesso imediato.
+//                    CategoriaResponse categoriaResponse = new CategoriaResponse();
+//                    categoriaResponse.setId(Long.valueOf(idCategoria));
+//                    categoriaResponse.setDescricao(descricao);
+//                    categoriaResponse.setIdCategoriaPai(idCategoriaPai);
+//                    categoriaResponseRepository.save(categoriaResponse);
+//
+//                    System.out.println("Dados atualizados no banco local.");
+//
+//                    // Retorna um objeto vazio como indicação de que a operação foi concluída com sucesso
+//                    return new JsonRequest();
+//                } catch (NumberFormatException | ParserConfigurationException | IOException | SAXException ex) {
+//                    throw new ApiCategoriaException("Erro ao processar XML", ex);
+//                }
+//            } else {
+//                throw new ApiCategoriaException("Categoria não encontrada no banco de dados", e);
+//            }
+//       }
     }
 
     /**

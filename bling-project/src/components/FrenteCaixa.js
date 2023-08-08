@@ -240,10 +240,10 @@ class FrenteCaixa extends React.Component {
     componentDidMount() {
         this.buscarFormaDePagamento()
             .catch(() => { throw new Error("Erro ao conectar a API"); })
-        //     .then(() => this.buscarLoja())
-        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
-        //     .then(() => this.buscarPedido())
-        //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+            //     .then(() => this.buscarLoja())
+            //     .catch(() => { throw new Error("Erro ao conectar a API"); })
+            .then(() => this.buscarPedido())
+            .catch(() => { throw new Error("Erro ao conectar a API"); })
         //     .then(() => {
         //         this.setState({ carregado: true });
         //     })
@@ -286,7 +286,7 @@ class FrenteCaixa extends React.Component {
         return new Promise((resolve, reject) => {
             this.setState({ buscaProduto: value, carregando: false, produtoNaoLocalizado: false });
             // fetch("http://localhost:8081/api/v1/produtos")
-            fetch(`https://api-produtos.azurewebsites.net/api/v1/produtos`)
+            fetch(`https://dev-api-produto.azurewebsites.net/api/v1/produtos`)
                 .then((resposta) => {
                     if (!resposta.ok) {
                         throw new Error('Erro na chamada da API');
@@ -366,7 +366,7 @@ class FrenteCaixa extends React.Component {
 
         this.setState({ buscaContato: value, carregando: true, contatoNaoLocalizado: false });
         // fetch(`http://localhost:8080/api/v1/contatos`)
-        fetch(`https://api-contato.azurewebsites.net/api/v1/contatos`)
+        fetch(`https://dev-api-contato.azurewebsites.net/api/v1/contatos`)
             .then((resposta) => {
                 if (!resposta.ok) {
                     throw new Error('Erro na chamada da API');
@@ -457,7 +457,7 @@ class FrenteCaixa extends React.Component {
         return new Promise((resolve, reject) => {
             this.setState({ buscaVendedor: value, carregando: true, vendedorNaoLocalizado: false });
             // fetch(`http://localhost:8080/api/v1/contatos`)
-            fetch(`https://api-contato.azurewebsites.net/api/v1/contatos`)
+            fetch(`https://dev-api-contato.azurewebsites.net/api/v1/contatos`)
                 .then((resposta) => {
                     if (!resposta.ok) {
                         throw new Error("Erro na chamada da API");
@@ -559,7 +559,8 @@ class FrenteCaixa extends React.Component {
     buscarPedido = (value) => {
         return new Promise((resolve, reject) => {
             this.setState({ buscaPedido: value, carregando: true });
-            fetch("http://localhost:8085/api/v1/pedidos")
+            // fetch("http://localhost:8085/api/v1/pedidos")
+            fetch("https://dev-api-pedido.azurewebsites.net/api/v1/pedidos")
                 .then((resposta) => {
                     if (!resposta.ok) {
                         throw new Error("Erro na chamada da API");
@@ -595,14 +596,14 @@ class FrenteCaixa extends React.Component {
                     reject(error); // Rejeite a Promise se ocorrer um erro na chamada da API
                 });
         });
-    };
+    }; ''
 
     //----------------------------------------- API BUSCA FORMA DE PAGAMENTO ----------------------------------------------------------
 
     buscarFormaDePagamento = () => {
         return new Promise((resolve, reject) => {
             // fetch("http://localhost:8086/api/v1/formaspagamento")
-            fetch("https://api-forma-pagamento.azurewebsites.net/api/v1/formaspagamento")
+            fetch("https://dev-api-forma-pagamento.azurewebsites.net/api/v1/formaspagamento")
 
                 .then((resposta) => {
                     if (!resposta.ok) {
@@ -690,7 +691,9 @@ class FrenteCaixa extends React.Component {
         const xml = parser.parseFromString(xmlPedido, 'text/xml');
         const stringXml = new XMLSerializer().serializeToString(xml);
 
-        fetch('http://localhost:8085/api/v1/cadastrarpedido', {
+        // fetch('http://localhost:8085/api/v1/cadastrarpedido', {
+        fetch('https://dev-api-pedido.azurewebsites.net/api/v1/cadastrarpedido', {
+
             method: 'POST',
             body: stringXml,
             headers: {
@@ -701,19 +704,19 @@ class FrenteCaixa extends React.Component {
 
     //----------------------------------------- API CADASTRAR FORMA DE PAGAMENTO ----------------------------------------------------------
 
-    cadastrarFormaDePagamento = (xmlFormaPagamento) => {
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(xmlFormaPagamento, 'text/xml');
-        const stringXml = new XMLSerializer().serializeToString(xml);
+    // cadastrarFormaDePagamento = (xmlFormaPagamento) => {
+    //     const parser = new DOMParser();
+    //     const xml = parser.parseFromString(xmlFormaPagamento, 'text/xml');
+    //     const stringXml = new XMLSerializer().serializeToString(xml);
 
-        fetch('http://localhost:8086/api/v1/cadastrarformapagamento', {
-            method: 'POST',
-            body: stringXml,
-            headers: {
-                'Content-Type': 'application/xml'
-            }
-        });
-    };
+    //     fetch('http://localhost:8086/api/v1/cadastrarformapagamento', {
+    //         method: 'POST',
+    //         body: stringXml,
+    //         headers: {
+    //             'Content-Type': 'application/xml'
+    //         }
+    //     });
+    // };
 
     //----------------------------------------- API´s PUBLICAS (CEP) ----------------------------------------------------------
 
@@ -2970,28 +2973,31 @@ class FrenteCaixa extends React.Component {
                                 </div>
                             </Col>
                         </Row >
-                        <Row className="fixed-bottom align-items-center">
-                            <Col>
-                                <div className="rodape">
-                                    <div>
-                                        <div className="botao-excluirvenda">
-                                            <div>
-                                                <Button variant="success" onClick={this.ModalExcluirPedido}>Excluir pedido</Button>
+                        <div className="container-fluid">
+                            <Row className="fixed-bottom align-items-center">
+                                <Col>
+                                    <div className="rodape">
+                                        <div className="d-flex justify-content-between">
+                                            <div className="botao-excluirvenda">
+                                                <div>
+                                                    <Button variant="secondary" onClick={this.ModalExcluirPedido}>Excluir pedido</Button>
+                                                </div>
+                                            </div>
+                                            <div className="botao-finalizarvenda">
+                                                <Button variant="success" type="submit">Finalizar Venda</Button>
                                             </div>
                                         </div>
-                                        <div className="botao-finalizarvenda">
-                                            <Button variant="success" type="submit">Finalizar Venda</Button>
+                                        <div className="div_total_venda">
+                                            <div>
+                                                <span className="span-total">Total:</span>
+                                                <span className="span-valor">{this.calcularSubTotalGeral().toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="div_total_venda">
-                                        <div>
-                                            <span className="span-total">Total:</span>
-                                            <span className="span-valor">{this.calcularSubTotalGeral().toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Col>
-                        </Row>
+                                </Col>
+                            </Row>
+                        </div>
+
                     </Form>
 
                     {/* ---------------------------------------------------------- MODALS ---------------------------------------------------------- */}

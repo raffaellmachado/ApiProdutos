@@ -13,22 +13,22 @@ import javax.persistence.Table;
 
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "TB_CATEGORIA_RESPONSE")
+//@Entity
+//@Table(name = "TB_CATEGORIA_RESPONSE")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CategoriaResponse {
 
-    @Id
+//    @Id
     @JsonProperty("id")
-    @Column(name = "ID")
+//    @Column(name = "ID")
     public Long id;
 
     @JsonProperty("descricao")
-    @Column(name = "DESCRICAO")
+//    @Column(name = "DESCRICAO")
     public String descricao;
 
     @JsonProperty("idCategoriaPai")
-    @Column(name = "ID_CATEGORIA_PAI")
+//    @Column(name = "ID_CATEGORIA_PAI")
     public String idCategoriaPai;
 }
