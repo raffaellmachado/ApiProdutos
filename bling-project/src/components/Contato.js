@@ -93,7 +93,9 @@ class Contato extends React.Component {
             .then(resposta => resposta.json())
             .then(dados => {
                 if (dados.retorno.contatos) {
-                    this.setState({ contatos: dados.retorno.contatos })
+                    this.setState({
+                        contatos: dados.retorno.contatos,
+                    })
                 } else {
                     this.setState({ contatos: [] })
                 }
@@ -542,6 +544,7 @@ class Contato extends React.Component {
                             </Table>
                         </div>
                     </div>
+
                     <Container>
                         <Modal show={this.state.modalAberta} onHide={this.fecharModal} size="xl" backdrop="static">
                             <Modal.Header closeButton>

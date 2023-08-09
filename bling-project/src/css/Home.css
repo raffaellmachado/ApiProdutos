@@ -4,6 +4,7 @@
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
   padding: 20px;
+  flex-wrap: wrap;
 }
 
 .custom-card {
@@ -20,10 +21,10 @@
 }
 
 .custom-card img {
-  width: 170px; /* Defina o tamanho desejado */
-  height: 153px; /* Defina o tamanho desejado */
+  width: 170px;
+  height: 153px;
   object-fit: cover;
-  margin: 0 auto; /* Centralizar a imagem horizontalmente */
+  margin: 0 auto;
 }
 
 @keyframes bolha {
